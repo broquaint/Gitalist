@@ -57,8 +57,7 @@ if ($path_info) {
 our $GIT = "/usr/bin/git";
 
 # absolute fs-path which will be prepended to the project path
-#our $projectroot = "/pub/scm";
-our $projectroot = "/home/git/repositories";
+our $projectroot = "/pub/scm";
 
 # fs traversing limit for getting project list
 # the number is relative to the projectroot
@@ -466,7 +465,7 @@ our $GITWEB_CONFIG = $ENV{'GITWEB_CONFIG'} || "gitweb_config.perl";
 if (-e $GITWEB_CONFIG) {
 	do $GITWEB_CONFIG;
 } else {
-	our $GITWEB_CONFIG_SYSTEM = $ENV{'GITWEB_CONFIG_SYSTEM'} || '/home/git/gitweb/gitweb.conf'
+	our $GITWEB_CONFIG_SYSTEM = $ENV{'GITWEB_CONFIG_SYSTEM'} || '/home/git/gitweb/gitweb.conf';
 	do $GITWEB_CONFIG_SYSTEM if -e $GITWEB_CONFIG_SYSTEM;
 }
 
