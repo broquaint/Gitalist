@@ -22,349 +22,791 @@ BEGIN {
 	CGI->compile() if $ENV{'MOD_PERL'};
 }
 
-our $cgi = new CGI;
-our $version = "1.6.3.3";
-our $my_url = $cgi->url();
-our $my_uri = $cgi->url(-absolute => 1);
+use vars qw(
+	$cgi $version $my_url $my_uri $base_url $path_info $GIT $projectroot
+	$project_maxdepth $home_link $home_link_str $site_name $site_header
+	$home_text $site_footer @stylesheets $stylesheet $logo $favicon
+	$logo_url $logo_label $logo_url $logo_label $projects_list
+	$projects_list_description_width $default_projects_order
+	$export_ok $export_auth_hook $strict_export @git_base_url_list
+	$default_blob_plain_mimetype $default_text_plain_charset
+	$mimetypes_file $fallback_encoding @diff_opts $prevent_xss
+	%known_snapshot_formats %known_snapshot_format_aliases %feature
+	$GITWEB_CONFIG $GITWEB_CONFIG $GITWEB_CONFIG_SYSTEM $git_version
+	%input_params @cgi_param_mapping %cgi_param_mapping %actions
+	%allowed_options $action $project $file_name $file_parent $hash
+	$hash_parent $hash_base @extra_options $hash_parent_base $page
+	$searchtype $search_use_regexp $searchtext $search_regexp $git_dir
+	@snapshot_fmts
+);
 
-# Base URL for relative URLs in gitweb ($logo, $favicon, ...),
-# needed and used only for URLs with nonempty PATH_INFO
-our $base_url = $my_url;
+sub main {
+	our $cgi = new CGI;
+	our $version = "1.6.3.3";
+	our $my_url = $cgi->url();
+	our $my_uri = $cgi->url(-absolute => 1);
 
-# When the script is used as DirectoryIndex, the URL does not contain the name
-# of the script file itself, and $cgi->url() fails to strip PATH_INFO, so we
-# have to do it ourselves. We make $path_info global because it's also used
-# later on.
-#
-# Another issue with the script being the DirectoryIndex is that the resulting
-# $my_url data is not the full script URL: this is good, because we want
-# generated links to keep implying the script name if it wasn't explicitly
-# indicated in the URL we're handling, but it means that $my_url cannot be used
-# as base URL.
-# Therefore, if we needed to strip PATH_INFO, then we know that we have
-# to build the base URL ourselves:
-our $path_info = $ENV{"PATH_INFO"};
-if ($path_info) {
-	if ($my_url =~ s,\Q$path_info\E$,, &&
-	    $my_uri =~ s,\Q$path_info\E$,, &&
-	    defined $ENV{'SCRIPT_NAME'}) {
-		$base_url = $cgi->url(-base => 1) . $ENV{'SCRIPT_NAME'};
+	# Base URL for relative URLs in gitweb ($logo, $favicon, ...),
+	# needed and used only for URLs with nonempty PATH_INFO
+	our $base_url = $my_url;
+
+	# When the script is used as DirectoryIndex, the URL does not contain the name
+	# of the script file itself, and $cgi->url() fails to strip PATH_INFO, so we
+	# have to do it ourselves. We make $path_info global because it's also used
+	# later on.
+	#
+	# Another issue with the script being the DirectoryIndex is that the resulting
+	# $my_url data is not the full script URL: this is good, because we want
+	# generated links to keep implying the script name if it wasn't explicitly
+	# indicated in the URL we're handling, but it means that $my_url cannot be used
+	# as base URL.
+	# Therefore, if we needed to strip PATH_INFO, then we know that we have
+	# to build the base URL ourselves:
+	our $path_info = $ENV{"PATH_INFO"};
+	if ($path_info) {
+		if ($my_url =~ s,\Q$path_info\E$,, &&
+		    $my_uri =~ s,\Q$path_info\E$,, &&
+		    defined $ENV{'SCRIPT_NAME'}) {
+			$base_url = $cgi->url(-base => 1) . $ENV{'SCRIPT_NAME'};
+		}
 	}
+
+	# core git executable to use
+	# this can just be "git" if your webserver has a sensible PATH
+	our $GIT = "/usr/bin/git";
+
+	# absolute fs-path which will be prepended to the project path
+	our $projectroot = "/pub/scm";
+
+	# fs traversing limit for getting project list
+	# the number is relative to the projectroot
+	our $project_maxdepth = 2007;
+
+	# target of the home link on top of all pages
+	our $home_link = $my_uri || "/";
+
+	# string of the home link on top of all pages
+	our $home_link_str = "DanB's git repos";
+
+	# name of your site or organization to appear in page titles
+	# replace this with something more descriptive for clearer bookmarks
+	our $site_name = ""
+	                 || ($ENV{'SERVER_NAME'} || "Untitled") . " Git";
+
+	# filename of html text to include at top of each page
+	our $site_header = "";
+	# html text to include at home page
+	our $home_text = "indextext.html";
+	# filename of html text to include at bottom of each page
+	our $site_footer = "";
+
+	# URI of stylesheets
+	our @stylesheets = ("gitweb.css");
+	# URI of a single stylesheet, which can be overridden in GITWEB_CONFIG.
+	our $stylesheet = undef;
+	# URI of GIT logo (72x27 size)
+	our $logo = "git-logo.png";
+	# URI of GIT favicon, assumed to be image/png type
+	our $favicon = "git-favicon.png";
+
+	# URI and label (title) of GIT logo link
+	#our $logo_url = "http://www.kernel.org/pub/software/scm/git/docs/";
+	#our $logo_label = "git documentation";
+	our $logo_url = "http://git.dev.venda.com/";
+	our $logo_label = "Venda Git Resources";
+
+	# source of projects list
+	our $projects_list = "";
+
+	# the width (in characters) of the projects list "Description" column
+	our $projects_list_description_width = 25;
+
+	# default order of projects list
+	# valid values are none, project, descr, owner, and age
+	our $default_projects_order = "project";
+
+	# show repository only if this file exists
+	# (only effective if this variable evaluates to true)
+	our $export_ok = "";
+
+	# show repository only if this subroutine returns true
+	# when given the path to the project, for example:
+	#    sub { return -e "$_[0]/git-daemon-export-ok"; }
+	our $export_auth_hook = undef;
+
+	# only allow viewing of repositories also shown on the overview page
+	our $strict_export = "";
+
+	# list of git base URLs used for URL to where fetch project from,
+	# i.e. full URL is "$git_base_url/$project"
+	our @git_base_url_list = grep { $_ ne '' } ("");
+
+	# default blob_plain mimetype and default charset for text/plain blob
+	our $default_blob_plain_mimetype = 'text/plain';
+	our $default_text_plain_charset  = undef;
+
+	# file to use for guessing MIME types before trying /etc/mime.types
+	# (relative to the current git repository)
+	our $mimetypes_file = undef;
+
+	# assume this charset if line contains non-UTF-8 characters;
+	# it should be valid encoding (see Encoding::Supported(3pm) for list),
+	# for which encoding all byte sequences are valid, for example
+	# 'iso-8859-1' aka 'latin1' (it is decoded without checking, so it
+	# could be even 'utf-8' for the old behavior)
+	our $fallback_encoding = 'latin1';
+
+	# rename detection options for git-diff and git-diff-tree
+	# - default is '-M', with the cost proportional to
+	#   (number of removed files) * (number of new files).
+	# - more costly is '-C' (which implies '-M'), with the cost proportional to
+	#   (number of changed files + number of removed files) * (number of new files)
+	# - even more costly is '-C', '--find-copies-harder' with cost
+	#   (number of files in the original tree) * (number of new files)
+	# - one might want to include '-B' option, e.g. '-B', '-M'
+	our @diff_opts = ('-M'); # taken from git_commit
+
+	# Disables features that would allow repository owners to inject script into
+	# the gitweb domain.
+	our $prevent_xss = 0;
+
+	# information about snapshot formats that gitweb is capable of serving
+	our %known_snapshot_formats = (
+		# name => {
+		# 	'display' => display name,
+		# 	'type' => mime type,
+		# 	'suffix' => filename suffix,
+		# 	'format' => --format for git-archive,
+		# 	'compressor' => [compressor command and arguments]
+		# 	                (array reference, optional)}
+		#
+		'tgz' => {
+			'display' => 'tar.gz',
+			'type' => 'application/x-gzip',
+			'suffix' => '.tar.gz',
+			'format' => 'tar',
+			'compressor' => ['gzip']},
+
+		'tbz2' => {
+			'display' => 'tar.bz2',
+			'type' => 'application/x-bzip2',
+			'suffix' => '.tar.bz2',
+			'format' => 'tar',
+			'compressor' => ['bzip2']},
+
+		'zip' => {
+			'display' => 'zip',
+			'type' => 'application/x-zip',
+			'suffix' => '.zip',
+			'format' => 'zip'},
+	);
+
+	# Aliases so we understand old gitweb.snapshot values in repository
+	# configuration.
+	our %known_snapshot_format_aliases = (
+		'gzip'  => 'tgz',
+		'bzip2' => 'tbz2',
+
+		# backward compatibility: legacy gitweb config support
+		'x-gzip' => undef, 'gz' => undef,
+		'x-bzip2' => undef, 'bz2' => undef,
+		'x-zip' => undef, '' => undef,
+	);
+
+	my $feature_bool = sub {
+		my $key = shift;
+		my ($val) = git_get_project_config($key, '--bool');
+
+		if (!defined $val) {
+			return ($_[0]);
+		} elsif ($val eq 'true') {
+			return (1);
+		} elsif ($val eq 'false') {
+			return (0);
+		}
+	};
+
+	my $feature_snapshot = sub {
+		my (@fmts) = @_;
+
+		my ($val) = git_get_project_config('snapshot');
+
+		if ($val) {
+			@fmts = ($val eq 'none' ? () : split /\s*[,\s]\s*/, $val);
+		}
+
+		return @fmts;
+	};
+
+	my $feature_patches = sub {
+		my @val = (git_get_project_config('patches', '--int'));
+
+		if (@val) {
+			return @val;
+		}
+
+		return ($_[0]);
+	};
+
+
+	# You define site-wide feature defaults here; override them with
+	# $GITWEB_CONFIG as necessary.
+	our %feature = (
+		# feature => {
+		# 	'sub' => feature-sub (subroutine),
+		# 	'override' => allow-override (boolean),
+		# 	'default' => [ default options...] (array reference)}
+		#
+		# if feature is overridable (it means that allow-override has true value),
+		# then feature-sub will be called with default options as parameters;
+		# return value of feature-sub indicates if to enable specified feature
+		#
+		# if there is no 'sub' key (no feature-sub), then feature cannot be
+		# overriden
+		#
+		# use gitweb_get_feature(<feature>) to retrieve the <feature> value
+		# (an array) or gitweb_check_feature(<feature>) to check if <feature>
+		# is enabled
+
+		# Enable the 'blame' blob view, showing the last commit that modified
+		# each line in the file. This can be very CPU-intensive.
+
+		# To enable system wide have in $GITWEB_CONFIG
+		# $feature{'blame'}{'default'} = [1];
+		# To have project specific config enable override in $GITWEB_CONFIG
+		# $feature{'blame'}{'override'} = 1;
+		# and in project config gitweb.blame = 0|1;
+		'blame' => {
+			'sub' => sub { &$feature_bool('blame', @_) },
+			'override' => 0,
+			'default' => [0]},
+
+		# Enable the 'snapshot' link, providing a compressed archive of any
+		# tree. This can potentially generate high traffic if you have large
+		# project.
+
+		# Value is a list of formats defined in %known_snapshot_formats that
+		# you wish to offer.
+		# To disable system wide have in $GITWEB_CONFIG
+		# $feature{'snapshot'}{'default'} = [];
+		# To have project specific config enable override in $GITWEB_CONFIG
+		# $feature{'snapshot'}{'override'} = 1;
+		# and in project config, a comma-separated list of formats or "none"
+		# to disable.  Example: gitweb.snapshot = tbz2,zip;
+		'snapshot' => {
+			'sub' => $feature_snapshot,
+			'override' => 0,
+			'default' => ['tgz']},
+
+		# Enable text search, which will list the commits which match author,
+		# committer or commit text to a given string.  Enabled by default.
+		# Project specific override is not supported.
+		'search' => {
+			'override' => 0,
+			'default' => [1]},
+
+		# Enable grep search, which will list the files in currently selected
+		# tree containing the given string. Enabled by default. This can be
+		# potentially CPU-intensive, of course.
+
+		# To enable system wide have in $GITWEB_CONFIG
+		# $feature{'grep'}{'default'} = [1];
+		# To have project specific config enable override in $GITWEB_CONFIG
+		# $feature{'grep'}{'override'} = 1;
+		# and in project config gitweb.grep = 0|1;
+		'grep' => {
+			'sub' => sub { &$feature_bool('grep', @_) },
+			'override' => 0,
+			'default' => [1]},
+
+		# Enable the pickaxe search, which will list the commits that modified
+		# a given string in a file. This can be practical and quite faster
+		# alternative to 'blame', but still potentially CPU-intensive.
+
+		# To enable system wide have in $GITWEB_CONFIG
+		# $feature{'pickaxe'}{'default'} = [1];
+		# To have project specific config enable override in $GITWEB_CONFIG
+		# $feature{'pickaxe'}{'override'} = 1;
+		# and in project config gitweb.pickaxe = 0|1;
+		'pickaxe' => {
+			'sub' => sub { &$feature_bool('pickaxe', @_) },
+			'override' => 0,
+			'default' => [1]},
+
+		# Make gitweb use an alternative format of the URLs which can be
+		# more readable and natural-looking: project name is embedded
+		# directly in the path and the query string contains other
+		# auxiliary information. All gitweb installations recognize
+		# URL in either format; this configures in which formats gitweb
+		# generates links.
+
+		# To enable system wide have in $GITWEB_CONFIG
+		# $feature{'pathinfo'}{'default'} = [1];
+		# Project specific override is not supported.
+
+		# Note that you will need to change the default location of CSS,
+		# favicon, logo and possibly other files to an absolute URL. Also,
+		# if gitweb.cgi serves as your indexfile, you will need to force
+		# $my_uri to contain the script name in your $GITWEB_CONFIG.
+		'pathinfo' => {
+			'override' => 0,
+			'default' => [0]},
+
+		# Make gitweb consider projects in project root subdirectories
+		# to be forks of existing projects. Given project $projname.git,
+		# projects matching $projname/*.git will not be shown in the main
+		# projects list, instead a '+' mark will be added to $projname
+		# there and a 'forks' view will be enabled for the project, listing
+		# all the forks. If project list is taken from a file, forks have
+		# to be listed after the main project.
+
+		# To enable system wide have in $GITWEB_CONFIG
+		# $feature{'forks'}{'default'} = [1];
+		# Project specific override is not supported.
+		'forks' => {
+			'override' => 0,
+			'default' => [0]},
+
+		# Insert custom links to the action bar of all project pages.
+		# This enables you mainly to link to third-party scripts integrating
+		# into gitweb; e.g. git-browser for graphical history representation
+		# or custom web-based repository administration interface.
+
+		# The 'default' value consists of a list of triplets in the form
+		# (label, link, position) where position is the label after which
+		# to insert the link and link is a format string where %n expands
+		# to the project name, %f to the project path within the filesystem,
+		# %h to the current hash (h gitweb parameter) and %b to the current
+		# hash base (hb gitweb parameter); %% expands to %.
+
+		# To enable system wide have in $GITWEB_CONFIG e.g.
+		# $feature{'actions'}{'default'} = [('graphiclog',
+		# 	'/git-browser/by-commit.html?r=%n', 'summary')];
+		# Project specific override is not supported.
+		'actions' => {
+			'override' => 0,
+			'default' => []},
+
+		# Allow gitweb scan project content tags described in ctags/
+		# of project repository, and display the popular Web 2.0-ish
+		# "tag cloud" near the project list. Note that this is something
+		# COMPLETELY different from the normal Git tags.
+
+		# gitweb by itself can show existing tags, but it does not handle
+		# tagging itself; you need an external application for that.
+		# For an example script, check Girocco's cgi/tagproj.cgi.
+		# You may want to install the HTML::TagCloud Perl module to get
+		# a pretty tag cloud instead of just a list of tags.
+
+		# To enable system wide have in $GITWEB_CONFIG
+		# $feature{'ctags'}{'default'} = ['path_to_tag_script'];
+		# Project specific override is not supported.
+		'ctags' => {
+			'override' => 0,
+			'default' => [0]},
+
+		# The maximum number of patches in a patchset generated in patch
+		# view. Set this to 0 or undef to disable patch view, or to a
+		# negative number to remove any limit.
+
+		# To disable system wide have in $GITWEB_CONFIG
+		# $feature{'patches'}{'default'} = [0];
+		# To have project specific config enable override in $GITWEB_CONFIG
+		# $feature{'patches'}{'override'} = 1;
+		# and in project config gitweb.patches = 0|n;
+		# where n is the maximum number of patches allowed in a patchset.
+		'patches' => {
+			'sub' => $feature_patches,
+			'override' => 0,
+			'default' => [16]},
+	);
+
+
+	# process alternate names for backward compatibility
+	# filter out unsupported (unknown) snapshot formats
+	my $filter_snapshot_fmts  = sub {
+		my @fmts = @_;
+
+		@fmts = map {
+			exists $known_snapshot_format_aliases{$_} ?
+			       $known_snapshot_format_aliases{$_} : $_} @fmts;
+		@fmts = grep(exists $known_snapshot_formats{$_}, @fmts);
+
+	};
+
+	our $GITWEB_CONFIG = $ENV{'GITWEB_CONFIG'} || "gitweb_config.perl";
+	if (-e $GITWEB_CONFIG) {
+		do $GITWEB_CONFIG;
+	} else {
+		our $GITWEB_CONFIG_SYSTEM = $ENV{'GITWEB_CONFIG_SYSTEM'} || '/home/git/gitweb/gitweb.conf';
+		do $GITWEB_CONFIG_SYSTEM if -e $GITWEB_CONFIG_SYSTEM;
+	}
+
+	# version of the core git binary
+	our $git_version = qx("$GIT" --version) =~ m/git version (.*)$/ ? $1 : "unknown";
+
+	$projects_list ||= $projectroot;
+
+	# ======================================================================
+	# input validation and dispatch
+
+	# input parameters can be collected from a variety of sources (presently, CGI
+	# and PATH_INFO), so we define an %input_params hash that collects them all
+	# together during validation: this allows subsequent uses (e.g. href()) to be
+	# agnostic of the parameter origin
+
+	our %input_params = ();
+
+	# input parameters are stored with the long parameter name as key. This will
+	# also be used in the href subroutine to convert parameters to their CGI
+	# equivalent, and since the href() usage is the most frequent one, we store
+	# the name -> CGI key mapping here, instead of the reverse.
+	#
+	# XXX: Warning: If you touch this, check the search form for updating,
+	# too.
+
+	our @cgi_param_mapping = (
+		project => "p",
+		action => "a",
+		file_name => "f",
+		file_parent => "fp",
+		hash => "h",
+		hash_parent => "hp",
+		hash_base => "hb",
+		hash_parent_base => "hpb",
+		page => "pg",
+		order => "o",
+		searchtext => "s",
+		searchtype => "st",
+		snapshot_format => "sf",
+		extra_options => "opt",
+		search_use_regexp => "sr",
+	);
+	our %cgi_param_mapping = @cgi_param_mapping;
+
+	# we will also need to know the possible actions, for validation
+	our %actions = (
+		"blame" => \&git_blame,
+		"blobdiff" => \&git_blobdiff,
+		"blobdiff_plain" => \&git_blobdiff_plain,
+		"blob" => \&git_blob,
+		"blob_plain" => \&git_blob_plain,
+		"commitdiff" => \&git_commitdiff,
+		"commitdiff_plain" => \&git_commitdiff_plain,
+		"commit" => \&git_commit,
+		"forks" => \&git_forks,
+		"heads" => \&git_heads,
+		"history" => \&git_history,
+		"log" => \&git_log,
+		"patch" => \&git_patch,
+		"patches" => \&git_patches,
+		"rss" => \&git_rss,
+		"atom" => \&git_atom,
+		"search" => \&git_search,
+		"search_help" => \&git_search_help,
+		"shortlog" => \&git_shortlog,
+		"summary" => \&git_summary,
+		"tag" => \&git_tag,
+		"tags" => \&git_tags,
+		"tree" => \&git_tree,
+		"snapshot" => \&git_snapshot,
+		"object" => \&git_object,
+		# those below don't need $project
+		"opml" => \&git_opml,
+		"project_list" => \&git_project_list,
+		"project_index" => \&git_project_index,
+	);
+
+	# finally, we have the hash of allowed extra_options for the commands that
+	# allow them
+	our %allowed_options = (
+		"--no-merges" => [ qw(rss atom log shortlog history) ],
+	);
+
+	# fill %input_params with the CGI parameters. All values except for 'opt'
+	# should be single values, but opt can be an array. We should probably
+	# build an array of parameters that can be multi-valued, but since for the time
+	# being it's only this one, we just single it out
+	while (my ($name, $symbol) = each %cgi_param_mapping) {
+		if ($symbol eq 'opt') {
+			$input_params{$name} = [ $cgi->param($symbol) ];
+		} else {
+			$input_params{$name} = $cgi->param($symbol);
+		}
+	}
+
+	# now read PATH_INFO and update the parameter list for missing parameters
+	my $evaluate_path_info = sub {
+		return if defined $input_params{'project'};
+		return if !$path_info;
+		$path_info =~ s,^/+,,;
+		return if !$path_info;
+
+		# find which part of PATH_INFO is project
+		my $project = $path_info;
+		$project =~ s,/+$,,;
+		while ($project && !check_head_link("$projectroot/$project")) {
+			$project =~ s,/*[^/]*$,,;
+		}
+		return unless $project;
+		$input_params{'project'} = $project;
+
+		# do not change any parameters if an action is given using the query string
+		return if $input_params{'action'};
+		$path_info =~ s,^\Q$project\E/*,,;
+
+		# next, check if we have an action
+		my $action = $path_info;
+		$action =~ s,/.*$,,;
+		if (exists $actions{$action}) {
+			$path_info =~ s,^$action/*,,;
+			$input_params{'action'} = $action;
+		}
+
+		# list of actions that want hash_base instead of hash, but can have no
+		# pathname (f) parameter
+		my @wants_base = (
+			'tree',
+			'history',
+		);
+
+		# we want to catch
+		# [$hash_parent_base[:$file_parent]..]$hash_parent[:$file_name]
+		my ($parentrefname, $parentpathname, $refname, $pathname) =
+			($path_info =~ /^(?:(.+?)(?::(.+))?\.\.)?(.+?)(?::(.+))?$/);
+
+		# first, analyze the 'current' part
+		if (defined $pathname) {
+			# we got "branch:filename" or "branch:dir/"
+			# we could use git_get_type(branch:pathname), but:
+			# - it needs $git_dir
+			# - it does a git() call
+			# - the convention of terminating directories with a slash
+			#   makes it superfluous
+			# - embedding the action in the PATH_INFO would make it even
+			#   more superfluous
+			$pathname =~ s,^/+,,;
+			if (!$pathname || substr($pathname, -1) eq "/") {
+				$input_params{'action'} ||= "tree";
+				$pathname =~ s,/$,,;
+			} else {
+				# the default action depends on whether we had parent info
+				# or not
+				if ($parentrefname) {
+					$input_params{'action'} ||= "blobdiff_plain";
+				} else {
+					$input_params{'action'} ||= "blob_plain";
+				}
+			}
+			$input_params{'hash_base'} ||= $refname;
+			$input_params{'file_name'} ||= $pathname;
+		} elsif (defined $refname) {
+			# we got "branch". In this case we have to choose if we have to
+			# set hash or hash_base.
+			#
+			# Most of the actions without a pathname only want hash to be
+			# set, except for the ones specified in @wants_base that want
+			# hash_base instead. It should also be noted that hand-crafted
+			# links having 'history' as an action and no pathname or hash
+			# set will fail, but that happens regardless of PATH_INFO.
+			$input_params{'action'} ||= "shortlog";
+			if (grep { $_ eq $input_params{'action'} } @wants_base) {
+				$input_params{'hash_base'} ||= $refname;
+			} else {
+				$input_params{'hash'} ||= $refname;
+			}
+		}
+
+		# next, handle the 'parent' part, if present
+		if (defined $parentrefname) {
+			# a missing pathspec defaults to the 'current' filename, allowing e.g.
+			# someproject/blobdiff/oldrev..newrev:/filename
+			if ($parentpathname) {
+				$parentpathname =~ s,^/+,,;
+				$parentpathname =~ s,/$,,;
+				$input_params{'file_parent'} ||= $parentpathname;
+			} else {
+				$input_params{'file_parent'} ||= $input_params{'file_name'};
+			}
+			# we assume that hash_parent_base is wanted if a path was specified,
+			# or if the action wants hash_base instead of hash
+			if (defined $input_params{'file_parent'} ||
+				grep { $_ eq $input_params{'action'} } @wants_base) {
+				$input_params{'hash_parent_base'} ||= $parentrefname;
+			} else {
+				$input_params{'hash_parent'} ||= $parentrefname;
+			}
+		}
+
+		# for the snapshot action, we allow URLs in the form
+		# $project/snapshot/$hash.ext
+		# where .ext determines the snapshot and gets removed from the
+		# passed $refname to provide the $hash.
+		#
+		# To be able to tell that $refname includes the format extension, we
+		# require the following two conditions to be satisfied:
+		# - the hash input parameter MUST have been set from the $refname part
+		#   of the URL (i.e. they must be equal)
+		# - the snapshot format MUST NOT have been defined already (e.g. from
+		#   CGI parameter sf)
+		# It's also useless to try any matching unless $refname has a dot,
+		# so we check for that too
+		if (defined $input_params{'action'} &&
+			$input_params{'action'} eq 'snapshot' &&
+			defined $refname && index($refname, '.') != -1 &&
+			$refname eq $input_params{'hash'} &&
+			!defined $input_params{'snapshot_format'}) {
+			# We loop over the known snapshot formats, checking for
+			# extensions. Allowed extensions are both the defined suffix
+			# (which includes the initial dot already) and the snapshot
+			# format key itself, with a prepended dot
+			while (my ($fmt, $opt) = each %known_snapshot_formats) {
+				my $hash = $refname;
+				my $sfx;
+				$hash =~ s/(\Q$opt->{'suffix'}\E|\Q.$fmt\E)$//;
+				next unless $sfx = $1;
+				# a valid suffix was found, so set the snapshot format
+				# and reset the hash parameter
+				$input_params{'snapshot_format'} = $fmt;
+				$input_params{'hash'} = $hash;
+				# we also set the format suffix to the one requested
+				# in the URL: this way a request for e.g. .tgz returns
+				# a .tgz instead of a .tar.gz
+				$known_snapshot_formats{$fmt}{'suffix'} = $sfx;
+				last;
+			}
+		}
+	};
+	&$evaluate_path_info();
+
+	our $action = $input_params{'action'};
+	if (defined $action) {
+		if (!validate_action($action)) {
+			die_error(400, "Invalid action parameter");
+		}
+	}
+
+	# parameters which are pathnames
+	our $project = $input_params{'project'};
+	if (defined $project) {
+		if (!validate_project($project)) {
+			undef $project;
+			die_error(404, "No such project");
+		}
+	}
+
+	our $file_name = $input_params{'file_name'};
+	if (defined $file_name) {
+		if (!validate_pathname($file_name)) {
+			die_error(400, "Invalid file parameter");
+		}
+	}
+
+	our $file_parent = $input_params{'file_parent'};
+	if (defined $file_parent) {
+		if (!validate_pathname($file_parent)) {
+			die_error(400, "Invalid file parent parameter");
+		}
+	}
+
+	# parameters which are refnames
+	our $hash = $input_params{'hash'};
+	if (defined $hash) {
+		if (!validate_refname($hash)) {
+			die_error(400, "Invalid hash parameter");
+		}
+	}
+
+	our $hash_parent = $input_params{'hash_parent'};
+	if (defined $hash_parent) {
+		if (!validate_refname($hash_parent)) {
+			die_error(400, "Invalid hash parent parameter");
+		}
+	}
+
+	our $hash_base = $input_params{'hash_base'};
+	if (defined $hash_base) {
+		if (!validate_refname($hash_base)) {
+			die_error(400, "Invalid hash base parameter");
+		}
+	}
+
+	our @extra_options = @{$input_params{'extra_options'}};
+	# @extra_options is always defined, since it can only be (currently) set from
+	# CGI, and $cgi->param() returns the empty array in array context if the param
+	# is not set
+	foreach my $opt (@extra_options) {
+		if (not exists $allowed_options{$opt}) {
+			die_error(400, "Invalid option parameter");
+		}
+		if (not grep(/^$action$/, @{$allowed_options{$opt}})) {
+			die_error(400, "Invalid option parameter for this action");
+		}
+	}
+
+	our $hash_parent_base = $input_params{'hash_parent_base'};
+	if (defined $hash_parent_base) {
+		if (!validate_refname($hash_parent_base)) {
+			die_error(400, "Invalid hash parent base parameter");
+		}
+	}
+
+	# other parameters
+	our $page = $input_params{'page'};
+	if (defined $page) {
+		if ($page =~ m/[^0-9]/) {
+			die_error(400, "Invalid page parameter");
+		}
+	}
+
+	our $searchtype = $input_params{'searchtype'};
+	if (defined $searchtype) {
+		if ($searchtype =~ m/[^a-z]/) {
+			die_error(400, "Invalid searchtype parameter");
+		}
+	}
+
+	our $search_use_regexp = $input_params{'search_use_regexp'};
+
+	our $searchtext = $input_params{'searchtext'};
+	our $search_regexp;
+	if (defined $searchtext) {
+		if (length($searchtext) < 2) {
+			die_error(403, "At least two characters are required for search parameter");
+		}
+		$search_regexp = $search_use_regexp ? $searchtext : quotemeta $searchtext;
+	}
+
+	# path to the current git repository
+	our $git_dir;
+	$git_dir = "$projectroot/$project" if $project;
+
+	# list of supported snapshot formats
+	our @snapshot_fmts = gitweb_get_feature('snapshot');
+	@snapshot_fmts = &$filter_snapshot_fmts(@snapshot_fmts);
+
+	# dispatch
+	if (!defined $action) {
+		if (defined $hash) {
+			$action = git_get_type($hash);
+		} elsif (defined $hash_base && defined $file_name) {
+			$action = git_get_type("$hash_base:$file_name");
+		} elsif (defined $project) {
+			$action = 'summary';
+		} else {
+			$action = 'project_list';
+		}
+	}
+	if (!defined($actions{$action})) {
+		die_error(400, "Unknown action");
+	}
+	if ($action !~ m/^(opml|project_list|project_index)$/ &&
+	    !$project) {
+		die_error(400, "Project needed");
+	}
+	$actions{$action}->();
+	exit;
 }
-
-# core git executable to use
-# this can just be "git" if your webserver has a sensible PATH
-our $GIT = "/usr/bin/git";
-
-# absolute fs-path which will be prepended to the project path
-our $projectroot = "/pub/scm";
-
-# fs traversing limit for getting project list
-# the number is relative to the projectroot
-our $project_maxdepth = 2007;
-
-# target of the home link on top of all pages
-our $home_link = $my_uri || "/";
-
-# string of the home link on top of all pages
-our $home_link_str = "DanB's git repos";
-
-# name of your site or organization to appear in page titles
-# replace this with something more descriptive for clearer bookmarks
-our $site_name = ""
-                 || ($ENV{'SERVER_NAME'} || "Untitled") . " Git";
-
-# filename of html text to include at top of each page
-our $site_header = "";
-# html text to include at home page
-our $home_text = "indextext.html";
-# filename of html text to include at bottom of each page
-our $site_footer = "";
-
-# URI of stylesheets
-our @stylesheets = ("gitweb.css");
-# URI of a single stylesheet, which can be overridden in GITWEB_CONFIG.
-our $stylesheet = undef;
-# URI of GIT logo (72x27 size)
-our $logo = "git-logo.png";
-# URI of GIT favicon, assumed to be image/png type
-our $favicon = "git-favicon.png";
-
-# URI and label (title) of GIT logo link
-#our $logo_url = "http://www.kernel.org/pub/software/scm/git/docs/";
-#our $logo_label = "git documentation";
-our $logo_url = "http://git.dev.venda.com/";
-our $logo_label = "Venda Git Resources";
-
-# source of projects list
-our $projects_list = "";
-
-# the width (in characters) of the projects list "Description" column
-our $projects_list_description_width = 25;
-
-# default order of projects list
-# valid values are none, project, descr, owner, and age
-our $default_projects_order = "project";
-
-# show repository only if this file exists
-# (only effective if this variable evaluates to true)
-our $export_ok = "";
-
-# show repository only if this subroutine returns true
-# when given the path to the project, for example:
-#    sub { return -e "$_[0]/git-daemon-export-ok"; }
-our $export_auth_hook = undef;
-
-# only allow viewing of repositories also shown on the overview page
-our $strict_export = "";
-
-# list of git base URLs used for URL to where fetch project from,
-# i.e. full URL is "$git_base_url/$project"
-our @git_base_url_list = grep { $_ ne '' } ("");
-
-# default blob_plain mimetype and default charset for text/plain blob
-our $default_blob_plain_mimetype = 'text/plain';
-our $default_text_plain_charset  = undef;
-
-# file to use for guessing MIME types before trying /etc/mime.types
-# (relative to the current git repository)
-our $mimetypes_file = undef;
-
-# assume this charset if line contains non-UTF-8 characters;
-# it should be valid encoding (see Encoding::Supported(3pm) for list),
-# for which encoding all byte sequences are valid, for example
-# 'iso-8859-1' aka 'latin1' (it is decoded without checking, so it
-# could be even 'utf-8' for the old behavior)
-our $fallback_encoding = 'latin1';
-
-# rename detection options for git-diff and git-diff-tree
-# - default is '-M', with the cost proportional to
-#   (number of removed files) * (number of new files).
-# - more costly is '-C' (which implies '-M'), with the cost proportional to
-#   (number of changed files + number of removed files) * (number of new files)
-# - even more costly is '-C', '--find-copies-harder' with cost
-#   (number of files in the original tree) * (number of new files)
-# - one might want to include '-B' option, e.g. '-B', '-M'
-our @diff_opts = ('-M'); # taken from git_commit
-
-# Disables features that would allow repository owners to inject script into
-# the gitweb domain.
-our $prevent_xss = 0;
-
-# information about snapshot formats that gitweb is capable of serving
-our %known_snapshot_formats = (
-	# name => {
-	# 	'display' => display name,
-	# 	'type' => mime type,
-	# 	'suffix' => filename suffix,
-	# 	'format' => --format for git-archive,
-	# 	'compressor' => [compressor command and arguments]
-	# 	                (array reference, optional)}
-	#
-	'tgz' => {
-		'display' => 'tar.gz',
-		'type' => 'application/x-gzip',
-		'suffix' => '.tar.gz',
-		'format' => 'tar',
-		'compressor' => ['gzip']},
-
-	'tbz2' => {
-		'display' => 'tar.bz2',
-		'type' => 'application/x-bzip2',
-		'suffix' => '.tar.bz2',
-		'format' => 'tar',
-		'compressor' => ['bzip2']},
-
-	'zip' => {
-		'display' => 'zip',
-		'type' => 'application/x-zip',
-		'suffix' => '.zip',
-		'format' => 'zip'},
-);
-
-# Aliases so we understand old gitweb.snapshot values in repository
-# configuration.
-our %known_snapshot_format_aliases = (
-	'gzip'  => 'tgz',
-	'bzip2' => 'tbz2',
-
-	# backward compatibility: legacy gitweb config support
-	'x-gzip' => undef, 'gz' => undef,
-	'x-bzip2' => undef, 'bz2' => undef,
-	'x-zip' => undef, '' => undef,
-);
-
-# You define site-wide feature defaults here; override them with
-# $GITWEB_CONFIG as necessary.
-our %feature = (
-	# feature => {
-	# 	'sub' => feature-sub (subroutine),
-	# 	'override' => allow-override (boolean),
-	# 	'default' => [ default options...] (array reference)}
-	#
-	# if feature is overridable (it means that allow-override has true value),
-	# then feature-sub will be called with default options as parameters;
-	# return value of feature-sub indicates if to enable specified feature
-	#
-	# if there is no 'sub' key (no feature-sub), then feature cannot be
-	# overriden
-	#
-	# use gitweb_get_feature(<feature>) to retrieve the <feature> value
-	# (an array) or gitweb_check_feature(<feature>) to check if <feature>
-	# is enabled
-
-	# Enable the 'blame' blob view, showing the last commit that modified
-	# each line in the file. This can be very CPU-intensive.
-
-	# To enable system wide have in $GITWEB_CONFIG
-	# $feature{'blame'}{'default'} = [1];
-	# To have project specific config enable override in $GITWEB_CONFIG
-	# $feature{'blame'}{'override'} = 1;
-	# and in project config gitweb.blame = 0|1;
-	'blame' => {
-		'sub' => sub { feature_bool('blame', @_) },
-		'override' => 0,
-		'default' => [0]},
-
-	# Enable the 'snapshot' link, providing a compressed archive of any
-	# tree. This can potentially generate high traffic if you have large
-	# project.
-
-	# Value is a list of formats defined in %known_snapshot_formats that
-	# you wish to offer.
-	# To disable system wide have in $GITWEB_CONFIG
-	# $feature{'snapshot'}{'default'} = [];
-	# To have project specific config enable override in $GITWEB_CONFIG
-	# $feature{'snapshot'}{'override'} = 1;
-	# and in project config, a comma-separated list of formats or "none"
-	# to disable.  Example: gitweb.snapshot = tbz2,zip;
-	'snapshot' => {
-		'sub' => \&feature_snapshot,
-		'override' => 0,
-		'default' => ['tgz']},
-
-	# Enable text search, which will list the commits which match author,
-	# committer or commit text to a given string.  Enabled by default.
-	# Project specific override is not supported.
-	'search' => {
-		'override' => 0,
-		'default' => [1]},
-
-	# Enable grep search, which will list the files in currently selected
-	# tree containing the given string. Enabled by default. This can be
-	# potentially CPU-intensive, of course.
-
-	# To enable system wide have in $GITWEB_CONFIG
-	# $feature{'grep'}{'default'} = [1];
-	# To have project specific config enable override in $GITWEB_CONFIG
-	# $feature{'grep'}{'override'} = 1;
-	# and in project config gitweb.grep = 0|1;
-	'grep' => {
-		'sub' => sub { feature_bool('grep', @_) },
-		'override' => 0,
-		'default' => [1]},
-
-	# Enable the pickaxe search, which will list the commits that modified
-	# a given string in a file. This can be practical and quite faster
-	# alternative to 'blame', but still potentially CPU-intensive.
-
-	# To enable system wide have in $GITWEB_CONFIG
-	# $feature{'pickaxe'}{'default'} = [1];
-	# To have project specific config enable override in $GITWEB_CONFIG
-	# $feature{'pickaxe'}{'override'} = 1;
-	# and in project config gitweb.pickaxe = 0|1;
-	'pickaxe' => {
-		'sub' => sub { feature_bool('pickaxe', @_) },
-		'override' => 0,
-		'default' => [1]},
-
-	# Make gitweb use an alternative format of the URLs which can be
-	# more readable and natural-looking: project name is embedded
-	# directly in the path and the query string contains other
-	# auxiliary information. All gitweb installations recognize
-	# URL in either format; this configures in which formats gitweb
-	# generates links.
-
-	# To enable system wide have in $GITWEB_CONFIG
-	# $feature{'pathinfo'}{'default'} = [1];
-	# Project specific override is not supported.
-
-	# Note that you will need to change the default location of CSS,
-	# favicon, logo and possibly other files to an absolute URL. Also,
-	# if gitweb.cgi serves as your indexfile, you will need to force
-	# $my_uri to contain the script name in your $GITWEB_CONFIG.
-	'pathinfo' => {
-		'override' => 0,
-		'default' => [0]},
-
-	# Make gitweb consider projects in project root subdirectories
-	# to be forks of existing projects. Given project $projname.git,
-	# projects matching $projname/*.git will not be shown in the main
-	# projects list, instead a '+' mark will be added to $projname
-	# there and a 'forks' view will be enabled for the project, listing
-	# all the forks. If project list is taken from a file, forks have
-	# to be listed after the main project.
-
-	# To enable system wide have in $GITWEB_CONFIG
-	# $feature{'forks'}{'default'} = [1];
-	# Project specific override is not supported.
-	'forks' => {
-		'override' => 0,
-		'default' => [0]},
-
-	# Insert custom links to the action bar of all project pages.
-	# This enables you mainly to link to third-party scripts integrating
-	# into gitweb; e.g. git-browser for graphical history representation
-	# or custom web-based repository administration interface.
-
-	# The 'default' value consists of a list of triplets in the form
-	# (label, link, position) where position is the label after which
-	# to insert the link and link is a format string where %n expands
-	# to the project name, %f to the project path within the filesystem,
-	# %h to the current hash (h gitweb parameter) and %b to the current
-	# hash base (hb gitweb parameter); %% expands to %.
-
-	# To enable system wide have in $GITWEB_CONFIG e.g.
-	# $feature{'actions'}{'default'} = [('graphiclog',
-	# 	'/git-browser/by-commit.html?r=%n', 'summary')];
-	# Project specific override is not supported.
-	'actions' => {
-		'override' => 0,
-		'default' => []},
-
-	# Allow gitweb scan project content tags described in ctags/
-	# of project repository, and display the popular Web 2.0-ish
-	# "tag cloud" near the project list. Note that this is something
-	# COMPLETELY different from the normal Git tags.
-
-	# gitweb by itself can show existing tags, but it does not handle
-	# tagging itself; you need an external application for that.
-	# For an example script, check Girocco's cgi/tagproj.cgi.
-	# You may want to install the HTML::TagCloud Perl module to get
-	# a pretty tag cloud instead of just a list of tags.
-
-	# To enable system wide have in $GITWEB_CONFIG
-	# $feature{'ctags'}{'default'} = ['path_to_tag_script'];
-	# Project specific override is not supported.
-	'ctags' => {
-		'override' => 0,
-		'default' => [0]},
-
-	# The maximum number of patches in a patchset generated in patch
-	# view. Set this to 0 or undef to disable patch view, or to a
-	# negative number to remove any limit.
-
-	# To disable system wide have in $GITWEB_CONFIG
-	# $feature{'patches'}{'default'} = [0];
-	# To have project specific config enable override in $GITWEB_CONFIG
-	# $feature{'patches'}{'override'} = 1;
-	# and in project config gitweb.patches = 0|n;
-	# where n is the maximum number of patches allowed in a patchset.
-	'patches' => {
-		'sub' => \&feature_patches,
-		'override' => 0,
-		'default' => [16]},
-);
 
 sub gitweb_get_feature {
 	my ($name) = @_;
@@ -396,42 +838,6 @@ sub gitweb_check_feature {
 	return (gitweb_get_feature(@_))[0];
 }
 
-
-sub feature_bool {
-	my $key = shift;
-	my ($val) = git_get_project_config($key, '--bool');
-
-	if (!defined $val) {
-		return ($_[0]);
-	} elsif ($val eq 'true') {
-		return (1);
-	} elsif ($val eq 'false') {
-		return (0);
-	}
-}
-
-sub feature_snapshot {
-	my (@fmts) = @_;
-
-	my ($val) = git_get_project_config('snapshot');
-
-	if ($val) {
-		@fmts = ($val eq 'none' ? () : split /\s*[,\s]\s*/, $val);
-	}
-
-	return @fmts;
-}
-
-sub feature_patches {
-	my @val = (git_get_project_config('patches', '--int'));
-
-	if (@val) {
-		return @val;
-	}
-
-	return ($_[0]);
-}
-
 # checking HEAD file with -e is fragile if the repository was
 # initialized long time ago (i.e. symlink HEAD) and was pack-ref'ed
 # and then pruned.
@@ -449,390 +855,6 @@ sub check_export_ok {
 		(!$export_auth_hook || $export_auth_hook->($dir)));
 }
 
-# process alternate names for backward compatibility
-# filter out unsupported (unknown) snapshot formats
-sub filter_snapshot_fmts {
-	my @fmts = @_;
-
-	@fmts = map {
-		exists $known_snapshot_format_aliases{$_} ?
-		       $known_snapshot_format_aliases{$_} : $_} @fmts;
-	@fmts = grep(exists $known_snapshot_formats{$_}, @fmts);
-
-}
-
-our $GITWEB_CONFIG = $ENV{'GITWEB_CONFIG'} || "gitweb_config.perl";
-if (-e $GITWEB_CONFIG) {
-	do $GITWEB_CONFIG;
-} else {
-	our $GITWEB_CONFIG_SYSTEM = $ENV{'GITWEB_CONFIG_SYSTEM'} || '/home/git/gitweb/gitweb.conf';
-	do $GITWEB_CONFIG_SYSTEM if -e $GITWEB_CONFIG_SYSTEM;
-}
-
-# version of the core git binary
-our $git_version = qx("$GIT" --version) =~ m/git version (.*)$/ ? $1 : "unknown";
-
-$projects_list ||= $projectroot;
-
-# ======================================================================
-# input validation and dispatch
-
-# input parameters can be collected from a variety of sources (presently, CGI
-# and PATH_INFO), so we define an %input_params hash that collects them all
-# together during validation: this allows subsequent uses (e.g. href()) to be
-# agnostic of the parameter origin
-
-our %input_params = ();
-
-# input parameters are stored with the long parameter name as key. This will
-# also be used in the href subroutine to convert parameters to their CGI
-# equivalent, and since the href() usage is the most frequent one, we store
-# the name -> CGI key mapping here, instead of the reverse.
-#
-# XXX: Warning: If you touch this, check the search form for updating,
-# too.
-
-our @cgi_param_mapping = (
-	project => "p",
-	action => "a",
-	file_name => "f",
-	file_parent => "fp",
-	hash => "h",
-	hash_parent => "hp",
-	hash_base => "hb",
-	hash_parent_base => "hpb",
-	page => "pg",
-	order => "o",
-	searchtext => "s",
-	searchtype => "st",
-	snapshot_format => "sf",
-	extra_options => "opt",
-	search_use_regexp => "sr",
-);
-our %cgi_param_mapping = @cgi_param_mapping;
-
-# we will also need to know the possible actions, for validation
-our %actions = (
-	"blame" => \&git_blame,
-	"blobdiff" => \&git_blobdiff,
-	"blobdiff_plain" => \&git_blobdiff_plain,
-	"blob" => \&git_blob,
-	"blob_plain" => \&git_blob_plain,
-	"commitdiff" => \&git_commitdiff,
-	"commitdiff_plain" => \&git_commitdiff_plain,
-	"commit" => \&git_commit,
-	"forks" => \&git_forks,
-	"heads" => \&git_heads,
-	"history" => \&git_history,
-	"log" => \&git_log,
-	"patch" => \&git_patch,
-	"patches" => \&git_patches,
-	"rss" => \&git_rss,
-	"atom" => \&git_atom,
-	"search" => \&git_search,
-	"search_help" => \&git_search_help,
-	"shortlog" => \&git_shortlog,
-	"summary" => \&git_summary,
-	"tag" => \&git_tag,
-	"tags" => \&git_tags,
-	"tree" => \&git_tree,
-	"snapshot" => \&git_snapshot,
-	"object" => \&git_object,
-	# those below don't need $project
-	"opml" => \&git_opml,
-	"project_list" => \&git_project_list,
-	"project_index" => \&git_project_index,
-);
-
-# finally, we have the hash of allowed extra_options for the commands that
-# allow them
-our %allowed_options = (
-	"--no-merges" => [ qw(rss atom log shortlog history) ],
-);
-
-# fill %input_params with the CGI parameters. All values except for 'opt'
-# should be single values, but opt can be an array. We should probably
-# build an array of parameters that can be multi-valued, but since for the time
-# being it's only this one, we just single it out
-while (my ($name, $symbol) = each %cgi_param_mapping) {
-	if ($symbol eq 'opt') {
-		$input_params{$name} = [ $cgi->param($symbol) ];
-	} else {
-		$input_params{$name} = $cgi->param($symbol);
-	}
-}
-
-# now read PATH_INFO and update the parameter list for missing parameters
-sub evaluate_path_info {
-	return if defined $input_params{'project'};
-	return if !$path_info;
-	$path_info =~ s,^/+,,;
-	return if !$path_info;
-
-	# find which part of PATH_INFO is project
-	my $project = $path_info;
-	$project =~ s,/+$,,;
-	while ($project && !check_head_link("$projectroot/$project")) {
-		$project =~ s,/*[^/]*$,,;
-	}
-	return unless $project;
-	$input_params{'project'} = $project;
-
-	# do not change any parameters if an action is given using the query string
-	return if $input_params{'action'};
-	$path_info =~ s,^\Q$project\E/*,,;
-
-	# next, check if we have an action
-	my $action = $path_info;
-	$action =~ s,/.*$,,;
-	if (exists $actions{$action}) {
-		$path_info =~ s,^$action/*,,;
-		$input_params{'action'} = $action;
-	}
-
-	# list of actions that want hash_base instead of hash, but can have no
-	# pathname (f) parameter
-	my @wants_base = (
-		'tree',
-		'history',
-	);
-
-	# we want to catch
-	# [$hash_parent_base[:$file_parent]..]$hash_parent[:$file_name]
-	my ($parentrefname, $parentpathname, $refname, $pathname) =
-		($path_info =~ /^(?:(.+?)(?::(.+))?\.\.)?(.+?)(?::(.+))?$/);
-
-	# first, analyze the 'current' part
-	if (defined $pathname) {
-		# we got "branch:filename" or "branch:dir/"
-		# we could use git_get_type(branch:pathname), but:
-		# - it needs $git_dir
-		# - it does a git() call
-		# - the convention of terminating directories with a slash
-		#   makes it superfluous
-		# - embedding the action in the PATH_INFO would make it even
-		#   more superfluous
-		$pathname =~ s,^/+,,;
-		if (!$pathname || substr($pathname, -1) eq "/") {
-			$input_params{'action'} ||= "tree";
-			$pathname =~ s,/$,,;
-		} else {
-			# the default action depends on whether we had parent info
-			# or not
-			if ($parentrefname) {
-				$input_params{'action'} ||= "blobdiff_plain";
-			} else {
-				$input_params{'action'} ||= "blob_plain";
-			}
-		}
-		$input_params{'hash_base'} ||= $refname;
-		$input_params{'file_name'} ||= $pathname;
-	} elsif (defined $refname) {
-		# we got "branch". In this case we have to choose if we have to
-		# set hash or hash_base.
-		#
-		# Most of the actions without a pathname only want hash to be
-		# set, except for the ones specified in @wants_base that want
-		# hash_base instead. It should also be noted that hand-crafted
-		# links having 'history' as an action and no pathname or hash
-		# set will fail, but that happens regardless of PATH_INFO.
-		$input_params{'action'} ||= "shortlog";
-		if (grep { $_ eq $input_params{'action'} } @wants_base) {
-			$input_params{'hash_base'} ||= $refname;
-		} else {
-			$input_params{'hash'} ||= $refname;
-		}
-	}
-
-	# next, handle the 'parent' part, if present
-	if (defined $parentrefname) {
-		# a missing pathspec defaults to the 'current' filename, allowing e.g.
-		# someproject/blobdiff/oldrev..newrev:/filename
-		if ($parentpathname) {
-			$parentpathname =~ s,^/+,,;
-			$parentpathname =~ s,/$,,;
-			$input_params{'file_parent'} ||= $parentpathname;
-		} else {
-			$input_params{'file_parent'} ||= $input_params{'file_name'};
-		}
-		# we assume that hash_parent_base is wanted if a path was specified,
-		# or if the action wants hash_base instead of hash
-		if (defined $input_params{'file_parent'} ||
-			grep { $_ eq $input_params{'action'} } @wants_base) {
-			$input_params{'hash_parent_base'} ||= $parentrefname;
-		} else {
-			$input_params{'hash_parent'} ||= $parentrefname;
-		}
-	}
-
-	# for the snapshot action, we allow URLs in the form
-	# $project/snapshot/$hash.ext
-	# where .ext determines the snapshot and gets removed from the
-	# passed $refname to provide the $hash.
-	#
-	# To be able to tell that $refname includes the format extension, we
-	# require the following two conditions to be satisfied:
-	# - the hash input parameter MUST have been set from the $refname part
-	#   of the URL (i.e. they must be equal)
-	# - the snapshot format MUST NOT have been defined already (e.g. from
-	#   CGI parameter sf)
-	# It's also useless to try any matching unless $refname has a dot,
-	# so we check for that too
-	if (defined $input_params{'action'} &&
-		$input_params{'action'} eq 'snapshot' &&
-		defined $refname && index($refname, '.') != -1 &&
-		$refname eq $input_params{'hash'} &&
-		!defined $input_params{'snapshot_format'}) {
-		# We loop over the known snapshot formats, checking for
-		# extensions. Allowed extensions are both the defined suffix
-		# (which includes the initial dot already) and the snapshot
-		# format key itself, with a prepended dot
-		while (my ($fmt, $opt) = each %known_snapshot_formats) {
-			my $hash = $refname;
-			my $sfx;
-			$hash =~ s/(\Q$opt->{'suffix'}\E|\Q.$fmt\E)$//;
-			next unless $sfx = $1;
-			# a valid suffix was found, so set the snapshot format
-			# and reset the hash parameter
-			$input_params{'snapshot_format'} = $fmt;
-			$input_params{'hash'} = $hash;
-			# we also set the format suffix to the one requested
-			# in the URL: this way a request for e.g. .tgz returns
-			# a .tgz instead of a .tar.gz
-			$known_snapshot_formats{$fmt}{'suffix'} = $sfx;
-			last;
-		}
-	}
-}
-evaluate_path_info();
-
-our $action = $input_params{'action'};
-if (defined $action) {
-	if (!validate_action($action)) {
-		die_error(400, "Invalid action parameter");
-	}
-}
-
-# parameters which are pathnames
-our $project = $input_params{'project'};
-if (defined $project) {
-	if (!validate_project($project)) {
-		undef $project;
-		die_error(404, "No such project");
-	}
-}
-
-our $file_name = $input_params{'file_name'};
-if (defined $file_name) {
-	if (!validate_pathname($file_name)) {
-		die_error(400, "Invalid file parameter");
-	}
-}
-
-our $file_parent = $input_params{'file_parent'};
-if (defined $file_parent) {
-	if (!validate_pathname($file_parent)) {
-		die_error(400, "Invalid file parent parameter");
-	}
-}
-
-# parameters which are refnames
-our $hash = $input_params{'hash'};
-if (defined $hash) {
-	if (!validate_refname($hash)) {
-		die_error(400, "Invalid hash parameter");
-	}
-}
-
-our $hash_parent = $input_params{'hash_parent'};
-if (defined $hash_parent) {
-	if (!validate_refname($hash_parent)) {
-		die_error(400, "Invalid hash parent parameter");
-	}
-}
-
-our $hash_base = $input_params{'hash_base'};
-if (defined $hash_base) {
-	if (!validate_refname($hash_base)) {
-		die_error(400, "Invalid hash base parameter");
-	}
-}
-
-our @extra_options = @{$input_params{'extra_options'}};
-# @extra_options is always defined, since it can only be (currently) set from
-# CGI, and $cgi->param() returns the empty array in array context if the param
-# is not set
-foreach my $opt (@extra_options) {
-	if (not exists $allowed_options{$opt}) {
-		die_error(400, "Invalid option parameter");
-	}
-	if (not grep(/^$action$/, @{$allowed_options{$opt}})) {
-		die_error(400, "Invalid option parameter for this action");
-	}
-}
-
-our $hash_parent_base = $input_params{'hash_parent_base'};
-if (defined $hash_parent_base) {
-	if (!validate_refname($hash_parent_base)) {
-		die_error(400, "Invalid hash parent base parameter");
-	}
-}
-
-# other parameters
-our $page = $input_params{'page'};
-if (defined $page) {
-	if ($page =~ m/[^0-9]/) {
-		die_error(400, "Invalid page parameter");
-	}
-}
-
-our $searchtype = $input_params{'searchtype'};
-if (defined $searchtype) {
-	if ($searchtype =~ m/[^a-z]/) {
-		die_error(400, "Invalid searchtype parameter");
-	}
-}
-
-our $search_use_regexp = $input_params{'search_use_regexp'};
-
-our $searchtext = $input_params{'searchtext'};
-our $search_regexp;
-if (defined $searchtext) {
-	if (length($searchtext) < 2) {
-		die_error(403, "At least two characters are required for search parameter");
-	}
-	$search_regexp = $search_use_regexp ? $searchtext : quotemeta $searchtext;
-}
-
-# path to the current git repository
-our $git_dir;
-$git_dir = "$projectroot/$project" if $project;
-
-# list of supported snapshot formats
-our @snapshot_fmts = gitweb_get_feature('snapshot');
-@snapshot_fmts = filter_snapshot_fmts(@snapshot_fmts);
-
-# dispatch
-if (!defined $action) {
-	if (defined $hash) {
-		$action = git_get_type($hash);
-	} elsif (defined $hash_base && defined $file_name) {
-		$action = git_get_type("$hash_base:$file_name");
-	} elsif (defined $project) {
-		$action = 'summary';
-	} else {
-		$action = 'project_list';
-	}
-}
-if (!defined($actions{$action})) {
-	die_error(400, "Unknown action");
-}
-if ($action !~ m/^(opml|project_list|project_index)$/ &&
-    !$project) {
-	die_error(400, "Project needed");
-}
-$actions{$action}->();
-exit;
 
 ## ======================================================================
 ## action links
