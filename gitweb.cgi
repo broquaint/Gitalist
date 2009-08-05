@@ -6,6 +6,7 @@
 # (C) 2005, Christian Gierke
 #
 # This program is licensed under the GPLv2
+package gitweb;
 
 use strict;
 use warnings;
@@ -73,7 +74,7 @@ sub main {
 
 	# core git executable to use
 	# this can just be "git" if your webserver has a sensible PATH
-	our $GIT = "/usr/bin/git";
+	our $GIT = "/home/dbrook/apps/bin/git";
 
 	# absolute fs-path which will be prepended to the project path
 	our $projectroot = "/pub/scm";
@@ -438,7 +439,7 @@ sub main {
 	if (-e $GITWEB_CONFIG) {
 		do $GITWEB_CONFIG;
 	} else {
-		our $GITWEB_CONFIG_SYSTEM = $ENV{'GITWEB_CONFIG_SYSTEM'} || '/home/git/gitweb/gitweb.conf';
+		our $GITWEB_CONFIG_SYSTEM = $ENV{'GITWEB_CONFIG_SYSTEM'} || '/home/dbrook/dev/gitweb/gitweb.conf';
 		do $GITWEB_CONFIG_SYSTEM if -e $GITWEB_CONFIG_SYSTEM;
 	}
 
@@ -805,7 +806,7 @@ sub main {
 		die_error(400, "Project needed");
 	}
 	$actions{$action}->();
-	exit;
+	#exit;
 }
 
 sub gitweb_get_feature {
@@ -3131,7 +3132,7 @@ $status - $error
 </div>
 EOF
 	git_footer_html();
-	exit;
+	die bless {};
 }
 
 ## ----------------------------------------------------------------------
@@ -6357,3 +6358,5 @@ XML
 </opml>
 XML
 }
+
+1;
