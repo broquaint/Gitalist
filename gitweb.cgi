@@ -39,9 +39,13 @@ use vars qw(
 	$hash_parent $hash_base @extra_options $hash_parent_base $page
 	$searchtype $search_use_regexp $searchtext $search_regexp $git_dir
 	@snapshot_fmts
+
+	$c
 );
 
 sub main {
+	our $c   = shift;
+
 	our $cgi = new CGI;
 	our $version = "1.6.3.3";
 	our $my_url = $cgi->url();
@@ -2932,18 +2936,13 @@ sub git_header_html {
 	}
 
 	my $mod_perl_version = $ENV{'MOD_PERL'} ? " $ENV{'MOD_PERL'}" : '';
-	print <<EOF;
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-US" lang="en-US">
-<!-- git web interface version $version, (C) 2005-2006, Kay Sievers <kay.sievers\@vrfy.org>, Christian Gierke -->
-<!-- git core binaries version $git_version -->
-<head>
-<meta http-equiv="content-type" content="$content_type; charset=utf-8"/>
-<meta name="generator" content="gitweb/$version git/$git_version$mod_perl_version"/>
-<meta name="robots" content="index, nofollow"/>
-<title>$title</title>
-EOF
+
+	$c->stash->{version} = $version;
+	$c->stash->{git_version} = $git_version;
+	$c->stash->{content_type} = $content_type;
+	$c->stash->{mod_perl_version} = $mod_perl_version;
+	$c->stash->{title} = $title;
+
 	# the stylesheet, favicon etc urls won't work correctly with path_info
 	# unless we set the appropriate base URL
 	if ($ENV{'PATH_INFO'}) {
@@ -3098,9 +3097,6 @@ sub git_footer_html {
 	if (-f $site_footer) {
 		insert_file($site_footer);
 	}
-
-	print "</body>\n" .
-	      "</html>";
 }
 
 # die_error(<http_status_code>, <error_message>)

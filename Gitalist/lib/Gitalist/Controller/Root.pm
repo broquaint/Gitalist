@@ -34,16 +34,18 @@ Gitalist::Controller::Root - Root Controller for Gitalist
 #}
 
 use IO::Capture::Stdout;
+
 sub default :Path {
     my ( $self, $c ) = @_;
 
 	my $capture = IO::Capture::Stdout->new();
 	$capture->start();
-	eval { gitweb::main() };
+	eval { gitweb::main($c) };
 	$capture->stop();
 
 	my $output = join '', $capture->read;
-    $c->response->body( $output );
+	$c->stash->{content} = $output;
+	$c->stash->{template} = 'default.tt2';
 }
 
 =head2 end

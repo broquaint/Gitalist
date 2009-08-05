@@ -28,7 +28,10 @@ our $VERSION = '0.01';
 # with an external configuration file acting as an override for
 # local deployment.
 
-__PACKAGE__->config( name => 'Gitalist' );
+__PACKAGE__->config(
+	name => 'Gitalist',
+	default_view => 'Default',
+);
 
 # Start the application
 __PACKAGE__->setup();
