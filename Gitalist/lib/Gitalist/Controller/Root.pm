@@ -43,7 +43,6 @@ sub default :Path {
 	$capture->stop();
 
 	my $output = join '', $capture->read;
-	$output =~ s/\A.*?\r?\n\r?\n//s;
     $c->response->body( $output );
 }
 
