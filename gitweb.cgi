@@ -1466,6 +1466,8 @@ sub format_ref_marker {
 					hash=>$dest
 				)}, $name);
 
+			# XXX For some reason this HTML is slightly broken rendering a
+			# small colour span before the non-coloured spans of the heads :S
 			$markers .= " <span class=\"$class\" title=\"$ref\">" .
 				$link . "</span>";
 		}
@@ -3061,12 +3063,11 @@ sub git_header_html {
 sub git_footer_html {
 	my $feed_class = 'rss_logo';
 
-	print "<div class=\"page_footer\">\n";
 	if (defined $project) {
 		my $descr = git_get_project_description($project);
-		if (defined $descr) {
-			print "<div class=\"page_footer_text\">" . esc_html($descr) . "</div>\n";
-		}
+		$c->stash->{project_description} = defined $descr
+			? esc_html($descr)
+			: '';
 
 		my %href_params = get_feed_info();
 		if (!%href_params) {
@@ -3076,22 +3077,21 @@ sub git_footer_html {
 
 		foreach my $format qw(RSS Atom) {
 			$href_params{'action'} = lc($format);
-			print $cgi->a({-href => href(%href_params),
+			$c->stash->{lc $format.'_feed'} = $cgi->a({-href => href(%href_params),
 			              -title => "$href_params{'-title'} $format feed",
-			              -class => $feed_class}, $format)."\n";
+			              -class => $feed_class}, $format);
 		}
 
 	} else {
-		print $cgi->a({-href => href(project=>undef, action=>"opml"),
-		              -class => $feed_class}, "OPML") . " ";
-		print $cgi->a({-href => href(project=>undef, action=>"project_index"),
-		              -class => $feed_class}, "TXT") . "\n";
+		$c->stash->{opml_feed} = $cgi->a({-href => href(project=>undef, action=>"opml"),
+		              -class => $feed_class}, "OPML");
+		$c->stash->{index_feed} = $cgi->a({-href => href(project=>undef, action=>"project_index"),
+		              -class => $feed_class}, "TXT");
 	}
-	print "</div>\n"; # class="page_footer"
 
-	if (-f $site_footer) {
-		print insert_file($site_footer);
-	}
+	$c->stash->{site_footer} = -f $site_footer
+		? insert_file($site_footer)
+		: '';
 }
 
 # die_error(<http_status_code>, <error_message>)

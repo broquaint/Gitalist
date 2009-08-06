@@ -42,5 +42,22 @@ END %]
 
 [% content %]
 
+<div class="page_footer">
+[%
+IF project;
+  IF project_description
+%]
+  <div class="page_footer_text">[% project_description %]</div>
+[%
+  END;
+  rss_feed;
+  atom_feed;
+ELSE;
+  opml_feed _ " " _ index_feed;
+END %]
+</div>
+
+[% site_footer %]
+
 </body>
 </html>
