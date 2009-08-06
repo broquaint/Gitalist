@@ -7,7 +7,9 @@
 <meta http-equiv="content-type" content="[% content_type %]; charset=utf-8"/>
 <meta name="generator" content="gitweb/[% version %] git/[% git_version %][% mod_perl_version %]"/>
 <meta name="robots" content="index, nofollow"/>
-<title>[% title %]</title>
+<title>[% title %] (Gitalist)</title>
+[% baseurl %]
+[% FOREACH ss IN stylesheets; ss; END %]
 
 [% content %]
 

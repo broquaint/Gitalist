@@ -2945,19 +2945,18 @@ sub git_header_html {
 
 	# the stylesheet, favicon etc urls won't work correctly with path_info
 	# unless we set the appropriate base URL
-	if ($ENV{'PATH_INFO'}) {
-		print "<base href=\"".esc_url($base_url)."\" />\n";
-	}
+	$c->stash->{baseurl} = $ENV{PATH_INFO}
+						 ? q[<base href="].esc_url($base_url).q[" />]
+						 : '';
+
 	# print out each stylesheet that exist, providing backwards capability
 	# for those people who defined $stylesheet in a config file
-	if (defined $stylesheet) {
-		print '<link rel="stylesheet" type="text/css" href="'.$stylesheet.'"/>'."\n";
-	} else {
-		foreach my $stylesheet (@stylesheets) {
-			next unless $stylesheet;
-			print '<link rel="stylesheet" type="text/css" href="'.$stylesheet.'"/>'."\n";
-		}
-	}
+	my $ssfmt = q[<link rel="stylesheet" type="text/css" href="%s"/>];
+	$c->stash->{stylesheets} = [defined $stylesheet
+		? sprintf($ssfmt, $stylesheet)
+		: map(sprintf($ssfmt, $_), grep $_, @stylesheets)
+	];
+
 	if (defined $project) {
 		my %href_params = get_feed_info();
 		if (!exists $href_params{'-title'}) {
