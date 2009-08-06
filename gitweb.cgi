@@ -2817,8 +2817,7 @@ sub insert_file {
 	my $filename = shift;
 
 	open my $fd, '<', $filename;
-	print map { to_utf8($_) } <$fd>;
-	close $fd;
+	return join '', map to_utf8($_), <$fd>;
 }
 
 ## ......................................................................
@@ -2957,6 +2956,7 @@ sub git_header_html {
 		: map(sprintf($ssfmt, $_), grep $_, @stylesheets)
 	];
 
+	$c->stash->{project} = defined $project;
 	if (defined $project) {
 		my %href_params = get_feed_info();
 		if (!exists $href_params{'-title'}) {
@@ -2973,7 +2973,7 @@ sub git_header_html {
 
 			$href_params{'action'} = $type;
 			$link_attr{'-href'} = href(%href_params);
-			print "<link ".
+			$c->stash->{lc $format.'_link'} = "<link ".
 			      "rel=\"$link_attr{'-rel'}\" ".
 			      "title=\"$link_attr{'-title'}\" ".
 			      "href=\"$link_attr{'-href'}\" ".
@@ -2983,7 +2983,7 @@ sub git_header_html {
 			$href_params{'extra_options'} = '--no-merges';
 			$link_attr{'-href'} = href(%href_params);
 			$link_attr{'-title'} .= ' (no merges)';
-			print "<link ".
+			$c->stash->{lc $format.'_link_no_merges'} = "<link ".
 			      "rel=\"$link_attr{'-rel'}\" ".
 			      "title=\"$link_attr{'-title'}\" ".
 			      "href=\"$link_attr{'-href'}\" ".
@@ -2992,37 +2992,34 @@ sub git_header_html {
 		}
 
 	} else {
-		printf('<link rel="alternate" title="%s projects list" '.
+		$c->stash->{projects_list} = sprintf('<link rel="alternate" title="%s projects list" '.
 		       'href="%s" type="text/plain; charset=utf-8" />'."\n",
 		       $site_name, href(project=>undef, action=>"project_index"));
-		printf('<link rel="alternate" title="%s projects feeds" '.
+		$c->stash->{projects_feed} = sprintf('<link rel="alternate" title="%s projects feeds" '.
 		       'href="%s" type="text/x-opml" />'."\n",
 		       $site_name, href(project=>undef, action=>"opml"));
 	}
-	if (defined $favicon) {
-		print qq(<link rel="shortcut icon" href="$favicon" type="image/png" />\n);
-	}
 
-	print "</head>\n" .
-	      "<body>\n";
+	$c->stash->{favicon} = defined $favicon
+		? qq(<link rel="shortcut icon" href="$favicon" type="image/png" />)
+		: '';
 
-	if (-f $site_header) {
-		insert_file($site_header);
-	}
+	# </head><body>
 
-	print "<div class=\"page_header\">\n" .
-	      $cgi->a({-href => esc_url($logo_url),
-	               -title => $logo_label},
-	              qq(<img src="$logo" width="72" height="27" alt="git" class="logo"/>));
-	print $cgi->a({-href => esc_url($home_link)}, $home_link_str) . " / ";
-	if (defined $project) {
-		print $cgi->a({-href => href(action=>"summary")}, esc_html($project));
-		if (defined $action) {
-			print " / $action";
-		}
-		print "\n";
+	$c->stash->{site_header} = -f $site_header
+		? insert_file($site_header)
+		: '';
+
+	$c->stash->{logo}
+		= $cgi->a({-href => esc_url($logo_url),
+				   -title => $logo_label},
+				   qq(<img src="$logo" width="72" height="27" alt="git" class="logo"/>));
+	$c->stash->{home_link} =  $cgi->a({-href => esc_url($home_link)}, $home_link_str);
+
+	if(defined $project) {
+		$c->stash->{summary} = $cgi->a({-href => href(action=>"summary")}, esc_html($project));
+		$c->stash->{action}  = $action;
 	}
-	print "</div>\n";
 
 	my $have_search = gitweb_check_feature('search');
 	if (defined $project && $have_search) {
@@ -3094,7 +3091,7 @@ sub git_footer_html {
 	print "</div>\n"; # class="page_footer"
 
 	if (-f $site_footer) {
-		insert_file($site_footer);
+		print insert_file($site_footer);
 	}
 }
 
@@ -4430,7 +4427,7 @@ sub git_project_list {
 	git_header_html();
 	if (-f $home_text) {
 		print "<div class=\"index_include\">\n";
-		insert_file($home_text);
+		print insert_file($home_text);
 		print "</div>\n";
 	}
 	print $cgi->startform(-method => "get") .
@@ -4546,7 +4543,7 @@ sub git_summary {
 	if (!$prevent_xss && -s "$projectroot/$project/README.html") {
 		print "<div class=\"title\">readme</div>\n" .
 		      "<div class=\"readme\">\n";
-		insert_file("$projectroot/$project/README.html");
+		print insert_file("$projectroot/$project/README.html");
 		print "\n</div>\n"; # class="readme"
 	}
 

@@ -26,13 +26,6 @@ Gitalist::Controller::Root - Root Controller for Gitalist
 
 =cut
 
-#sub index :Path :Args(0) {
-#    my ( $self, $c ) = @_;
-#
-#    # Hello World
-#    $c->response->body( $c->welcome_message );
-#}
-
 use IO::Capture::Stdout;
 
 sub default :Path {

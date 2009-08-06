@@ -4,12 +4,35 @@
 <!-- git web interface version [% version %], (C) 2005-2006, Kay Sievers <kay.sievers\@vrfy.org>, Christian Gierke -->
 <!-- git core binaries version [% git_version %] -->
 <head>
-<meta http-equiv="content-type" content="[% content_type %]; charset=utf-8"/>
-<meta name="generator" content="gitweb/[% version %] git/[% git_version %][% mod_perl_version %]"/>
-<meta name="robots" content="index, nofollow"/>
-<title>[% title %] (Gitalist)</title>
-[% baseurl %]
-[% FOREACH ss IN stylesheets; ss; END %]
+  <meta http-equiv="content-type" content="[% content_type %]; charset=utf-8"/>
+  <meta name="generator" content="gitweb/[% version %] git/[% git_version %][% mod_perl_version %]"/>
+  <meta name="robots" content="index, nofollow"/>
+  <title>[% title %] (Gitalist)</title>
+  [% baseurl %]
+  [% stylesheets.join("\n") %]
+  [% IF project;
+    rss_link;
+    rss_link_no_merges;
+    atom_link;
+    atom_link_no_merges;
+  ELSE;
+    projects_list;
+    projects_feed;
+  END %]
+  [% favicon %]
+</head>
+
+<body>
+
+[% site_header %]
+
+<div class="page_header">
+[% logo %]
+[% home_link %] / [% IF project;
+  summary;
+  IF action;  " / " _ action; END;
+END %]
+</div>
 
 [% content %]
 
