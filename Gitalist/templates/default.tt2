@@ -34,6 +34,12 @@
 END %]
 </div>
 
+[% IF project AND have_search %]
+<div class="search">
+  [% search_form %]
+</div>
+[% END %]
+
 [% content %]
 
 </body>

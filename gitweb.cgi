@@ -3021,7 +3021,7 @@ sub git_header_html {
 		$c->stash->{action}  = $action;
 	}
 
-	my $have_search = gitweb_check_feature('search');
+	my $have_search = $c->stash->{have_search} = gitweb_check_feature('search');
 	if (defined $project && $have_search) {
 		if (!defined $searchtext) {
 			$searchtext = "";
@@ -3039,8 +3039,8 @@ sub git_header_html {
 		if ($use_pathinfo) {
 			$action .= "/".esc_url($project);
 		}
-		print $cgi->startform(-method => "get", -action => $action) .
-		      "<div class=\"search\">\n" .
+		# This could be done better, but meh.
+		$c->stash->{search_form} = $cgi->startform(-method => "get", -action => $action) .
 		      (!$use_pathinfo &&
 		      $cgi->input({-name=>"p", -value=>$project, -type=>"hidden"}) . "\n") .
 		      $cgi->input({-name=>"a", -value=>"search", -type=>"hidden"}) . "\n" .
@@ -3048,13 +3048,12 @@ sub git_header_html {
 		      $cgi->popup_menu(-name => 'st', -default => 'commit',
 		                       -values => ['commit', 'grep', 'author', 'committer', 'pickaxe']) .
 		      $cgi->sup($cgi->a({-href => href(action=>"search_help")}, "?")) .
-		      " search:\n",
+		      " search:\n".
 		      $cgi->textfield(-name => "s", -value => $searchtext) . "\n" .
 		      "<span title=\"Extended regular expression\">" .
 		      $cgi->checkbox(-name => 'sr', -value => 1, -label => 're',
 		                     -checked => $search_use_regexp) .
 		      "</span>" .
-		      "</div>" .
 		      $cgi->end_form() . "\n";
 	}
 }
