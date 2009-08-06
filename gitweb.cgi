@@ -426,19 +426,6 @@ sub main {
 			'default' => [16]},
 	);
 
-
-	# process alternate names for backward compatibility
-	# filter out unsupported (unknown) snapshot formats
-	my $filter_snapshot_fmts  = sub {
-		my @fmts = @_;
-
-		@fmts = map {
-			exists $known_snapshot_format_aliases{$_} ?
-			       $known_snapshot_format_aliases{$_} : $_} @fmts;
-		@fmts = grep(exists $known_snapshot_formats{$_}, @fmts);
-
-	};
-
 	our $GITWEB_CONFIG = $ENV{'GITWEB_CONFIG'} || "gitweb_config.perl";
 	if (-e $GITWEB_CONFIG) {
 		do $GITWEB_CONFIG;
@@ -684,6 +671,11 @@ sub main {
 	};
 	&$evaluate_path_info();
 
+	gitweb_validate_setup();
+	$actions{$action}->();
+}
+
+sub gitweb_validate_setup {
 	our $action = $input_params{'action'};
 	if (defined $action) {
 		if (!validate_action($action)) {
@@ -786,6 +778,17 @@ sub main {
 	our $git_dir;
 	$git_dir = "$projectroot/$project" if $project;
 
+	# process alternate names for backward compatibility
+	# filter out unsupported (unknown) snapshot formats
+	my $filter_snapshot_fmts = sub {
+		my @fmts = @_;
+
+		@fmts = map {
+			exists $known_snapshot_format_aliases{$_} ?
+			       $known_snapshot_format_aliases{$_} : $_} @fmts;
+		@fmts = grep(exists $known_snapshot_formats{$_}, @fmts);
+
+	};
 	# list of supported snapshot formats
 	our @snapshot_fmts = gitweb_get_feature('snapshot');
 	@snapshot_fmts = &$filter_snapshot_fmts(@snapshot_fmts);
@@ -809,8 +812,6 @@ sub main {
 	    !$project) {
 		die_error(400, "Project needed");
 	}
-	$actions{$action}->();
-	#exit;
 }
 
 sub gitweb_get_feature {
@@ -2907,6 +2908,7 @@ sub blob_contenttype {
 ## functions printing HTML: header, footer, error page
 
 sub git_header_html {
+	# XXX I don't these are used here ...
 	my $status = shift || "200 OK";
 	my $expires = shift;
 
@@ -2935,6 +2937,7 @@ sub git_header_html {
 	} else {
 		$content_type = 'text/html';
 	}
+	$c->response->content_type($content_type);
 
 	my $mod_perl_version = $ENV{'MOD_PERL'} ? " $ENV{'MOD_PERL'}" : '';
 
@@ -3109,10 +3112,13 @@ sub die_error {
 	my $status = shift || 500;
 	my $error = shift || "Internal server error";
 
+	# XXX Should update $c->response here
 	my %http_responses = (400 => '400 Bad Request',
 			      403 => '403 Forbidden',
 			      404 => '404 Not Found',
 			      500 => '500 Internal Server Error');
+	$c->response->status($http_responses{$status});
+
 	git_header_html($http_responses{$status});
 	print <<EOF;
 <div class="page_body">

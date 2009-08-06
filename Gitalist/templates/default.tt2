@@ -27,11 +27,12 @@
 [% site_header %]
 
 <div class="page_header">
-[% logo %]
-[% home_link %] / [% IF project;
-  summary;
-  IF action;  " / " _ action; END;
-END %]
+  [% logo %]
+  [% home_link %] / [%
+  IF project;
+    summary;
+    IF action;  " / " _ action; END;
+  END %]
 </div>
 
 [% IF project AND have_search %]
@@ -40,7 +41,9 @@ END %]
 </div>
 [% END %]
 
-[% content %]
+[%
+# The output of gitweb.cgi is injected at this point.
+content %]
 
 <div class="page_footer">
 [%

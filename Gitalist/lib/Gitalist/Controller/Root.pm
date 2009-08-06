@@ -37,7 +37,8 @@ sub default :Path {
 	$capture->stop();
 
 	my $output = join '', $capture->read;
-	$c->stash->{content} = $output;
+	$c->stash->{content} = $output
+		unless $c->stash->{content};
 	$c->stash->{template} = 'default.tt2';
 }
 
