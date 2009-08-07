@@ -672,7 +672,8 @@ sub main {
 	&$evaluate_path_info();
 
 	gitweb_validate_setup();
-	$actions{$action}->();
+
+	return $actions{$action};
 }
 
 sub gitweb_validate_setup {
@@ -1467,8 +1468,6 @@ sub format_ref_marker {
 					hash=>$dest
 				)}, $name);
 
-			# XXX For some reason this HTML is slightly broken rendering a
-			# small colour span before the non-coloured spans of the heads :S
 			$markers .= " <span class=\"$class\" title=\"$ref\">" .
 				$link . "</span>";
 		}
@@ -3112,22 +3111,19 @@ sub die_error {
 	my $status = shift || 500;
 	my $error = shift || "Internal server error";
 
-	# XXX Should update $c->response here
 	my %http_responses = (400 => '400 Bad Request',
 			      403 => '403 Forbidden',
 			      404 => '404 Not Found',
 			      500 => '500 Internal Server Error');
 	$c->response->status($http_responses{$status});
 
-	git_header_html($http_responses{$status});
 	print <<EOF;
-<div class="page_body">
-<br /><br />
-$status - $error
-<br />
-</div>
+	<div class="page_body">
+	<br /><br />
+	$status - $error
+	<br />
+	</div>
 EOF
-	git_footer_html();
 	die bless {};
 }
 
@@ -4429,7 +4425,6 @@ sub git_project_list {
 		die_error(404, "No projects found");
 	}
 
-	git_header_html();
 	if (-f $home_text) {
 		print "<div class=\"index_include\">\n";
 		print insert_file($home_text);
@@ -4441,7 +4436,6 @@ sub git_project_list {
 	      "</p>" .
 	      $cgi->end_form() . "\n";
 	git_project_list_body(\@list, $order);
-	git_footer_html();
 }
 
 sub git_forks {
@@ -4455,11 +4449,9 @@ sub git_forks {
 		die_error(404, "No forks found");
 	}
 
-	git_header_html();
 	git_print_page_nav('','');
 	git_print_header_div('summary', "$project forks");
 	git_project_list_body(\@list, $order);
-	git_footer_html();
 }
 
 sub git_project_index {
@@ -4506,7 +4498,6 @@ sub git_summary {
 		@forklist = git_get_projects_list($project);
 	}
 
-	git_header_html();
 	git_print_page_nav('summary','', $head);
 
 	print "<div class=\"title\">&nbsp;</div>\n";
@@ -4584,12 +4575,10 @@ sub git_summary {
 		                      'no_header');
 	}
 
-	git_footer_html();
 }
 
 sub git_tag {
 	my $head = git_get_head_hash($project);
-	git_header_html();
 	git_print_page_nav('','', $head,undef,$head);
 	my %tag = parse_tag($hash);
 
@@ -4623,7 +4612,6 @@ sub git_tag {
 		print esc_html($line, -nbsp=>1) . "<br/>\n";
 	}
 	print "</div>\n";
-	git_footer_html();
 }
 
 sub git_blame {
@@ -4654,7 +4642,6 @@ sub git_blame {
 		or die_error(500, "Open git-blame failed");
 
 	# page header
-	git_header_html();
 	my $formats_nav =
 		$cgi->a({-href => href(action=>"blob", -replay=>1)},
 		        "blob") .
@@ -4746,12 +4733,10 @@ HTML
 		or print "Reading blob failed\n";
 
 	# page footer
-	git_footer_html();
 }
 
 sub git_tags {
 	my $head = git_get_head_hash($project);
-	git_header_html();
 	git_print_page_nav('','', $head,undef,$head);
 	git_print_header_div('summary', $project);
 
@@ -4759,12 +4744,10 @@ sub git_tags {
 	if (@tagslist) {
 		git_tags_body(\@tagslist);
 	}
-	git_footer_html();
 }
 
 sub git_heads {
 	my $head = git_get_head_hash($project);
-	git_header_html();
 	git_print_page_nav('','', $head,undef,$head);
 	git_print_header_div('summary', $project);
 
@@ -4772,7 +4755,6 @@ sub git_heads {
 	if (@headslist) {
 		git_heads_body(\@headslist, $head);
 	}
-	git_footer_html();
 }
 
 sub git_blob_plain {
@@ -4856,7 +4838,6 @@ sub git_blob {
 	# we can have blame only for text/* mimetype
 	$have_blame &&= ($mimetype =~ m!^text/!);
 
-	git_header_html(undef, $expires);
 	my $formats_nav = '';
 	if (defined $hash_base && (my %co = parse_commit($hash_base))) {
 		if (defined $file_name) {
@@ -4912,7 +4893,6 @@ sub git_blob {
 	close $fd
 		or print "Reading blob failed.\n";
 	print "</div>";
-	git_footer_html();
 }
 
 sub git_tree {
@@ -4936,7 +4916,6 @@ sub git_tree {
 
 	my $refs = git_get_references();
 	my $ref = format_ref_marker($refs, $hash_base);
-	git_header_html();
 	my $basedir = '';
 	my $have_blame = gitweb_check_feature('blame');
 	if (defined $hash_base && (my %co = parse_commit($hash_base))) {
@@ -5012,7 +4991,6 @@ sub git_tree {
 	}
 	print "</table>\n" .
 	      "</div>";
-	git_footer_html();
 }
 
 sub git_snapshot {
@@ -5085,7 +5063,6 @@ sub git_log {
 		}
 	}
 
-	git_header_html();
 	git_print_page_nav('log','', $hash,undef,undef, $paging_nav);
 
 	if (!@commitlist) {
@@ -5127,7 +5104,6 @@ sub git_log {
 			       -accesskey => "n", -title => "Alt-n"}, "next");
 		print "</div>\n";
 	}
-	git_footer_html();
 }
 
 sub git_commit {
@@ -5190,7 +5166,6 @@ sub git_commit {
 	my $refs = git_get_references();
 	my $ref = format_ref_marker($refs, $co{'id'});
 
-	git_header_html(undef, $expires);
 	git_print_page_nav('commit', '',
 	                   $hash, $co{'tree'}, $hash,
 	                   $formats_nav);
@@ -5258,7 +5233,6 @@ sub git_commit {
 
 	git_difftree_body(\@difftree, $hash, @$parents);
 
-	git_footer_html();
 }
 
 sub git_object {
@@ -5388,7 +5362,6 @@ sub git_blobdiff {
 		my $formats_nav =
 			$cgi->a({-href => href(action=>"blobdiff_plain", -replay=>1)},
 			        "raw");
-		git_header_html(undef, $expires);
 		if (defined $hash_base && (my %co = parse_commit($hash_base))) {
 			git_print_page_nav('','', $hash_base,$co{'tree'},$hash_base, $formats_nav);
 			git_print_header_div('commit', esc_html($co{'title'}), $hash_base);
@@ -5423,7 +5396,6 @@ sub git_blobdiff {
 		close $fd;
 
 		print "</div>\n"; # class="page_body"
-		git_footer_html();
 
 	} else {
 		while (my $line = <$fd>) {
@@ -5595,7 +5567,6 @@ sub git_commitdiff {
 		my $refs = git_get_references();
 		my $ref = format_ref_marker($refs, $co{'id'});
 
-		git_header_html(undef, $expires);
 		git_print_page_nav('commitdiff','', $hash,$co{'tree'},$hash, $formats_nav);
 		git_print_header_div('commit', esc_html($co{'title'}) . $ref, $hash);
 		git_print_authorship(\%co);
@@ -5650,7 +5621,6 @@ sub git_commitdiff {
 		                  $use_parents ? @{$co{'parents'}} : $hash_parent);
 		close $fd;
 		print "</div>\n"; # class="page_body"
-		git_footer_html();
 
 	} elsif ($format eq 'plain') {
 		local $/ = undef;
@@ -5734,7 +5704,6 @@ sub git_history {
 		$paging_nav .= " &sdot; next";
 	}
 
-	git_header_html();
 	git_print_page_nav('history','', $hash_base,$co{'tree'},$hash_base, $paging_nav);
 	git_print_header_div('commit', esc_html($co{'title'}), $hash_base);
 	git_print_page_path($file_name, $ftype, $hash_base);
@@ -5742,7 +5711,6 @@ sub git_history {
 	git_history_body(\@commitlist, 0, 99,
 	                 $refs, $hash_base, $ftype, $next_link);
 
-	git_footer_html();
 }
 
 sub git_search {
@@ -5773,7 +5741,6 @@ sub git_search {
 		    or die_error(403, "Grep is disabled");
 	}
 
-	git_header_html();
 
 	if ($searchtype eq 'commit' or $searchtype eq 'author' or $searchtype eq 'committer') {
 		my $greptype;
@@ -5958,11 +5925,9 @@ sub git_search {
 
 		print "</table>\n";
 	}
-	git_footer_html();
 }
 
 sub git_search_help {
-	git_header_html();
 	git_print_page_nav('','', $hash,$hash,$hash);
 	print <<EOT;
 <p><strong>Pattern</strong> is by default a normal string that is matched precisely (but without
@@ -6002,7 +5967,6 @@ interested even in changes just changing the case as well, this search is case s
 EOT
 	}
 	print "</dl>\n";
-	git_footer_html();
 }
 
 sub git_shortlog {
@@ -6037,13 +6001,11 @@ sub git_shortlog {
 		}
 	}
 
-	git_header_html();
 	git_print_page_nav('shortlog','', $hash,$hash,$hash, $paging_nav);
 	git_print_header_div('summary', $project);
 
 	git_shortlog_body(\@commitlist, 0, 99, $refs, $next_link);
 
-	git_footer_html();
 }
 
 ## ......................................................................

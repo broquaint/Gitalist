@@ -33,9 +33,14 @@ sub default :Path {
 
 	my $capture = IO::Capture::Stdout->new();
 	$capture->start();
-	eval { gitweb::main($c) };
+	eval {
+		my $action = gitweb::main($c);
+		$action->();
+	};
 	$capture->stop();
 
+	gitweb::git_header_html();
+	gitweb::git_footer_html();
 	my $output = join '', $capture->read;
 	$c->stash->{content} = $output
 		unless $c->stash->{content};
