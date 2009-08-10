@@ -2142,7 +2142,7 @@ sub git_populate_project_tagcloud {
 
 sub git_show_project_tagcloud {
 	my ($cloud, $count) = @_;
-	print STDERR ref($cloud)."..\n";
+	#print STDERR ref($cloud)."..\n";
 	if (ref $cloud eq 'HTML::TagCloud') {
 		return $cloud->html_and_css($count);
 	} else {
@@ -3117,7 +3117,7 @@ sub die_error {
 			      500 => '500 Internal Server Error');
 	$c->response->status($http_responses{$status});
 
-	print <<EOF;
+	$c->stash->{content} = <<EOF;
 	<div class="page_body">
 	<br /><br />
 	$status - $error
@@ -3171,13 +3171,13 @@ sub git_print_page_nav {
 		$arg{$label}{'_href'} = $link;
 	}
 
-	print "<div class=\"page_nav\">\n" .
+	$c->stash->{page_nav} = 1;
+	$c->stash->{nav_links} =
 		(join " | ",
 		 map { $_ eq $current ?
 		       $_ : $cgi->a({-href => ($arg{$_}{_href} ? $arg{$_}{_href} : href(%{$arg{$_}}))}, "$_")
 		 } @navs);
-	print "<br/>\n$extra<br/>\n" .
-	      "</div>\n";
+	$c->stash->{extra} = $extra;
 }
 
 sub format_paging_nav {

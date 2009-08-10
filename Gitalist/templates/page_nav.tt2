@@ -1,0 +1,4 @@
+<div class="page_nav">
+	[% nav_links %]
+	<br/>[% $extra %]<br/>
+</div>
