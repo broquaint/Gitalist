@@ -27,3 +27,7 @@ Copyright (C) 2009 Venda Ltd
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself, either Perl version 5.8.8 or,
 at your option, any later version of Perl 5 you may have available.
+
+gitweb.cgi is based on the gitweb.perl from git-1.6.3.3
+(C) 2005-2006, Kay Sievers <kay.sievers@vrfy.org>
+(C) 2005, Christian Gierke
