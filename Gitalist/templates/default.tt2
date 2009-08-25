@@ -50,7 +50,6 @@
     INCLUDE "page_nav.tt2";
   END;
 %]
-
 [%
 # The output of gitweb.cgi is injected at this point.
 content %]

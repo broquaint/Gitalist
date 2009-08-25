@@ -78,7 +78,7 @@ sub main {
 
 	# core git executable to use
 	# this can just be "git" if your webserver has a sensible PATH
-	our $GIT = "/home/dbrook/apps/bin/git";
+	our $GIT = "/usr/bin/git";
 
 	# absolute fs-path which will be prepended to the project path
 	our $projectroot = "/pub/scm";
@@ -91,7 +91,7 @@ sub main {
 	our $home_link = $my_uri || "/";
 
 	# string of the home link on top of all pages
-	our $home_link_str = "DanB's git repos";
+	our $home_link_str = "Project Gitalist";
 
 	# name of your site or organization to appear in page titles
 	# replace this with something more descriptive for clearer bookmarks
@@ -430,7 +430,7 @@ sub main {
 	if (-e $GITWEB_CONFIG) {
 		do $GITWEB_CONFIG;
 	} else {
-		our $GITWEB_CONFIG_SYSTEM = $ENV{'GITWEB_CONFIG_SYSTEM'} || '/home/dbrook/dev/gitweb/gitweb.conf';
+		our $GITWEB_CONFIG_SYSTEM = $ENV{'GITWEB_CONFIG_SYSTEM'} || '../../gitweb.conf';
 		do $GITWEB_CONFIG_SYSTEM if -e $GITWEB_CONFIG_SYSTEM;
 	}
 
@@ -2907,7 +2907,7 @@ sub blob_contenttype {
 ## functions printing HTML: header, footer, error page
 
 sub git_header_html {
-	# XXX I don't these are used here ...
+	# XXX These aren't used, how odd.
 	my $status = shift || "200 OK";
 	my $expires = shift;
 
@@ -3221,13 +3221,12 @@ sub git_print_header_div {
 	$args{'hash'} = $hash if $hash;
 	$args{'hash_base'} = $hash_base if $hash_base;
 
-	print "<div class=\"header\">\n" .
+    print q[<div class="header">],
 	      $cgi->a({-href => href(%args), -class => "title"},
-	      $title ? $title : $action) .
-	      "\n</div>\n";
+	      $title ? $title : $action),
+		  q[</div>];
 }
 
-#sub git_print_authorship (\%) {
 sub git_print_authorship {
 	my $co = shift;
 

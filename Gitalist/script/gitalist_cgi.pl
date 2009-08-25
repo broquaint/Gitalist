@@ -1,10 +1,4 @@
-#!/home/dbrook/apps/bin/perl
-
-use lib qw(
-	/home/dbrook/.perl-lib
-	/home/dbrook/.perl-lib/i686-linux-thread-multi
-	/home/dbrook/.perl/lib/perl5/i686-linux-thread-multi
-);
+#!/usr/bin/perl
 
 BEGIN { $ENV{CATALYST_ENGINE} ||= 'CGI' }
 
