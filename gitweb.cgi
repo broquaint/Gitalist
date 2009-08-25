@@ -115,10 +115,8 @@ sub main {
 	our $favicon = "git-favicon.png";
 
 	# URI and label (title) of GIT logo link
-	#our $logo_url = "http://www.kernel.org/pub/software/scm/git/docs/";
-	#our $logo_label = "git documentation";
-	our $logo_url = "http://git.dev.venda.com/";
-	our $logo_label = "Venda Git Resources";
+	our $logo_url = "http://www.kernel.org/pub/software/scm/git/docs/";
+	our $logo_label = "git documentation";
 
 	# source of projects list
 	our $projects_list = "";
