@@ -19,6 +19,9 @@ use Catalyst qw/-Debug
                 Static::Simple/;
 our $VERSION = '0.01';
 
+# Bring in the libified gitweb.cgi.
+use gitweb;
+
 # Configure the application.
 #
 # Note that settings in gitalist.conf (or other external
@@ -35,8 +38,6 @@ __PACKAGE__->config(
 
 # Start the application
 __PACKAGE__->setup();
-
-require '/var/www/cgi-bin/gitalist/gitweb.cgi';
 
 =head1 NAME
 

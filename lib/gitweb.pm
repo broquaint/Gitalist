@@ -17,6 +17,7 @@ use Encode;
 use Fcntl ':mode';
 use File::Find qw();
 use File::Basename qw(basename);
+use FindBin;
 binmode STDOUT, ':utf8';
 
 BEGIN {
@@ -428,7 +429,7 @@ sub main {
 	if (-e $GITWEB_CONFIG) {
 		do $GITWEB_CONFIG;
 	} else {
-		our $GITWEB_CONFIG_SYSTEM = $ENV{'GITWEB_CONFIG_SYSTEM'} || '../../gitweb.conf';
+		our $GITWEB_CONFIG_SYSTEM = $ENV{'GITWEB_CONFIG_SYSTEM'} || "$FindBin::Bin/../gitweb.conf";
 		do $GITWEB_CONFIG_SYSTEM if -e $GITWEB_CONFIG_SYSTEM;
 	}
 
