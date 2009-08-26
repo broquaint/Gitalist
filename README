@@ -15,6 +15,15 @@ After that provide a model based on one of the git modules, either the Git.pm
 that comes with git or Git::PurePerl, and deprecate or port the existing
 gitweb.cgi functions.
 
+USAGE
+
+To get Gitalist up and running just set $projectroot in gitweb.conf to point
+to the directory contains your repositories. With that done the usual:
+
+  perl script/gitalist_server.pl
+
+should do the trick.
+
 DEPENDENCIES
 
   Catalyst
