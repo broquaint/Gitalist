@@ -520,9 +520,9 @@ sub main {
 	# being it's only this one, we just single it out
 	while (my ($name, $symbol) = each %cgi_param_mapping) {
 		if ($symbol eq 'opt') {
-			$input_params{$name} = [ $cgi->param($symbol) ];
+			$input_params{$name} = [ $c->req->param($symbol) ];
 		} else {
-			$input_params{$name} = $cgi->param($symbol);
+			$input_params{$name} = $c->req->param($symbol);
 		}
 	}
 
@@ -668,6 +668,7 @@ sub main {
 			}
 		}
 	};
+
 	&$evaluate_path_info();
 
 	gitweb_validate_setup();
@@ -730,7 +731,7 @@ sub gitweb_validate_setup {
 
 	our @extra_options = @{$input_params{'extra_options'}};
 	# @extra_options is always defined, since it can only be (currently) set from
-	# CGI, and $cgi->param() returns the empty array in array context if the param
+	# CGI, and $c->req->param() returns the empty array in array context if the param
 	# is not set
 	foreach my $opt (@extra_options) {
 		if (not exists $allowed_options{$opt}) {
@@ -2923,6 +2924,8 @@ sub git_header_html {
 			}
 		}
 	}
+
+	# XXX As this does much header grovelling it may be broken ...
 	my $content_type;
 	# require explicit support from the UA if we are to send the page as
 	# 'application/xhtml+xml', otherwise send it as plain old 'text/html'.
@@ -4082,7 +4085,7 @@ sub git_project_list_body {
 		      "</tr>\n";
 	}
 	my $alternate = 1;
-	my $tagfilter = $cgi->param('by_tag');
+	my $tagfilter = $c->req->param('by_tag');
 	for (my $i = $from; $i <= $to; $i++) {
 		my $pr = $projects[$i];
 
@@ -6009,6 +6012,8 @@ sub git_shortlog {
 ## ......................................................................
 ## feeds (RSS, Atom; OPML)
 
+# XXX This does header stuff which may not play nice with Catalyst, so likely
+# broken in some/many ways.
 sub git_feed {
 	my $format = shift || 'atom';
 	my $have_blame = gitweb_check_feature('blame');
