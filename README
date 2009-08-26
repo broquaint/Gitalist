@@ -18,11 +18,9 @@ gitweb.cgi functions.
 USAGE
 
 To get Gitalist up and running just set $projectroot in gitweb.conf to point
-to the directory contains your repositories. With that done the usual:
+to the directory that contains your repositories. With that done just run:
 
   perl script/gitalist_server.pl
-
-should do the trick.
 
 DEPENDENCIES
 
@@ -37,6 +35,6 @@ This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself, either Perl version 5.8.8 or,
 at your option, any later version of Perl 5 you may have available.
 
-gitweb.cgi is based on the gitweb.perl from git-1.6.3.3
+gitweb.pm is based on the gitweb.perl from git-1.6.3.3
 (C) 2005-2006, Kay Sievers <kay.sievers@vrfy.org>
 (C) 2005, Christian Gierke
