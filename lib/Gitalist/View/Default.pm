@@ -4,6 +4,7 @@ use Gitalist; # ->path_to
 use namespace::autoclean;
 
 extends 'Catalyst::View::TT';
+with 'Catalyst::View::ContentNegotiation::XHTML';
 
 =head1 NAME
 

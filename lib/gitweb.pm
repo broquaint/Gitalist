@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+co#!/usr/bin/perl
 
 # gitweb - simple web interface to track changes in git repositories
 #
@@ -2925,26 +2925,10 @@ sub git_header_html {
 		}
 	}
 
-	# XXX As this does much header grovelling it may be broken ...
-	my $content_type;
-	# require explicit support from the UA if we are to send the page as
-	# 'application/xhtml+xml', otherwise send it as plain old 'text/html'.
-	# we have to do this because MSIE sometimes globs '*/*', pretending to
-	# support xhtml+xml but choking when it gets what it asked for.
-	if (defined $cgi->http('HTTP_ACCEPT') &&
-	    $cgi->http('HTTP_ACCEPT') =~ m/(,|;|\s|^)application\/xhtml\+xml(,|;|\s|$)/ &&
-	    $cgi->Accept('application/xhtml+xml') != 0) {
-		$content_type = 'application/xhtml+xml';
-	} else {
-		$content_type = 'text/html';
-	}
-	$c->response->content_type($content_type);
-
 	my $mod_perl_version = $ENV{'MOD_PERL'} ? " $ENV{'MOD_PERL'}" : '';
 
 	$c->stash->{version} = $version;
 	$c->stash->{git_version} = $git_version;
-	$c->stash->{content_type} = $content_type;
 	$c->stash->{mod_perl_version} = $mod_perl_version;
 	$c->stash->{title} = $title;
 
