@@ -79,7 +79,8 @@ sub main {
 
 	# core git executable to use
 	# this can just be "git" if your webserver has a sensible PATH
-	our $GIT = "/usr/bin/git";
+	our $GIT = `which git`;
+	chomp($GIT);
 
 	# absolute fs-path which will be prepended to the project path
 	our $projectroot = "/pub/scm";
