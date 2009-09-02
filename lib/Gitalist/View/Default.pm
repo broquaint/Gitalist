@@ -1,8 +1,9 @@
 package Gitalist::View::Default;
+use Moose;
+use Gitalist; # ->path_to
+use namespace::autoclean;
 
-use strict;
-use warnings;
-use parent 'Catalyst::View::TT';
+extends 'Catalyst::View::TT';
 
 =head1 NAME
 
@@ -30,4 +31,4 @@ __PACKAGE__->config(
 #	WRAPPER => 'default.tt2',
 );
 
-1;
+__PACKAGE__->meta->make_immutable(inline_constructor => 0);
