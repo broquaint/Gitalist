@@ -21,7 +21,7 @@ use FindBin;
 binmode STDOUT, ':utf8';
 
 BEGIN {
-	CGI->compile() if $ENV{'MOD_PERL'};
+	CGI->compile();
 }
 
 use vars qw(
@@ -2925,11 +2925,8 @@ sub git_header_html {
 		}
 	}
 
-	my $mod_perl_version = $ENV{'MOD_PERL'} ? " $ENV{'MOD_PERL'}" : '';
-
 	$c->stash->{version} = $version;
 	$c->stash->{git_version} = $git_version;
-	$c->stash->{mod_perl_version} = $mod_perl_version;
 	$c->stash->{title} = $title;
 
 	# the stylesheet, favicon etc urls won't work correctly with path_info
