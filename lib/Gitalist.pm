@@ -1,19 +1,11 @@
 package Gitalist;
-
-use strict;
-use warnings;
+use Moose;
+use namespace::autoclean;
 
 use Catalyst::Runtime 5.80;
 
-# Set flags and add plugins for the application
-#
-#         -Debug: activates the debug mode for very useful log messages
-#   ConfigLoader: will load the configuration from a Config::General file in the
-#                 application's home directory
-# Static::Simple: will serve static files from the application's root
-#                 directory
+extends 'Catalyst';
 
-use parent qw/Catalyst/;
 use Catalyst qw/-Debug
                 ConfigLoader
                 Static::Simple/;
@@ -21,15 +13,6 @@ our $VERSION = '0.01';
 
 # Bring in the libified gitweb.cgi.
 use gitweb;
-
-# Configure the application.
-#
-# Note that settings in gitalist.conf (or other external
-# configuration file that you set up manually) take precedence
-# over this when using ConfigLoader. Thus configuration
-# details given here can function as a default configuration,
-# with an external configuration file acting as an override for
-# local deployment.
 
 __PACKAGE__->config(
 	name => 'Gitalist',
@@ -55,11 +38,18 @@ Gitalist - Catalyst based application
 
 L<Gitalist::Controller::Root>, L<Catalyst>
 
-=head1 AUTHOR
+=head1 AUTHORS AND COPYRIGHT
 
-Dan Brook,,,
+  Catalyst application:
+    (C) 2009 Venda Ltd and Dan Brook <dbrook@venda.com>
+
+  Original gitweb.cgi from which this was derived:
+    (C) 2005-2006, Kay Sievers <kay.sievers@vrfy.org>
+    (C) 2005, Christian Gierke
 
 =head1 LICENSE
+
+FIXME - Is this going to be GPLv2 as per gitweb? If so this is broken..
 
 This library is free software. You can redistribute it and/or modify
 it under the same terms as Perl itself.
