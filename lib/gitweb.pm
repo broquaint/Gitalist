@@ -20,6 +20,8 @@ use File::Basename qw(basename);
 use FindBin;
 binmode STDOUT, ':utf8';
 
+use Gitalist::Util qw(to_utf8);
+
 BEGIN {
 	CGI->compile();
 }
@@ -27,7 +29,7 @@ BEGIN {
 use vars qw(
 	$cgi $version $my_url $my_uri $base_url $path_info $GIT $projectroot
 	$project_maxdepth $home_link $home_link_str $site_name $site_header
-	$home_text $site_footer @stylesheets $stylesheet $logo $favicon
+	$home_text $site_footer @stylesheets
 	$logo_url $logo_label $logo_url $logo_label $projects_list
 	$projects_list_description_width $default_projects_order
 	$export_ok $export_auth_hook $strict_export @git_base_url_list
@@ -85,10 +87,6 @@ sub main {
 	# absolute fs-path which will be prepended to the project path
 	our $projectroot = "/pub/scm";
 
-	# fs traversing limit for getting project list
-	# the number is relative to the projectroot
-	our $project_maxdepth = 2007;
-
 	# target of the home link on top of all pages
 	our $home_link = $my_uri || "/";
 
@@ -109,19 +107,13 @@ sub main {
 
 	# URI of stylesheets
 	our @stylesheets = ("gitweb.css");
-	# URI of a single stylesheet, which can be overridden in GITWEB_CONFIG.
-	our $stylesheet = undef;
-	# URI of GIT logo (72x27 size)
-	our $logo = "git-logo.png";
-	# URI of GIT favicon, assumed to be image/png type
-	our $favicon = "git-favicon.png";
 
 	# URI and label (title) of GIT logo link
 	our $logo_url = "http://www.kernel.org/pub/software/scm/git/docs/";
 	our $logo_label = "git documentation";
 
 	# source of projects list
-	our $projects_list = "";
+	our $projects_list = $c->config->{projectroot};
 
 	# the width (in characters) of the projects list "Description" column
 	our $projects_list_description_width = 25;
@@ -436,8 +428,6 @@ sub main {
 
 	# version of the core git binary
 	our $git_version = qx("$GIT" --version) =~ m/git version (.*)$/ ? $1 : "unknown";
-
-	$projects_list ||= $projectroot;
 
 	# ======================================================================
 	# input validation and dispatch
@@ -1030,19 +1020,6 @@ sub validate_refname {
 		return undef;
 	}
 	return $input;
-}
-
-# decode sequences of octets in utf8 into Perl's internal form,
-# which is utf-8 with utf8 flag set if needed.  gitweb writes out
-# in utf-8 thanks to "binmode STDOUT, ':utf8'" at beginning
-sub to_utf8 {
-	my $str = shift;
-	if (utf8::valid($str)) {
-		utf8::decode($str);
-		return $str;
-	} else {
-		return decode($fallback_encoding, $str, Encode::FB_DEFAULT);
-	}
 }
 
 # quote unsafe chars, but keep the slash, even when it's not
@@ -2168,106 +2145,6 @@ sub git_get_project_url_list {
 	return wantarray ? @git_project_url_list : \@git_project_url_list;
 }
 
-sub git_get_projects_list {
-	my ($filter) = @_;
-	my @list;
-
-	$filter ||= '';
-	$filter =~ s/\.git$//;
-
-	my $check_forks = gitweb_check_feature('forks');
-
-	if (-d $projects_list) {
-		# search in directory
-		my $dir = $projects_list . ($filter ? "/$filter" : '');
-		# remove the trailing "/"
-		$dir =~ s!/+$!!;
-		my $pfxlen = length("$dir");
-		my $pfxdepth = ($dir =~ tr!/!!);
-
-		File::Find::find({
-			follow_fast => 1, # follow symbolic links
-			follow_skip => 2, # ignore duplicates
-			dangling_symlinks => 0, # ignore dangling symlinks, silently
-			wanted => sub {
-				# skip project-list toplevel, if we get it.
-				return if (m!^[/.]$!);
-				# only directories can be git repositories
-				return unless (-d $_);
-				# don't traverse too deep (Find is super slow on os x)
-				if (($File::Find::name =~ tr!/!!) - $pfxdepth > $project_maxdepth) {
-					$File::Find::prune = 1;
-					return;
-				}
-
-				my $subdir = substr($File::Find::name, $pfxlen + 1);
-				# we check related file in $projectroot
-				my $path = ($filter ? "$filter/" : '') . $subdir;
-				if (check_export_ok("$projectroot/$path")) {
-					push @list, { path => $path };
-					$File::Find::prune = 1;
-				}
-			},
-		}, "$dir");
-
-	} elsif (-f $projects_list) {
-		# read from file(url-encoded):
-		# 'git%2Fgit.git Linus+Torvalds'
-		# 'libs%2Fklibc%2Fklibc.git H.+Peter+Anvin'
-		# 'linux%2Fhotplug%2Fudev.git Greg+Kroah-Hartman'
-		my %paths;
-		open my ($fd), $projects_list or return;
-	PROJECT:
-		while (my $line = <$fd>) {
-			chomp $line;
-			my ($path, $owner) = split ' ', $line;
-			$path = unescape($path);
-			$owner = unescape($owner);
-			if (!defined $path) {
-				next;
-			}
-			if ($filter ne '') {
-				# looking for forks;
-				my $pfx = substr($path, 0, length($filter));
-				if ($pfx ne $filter) {
-					next PROJECT;
-				}
-				my $sfx = substr($path, length($filter));
-				if ($sfx !~ /^\/.*\.git$/) {
-					next PROJECT;
-				}
-			} elsif ($check_forks) {
-			PATH:
-				foreach my $filter (keys %paths) {
-					# looking for forks;
-					my $pfx = substr($path, 0, length($filter));
-					if ($pfx ne $filter) {
-						next PATH;
-					}
-					my $sfx = substr($path, length($filter));
-					if ($sfx !~ /^\/.*\.git$/) {
-						next PATH;
-					}
-					# is a fork, don't include it in
-					# the list
-					next PROJECT;
-				}
-			}
-			if (check_export_ok("$projectroot/$path")) {
-				my $pr = {
-					path => $path,
-					owner => to_utf8($owner),
-				};
-				push @list, $pr;
-				(my $forks_path = $path) =~ s/\.git$//;
-				$paths{$forks_path}++;
-			}
-		}
-		close $fd;
-	}
-	return @list;
-}
-
 our $gitweb_project_owner = undef;
 sub git_get_project_list_from_file {
 
@@ -2939,8 +2816,8 @@ sub git_header_html {
 	# print out each stylesheet that exist, providing backwards capability
 	# for those people who defined $stylesheet in a config file
 	my $ssfmt = q[<link rel="stylesheet" type="text/css" href="%s"/>];
-	$c->stash->{stylesheets} = [defined $stylesheet
-		? sprintf($ssfmt, $stylesheet)
+	$c->stash->{stylesheets} = [$c->config->{stylesheet}
+		? sprintf($ssfmt, $c->config->{stylesheet})
 		: map(sprintf($ssfmt, $_), grep $_, @stylesheets)
 	];
 
@@ -2988,6 +2865,7 @@ sub git_header_html {
 		       $site_name, href(project=>undef, action=>"opml"));
 	}
 
+	my $favicon = $c->config->{favicon};
 	$c->stash->{favicon} = defined $favicon
 		? qq(<link rel="shortcut icon" href="$favicon" type="image/png" />)
 		: '';
@@ -2998,6 +2876,7 @@ sub git_header_html {
 		? insert_file($site_header)
 		: '';
 
+	my $logo = $c->config->{logo};
 	$c->stash->{logo}
 		= $cgi->a({-href => esc_url($logo_url),
 				   -title => $logo_label},
@@ -6100,10 +5979,10 @@ XML
 		      "<language>en</language>\n" .
 		      # project owner is responsible for 'editorial' content
 		      "<managingEditor>$owner</managingEditor>\n";
-		if (defined $logo || defined $favicon) {
+		if ($c->config->{logo} || $c->config->{favicon}) {
 			# prefer the logo to the favicon, since RSS
 			# doesn't allow both
-			my $img = esc_url($logo || $favicon);
+			my $img = esc_url($c->config->{logo} || $c->config->{favicon});
 			print "<image>\n" .
 			      "<url>$img</url>\n" .
 			      "<title>$title</title>\n" .
@@ -6128,12 +6007,12 @@ XML
 		      "<id>" . href(-full=>1) . "</id>\n" .
 		      # use project owner for feed author
 		      "<author><name>$owner</name></author>\n";
-		if (defined $favicon) {
-			print "<icon>" . esc_url($favicon) . "</icon>\n";
+		if ($c->config->{favicon}) {
+			print "<icon>" . esc_url($c->config->{favicon}) . "</icon>\n";
 		}
 		if (defined $logo_url) {
 			# not twice as wide as tall: 72 x 27 pixels
-			print "<logo>" . esc_url($logo) . "</logo>\n";
+			print "<logo>" . esc_url($c->config->{logo}) . "</logo>\n";
 		}
 		if (! %latest_date) {
 			# dummy date to keep the feed valid until commits trickle in:

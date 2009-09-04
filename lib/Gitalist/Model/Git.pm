@@ -3,7 +3,8 @@ package Gitalist::Model::Git;
 use Moose;
 use namespace::autoclean;
 
-use Gitalist;
+BEGIN { extends 'Catalyst::Model' }
+
 use DateTime;
 use Path::Class;
 use Carp qw/croak/;
@@ -13,7 +14,10 @@ use File::Stat::ModeString;
 use List::MoreUtils qw/any/;
 use Scalar::Util qw/blessed/;
 
-BEGIN { extends 'Catalyst::Model' }
+use Gitalist::Util qw(to_utf8);
+
+# from gitweb.pm
+use CGI::Util qw(unescape);
 
 has git => (
 	is      => 'ro',
@@ -337,6 +341,109 @@ sub archive {
     #FIXME: huge memory consuption
     #TODO: compression
     return $self->run_cmd_in($project, qw/archive --format=tar/, "--prefix=${project}/", $rev);
+}
+
+## from gitweb.pm
+
+# checking HEAD file with -e is fragile if the repository was
+# initialized long time ago (i.e. symlink HEAD) and was pack-ref'ed
+# and then pruned.
+sub check_head_link {
+	my ($dir) = @_;
+	my $headfile = "$dir/HEAD";
+	return ((-e $headfile) ||
+		(-l $headfile && readlink($headfile) =~ /^refs\/heads\//));
+}
+
+sub check_export_ok {
+	my ($dir) = @_;
+	my($export_ok, $export_auth_hook) = @{Gitalist->config}{qw(export_ok export_auth_hook)};
+	return (check_head_link($dir) &&
+		(!$export_ok || -e "$dir/$export_ok") &&
+		(!$export_auth_hook || $export_auth_hook->($dir)));
+}
+
+sub projects {
+	my($self, $filter) = @_;
+	my @list;
+
+	$filter ||= '';
+	$filter =~ s/\.git$//;
+
+	my $projects_list = Gitalist->config->{projectroot};
+	if (-d $projects_list) {
+		# search in directory
+		my $dir = $projects_list . ($filter ? "/$filter" : '');
+		# remove the trailing "/"
+		$dir =~ s!/+$!!;
+		my $pfxlen = length("$dir");
+		my $pfxdepth = ($dir =~ tr!/!!);
+
+		File::Find::find({
+			follow_fast => 1, # follow symbolic links
+			follow_skip => 2, # ignore duplicates
+			dangling_symlinks => 0, # ignore dangling symlinks, silently
+			wanted => sub {
+				# skip project-list toplevel, if we get it.
+				return if (m!^[/.]$!);
+				# only directories can be git repositories
+				return unless (-d $_);
+				# don't traverse too deep (Find is super slow on os x)
+				if (($File::Find::name =~ tr!/!!) - $pfxdepth > Gitalist->config->{project_maxdepth}) {
+					$File::Find::prune = 1;
+					return;
+				}
+
+				my $subdir = substr($File::Find::name, $pfxlen + 1);
+				# we check related file in $projectroot
+				my $path = ($filter ? "$filter/" : '') . $subdir;
+				if (check_export_ok("$projects_list/$path")) {
+					push @list, { path => $path };
+					$File::Find::prune = 1;
+				}
+			},
+		}, "$dir");
+
+	} elsif (-f $projects_list) {
+		# read from file(url-encoded):
+		# 'git%2Fgit.git Linus+Torvalds'
+		# 'libs%2Fklibc%2Fklibc.git H.+Peter+Anvin'
+		# 'linux%2Fhotplug%2Fudev.git Greg+Kroah-Hartman'
+		my %paths;
+		open my ($fd), $projects_list or return;
+	PROJECT:
+		while (my $line = <$fd>) {
+			chomp $line;
+			my ($path, $owner) = split ' ', $line;
+			$path = unescape($path);
+			$owner = unescape($owner);
+			if (!defined $path) {
+				next;
+			}
+			if ($filter ne '') {
+				# looking for forks;
+				my $pfx = substr($path, 0, length($filter));
+				if ($pfx ne $filter) {
+					next PROJECT;
+				}
+				my $sfx = substr($path, length($filter));
+				if ($sfx !~ /^\/.*\.git$/) {
+					next PROJECT;
+				}
+			}
+			if (check_export_ok("$projects_list/$path")) {
+				my $pr = {
+					path => $path,
+					owner => to_utf8($owner),
+				};
+				push @list, $pr;
+				(my $forks_path = $path) =~ s/\.git$//;
+				$paths{$forks_path}++;
+			}
+		}
+		close $fd;
+	}
+	return @list;
 }
 
 1;

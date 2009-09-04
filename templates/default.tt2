@@ -49,10 +49,14 @@
   IF page_nav;
     INCLUDE "page_nav.tt2";
   END;
+
+  IF action;
+    INCLUDE "$action.tt2";
+  ELSE;
+    # The output of gitweb.cgi is injected at this point.
+    content;
+  END;
 %]
-[%
-# The output of gitweb.cgi is injected at this point.
-content %]
 
 [%- # git_footer_html
 -%]
