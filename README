@@ -8,12 +8,7 @@ being "this was once gitweb.cgi" to a project of its own (hence the
 "transitional" in the description).
 
 As it stands Gitalist is very much in its infancy and hasn't got far
-beyond a layout template and a single controller. Probably the next step is
-moving an existing action into a new Catalyst action and laying down the code
-to make porting further actions, or writing new ones, as simple as possible.
-After that provide a model based on one of the git modules, either the Git.pm
-that comes with git or Git::PurePerl, and deprecate or port the existing
-gitweb.cgi functions.
+beyond a layout template and a single controller.
 
 USAGE
 
@@ -26,7 +21,16 @@ directory that contains your repositories. With that done just run:
 DEPENDENCIES
 
   Catalyst
-  IO::Capture::Stdout;
+  IO::Capture::Stdout
+  Catalyst::View::ContentNegotiation::XHTML
+  Template::Plugin::Cycle
+  DateTime
+  Path::Class
+  File::Find::Rule;
+  DateTime::Format::Mail
+  File::Stat::ModeString
+  List::MoreUtils
+  # Probably others ...
 
 COPYRIGHT AND LICENCE
 
