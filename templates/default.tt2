@@ -10,18 +10,20 @@
   <meta name="generator" content="gitweb/[% version %] git/[% git_version %][% mod_perl_version %]"/>
   <meta name="robots" content="index, nofollow"/>
   <title>[% title %] (Gitalist)</title>
-  [% baseurl %]
-  [% stylesheets.join("\n") %]
-  [% IF project;
-    rss_link;
-    rss_link_no_merges;
-    atom_link;
-    atom_link_no_merges;
-  ELSE;
-    projects_list;
-    projects_feed;
-  END %]
-  [% favicon %]
+  [% IF baseurl %]
+  <base href="[% baseurl %]" />
+  [% END %]
+  <link rel="stylesheet" type="text/css" href="[% stylesheet %]"/>
+  [% FOR link IN links %]
+            <link rel="[% link.rel %]"
+                  title="[% link.title %]"
+                  href="[% link.href %]"
+                  type="[% link.type %]"
+            />
+  [% END %]
+  [% IF favicon %]
+  <link rel="shortcut icon" href="[% favicon %]" type="image/png" />
+  [% END %]
 </head>
 
 <body>
@@ -29,17 +31,30 @@
 [% site_header %]
 
 <div class="page_header">
-  [% logo %]
-  [% home_link %] / [%
-  IF project;
-    summary;
-    IF action;  " / " _ action; END;
+  <a title="[% logo_label %]" href="[% logo_url %]"><img src="[% logo_img %]" alt="git" class="logo"/></a>
+  <a href="/git/gitweb.cgi">Venda Git Repos</a>
+  [%- IF project %]
+  / <a href="/git/gitweb.cgi?p=[% project %];a=summary">[% project %]</a>
+  [% IF action;  " / " _ action; END;
   END %]
 </div>
 
 [% IF project AND have_search %]
 <div class="search">
-  [% search_form %]
+  <form method="get" action="/" enctype="application/x-www-form-urlencoded">
+  <input name="p" type="hidden" value="[% project %]" />
+  <input name="a" type="hidden" value="search" />
+  <input name="h" type="hidden" value="[% search_hash %]" />
+  <select name="st" >
+      <option value="commit">commit</option>
+      <option value="grep">grep</option>
+      <option value="author">author</option>
+      <option value="committer">committer</option>
+      <option value="pickaxe">pickaxe</option>
+  </select><sup><a href="/?p=[% project %];a=search_help">?</a></sup> search:
+  <input type="text" name="s" value="[% search_text %]"/>
+  <span title="Extended regular expression"><label><input type="checkbox" name="sr" value="1" />re</label></span>
+  </form>
 </div>
 [% END %]
 
@@ -51,7 +66,7 @@
   END;
 
   IF action;
-    INCLUDE "$action.tt2";
+    INCLUDE "index.tt2";
   ELSE;
     # The output of gitweb.cgi is injected at this point.
     content;
@@ -61,18 +76,12 @@
 [%- # git_footer_html
 -%]
 <div class="page_footer">
-[%
-IF project;
-  IF project_description
-%]
+[% IF project AND project_description %]
   <div class="page_footer_text">[% project_description %]</div>
-[%
-  END;
-  rss_feed;
-  atom_feed;
-ELSE;
-  opml_feed _ " " _ index_feed;
-END %]
+[% END %]
+[% FOR feed IN feeds %]
+    <a class="[% feed.class %]" title="[% feed.title %]" href="[% feed.href %]">[% feed.name %]</a>
+[% END %]
 </div>
 
 [% site_footer %]

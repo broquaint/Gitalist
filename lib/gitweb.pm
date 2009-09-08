@@ -28,7 +28,7 @@ BEGIN {
 
 use vars qw(
 	$cgi $version $my_url $my_uri $base_url $path_info $GIT $projectroot
-	$project_maxdepth $home_link $home_link_str $site_name $site_header
+	$project_maxdepth $home_link $home_link_str $site_header
 	$home_text $site_footer @stylesheets
 	$logo_url $logo_label $logo_url $logo_label $projects_list
 	$projects_list_description_width $default_projects_order
@@ -92,11 +92,6 @@ sub main {
 
 	# string of the home link on top of all pages
 	our $home_link_str = "Project Gitalist";
-
-	# name of your site or organization to appear in page titles
-	# replace this with something more descriptive for clearer bookmarks
-	our $site_name = ""
-	                 || ($ENV{'SERVER_NAME'} || "Untitled") . " Git";
 
 	# filename of html text to include at top of each page
 	our $site_header = "";
@@ -2789,7 +2784,7 @@ sub git_header_html {
 	my $status = shift || "200 OK";
 	my $expires = shift;
 
-	my $title = "$site_name";
+	my $title = $c->config->{sitename};
 	if (defined $project) {
 		$title .= " - " . to_utf8($project);
 		if (defined $action) {
@@ -2859,10 +2854,10 @@ sub git_header_html {
 	} else {
 		$c->stash->{projects_list} = sprintf('<link rel="alternate" title="%s projects list" '.
 		       'href="%s" type="text/plain; charset=utf-8" />'."\n",
-		       $site_name, href(project=>undef, action=>"project_index"));
+		       $c->config->{sitename}, href(project=>undef, action=>"project_index"));
 		$c->stash->{projects_feed} = sprintf('<link rel="alternate" title="%s projects feeds" '.
 		       'href="%s" type="text/x-opml" />'."\n",
-		       $site_name, href(project=>undef, action=>"opml"));
+		       $c->config->{sitename}, href(project=>undef, action=>"opml"));
 	}
 
 	my $favicon = $c->config->{favicon};
@@ -5933,7 +5928,7 @@ sub git_feed {
 	return if ($cgi->request_method() eq 'HEAD');
 
 	# header variables
-	my $title = "$site_name - $project/$action";
+	my $title = $c->config->{sitename} . " - $project/$action";
 	my $feed_type = 'log';
 	if (defined $hash) {
 		$title .= " - '$hash'";
@@ -6147,11 +6142,12 @@ sub git_opml {
 		-charset => 'utf-8',
 		-content_disposition => 'inline; filename="opml.xml"');
 
+	my $sitename = $c->config->{sitename};
 	print <<XML;
 <?xml version="1.0" encoding="utf-8"?>
 <opml version="1.0">
 <head>
-  <title>$site_name OPML Export</title>
+  <title>$sitename OPML Export</title>
 </head>
 <body>
 <outline text="git RSS feeds">

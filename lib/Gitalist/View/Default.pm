@@ -6,6 +6,8 @@ use namespace::autoclean;
 extends 'Catalyst::View::TT';
 with 'Catalyst::View::ContentNegotiation::XHTML';
 
+use Template::Plugin::Cycle;
+
 =head1 NAME
 
 Gitalist::View::Default - Catalyst View
@@ -28,8 +30,8 @@ it under the same terms as Perl itself.
 __PACKAGE__->config(
 	TEMPLATE_EXTENSION => '.tt2',
 	# Set the location for TT files
-	INCLUDE_PATH => [ Gitalist->path_to( 'templates' ) ],
-#	WRAPPER => 'default.tt2',
+	INCLUDE_PATH       => [ Gitalist->path_to( 'templates' ) ],
+	WRAPPER            => 'default.tt2',
 );
 
 __PACKAGE__->meta->make_immutable(inline_constructor => 0);
