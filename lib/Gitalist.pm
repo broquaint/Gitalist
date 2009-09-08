@@ -8,7 +8,8 @@ extends 'Catalyst';
 
 use Catalyst qw/-Debug
                 ConfigLoader
-                Static::Simple/;
+                Static::Simple
+				StackTrace/;
 our $VERSION = '0.01';
 
 # Bring in the libified gitweb.cgi.

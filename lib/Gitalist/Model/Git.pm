@@ -42,8 +42,7 @@ EOR
 sub is_git_repo {
     my ($self, $dir) = @_;
 
-    #FIXME: Only handles bare repos. Is that enough?
-    return -f $dir->file('HEAD') or -f $dir->file('.git/HEAD');
+    return -f $dir->file('HEAD') || -f $dir->file('.git/HEAD');
 }
 
 sub project_info {
@@ -70,7 +69,6 @@ sub get_project_properties {
         delete $props{description};
     }
 
-	#Carp::cluck "dir is: $dir";
     $props{owner} = (getpwuid $dir->stat->uid)[6];
 
     my $output = $self->run_cmd_in($dir, qw{
@@ -100,9 +98,12 @@ sub list_projects {
         my $obj = $base->subdir($file);
         next unless -d $obj;
         next unless $self->is_git_repo($obj);
+		# XXX Leaky abstraction alert!
+		$obj = $obj->subdir('.git')
+			if -d $obj->subdir('.git');
 
         push @ret, {
-            name => ($obj->dir_list)[-1],
+            name => (File::Spec->splitdir($base->subdir($file)))[-1],
             $self->get_project_properties($obj),
         };
     }
@@ -139,8 +140,6 @@ sub run_cmd_in {
 sub git_dir_from_project_name {
     my ($self, $project) = @_;
 
-	warn 'er, dir    - '.dir(Gitalist->config->{repo_dir});
-	warn 'er, subdir - '.dir(Gitalist->config->{repo_dir})->subdir($project);
     return dir(Gitalist->config->{repo_dir})->subdir($project);
 }
 

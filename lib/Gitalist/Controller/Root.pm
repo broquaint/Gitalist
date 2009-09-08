@@ -40,8 +40,6 @@ sub default :Path {
   };
   $capture->stop();
 
-  gitweb::git_header_html();
-  gitweb::git_footer_html();
   my $output = join '', $capture->read;
   $c->stash->{content} = $output
     unless $c->stash->{content};
@@ -49,26 +47,18 @@ sub default :Path {
 }
 
 sub index :Path :Args(0) {
-    my ( $self, $c ) = @_;
+  my ( $self, $c ) = @_;
 
-  my $order = $c->req->param('order');
-  if($order && $order !~ m/none|project|descr|owner|age/) {
-    die "Unknown order parameter";
-  }
-
-  my @list = $c->model('Git')->list_projects;
-  if (!@list) {
+  my $list = $c->model('Git')->list_projects;
+  unless(@$list) {
     die "No projects found";
   }
 
-  if (-f $c->config->{home_text}) {
-    $c->stash->{home_text_contents} = slurp($c->config->{home_text});
-  }
-
-  $c->config->{ENV} = \%ENV;
-  $c->stash->{searchtext} = $c->req->param('searchtext');
-  $c->stash->{projects}   = \@list;
-  $c->stash->{action}     = 'index';
+  $c->stash(
+    searchtext => $c->req->param('searchtext') || '',
+    projects   => $list,
+    action     => 'index',
+  );
 }
 
 sub auto : Private {
@@ -178,8 +168,8 @@ sub footer {
   my @feeds;
   my $project = $c->req->param('project')  || $c->req->param('p');
 	if(defined $project) {
-    # ... this could be simpler ...            # Chop off .git
-		my $descr = $c->model('Git')->project_info(substr($project, 0, -5))->{description};
+    (my $pstr = $project) =~ s[/?\.git$][];
+		my $descr = $c->model('Git')->project_info($project)->{description};
 		$c->stash->{project_description} = defined $descr
 			? encode_entities($descr)
 			: '';
