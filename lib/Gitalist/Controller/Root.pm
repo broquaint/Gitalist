@@ -29,25 +29,36 @@ Gitalist::Controller::Root - Root Controller for Gitalist
 use IO::Capture::Stdout;
 use File::Slurp qw(slurp);
 
-sub default :Path {
+#sub default :Path {
+sub run_gitweb {
   my ( $self, $c ) = @_;
 
-  my $capture = IO::Capture::Stdout->new();
-  $capture->start();
-  eval {
-    my $action = gitweb::main($c);
-    $action->();
-  };
-  $capture->stop();
-
-  my $output = join '', $capture->read;
-  $c->stash->{content} = $output
-    unless $c->stash->{content};
-  $c->stash->{template} = 'default.tt2';
+  # XXX A slippery slope to be sure.
+  if($c->req->param('a')) {
+    my $capture = IO::Capture::Stdout->new();
+    $capture->start();
+    eval {
+      my $action = gitweb::main($c);
+      $action->();
+    };
+    $capture->stop();
+    
+    use Data::Dumper;
+    die Dumper($@)
+      if $@;
+  
+    my $output = join '', $capture->read;
+    $c->stash->{gitweb_output} = $output;
+    $c->stash->{template} = 'gitweb.tt2';
+  }
 }
 
 sub index :Path :Args(0) {
   my ( $self, $c ) = @_;
+
+  # Leave actions up to gitweb at this point.
+  return $self->run_gitweb($c)
+    if $c->req->param('a');
 
   my $list = $c->model('Git')->list_projects;
   unless(@$list) {

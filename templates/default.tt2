@@ -32,7 +32,7 @@
 
 <div class="page_header">
   <a title="[% logo_label %]" href="[% logo_url %]"><img src="[% logo_img %]" alt="git" class="logo"/></a>
-  <a href="/git/gitweb.cgi">Venda Git Repos</a>
+  <a href="[% home_link %]">[% home_link_str %]</a>
   [%- IF project %]
   / <a href="/git/gitweb.cgi?p=[% project %];a=summary">[% project %]</a>
   [% IF action;  " / " _ action; END;
@@ -66,6 +66,7 @@
   END;
 
   IF action;
+    # XXX Err ... yeah, slight hack here ... ahem.
     INCLUDE "index.tt2";
   ELSE;
     # The output of gitweb.cgi is injected at this point.

@@ -108,7 +108,7 @@ sub main {
 	our $logo_label = "git documentation";
 
 	# source of projects list
-	our $projects_list = $c->config->{projectroot};
+	our $projectroot = our $projects_list = $c->config->{projectroot};
 
 	# the width (in characters) of the projects list "Description" column
 	our $projects_list_description_width = 25;
@@ -2776,184 +2776,6 @@ sub blob_contenttype {
 	return $type;
 }
 
-## ======================================================================
-## functions printing HTML: header, footer, error page
-
-sub git_header_html {
-	# XXX These aren't used, how odd.
-	my $status = shift || "200 OK";
-	my $expires = shift;
-
-	my $title = $c->config->{sitename};
-	if (defined $project) {
-		$title .= " - " . to_utf8($project);
-		if (defined $action) {
-			$title .= "/$action";
-			if (defined $file_name) {
-				$title .= " - " . esc_path($file_name);
-				if ($action eq "tree" && $file_name !~ m|/$|) {
-					$title .= "/";
-				}
-			}
-		}
-	}
-
-	$c->stash->{version} = $version;
-	$c->stash->{git_version} = $git_version;
-	$c->stash->{title} = $title;
-
-	# the stylesheet, favicon etc urls won't work correctly with path_info
-	# unless we set the appropriate base URL
-	$c->stash->{baseurl} = $ENV{PATH_INFO}
-						 ? q[<base href="].esc_url($base_url).q[" />]
-						 : '';
-
-	# print out each stylesheet that exist, providing backwards capability
-	# for those people who defined $stylesheet in a config file
-	my $ssfmt = q[<link rel="stylesheet" type="text/css" href="%s"/>];
-	$c->stash->{stylesheets} = [$c->config->{stylesheet}
-		? sprintf($ssfmt, $c->config->{stylesheet})
-		: map(sprintf($ssfmt, $_), grep $_, @stylesheets)
-	];
-
-	$c->stash->{project} = defined $project;
-	if (defined $project) {
-		my %href_params = get_feed_info();
-		if (!exists $href_params{'-title'}) {
-			$href_params{'-title'} = 'log';
-		}
-
-		foreach my $format qw(RSS Atom) {
-			my $type = lc($format);
-			my %link_attr = (
-				'-rel' => 'alternate',
-				'-title' => "$project - $href_params{'-title'} - $format feed",
-				'-type' => "application/$type+xml"
-			);
-
-			$href_params{'action'} = $type;
-			$link_attr{'-href'} = href(%href_params);
-			$c->stash->{lc $format.'_link'} = "<link ".
-			      "rel=\"$link_attr{'-rel'}\" ".
-			      "title=\"$link_attr{'-title'}\" ".
-			      "href=\"$link_attr{'-href'}\" ".
-			      "type=\"$link_attr{'-type'}\" ".
-			      "/>\n";
-
-			$href_params{'extra_options'} = '--no-merges';
-			$link_attr{'-href'} = href(%href_params);
-			$link_attr{'-title'} .= ' (no merges)';
-			$c->stash->{lc $format.'_link_no_merges'} = "<link ".
-			      "rel=\"$link_attr{'-rel'}\" ".
-			      "title=\"$link_attr{'-title'}\" ".
-			      "href=\"$link_attr{'-href'}\" ".
-			      "type=\"$link_attr{'-type'}\" ".
-			      "/>\n";
-		}
-
-	} else {
-		$c->stash->{projects_list} = sprintf('<link rel="alternate" title="%s projects list" '.
-		       'href="%s" type="text/plain; charset=utf-8" />'."\n",
-		       $c->config->{sitename}, href(project=>undef, action=>"project_index"));
-		$c->stash->{projects_feed} = sprintf('<link rel="alternate" title="%s projects feeds" '.
-		       'href="%s" type="text/x-opml" />'."\n",
-		       $c->config->{sitename}, href(project=>undef, action=>"opml"));
-	}
-
-	my $favicon = $c->config->{favicon};
-	$c->stash->{favicon} = defined $favicon
-		? qq(<link rel="shortcut icon" href="$favicon" type="image/png" />)
-		: '';
-
-	# </head><body>
-
-	$c->stash->{site_header} = -f $site_header
-		? insert_file($site_header)
-		: '';
-
-	my $logo = $c->config->{logo};
-	$c->stash->{logo}
-		= $cgi->a({-href => esc_url($logo_url),
-				   -title => $logo_label},
-				   qq(<img src="$logo" width="72" height="27" alt="git" class="logo"/>));
-	$c->stash->{home_link} =  $cgi->a({-href => esc_url($home_link)}, $home_link_str);
-
-	if(defined $project) {
-		$c->stash->{summary} = $cgi->a({-href => href(action=>"summary")}, esc_html($project));
-		$c->stash->{action}  = $action;
-	}
-
-	my $have_search = $c->stash->{have_search} = gitweb_check_feature('search');
-	if (defined $project && $have_search) {
-		if (!defined $searchtext) {
-			$searchtext = "";
-		}
-		my $search_hash;
-		if (defined $hash_base) {
-			$search_hash = $hash_base;
-		} elsif (defined $hash) {
-			$search_hash = $hash;
-		} else {
-			$search_hash = "HEAD";
-		}
-		my $action = $my_uri;
-		my $use_pathinfo = gitweb_check_feature('pathinfo');
-		if ($use_pathinfo) {
-			$action .= "/".esc_url($project);
-		}
-		# This could be done better, but meh.
-		$c->stash->{search_form} = $cgi->startform(-method => "get", -action => $action) .
-		      (!$use_pathinfo &&
-		      $cgi->input({-name=>"p", -value=>$project, -type=>"hidden"}) . "\n") .
-		      $cgi->input({-name=>"a", -value=>"search", -type=>"hidden"}) . "\n" .
-		      $cgi->input({-name=>"h", -value=>$search_hash, -type=>"hidden"}) . "\n" .
-		      $cgi->popup_menu(-name => 'st', -default => 'commit',
-		                       -values => ['commit', 'grep', 'author', 'committer', 'pickaxe']) .
-		      $cgi->sup($cgi->a({-href => href(action=>"search_help")}, "?")) .
-		      " search:\n".
-		      $cgi->textfield(-name => "s", -value => $searchtext) . "\n" .
-		      "<span title=\"Extended regular expression\">" .
-		      $cgi->checkbox(-name => 'sr', -value => 1, -label => 're',
-		                     -checked => $search_use_regexp) .
-		      "</span>" .
-		      $cgi->end_form() . "\n";
-	}
-}
-
-sub git_footer_html {
-	my $feed_class = 'rss_logo';
-
-	if (defined $project) {
-		my $descr = git_get_project_description($project);
-		$c->stash->{project_description} = defined $descr
-			? esc_html($descr)
-			: '';
-
-		my %href_params = get_feed_info();
-		if (!%href_params) {
-			$feed_class .= ' generic';
-		}
-		$href_params{'-title'} ||= 'log';
-
-		foreach my $format qw(RSS Atom) {
-			$href_params{'action'} = lc($format);
-			$c->stash->{lc $format.'_feed'} = $cgi->a({-href => href(%href_params),
-			              -title => "$href_params{'-title'} $format feed",
-			              -class => $feed_class}, $format);
-		}
-
-	} else {
-		$c->stash->{opml_feed} = $cgi->a({-href => href(project=>undef, action=>"opml"),
-		              -class => $feed_class}, "OPML");
-		$c->stash->{index_feed} = $cgi->a({-href => href(project=>undef, action=>"project_index"),
-		              -class => $feed_class}, "TXT");
-	}
-
-	$c->stash->{site_footer} = -f $site_footer
-		? insert_file($site_footer)
-		: '';
-}
-
 # die_error(<http_status_code>, <error_message>)
 # Example: die_error(404, 'Hash not found')
 # By convention, use the following status codes (as defined in RFC 2616):
@@ -2982,7 +2804,7 @@ sub die_error {
 	<br />
 	</div>
 EOF
-	die bless {};
+	die bless { $status => $http_responses{$status}, err => $error };
 }
 
 ## ----------------------------------------------------------------------

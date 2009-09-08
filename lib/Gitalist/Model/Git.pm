@@ -99,12 +99,14 @@ sub list_projects {
         next unless -d $obj;
         next unless $self->is_git_repo($obj);
 		# XXX Leaky abstraction alert!
-		$obj = $obj->subdir('.git')
-			if -d $obj->subdir('.git');
+		my $is_bare = !-d $obj->subdir('.git');
 
+		my $name = (File::Spec->splitdir($obj))[-1];
         push @ret, {
-            name => (File::Spec->splitdir($base->subdir($file)))[-1],
-            $self->get_project_properties($obj),
+            name => ($name . ( $is_bare ? '.git' : '/.git' )),
+            $self->get_project_properties(
+				$is_bare ? $obj : $obj->subdir('.git')
+			),
         };
     }
 
