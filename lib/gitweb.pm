@@ -85,7 +85,7 @@ sub main {
 	chomp($GIT);
 
 	# absolute fs-path which will be prepended to the project path
-	our $projectroot = "/pub/scm";
+	#our $projectroot = "/pub/scm";
 
 	# target of the home link on top of all pages
 	our $home_link = $my_uri || "/";

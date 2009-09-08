@@ -17,8 +17,9 @@ gitweb.cgi functions.
 
 USAGE
 
-To get Gitalist up and running just set $projectroot in gitweb.conf to point
-to the directory that contains your repositories. With that done just run:
+To get Gitalist up and running just set projectroot & repo_dir (one in
+the same unfortunately at this point) in gitalist.conf to point to the
+directory that contains your repositories. With that done just run:
 
   perl script/gitalist_server.pl
 

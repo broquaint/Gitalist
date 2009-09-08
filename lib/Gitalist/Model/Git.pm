@@ -110,7 +110,7 @@ sub list_projects {
         };
     }
 
-    return \@ret;
+    return [sort { $a->{name} cmp $b->{name} } @ret];
 }
 
 sub run_cmd {
