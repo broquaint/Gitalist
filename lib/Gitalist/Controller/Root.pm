@@ -89,6 +89,18 @@ sub blob : Local {
   );
 }
 
+sub reflog : Local {
+  my ( $self, $c ) = @_;
+
+  my $log = $c->model('Git')->run_cmd_in($c->req->param('p'),
+      log => '--since=yesterday', '-g'
+  );
+  $c->stash(
+      log    => [map encode_entities($_), $log =~ /(^commit.*?^    \S.*?$)/msg],
+      action => 'reflog',
+  );
+}
+
 sub auto : Private {
     my($self, $c) = @_;
 

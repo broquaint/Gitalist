@@ -1,0 +1,5 @@
+<ul>
+[% FOR entry IN log %]
+  <li><pre>[% entry %]</pre></li>
+[% END %]
+</ul>
