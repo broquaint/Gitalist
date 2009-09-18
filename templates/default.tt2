@@ -66,8 +66,8 @@
   END;
 
   IF action;
-    # XXX Err ... yeah, slight hack here ... ahem.
-    INCLUDE "index.tt2";
+    SET actmpl = action _ ".tt2";
+    INCLUDE $actmpl;
   ELSE;
     # The output of gitweb.cgi is injected at this point.
     content;

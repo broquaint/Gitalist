@@ -195,6 +195,21 @@ sub get_object_type {
     return $output;
 }
 
+sub get_hash_by_path {
+	my($self, $base, $path, $type) = @_;
+
+	$path =~ s{/+$}();
+
+	my $line = $self->run_cmd('ls-tree', $base, '--', $path)
+    or return;
+
+	#'100644 blob 0fa3f3a66fb6a137f6ec2c19351ed4d807070ffa	panic.c'
+	$line =~ m/^([0-9]+) (.+) ([0-9a-fA-F]{40})\t/;
+	return defined $type && $type ne $2
+       ? ()
+	     : return $3;
+}
+
 sub cat_file {
     my ($self, $project, $object) = @_;
 

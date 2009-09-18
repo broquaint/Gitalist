@@ -29,7 +29,6 @@ Gitalist::Controller::Root - Root Controller for Gitalist
 use IO::Capture::Stdout;
 use File::Slurp qw(slurp);
 
-#sub default :Path {
 sub run_gitweb {
   my ( $self, $c ) = @_;
 
@@ -69,6 +68,24 @@ sub index :Path :Args(0) {
     searchtext => $c->req->param('searchtext') || '',
     projects   => $list,
     action     => 'index',
+  );
+}
+
+sub blob : Local {
+  my ( $self, $c ) = @_;
+
+  my $git      = $c->model('Git');
+  my $req      = $c->req;
+  my $filename = $req->param('f')  || $req->param('filename');
+  my $hash     = $req->param('hb') || $req->param('hashbase')
+              || $git->get_head_hash($req->param('p') || $req->param('project'));
+  my $filehash = $git->get_hash_by_path($hash, $filename, 'blob');
+  
+  my $blob = $git->run_cmd('cat-file' => blob => $filehash);
+
+  $c->stash(
+      blob   => encode_entities($blob),
+      action => 'blob',
   );
 }
 
@@ -162,10 +179,10 @@ sub header {
 
 	if(defined $project) {
     $c->stash(
-      search_text => $c->req->param('s') || $c->req->param('searchtext'),
-      search_hash => $c->req->param('hb') || $c->req->param('hashbase')
+      search_text => ( $c->req->param('s') || $c->req->param('searchtext') ),
+      search_hash => ( $c->req->param('hb') || $c->req->param('hashbase')
                    || $c->req->param('h')  || $c->req->param('hash')
-                   || 'HEAD'
+                   || 'HEAD' ),
     );
 	}
 }
