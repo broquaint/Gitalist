@@ -120,6 +120,8 @@ sub run_cmd {
         or die "failed to run git command";
     binmode $fh, ':encoding(UTF-8)';
 
+    print STDERR "RAN - git @_[1..$#_]\n"; 
+
     my $output = do { local $/ = undef; <$fh> };
     close $fh;
 
@@ -196,11 +198,11 @@ sub get_object_type {
 }
 
 sub get_hash_by_path {
-	my($self, $base, $path, $type) = @_;
+	my($self, $project, $base, $path, $type) = @_;
 
 	$path =~ s{/+$}();
 
-	my $line = $self->run_cmd('ls-tree', $base, '--', $path)
+	my $line = $self->run_cmd_in($project, 'ls-tree', $base, '--', $path)
     or return;
 
 	#'100644 blob 0fa3f3a66fb6a137f6ec2c19351ed4d807070ffa	panic.c'
@@ -322,6 +324,50 @@ sub rev_info {
     return unless $self->valid_rev($rev);
 
     return $self->list_revs($project, rev => $rev, count => 1);
+}
+
+sub reflog {
+    my ($self, $project, @logargs) = @_;
+
+    my @entries
+      =  $self->run_cmd_in($project, qw(log -g), @logargs)
+      =~ /(^commit.+?(?:(?=^commit)|(?=\z)))/msg;
+
+=begin
+
+  commit 02526fc15beddf2c64798a947fecdd8d11bf993d
+  Reflog: HEAD@{14} (The Git Server <git@git.dev.venda.com>)
+  Reflog message: push
+  Author: Iain Loasby <iloasby@rowlf.of-2.uk.venda.com>
+  Date:   Thu Sep 17 12:26:05 2009 +0100
+
+      Merge branch 'rt125181
+=cut
+    return map {
+      # XXX Stuff like this makes me want to switch to Git::PurePerl
+      my($sha1, $type, $author, $date)
+        = m{
+          ^ commit \s+ ([0-9a-f]+)$
+          .*?
+          Reflog[ ]message: \s+ (.+?)$ \s+
+          Author: \s+ ([^<]+) <.*?$ \s+
+          Date: \s+ (.+?)$
+        }xms;
+
+      pos($_) = index($_, $date) + length $date;
+      # Yeah, I just did that.
+
+      my($msg) = /\G\s+(\S.*)/sg;
+
+      {
+        hash    => $sha1,
+        type    => $type,
+        author  => $author,
+        # XXX Add DateTime goodness.
+        date    => $date,
+        message => $msg,
+      };
+    } @entries;
 }
 
 sub get_heads {

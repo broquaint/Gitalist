@@ -1,5 +1,5 @@
 <div>
 <pre>
-[% blob %]
+[% blob | html %]
 </pre>
 </div>

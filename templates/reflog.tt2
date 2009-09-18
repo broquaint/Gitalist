@@ -1,5 +1,12 @@
 <ul>
 [% FOR entry IN log %]
-  <li><pre>[% entry %]</pre></li>
+  <li><h3>[% entry.message | html %]</h3>
+    <dl>
+      <dt>Commit</dt>  <dd>[% entry.hash %]</dd>
+      <dt>Type</dt>    <dd>[% entry.type %]</dd>
+      <dt>Author</dt>  <dd>[% entry.author %]</dd>
+      <dt>Date</dt>    <dd>[% entry.date %]</dd>
+    </dl>
+  </li>
 [% END %]
 </ul>
