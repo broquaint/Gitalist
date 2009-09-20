@@ -74,17 +74,8 @@ sub index :Path :Args(0) {
 sub blob : Local {
   my ( $self, $c ) = @_;
 
-  my $git      = $c->model('Git');
-  my $req      = $c->req;
-  my $proj     = $req->param('p');
-  my $filename = $req->param('f')  || $req->param('filename');
-  my $hash     = $req->param('hb') || $git->get_head_hash($proj);
-  my $filehash = $req->param('h')  || $git->get_hash_by_path($proj, $hash, $filename, 'blob');
-  
-  my $blob = $git->run_cmd('cat-file' => blob => $filehash);
-
   $c->stash(
-      blob   => $blob,
+      blob   => $c->model('GPP')->get_object($c->req->param('h'))->content,
       action => 'blob',
   );
 }
@@ -93,8 +84,6 @@ sub reflog : Local {
   my ( $self, $c ) = @_;
 
   my @log = $c->model('Git')->reflog(
-      # XXX The project parameter should probably be passed into the Model.
-      $c->req->param('p'),
       '--since=yesterday'
   );
 
@@ -104,8 +93,18 @@ sub reflog : Local {
   );
 }
 
+sub commit {
+  my ( $self, $c ) = @_;
+}
+
 sub auto : Private {
     my($self, $c) = @_;
+
+    # XXX Probably not the best place for it but it will do for now.
+    if(my $proj = $c->req->param('p')) {
+        my $m = $c->model('Git');
+        $m->project($proj);
+    }
 
     # Yes, this is hideous.
     $self->header($c);
