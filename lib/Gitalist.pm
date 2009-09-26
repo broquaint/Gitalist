@@ -15,6 +15,13 @@ our $VERSION = '0.01';
 # Bring in the libified gitweb.cgi.
 use gitweb;
 
+# Load the testing config if we're invoked under test
+if ($ENV{APP_TEST} ) {
+  __PACKAGE__->config( 'Plugin::ConfigLoader' =>
+                       { file => __PACKAGE__->path_to
+                         ('t/lib/gitalist_testing.conf')}
+                     );
+}
 __PACKAGE__->config(
 	name => 'Gitalist',
 	default_view => 'Default',
