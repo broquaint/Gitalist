@@ -106,7 +106,7 @@ sub list_projects {
 
 		my $name = (File::Spec->splitdir($obj))[-1];
         push @ret, {
-            name => ($name . ( $is_bare ? '.git' : '/.git' )),
+            name => ($name . ( $is_bare ? '' : '/.git' )),
             $self->get_project_properties(
 				$is_bare ? $obj : $obj->subdir('.git')
 			),
