@@ -15,4 +15,4 @@ SKIP: {
 
 ok( request('/')->is_success, 'Request should succeed' );
 
-} # CLose APP_TEST skip
+} # Close APP_TEST skip

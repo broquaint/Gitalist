@@ -14,6 +14,9 @@ use File::Stat::ModeString;
 use List::MoreUtils qw/any/;
 use Scalar::Util qw/blessed/;
 
+# abstraction fail - but currently needed for unit tests to work
+use Gitalist;
+
 {
 	my $git;
 	sub git {
