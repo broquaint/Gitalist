@@ -1,6 +1,7 @@
 package Gitalist::Model::Git;
 
 use Moose;
+use MooseX::Types::Common::String qw/NonEmptySimpleStr/; # FIXME, use Types::Path::Class and coerce
 use namespace::autoclean;
 
 BEGIN { extends 'Catalyst::Model' }
@@ -12,34 +13,26 @@ use File::Find::Rule;
 use DateTime::Format::Mail;
 use File::Stat::ModeString;
 use List::MoreUtils qw/any/;
-use Scalar::Util qw/blessed/;
+use File::Which;
 
-# abstraction fail - but currently needed for unit tests to work
-use Gitalist;
+sub BUILD {
+    my ($self) = @_;
+    $self->git; # Cause lazy value build.
+}
 
-{
-	my $git;
-	sub git {
-		return $git
-			if $git;
+has git => ( isa => NonEmptySimpleStr, is => 'ro', lazy_build => 1 );
 
-		if (my $config_git = Gitalist->config->{git}) {
-			$git = $config_git if -x $config_git;
-		}
-		else {
-			require File::Which;
-			$git = File::Which::which('git');
-		}
+sub _build_git {
+	my $git = File::Which::which('git');
 
-		if (!$git) {
-			die <<EOR
+	if (!$git) {
+		die <<EOR
 Could not find a git executable.
 Please specify the which git executable to use in gitweb.yml
 EOR
-		}
-
-		return $git;
 	}
+
+	return $git;
 }
 
 sub is_git_repo {
@@ -88,10 +81,12 @@ sub get_project_properties {
     return %props;
 }
 
+has repo_dir => ( isa => NonEmptySimpleStr, required => 1, is => 'ro' ); # Fixme - path::class
+
 sub list_projects {
     my ($self) = @_;
 
-    my $base = dir(Gitalist->config->{repo_dir});
+    my $base = dir($self->repo_dir);
 
     my @ret;
     my $dh = $base->open;
@@ -119,7 +114,7 @@ sub list_projects {
 sub run_cmd {
     my ($self, @args) = @_;
 
-    open my $fh, '-|', __PACKAGE__->git, @args
+    open my $fh, '-|', $self->git, @args
         or die "failed to run git command";
     binmode $fh, ':encoding(UTF-8)';
 
@@ -145,7 +140,7 @@ sub run_cmd_in {
 sub git_dir_from_project_name {
     my ($self, $project) = @_;
 
-    return dir(Gitalist->config->{repo_dir})->subdir($project);
+    return dir($self->repo_dir)->subdir($project);
 }
 
 sub get_head_hash {
