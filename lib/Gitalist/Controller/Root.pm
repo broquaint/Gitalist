@@ -95,6 +95,11 @@ sub reflog : Local {
 
 sub commit {
   my ( $self, $c ) = @_;
+
+  $c->stash(
+      commit => $c->model('GPP')->get_object($c->req->param('h')),
+      action => 'commit',
+  );
 }
 
 sub auto : Private {
