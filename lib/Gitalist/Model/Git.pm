@@ -15,12 +15,14 @@ use File::Stat::ModeString;
 use List::MoreUtils qw/any/;
 use File::Which;
 
+has repo_dir => ( isa => NonEmptySimpleStr, is => 'ro', lazy_build => 1 ); # Fixme - path::class
+has git      => ( isa => NonEmptySimpleStr, is => 'ro', lazy_build => 1 );
+
 sub BUILD {
     my ($self) = @_;
     $self->git; # Cause lazy value build.
+	$self->repo_dir;
 }
-
-has git => ( isa => NonEmptySimpleStr, is => 'ro', lazy_build => 1 );
 
 sub _build_git {
 	my $git = File::Which::which('git');
@@ -33,6 +35,10 @@ EOR
 	}
 
 	return $git;
+}
+
+sub _build_repo_dir {
+	return Gitalist->config->{repo_dir};
 }
 
 sub is_git_repo {
@@ -80,8 +86,6 @@ sub get_project_properties {
 
     return %props;
 }
-
-has repo_dir => ( isa => NonEmptySimpleStr, required => 1, is => 'ro' ); # Fixme - path::class
 
 sub list_projects {
     my ($self) = @_;

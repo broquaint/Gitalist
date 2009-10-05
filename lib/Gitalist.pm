@@ -15,11 +15,6 @@ our $VERSION = '0.01';
 # Bring in the libified gitweb.cgi.
 use gitweb;
 
-before 'setup' => sub {
-    my $app = shift;
-    $app->config('Model::Git' => { repo_dir => $app->config('repo_dir') });
-};
-
 __PACKAGE__->config(
 	name => 'Gitalist',
 	default_view => 'Default',
