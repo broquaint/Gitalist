@@ -30,6 +30,7 @@ DEPENDENCIES
   DateTime::Format::Mail
   File::Stat::ModeString
   List::MoreUtils
+  MooseX::Types::Common
   # Probably others ...
 
 COPYRIGHT AND LICENCE
