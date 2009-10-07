@@ -1,0 +1,7 @@
+[% FOR act IN ['summary', 'shortlog', 'log', 'commit', 'commitdiff', 'tree'];
+  ' | ' UNLESS loop.first;
+  IF act == action;
+    act;
+  ELSE; -%]
+  <a href="/[% act %]">[% act %]</a>
+[% END %]

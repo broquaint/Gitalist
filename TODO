@@ -1,0 +1,1 @@
+* Fix git_blob_plain i.e don't use the wrapper.

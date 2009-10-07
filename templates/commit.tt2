@@ -1,0 +1,4 @@
+<h1>The commit says</h1>
+<pre>
+[% commit.comment %]
+</pre>
