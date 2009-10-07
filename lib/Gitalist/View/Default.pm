@@ -18,7 +18,7 @@ Catalyst View.
 
 =head1 AUTHOR
 
-Dan Brook,,,
+Dan Brook
 
 =head1 LICENSE
 

@@ -93,7 +93,7 @@ sub reflog : Local {
   );
 }
 
-sub commit {
+sub commit : Local {
   my ( $self, $c ) = @_;
 
   $c->stash(
@@ -104,12 +104,6 @@ sub commit {
 
 sub auto : Private {
     my($self, $c) = @_;
-
-    # XXX Probably not the best place for it but it will do for now.
-    if(my $proj = $c->req->param('p')) {
-        my $m = $c->model('Git');
-        $m->project($proj);
-    }
 
     # Yes, this is hideous.
     $self->header($c);
