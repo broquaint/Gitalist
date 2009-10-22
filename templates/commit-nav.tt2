@@ -1,7 +1,21 @@
-[% FOR act IN ['summary', 'shortlog', 'log', 'commit', 'commitdiff', 'tree'];
-  ' | ' UNLESS loop.first;
-  IF act == action;
-    act;
-  ELSE; -%]
-  <a href="/[% act %]">[% act %]</a>
-[% END %]
+<div id='commit-nav'>
+    [%# XXX For the record these params are wrong (i.e sha1 will probably be wrong) and the actions don't exist i.e this is a shim -%]
+    [% IF project %]
+    <a href="/summary?p=[% project %]">summary</a> |
+    [% END %]
+    [% IF c.req.param('hb') %]
+    <a href="/shortlog?h=[% c.req.param('hb') %]">shortlog</a> |
+    [% END %]
+    [% IF c.req.param('hb') %]
+    <a href="/log?h=[% c.req.param('hb') %]">log</a> |
+    [% END %]
+    [% IF c.req.param('h') %]
+    <a href="/commit?h=[% c.req.param('h') %]">commit</a> |
+    [% END %]
+    [% IF c.req.param('h') %]
+    <a href="/commitdiff?h=[% c.req.param('h') %]">commitdiff</a> |
+    [% END %]
+    [% IF t %]
+    <a href="/tree?h=[% t %]">tree</a>
+    [% END %]
+</div>

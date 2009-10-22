@@ -13,6 +13,7 @@
   [% IF baseurl %]
   <base href="[% baseurl %]" />
   [% END %]
+  <link rel="stylesheet" type="text/css" href="/static/css/site.css"/>
   <link rel="stylesheet" type="text/css" href="[% stylesheet %]"/>
   [% FOR link IN links %]
             <link rel="[% link.rel %]"

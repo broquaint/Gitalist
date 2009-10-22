@@ -1,3 +1,4 @@
+[% INCLUDE 'commit-nav.tt2' %]
 <link rel="stylesheet" type="text/css" href="/static/css/syntax-dark.css"/>
 <div>
 <pre class='blob'>
