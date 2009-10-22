@@ -1,1 +1,3 @@
 * Fix git_blob_plain i.e don't use the wrapper.
+* An action to find what branches have been merged, either as a list or through a search mechanism.
+* An action to find which branches a given commit is on.

@@ -34,4 +34,10 @@ __PACKAGE__->config(
 	WRAPPER            => 'default.tt2',
 );
 
+# before end => sub {
+#     my ( $self, $c ) = @_;
+#     return unless $c->stash->{syntax_highlight};
+#     $c->forward( 'View::SyntaxHighlight', $c->stash->{syntax_highlight} );
+# };
+
 __PACKAGE__->meta->make_immutable(inline_constructor => 0);

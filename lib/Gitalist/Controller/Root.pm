@@ -78,6 +78,8 @@ sub blob : Local {
       blob   => $c->model('GPP')->get_object($c->req->param('h'))->content,
       action => 'blob',
   );
+
+  $c->forward('View::Syntax');
 }
 
 sub reflog : Local {
