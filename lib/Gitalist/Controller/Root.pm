@@ -29,6 +29,12 @@ Gitalist::Controller::Root - Root Controller for Gitalist
 use IO::Capture::Stdout;
 use File::Slurp qw(slurp);
 
+=head2 run_gitweb
+
+The main shim around C<gitweb.pm>.
+
+=cut
+
 sub run_gitweb {
   my ( $self, $c ) = @_;
 
@@ -52,6 +58,12 @@ sub run_gitweb {
   }
 }
 
+=head2 index
+
+Provides the project listing.
+
+=cut
+
 sub index :Path :Args(0) {
   my ( $self, $c ) = @_;
 
@@ -71,16 +83,29 @@ sub index :Path :Args(0) {
   );
 }
 
+=head2 blob
+
+The blob action i.e the contents of a file.
+
+=cut
+
 sub blob : Local {
   my ( $self, $c ) = @_;
 
   $c->stash(
-      blob   => $c->model('GPP')->get_object($c->req->param('h'))->content,
-      action => 'blob',
+    blob   => $c->model('GPP')->get_object($c->req->param('h'))->content,
+    action => 'blob',
   );
 
-  $c->forward('View::Syntax');
+  $c->forward('View::Syntax')
+    if $c->req->param('f') and $c->req->param('f') =~ /\.p[lm]$/;
 }
+
+=head2 reflog
+
+Expose the local reflog. This may go away.
+
+=cut
 
 sub reflog : Local {
   my ( $self, $c ) = @_;
@@ -95,6 +120,12 @@ sub reflog : Local {
   );
 }
 
+=head2 commit
+
+Exposes a given commit. Probably too simple currently.
+
+=cut
+
 sub commit : Local {
   my ( $self, $c ) = @_;
 
@@ -103,6 +134,12 @@ sub commit : Local {
       action => 'commit',
   );
 }
+
+=head2 auto
+
+Populate the header and footer. Perhaps not the best location.
+
+=cut
 
 sub auto : Private {
     my($self, $c) = @_;
