@@ -27,7 +27,6 @@ Gitalist::Controller::Root - Root Controller for Gitalist
 =cut
 
 use IO::Capture::Stdout;
-use File::Slurp qw(slurp);
 
 =head2 run_gitweb
 
@@ -93,7 +92,7 @@ sub blob : Local {
   my ( $self, $c ) = @_;
 
   $c->stash(
-    blob   => $c->model('GPP')->get_object($c->req->param('h'))->content,
+    blob   => $c->model('Git')->get_object($c->req->param('h'))->content,
     action => 'blob',
   );
 
@@ -130,7 +129,7 @@ sub commit : Local {
   my ( $self, $c ) = @_;
 
   $c->stash(
-      commit => $c->model('GPP')->get_object($c->req->param('h')),
+      commit => $c->model('Git')->get_object($c->req->param('h')),
       action => 'commit',
   );
 }
@@ -143,6 +142,10 @@ Populate the header and footer. Perhaps not the best location.
 
 sub auto : Private {
     my($self, $c) = @_;
+
+    # XXX Temp hack until a decent solution is invented.
+    $c->model('Git')->project($c->req->param('p'))
+      if $c->req->param('p');
 
     # Yes, this is hideous.
     $self->header($c);

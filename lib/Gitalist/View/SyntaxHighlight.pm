@@ -46,4 +46,4 @@ sub process {
     $c->forward('View::Default');
 }
 
-1;
+__PACKAGE__->meta->make_immutable;

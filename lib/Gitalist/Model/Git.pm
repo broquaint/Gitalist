@@ -26,6 +26,21 @@ sub BUILD {
     $self->repo_dir;
 }
 
+use Git::PurePerl;
+
+has gpp => (
+ #isa => 'Git::PurePerl'
+  is       => 'ro',
+  required => 1,
+  lazy     => 1,
+  default  => sub {
+    my($self) = @_;
+    return Git::PurePerl->new(
+      directory => $self->project_dir( $self->project )
+    );
+  },
+);
+
 sub _build_git {
     my $git = File::Which::which('git');
 
@@ -40,13 +55,50 @@ EOR
 }
  
 sub _build_repo_dir {
-    return Gitalist->config->{repo_dir};
+  return Gitalist->config->{repo_dir};
+}
+
+sub get_object {
+  $_[0]->gpp->get_object($_[1]);
 }
 
 sub is_git_repo {
   my ($self, $dir) = @_;
 
   return -f $dir->file('HEAD') || -f $dir->file('.git/HEAD');
+}
+
+sub run_cmd {
+  my ($self, @args) = @_;
+
+  print STDERR 'RUNNING: ', $self->git, qq[ @args], $/;
+
+  open my $fh, '-|', $self->git, @args
+    or die "failed to run git command";
+  binmode $fh, ':encoding(UTF-8)';
+
+  my $output = do { local $/ = undef; <$fh> };
+  close $fh;
+
+  return $output;
+}
+
+sub project_dir {
+  my($self, $project) = @_;
+
+  my $dir = blessed($project) && $project->isa('Path::Class::Dir')
+       ? $project->stringify
+       : $self->git_dir_from_project_name($project);
+
+  $dir =~ s/\.git$//;
+
+  return $dir;
+}
+
+sub run_cmd_in {
+  my ($self, $project, @args) = @_;
+
+  return $self->run_cmd('--git-dir' => $self->project_dir($project)."/.git", @args);
 }
 
 sub project_info {
@@ -116,37 +168,6 @@ sub list_projects {
   }
 
   return [sort { $a->{name} cmp $b->{name} } @ret];
-}
-
-sub run_cmd {
-  my ($self, @args) = @_;
-
-  open my $fh, '-|', $self->git, @args
-    or die "failed to run git command";
-  binmode $fh, ':encoding(UTF-8)';
-
-  my $output = do { local $/ = undef; <$fh> };
-  close $fh;
-
-  return $output;
-}
-
-sub project_dir {
-  my($self, $project) = @_;
-
-  my $dir = blessed($project) && $project->isa('Path::Class::Dir')
-       ? $project->stringify
-       : $self->git_dir_from_project_name($project);
-
-  $dir =~ s/\.git$//;
-
-  return $dir;
-}
-
-sub run_cmd_in {
-  my ($self, $project, @args) = @_;
-
-  return $self->run_cmd('--git-dir' => $self->project_dir($project), @args);
 }
 
 sub git_dir_from_project_name {
@@ -346,10 +367,10 @@ sub reflog {
   commit 02526fc15beddf2c64798a947fecdd8d11bf993d
   Reflog: HEAD@{14} (The Git Server <git@git.dev.venda.com>)
   Reflog message: push
-  Author: Iain Loasby <iloasby@rowlf.of-2.uk.venda.com>
+  Author: Foo Barsby <fbarsby@example.com>
   Date:   Thu Sep 17 12:26:05 2009 +0100
 
-      Merge branch 'rt125181
+      Merge branch 'abc123'
 =cut
 
   return map {
@@ -379,7 +400,7 @@ sub reflog {
       date    => $date,
       message => $msg,
     };
-    } @entries;
+  } @entries;
 }
 
 sub get_heads {
@@ -404,6 +425,47 @@ sub get_heads {
   }
 
   return \@ret;
+}
+
+=head2 refs_for
+
+Return a list of refs (e.g branches) for a given sha1.
+
+=cut
+
+sub refs_for {
+	my($self, $sha1) = @_;
+
+	my $refs = $self->references->{$sha1};
+
+	return $refs ? @$refs : ();
+}
+
+=head2
+
+A wrapper for C<git show-ref --dereference>. Based on gitweb's
+C<git_get_references>.
+
+=cut
+
+sub references {
+	my($self) = @_;
+
+	return $self->{references}
+		if $self->{references};
+
+	# 5dc01c595e6c6ec9ccda4f6f69c131c0dd945f8c refs/tags/v2.6.11
+	# c39ae07f393806ccf406ef966e9a15afc43cc36a refs/tags/v2.6.11^{}
+	my $reflist = $self->run_cmd_in($self->project, qw(show-ref --dereference))
+		or return;
+
+	my %refs;
+	for(split /\n/, $reflist) {
+		push @{$refs{$1}}, $2
+			if m!^([0-9a-fA-F]{40})\srefs/(.*)$!;
+	}
+
+	return $self->{references} = \%refs;
 }
 
 sub archive {

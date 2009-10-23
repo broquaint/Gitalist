@@ -1,4 +1,161 @@
-<h1>The commit says</h1>
-<pre>
+[% INCLUDE 'commit-nav.tt2' %]
+<div>
 [% commit.comment %]
-</pre>
+[% FOREACH ref IN c.model('Git').refs_for(commit.sha1) %]
+ <span class='refs'><a href='/shortlog?h=[% commit.sha1 %];hb=[% ref %]'>[% ref %]</a></span>
+[% END %]
+</div>
+
+<dl>
+ <dt>author</dt>
+  <dd>[% commit.author.name %] &lt;[% commit.author.email %]&gt;<br/>
+      [% commit.authored_time %]</dd>
+ <dt>committer</dt>
+  <dd>[% commit.committer.name %] &lt;[% commit.committer.email %]&gt;<br/>
+      [% commit.committed_time %]</dd>
+ <dt>commit</dt>
+  <dd>[% commit.sha1 %]</dd>
+ <dt>tree</dt>
+  <dd>[% commit.tree_sha1 %] <a href="/tree?h=[% commit.sha1 %];hb=[% commit.tree_sha1 %]">tree</a></dd>
+ [% FOREACH parent IN commit.parents %]
+ <dt>parent</dt>
+  <dd>[% parent %] <a href="/commit?h=[% commit.sha1 %]">commit</a></dd>
+ [% END %]
+</dl>
+
+<!--
+
+$Git_PurePerl_Object_Commit1 = bless( {
+                                 author   => bless( {
+                                               email => 'broq@cpan.org',
+                                               name  => 'broquaint'
+                                             }, 'Git::PurePerl::Actor' ),
+                                 authored_time
+                                          => {
+                                               DateTime
+                                             },
+                                 comment  => 'The blob action now has simple (but functioning) syntax highlighting (thanks to jrockway\'s Angerwhale for the highlighting code).',
+                                 committed_time
+                                          => {
+                                               DateTime
+                                             },
+                                 committer
+                                          => bless( {
+                                               email => 'broq@cpan.org',
+                                               name  => 'broquaint'
+                                             }, 'Git::PurePerl::Actor' ),
+                                 content  => "tree 278387038d3a42dcc9b3b33d6809c71371caee90\nparent b222ff0a7260cc1777c".
+	"7e455dfcaf22551a512fc\nauthor broquaint <broq\@cpan.org> 1256204829 +0100\n".
+	"committer broquaint <broq\@cpan.org> 1256204829 +0100\n\nThe blob action no".
+	"w has simple (but functioning) syntax highlighting (thanks to jrockway's".
+	" Angerwhale for the highlighting code).\n",
+                                 git      => bless( {
+                                               directory => {
+                                                              dirs     => [ '.' ],
+                                                              file_spec_class
+                                                                       => undef,
+                                                              volume   => ''
+                                                            },
+                                               gitdir    => {
+                                                              dirs     => [ '.git' ],
+                                                              file_spec_class
+                                                                       => undef,
+                                                              volume   => ''
+                                                            },
+                                               loose     => bless( { directory => {
+                                                              dirs     => [
+                                                                            '.git',
+                                                                            'objects'
+                                                                          ],
+                                                              file_spec_class
+                                                                       => undef,
+                                                              volume   => ''
+                                                            } }, 'Git::PurePerl::Loose' ),
+                                               packs     => [ bless( {
+                                                              fh      => bless( do{ require Symbol; Symbol::gensym }, 'IO::File' ),
+                                                              filename
+                                                                      => {
+                                                                           dir     => {
+                                                                                        dirs     => [
+                                                                                                      '.git',
+                                                                                                      'objects',
+                                                                                                      'pack'
+                                                                                                    ],
+                                                                                        file_spec_class
+                                                                                                 => undef,
+                                                                                        volume   => ''
+                                                                                      },
+                                                                           file    => 'pack-76da0c32a0a4918d1828d110636caad32af6ec6c.pack',
+                                                                           file_spec_class
+                                                                                   => undef
+                                                                         },
+                                                              index   => bless( {
+                                                                           fh       => bless( Symbol::gensym, 'IO::File' ),
+                                                                           filename => {
+                                                                                         dir     => {
+                                                                                                      dirs     => [
+                                                                                                                    '.git',
+                                                                                                                    'objects',
+                                                                                                                    'pack'
+                                                                                                                  ],
+                                                                                                      file_spec_class
+                                                                                                               => undef,
+                                                                                                      volume   => ''
+                                                                                                    },
+                                                                                         file    => 'pack-76da0c32a0a4918d1828d110636caad32af6ec6c.idx',
+                                                                                         file_spec_class
+                                                                                                 => undef
+                                                                                       },
+                                                                           offsets  => [
+                                                                                         ( 0 ) x 23,
+                                                                                         ( 1 ) x 29,
+                                                                                         ( 2 ) x 11,
+                                                                                         ( 3 ) x 6,
+                                                                                         ( 4 ) x 22,
+                                                                                         ( 5 ) x 51,
+                                                                                         ( 6 ) x 78,
+                                                                                         ( 7 ) x 3,
+                                                                                         ( 8 ) x 34
+                                                                                       ],
+                                                                           size     => 8
+                                                                         }, 'Git::PurePerl::PackIndex::Version2' ),
+                                                              index_filename
+                                                                      => {
+                                                                           dir     => {
+                                                                                        dirs     => [
+                                                                                                      '.git',
+                                                                                                      'objects',
+                                                                                                      'pack'
+                                                                                                    ],
+                                                                                        file_spec_class
+                                                                                                 => undef,
+                                                                                        volume   => ''
+                                                                                      },
+                                                                           file    => 'pack-76da0c32a0a4918d1828d110636caad32af6ec6c.idx',
+                                                                           file_spec_class
+                                                                                   => undef
+                                                                         }
+                                                            }, 'Git::PurePerl::Pack::WithIndex' ) ]
+                                             }, 'Git::PurePerl' ),
+                                 kind     => 'commit',
+                                 parent_sha1
+                                          => 'b222ff0a7260cc1777c7e455dfcaf22551a512fc',
+                                 parents  => [ 'b222ff0a7260cc1777c7e455dfcaf22551a512fc' ],
+                                 sha1     => '7e54e579e196c6c545fee1030175f65a111039d4',
+                                 size     => 328,
+                                 tree_sha1
+                                          => '278387038d3a42dcc9b3b33d6809c71371caee90'
+                               }, 'Git::PurePerl::Object::Commit' );
+$Git_PurePerl_Object_Commit1->{committed_time}{locale} = $Git_PurePerl_Object_Commit1->{authored_time}{locale};
+bless( $Git_PurePerl_Object_Commit1->{authored_time}, 'DateTime' );
+bless( $Git_PurePerl_Object_Commit1->{committed_time}, 'DateTime' );
+bless( $Git_PurePerl_Object_Commit1->{git}{directory}, 'Path::Class::Dir' );
+bless( $Git_PurePerl_Object_Commit1->{git}{gitdir}, 'Path::Class::Dir' );
+bless( $Git_PurePerl_Object_Commit1->{git}{loose}{directory}, 'Path::Class::Dir' );
+bless( $Git_PurePerl_Object_Commit1->{git}{packs}[0]{filename}{dir}, 'Path::Class::Dir' );
+bless( $Git_PurePerl_Object_Commit1->{git}{packs}[0]{filename}, 'Path::Class::File' );
+bless( $Git_PurePerl_Object_Commit1->{git}{packs}[0]{index}{filename}{dir}, 'Path::Class::Dir' );
+bless( $Git_PurePerl_Object_Commit1->{git}{packs}[0]{index}{filename}, 'Path::Class::File' );
+bless( $Git_PurePerl_Object_Commit1->{git}{packs}[0]{index_filename}{dir}, 'Path::Class::Dir' );
+bless( $Git_PurePerl_Object_Commit1->{git}{packs}[0]{index_filename}, 'Path::Class::File' );
+-->

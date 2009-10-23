@@ -1,3 +1,5 @@
+# XXX Deprecated.
+
 package Gitalist::Model::GPP;
 
 #use base 'Catalyst::Model::Adaptor';
