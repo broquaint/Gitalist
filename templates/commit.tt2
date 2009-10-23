@@ -1,6 +1,6 @@
 [% INCLUDE 'commit-nav.tt2' object = commit %]
 <div class='commit-message'>
-[% commit.comment.substr(0, 50) %] ...
+[% commit.comment.substr(0, 85) %] ...
 [% FOREACH ref IN c.model('Git').refs_for(commit.sha1) %]
  <span class='refs'><a href='/shortlog?h=[% commit.sha1 %];hb=[% ref %]'>[% ref %]</a></span>
 [% END %]
@@ -27,8 +27,10 @@
 
 <table class='diff-tree'>
  <thead>
-  <td>file</td>
-  <td>actions</td>
+  <tr>
+   <td>file</td>
+   <td>actions</td>
+  </tr>
  </thead>
  <tbody>
   [% FOREACH line IN c.model('Git').diff_tree(commit) %]
@@ -43,8 +45,10 @@
   [% END %]
  </tbody>
  <tfoot>
-  <td>file</td>
-  <td>actions</td>
+  <tr>
+   <td>file</td>
+   <td>actions</td>
+  </tr>
  </tfoot>
 </table>
 

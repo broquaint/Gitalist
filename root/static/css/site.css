@@ -11,6 +11,8 @@
 /* /commit page */
 .commit-message {
     font-family: monospace;
+}
+div.commit-message {
     background-color: #ddd;
     padding: 5px;
 }

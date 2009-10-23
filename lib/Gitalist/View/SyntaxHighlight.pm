@@ -13,6 +13,8 @@ use HTML::Entities qw(encode_entities);
 sub process {
     my($self, $c) = @_;
 
+    # If we're not going to highlight the blob unsure that it's ready to go
+    # into HTML at least.
     if($c->stash->{filename} =~ /\.p[lm]$/) {
         # via
         # http://github.com/jrockway/angerwhale/blob/master/lib/Angerwhale/Format/Pod.pm#L136

@@ -129,7 +129,7 @@ sub reflog : Local {
 
 =head2 commit
 
-Exposes a given commit. Probably too simple currently.
+Exposes a given commit.
 
 =cut
 
@@ -139,6 +139,21 @@ sub commit : Local {
   $c->stash(
       commit => $c->model('Git')->get_object($c->req->param('h')),
       action => 'commit',
+  );
+}
+
+=head2 shortlog
+
+Expose an abbreviated log of a given sha1.
+
+=cut
+
+sub shortlog : Local {
+  my ( $self, $c ) = @_;
+
+  $c->stash(
+      commit => $c->model('Git')->get_object($c->req->param('h')),
+      action => 'shortlog',
   );
 }
 

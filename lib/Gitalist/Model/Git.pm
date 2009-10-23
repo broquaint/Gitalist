@@ -425,62 +425,30 @@ sub diff {
   return $output;
 }
 
-{
-  my $formatter = DateTime::Format::Mail->new;
-
 =head2 parse_rev_list
 
 Given the output of the C<rev-list> command return a list of hashes.
 
 =cut
 
-  sub parse_rev_list {
-    my ($self, $output) = @_;
-    my @ret;
+sub parse_rev_list {
+  my ($self, $output) = @_;
+  my @ret;
 
-    my @revs = split /\0/, $output;
+  my @revs = split /\0/, $output;
 
-    for my $rev (split /\0/, $output) {
-      for my $line (split /\n/, $rev, 6) {
-        chomp $line;
-        next unless $line;
+  for my $rev (split /\0/, $output) {
+    for my $line (split /\n/, $rev, 6) {
+      chomp $line;
+      next unless $line;
 
-        if ($self->valid_rev($line)) {
-          push @ret, {rev => $line};
-          next;
-        }
-
-        if (my ($key, $value) = $line =~ /^(tree|parent)\s+(.*)$/) {
-          $ret[-1]->{$key} = $value;
-          next;
-        }
-
-        if (my ($key, $value, $epoch, $tz) = $line =~ /^(author|committer)\s+(.*)\s+(\d+)\s+([+-]\d+)$/) {
-          $ret[-1]->{$key} = $value;
-          eval {
-            $ret[-1]->{ $key . "_datetime" } = DateTime->from_epoch(epoch => $epoch);
-            $ret[-1]->{ $key . "_datetime" }->set_time_zone($tz);
-            $ret[-1]->{ $key . "_datetime" }->set_formatter($formatter);
-            };
-
-          if ($@) {
-            $ret[-1]->{ $key . "_datetime" } = "$epoch $tz";
-          }
-
-          if (my ($name, $email) = $value =~ /^([^<]+)\s+<([^>]+)>$/) {
-            $ret[-1]->{ $key . "_name"  } = $name;
-            $ret[-1]->{ $key . "_email" } = $email;
-          }
-        }
-
-        $line =~ s/^\n?\s{4}//;
-        $ret[-1]->{longmessage} = $line;
-        $ret[-1]->{message} = (split /\n/, $line, 2)[0];
+      if ($self->valid_rev($line)) {
+        push @ret, $self->get_object($line);
       }
-    }
-
-    return @ret;
+	}
   }
+
+  return @ret;
 }
 
 =head2 list_revs
