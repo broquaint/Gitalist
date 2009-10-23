@@ -1,6 +1,27 @@
+#body {
+    margin: 1em;
+}
+
 #commit-nav {
-    margin: 10px;
     padding-bottom: 4px;
     border-bottom: solid 1px #ccc;
     font-style: italic;
+}
+
+/* /commit page */
+.commit-message {
+    font-family: monospace;
+}
+.commit-info dt {
+    font-weight: bold;
+}
+.commit-info dd {
+    font-family: monospace;
+}
+
+.filename {
+  font-family: monospace;
+}
+.action-list {
+  font-size: smaller;
 }

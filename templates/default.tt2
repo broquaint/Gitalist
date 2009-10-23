@@ -65,7 +65,9 @@
   IF page_nav;
     INCLUDE "page_nav.tt2";
   END;
-
+%]
+<div id='body'>
+[%
   IF action;
     SET actmpl = action _ ".tt2";
     INCLUDE $actmpl;
@@ -74,6 +76,7 @@
     content;
   END;
 %]
+</div>
 
 [%- # git_footer_html
 -%]

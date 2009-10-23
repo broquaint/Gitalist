@@ -1,12 +1,12 @@
 [% INCLUDE 'commit-nav.tt2' %]
-<div>
-[% commit.comment %]
+<div class='commit-message'>
+[% commit.comment.substr(0, 50) %] ...
 [% FOREACH ref IN c.model('Git').refs_for(commit.sha1) %]
  <span class='refs'><a href='/shortlog?h=[% commit.sha1 %];hb=[% ref %]'>[% ref %]</a></span>
 [% END %]
 </div>
 
-<dl>
+<dl class='commit-info'>
  <dt>author</dt>
   <dd>[% commit.author.name %] &lt;[% commit.author.email %]&gt;<br/>
       [% commit.authored_time %]</dd>
@@ -22,6 +22,33 @@
   <dd>[% parent %] <a href="/commit?h=[% commit.sha1 %]">commit</a></dd>
  [% END %]
 </dl>
+
+<pre class='commit-message'>
+[% commit.comment %]
+</pre>
+
+<table class='diff-tree'>
+ <thead>
+  <td>file</td>
+  <td>actions</td>
+ </thead>
+ <tbody>
+  [% FOREACH line IN c.model('Git').diff_tree(commit) %]
+  <tr>
+   <td class='filename'>[% line.src %]</td>
+   <td class='action-list'>
+     [% IF !line.is_new %]<a href="/blobdiff?f=[% line.file %];h=[% line.sha1dst %];hp=[% sha1src %]">diff</a>[% END %]
+     <a href="/blob?f=[% line.file %];h=[% line.sha1 %];hb=[% commit.sha1 %]">blob</a>
+     [% IF !line.is_new %]<a href="/log?f=[% line.file %];hb[% commit.sha1 %]=">history</a>[% END %]
+   </td>
+  </tr>
+  [% END %]
+ </tbody>
+ <tfoot>
+  <td>file</td>
+  <td>actions</td>
+ </tfoot>
+</table>
 
 <!--
 

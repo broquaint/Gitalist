@@ -16,6 +16,9 @@ use List::MoreUtils qw/any/;
 use Scalar::Util qw/blessed/;
 use MooseX::Types::Common::String qw/NonEmptySimpleStr/; # FIXME, use Types::Path::Class and coerce
 
+# Should these live in a separate module? Or perhaps extended Regexp::Common?
+our $SHA1RE = qr/[0-9a-fA-F]{40}/;
+
 has project  => ( isa => NonEmptySimpleStr, is => 'rw');
 has repo_dir => ( isa => NonEmptySimpleStr, is => 'ro', lazy_build => 1 ); # Fixme - path::class
 has git      => ( isa => NonEmptySimpleStr, is => 'ro', lazy_build => 1 );
@@ -101,6 +104,14 @@ sub run_cmd_in {
   return $self->run_cmd('--git-dir' => $self->project_dir($project)."/.git", @args);
 }
 
+sub command {
+  my($self, @args) = @_;
+
+  my $output = $self->run_cmd('--git-dir' => $self->project_dir($self->project)."/.git", @args);
+
+  return $output ? split(/\n/, $output) : ();
+}
+
 sub project_info {
   my ($self, $project) = @_;
 
@@ -182,7 +193,7 @@ sub get_head_hash {
   my $output = $self->run_cmd_in($self->project, qw/rev-parse --verify HEAD/ );
   return unless defined $output;
 
-  my ($head) = $output =~ /^([0-9a-fA-F]{40})$/;
+  my ($head) = $output =~ /^($SHA1RE)$/;
   return $head;
 }
 
@@ -235,7 +246,7 @@ sub get_hash_by_path {
     or return;
 
   #'100644 blob 0fa3f3a66fb6a137f6ec2c19351ed4d807070ffa	panic.c'
-  $line =~ m/^([0-9]+) (.+) ([0-9a-fA-F]{40})\t/;
+  $line =~ m/^([0-9]+) (.+) ($SHA1RE)\t/;
   return defined $type && $type ne $2
     ? ()
     : return $3;
@@ -258,7 +269,7 @@ sub valid_rev {
   my ($self, $rev) = @_;
 
   return unless $rev;
-  return ($rev =~ /^([0-9a-fA-F]{40})$/);
+  return ($rev =~ /^($SHA1RE)$/);
 }
 
 sub diff {
@@ -378,7 +389,7 @@ sub reflog {
     # XXX Stuff like this makes me want to switch to Git::PurePerl
     my($sha1, $type, $author, $date)
       = m{
-          ^ commit \s+ ([0-9a-f]+)$
+          ^ commit \s+ ($SHA1RE)$
           .*?
           Reflog[ ]message: \s+ (.+?)$ \s+
           Author: \s+ ([^<]+) <.*?$ \s+
@@ -456,16 +467,54 @@ sub references {
 
 	# 5dc01c595e6c6ec9ccda4f6f69c131c0dd945f8c refs/tags/v2.6.11
 	# c39ae07f393806ccf406ef966e9a15afc43cc36a refs/tags/v2.6.11^{}
-	my $reflist = $self->run_cmd_in($self->project, qw(show-ref --dereference))
+	my @reflist = $self->command(qw(show-ref --dereference))
 		or return;
 
 	my %refs;
-	for(split /\n/, $reflist) {
+	for(@reflist) {
 		push @{$refs{$1}}, $2
-			if m!^([0-9a-fA-F]{40})\srefs/(.*)$!;
+			if m!^($SHA1RE)\srefs/(.*)$!;
 	}
 
 	return $self->{references} = \%refs;
+}
+
+=begin
+
+$ git diff-tree -r --no-commit-id -M b222ff0a7260cc1777c7e455dfcaf22551a512fc 7e54e579e196c6c545fee1030175f65a111039d4
+:100644 100644 8976ebc7df65475b3def53a1653533c3f61070d0 852b6e170f1bad1fbd9930d3178dda8fdf1feae7 M      TODO
+:100644 100644 75f5e5f9ed10ae82a960fde77ecf138159c37610 7f54f8c3a4ad426f6889b13cfba5f5ad9969e3c6 M      lib/Gitalist/Controller/Root.pm
+:100644 100644 2c65caa46b56302502b9e6eef952b6f379c71fee e418acf5f7b5f771b0b2ef8be784e8dcd60a4271 M      lib/Gitalist/View/Default.pm
+:000000 100644 0000000000000000000000000000000000000000 642599f9ccfc4dbc7034987ad3233655010ff348 A      lib/Gitalist/View/SyntaxHighlight.pm
+:000000 100644 0000000000000000000000000000000000000000 3d2e533c41f01276b6f844bae98297273b38dffc A      root/static/css/syntax-dark.css
+:100644 100644 6a85d6c6315b55a99071974eb6ce643aeb2799d6 44c03ed6c328fa6de4b1d9b3f19a3de96b250370 M      templates/blob.tt2
+
+=cut
+
+use List::MoreUtils qw(zip);
+# XXX Hrm, getting called twice, not sure why.
+sub diff_tree {
+	my($self, $commit) = @_;
+
+	my @dtout = $self->command(
+		# XXX should really deal with multple parents ...
+		qw(diff-tree -r --no-commit-id -M), $commit->parent_sha1, $commit->sha1
+	);
+
+	my @keys = qw(modesrc modedst sha1src sha1dst status src dst);
+	my @difftree = map {
+		# see. man git-diff-tree for more info
+		# mode src, mode dst, sha1 src, sha1 dst, status, src[, dst]
+		my @vals = /^:(\d+) (\d+) ($SHA1RE) ($SHA1RE) ([ACDMRTUX])\t([^\t]+)(?:\t([^\n]+))?$/;
+		my %line = zip @keys, @vals;
+		# Some convenience keys
+		$line{file}   = $line{src};
+		$line{sha1}   = $line{sha1src};
+		$line{is_new} = $line{sha1src} =~ /^0+$/;
+		\%line;
+	} @dtout;
+
+	return @difftree;
 }
 
 sub archive {
