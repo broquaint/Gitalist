@@ -316,10 +316,11 @@ sub list_tree {
     my ($mode, $type, $object, $file) = split /\s+/, $line, 4;
 
     push @ret, {
-      mode   => oct $mode,
-      type   => $type,
-      object => $object,
-      file   => $file,
+      mode    => oct $mode,
+      modestr => $self->get_object_mode_string({mode=>oct $mode}),
+      type    => $type,
+      object  => $object,
+      file    => $file,
     };
   }
 

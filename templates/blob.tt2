@@ -1,5 +1,6 @@
-[% PROCESS 'commit-nav.tt2' object = head %]
 <link rel="stylesheet" type="text/css" href="/static/css/syntax-dark.css"/>
+
+[% PROCESS 'commit-nav.tt2' object = head %]
 <div class='commit-message'>
 [% head.comment.substr(0, 85) %] ...
 </div>

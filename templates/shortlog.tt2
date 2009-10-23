@@ -23,7 +23,7 @@
    <td class='action-list'>
      <a href="/commit?p=[% project %];h=[% line.sha1 %]">commit</a>
      <a href="/commitdiff?p=[% project %];h=[% line.sha1 %]">commitdiff</a>
-     <a href="/tree?p=[% project %];h=[% line.sha1 %];hb=[% line.tree_sha1 %]">history</a>
+     <a href="/tree?p=[% project %];h=[% line.sha1 %];hb=[% line.tree_sha1 %]">tree</a>
    </td>
   </tr>
  [% END %]

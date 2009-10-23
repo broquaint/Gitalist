@@ -1,0 +1,40 @@
+[% INCLUDE 'commit-nav.tt2' object = commit %]
+
+<div class='commit-message'>
+[% commit.comment.substr(0, 85) %] ...
+</div>
+
+<table>
+ <thead>
+  <tr>
+   <td>mode</td>
+   <td>file</td>
+   <td>actions</td>
+  </tr>
+ </thead>
+
+ <tbody>
+  [% FOREACH item IN c.model('Git').list_tree(commit.sha1) %]
+  <tr>
+   <td>[% item.modestr %]</td>
+   [% theact = item.type == 'tree' ? 'tree' : 'blob' -%]
+   <td>
+    <a href="/[% theact %]?h=[% item.object %];hb=[% commit.sha1 %];f=[% item.file %]">[% item.file %]</a>
+   </td>
+   <td class='action-list'>
+     <a href="/[% theact %]?p=[% project %];h=[% item.object %]">[% theact %]</a>
+     <a href="/history?p=[% project %];h=[% item.object %]">history</a>
+     <a href="/raw?p=[% project %];h=[% item.object %]">raw</a>
+   </td>
+  </tr>
+  [% END %]
+ </tbody>
+
+ <tfoot>
+  <tr>
+   <td>mode</td>
+   <td>file</td>
+   <td>actions</td>
+  </tr>
+ </tfoot>
+</table>

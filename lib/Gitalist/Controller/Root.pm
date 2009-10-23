@@ -157,6 +157,23 @@ sub shortlog : Local {
   );
 }
 
+=head2 tree
+
+The tree of a given commit.
+
+=cut
+
+sub tree : Local {
+  my ( $self, $c ) = @_;
+
+  $c->stash(
+      # XXX Useful defaults needed ...
+      commit => $c->model('Git')->get_object($c->req->param('h')),
+      tree   => $c->model('Git')->get_object($c->req->param('hb')),
+      action => 'tree',
+  );
+}
+
 =head2 auto
 
 Populate the header and footer. Perhaps not the best location.

@@ -2,3 +2,4 @@
 * An action to find what branches have been merged, either as a list or through a search mechanism.
 * An action to find which branches a given commit is on.
 * Fix any not text/html bits e.g the patch action.
+* Simplify the creation of links.
