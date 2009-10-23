@@ -16,6 +16,18 @@ use List::MoreUtils qw/any/;
 use Scalar::Util qw/blessed/;
 use MooseX::Types::Common::String qw/NonEmptySimpleStr/; # FIXME, use Types::Path::Class and coerce
 
+=head1 NAME
+
+Gitalist::Model::Git - the model for git interactions
+
+=head1 DESCRIPTION
+
+[enter your description here]
+
+=head1 METHODS
+
+=cut
+
 # Should these live in a separate module? Or perhaps extended Regexp::Common?
 our $SHA1RE = qr/[0-9a-fA-F]{40}/;
 
@@ -23,6 +35,10 @@ has project  => ( isa => NonEmptySimpleStr, is => 'rw');
 has repo_dir => ( isa => NonEmptySimpleStr, is => 'ro', lazy_build => 1 ); # Fixme - path::class
 has git      => ( isa => NonEmptySimpleStr, is => 'ro', lazy_build => 1 );
  
+=head2 BUILD
+
+=cut
+
 sub BUILD {
     my ($self) = @_;
     $self->git; # Cause lazy value build.
@@ -38,8 +54,9 @@ has gpp => (
   lazy     => 1,
   default  => sub {
     my($self) = @_;
+	(my $pd = $self->project_dir( $self->project )) =~ s{/\.git$}();
     return Git::PurePerl->new(
-      directory => $self->project_dir( $self->project )
+      directory => $pd
     );
   },
 );
@@ -61,15 +78,34 @@ sub _build_repo_dir {
   return Gitalist->config->{repo_dir};
 }
 
+=head2 get_object
+
+A wrapper for the equivalent L<Git::PurePerl> method.
+
+=cut
+
 sub get_object {
   $_[0]->gpp->get_object($_[1]);
 }
+
+=head2 is_git_repo
+
+Determine whether a given directory (as a L<Path::Class::Dir> object) is a
+C<git> repo.
+
+=cut
 
 sub is_git_repo {
   my ($self, $dir) = @_;
 
   return -f $dir->file('HEAD') || -f $dir->file('.git/HEAD');
 }
+
+=head2 run_cmd
+
+Call out to the C<git> binary and return a string consisting of the output.
+
+=cut
 
 sub run_cmd {
   my ($self, @args) = @_;
@@ -86,31 +122,63 @@ sub run_cmd {
   return $output;
 }
 
+=head2 project_dir
+
+The directory under which the given project will reside i.e C<.git/..>
+
+=cut
+
 sub project_dir {
   my($self, $project) = @_;
 
   my $dir = blessed($project) && $project->isa('Path::Class::Dir')
        ? $project->stringify
-       : $self->git_dir_from_project_name($project);
+       : $self->dir_from_project_name($project);
 
-  $dir =~ s/\.git$//;
+  $dir .= '/.git'
+  	if -f dir($dir)->file('.git/HEAD');
 
   return $dir;
 }
 
+=head2 run_cmd_in
+
+Run a C<git> command in a given project and return the output as a string.
+
+=cut
+
 sub run_cmd_in {
   my ($self, $project, @args) = @_;
 
-  return $self->run_cmd('--git-dir' => $self->project_dir($project)."/.git", @args);
+  return $self->run_cmd('--git-dir' => $self->project_dir($project), @args);
 }
+
+=head2 command
+
+Run a C<git> command for the project specified in the C<p> parameter and
+return the output as a list of strings corresponding to the lines of output.
+
+=cut
 
 sub command {
   my($self, @args) = @_;
 
-  my $output = $self->run_cmd('--git-dir' => $self->project_dir($self->project)."/.git", @args);
+  my $output = $self->run_cmd('--git-dir' => $self->project_dir($self->project), @args);
 
   return $output ? split(/\n/, $output) : ();
 }
+
+=head2 project_info
+
+Returns a hash corresponding to a given project's properties. The keys will
+be:
+
+	name
+	description (empty if .git/description is empty/unnamed)
+	owner
+	last_change
+
+=cut
 
 sub project_info {
   my ($self, $project) = @_;
@@ -118,10 +186,16 @@ sub project_info {
   return {
     name => $project,
     $self->get_project_properties(
-      $self->git_dir_from_project_name($project),
-      ),
-    };
+      $self->dir_from_project_name($project),
+    ),
+  };
 }
+
+=head2 get_project_properties
+
+Called by C<project_info> to get a project's properties.
+
+=cut
 
 sub get_project_properties {
   my ($self, $dir) = @_;
@@ -152,10 +226,17 @@ sub get_project_properties {
   return %props;
 }
 
-sub list_projects {
-  my ($self) = @_;
+=head2 list_projects
 
-  my $base = dir($self->repo_dir);
+For the C<repo_dir> specified in the config return an array of projects where
+each item will contain the contents of L</project_info>.
+
+=cut
+
+sub list_projects {
+  my ($self, $dir) = @_;
+
+  my $base = dir($dir || $self->repo_dir);
 
   my @ret;
   my $dh = $base->open;
@@ -171,7 +252,7 @@ sub list_projects {
 
     my $name = (File::Spec->splitdir($obj))[-1];
     push @ret, {
-      name => ($name . ( $is_bare ? '.git' : '/.git' )),
+      name => ($name . ( $is_bare ? '' : '/.git' )),
       $self->get_project_properties(
         $is_bare ? $obj : $obj->subdir('.git')
         ),
@@ -181,11 +262,23 @@ sub list_projects {
   return [sort { $a->{name} cmp $b->{name} } @ret];
 }
 
-sub git_dir_from_project_name {
+=head2 dir_from_project_name
+
+Get the corresponding directory of a given project.
+
+=cut
+
+sub dir_from_project_name {
   my ($self, $project) = @_;
 
   return dir($self->repo_dir)->subdir($project);
 }
+
+=head2 head_hash
+
+Find the C<HEAD> of given (or current) project.
+
+=cut
 
 sub head_hash {
   my ($self, $project) = @_;
@@ -197,9 +290,22 @@ sub head_hash {
   return $head;
 }
 
-sub list_tree {
-  my ($self, $project, $rev) = @_;
+=head2 list_tree
 
+For a given tree sha1 return an array describing the tree's contents. Where
+the keys for each item will be:
+
+	mode
+	type
+	object
+	file
+
+=cut
+
+sub list_tree {
+  my ($self, $rev, $project) = @_;
+
+  $project ||= $self->project;
   $rev ||= $self->head_hash($project);
 
   my $output = $self->run_cmd_in($project, qw/ls-tree -z/, $rev);
@@ -214,11 +320,17 @@ sub list_tree {
       type   => $type,
       object => $object,
       file   => $file,
-      };
+    };
   }
 
   return @ret;
 }
+
+=head2 get_object_mode_string
+
+Provide a string equivalent of an octal mode e.g 0644 eq '-rw-r--r--'.
+
+=cut
 
 sub get_object_mode_string {
   my ($self, $object) = @_;
@@ -227,15 +339,43 @@ sub get_object_mode_string {
   return mode_to_string($object->{mode});
 }
 
-sub get_object_type {
-  my ($self, $project, $object) = @_;
+=head2 get_object_type
 
-  my $output = $self->run_cmd_in($project, qw/cat-file -t/, $object);
+=cut
+
+sub get_object_type {
+  my ($self, $object, $project) = @_;
+
+  chomp(my $output = $self->run_cmd_in($project || $self->project, qw/cat-file -t/, $object));
   return unless $output;
 
-  chomp $output;
   return $output;
 }
+
+=head2 cat_file
+
+Return the contents of a given file.
+
+=cut
+
+sub cat_file {
+  my ($self, $object, $project) = @_;
+
+  my $type = $self->get_object_type($object);
+  die "object `$object' is not a file\n"
+    if (!defined $type || $type ne 'blob');
+
+  my $output = $self->run_cmd_in($project || $self->project, qw/cat-file -p/, $object);
+  return unless $output;
+
+  return $output;
+}
+
+=head2 hash_by_path
+
+For a given sha1 and path find the corresponding hash. Useful for find blobs.
+
+=cut
 
 sub hash_by_path {
   my($self, $base, $path, $type) = @_;
@@ -252,18 +392,11 @@ sub hash_by_path {
     : $3;
 }
 
-sub cat_file {
-  my ($self, $object) = @_;
+=head2 valid_rev
 
-  my $type = $self->get_object_type($self->project, $object);
-  die "object `$object' is not a file\n"
-    if (!defined $type || $type ne 'blob');
+Check whether a given rev is valid i.e looks like a sha1.
 
-  my $output = $self->run_cmd_in($self->project, qw/cat-file -p/, $object);
-  return unless $output;
-
-  return $output;
-}
+=cut
 
 sub valid_rev {
   my ($self, $rev) = @_;
@@ -272,15 +405,21 @@ sub valid_rev {
   return ($rev =~ /^($SHA1RE)$/);
 }
 
+=head2 diff
+
+
+
+=cut
+
 sub diff {
-  my ($self, $project, @revs) = @_;
+  my ($self, @revs, $project) = @_;
 
   croak("Gitalist::Model::Git::diff needs a project and either one or two revisions")
     if scalar @revs < 1
       || scalar @revs > 2
       || any { !$self->valid_rev($_) } @revs;
 
-  my $output = $self->run_cmd_in($project, 'diff', @revs);
+  my $output = $self->run_cmd_in($project || $self->project, 'diff', @revs);
   return unless $output;
 
   return $output;
@@ -288,6 +427,12 @@ sub diff {
 
 {
   my $formatter = DateTime::Format::Mail->new;
+
+=head2 parse_rev_list
+
+Given the output of the C<rev-list> command return a list of hashes.
+
+=cut
 
   sub parse_rev_list {
     my ($self, $output) = @_;
@@ -338,19 +483,26 @@ sub diff {
   }
 }
 
+=head2 list_revs
+
+Calls the C<rev-list> command (a low-level from of C<log>) and returns an
+array of hashes.
+
+=cut
+
 sub list_revs {
-  my ($self, $project, %args) = @_;
+  my ($self, %args) = @_;
 
-  $args{rev} ||= $self->head_hash($project);
+  $args{rev} ||= $self->head_hash($args{project});
 
-  my $output = $self->run_cmd_in($project, 'rev-list',
+  my $output = $self->run_cmd_in($args{project} || $self->project, 'rev-list',
     '--header',
     (defined $args{ count } ? "--max-count=$args{count}" : ()),
-    (defined $args{ skip  } ? "--skip=$args{skip}"     : ()),
+    (defined $args{ skip  } ? "--skip=$args{skip}"       : ()),
     $args{rev},
     '--',
-    ($args{file} || ()),
-    );
+    ($args{file} ? $args{file} : ()),
+  );
   return unless $output;
 
   my @revs = $self->parse_rev_list($output);
@@ -358,13 +510,28 @@ sub list_revs {
   return \@revs;
 }
 
+=head2 rev_info
+
+Get a single piece of revision information for a given sha1.
+
+=cut
+
 sub rev_info {
-  my ($self, $project, $rev) = @_;
+  my($self, $rev, $project) = @_;
 
   return unless $self->valid_rev($rev);
 
-  return $self->list_revs($project, rev => $rev, count => 1);
+  return $self->list_revs(
+	  rev => $rev, count => 1,
+	  ( $project ? (project => $project) : () )
+  );
 }
+
+=head2 reflog
+
+Calls the C<reflog> command and returns a list of hashes.
+
+=cut
 
 sub reflog {
   my ($self, @logargs) = @_;
@@ -394,7 +561,7 @@ sub reflog {
           Reflog[ ]message: \s+ (.+?)$ \s+
           Author: \s+ ([^<]+) <.*?$ \s+
           Date: \s+ (.+?)$
-}xms;
+        }xms;
 
     pos($_) = index($_, $date) + length $date;
 
@@ -414,10 +581,17 @@ sub reflog {
   } @entries;
 }
 
+=head2 get_heads
+
+Returns an array of hashes representing the heads (aka branches) for the
+given, or current, project.
+
+=cut
+
 sub get_heads {
   my ($self, $project) = @_;
 
-  my $output = $self->run_cmd_in($project, qw/for-each-ref --sort=-committerdate /, '--format=%(objectname)%00%(refname)%00%(committer)', 'refs/heads');
+  my $output = $self->run_cmd_in($project || $self->project, qw/for-each-ref --sort=-committerdate /, '--format=%(objectname)%00%(refname)%00%(committer)', 'refs/heads');
   return unless $output;
 
   my @ret;
@@ -440,7 +614,7 @@ sub get_heads {
 
 =head2 refs_for
 
-Return a list of refs (e.g branches) for a given sha1.
+For a given sha1 check which branches currently point at it.
 
 =cut
 
@@ -452,7 +626,7 @@ sub refs_for {
 	return $refs ? @$refs : ();
 }
 
-=head2
+=head2 references
 
 A wrapper for C<git show-ref --dereference>. Based on gitweb's
 C<git_get_references>.
@@ -493,6 +667,13 @@ $ git diff-tree -r --no-commit-id -M b222ff0a7260cc1777c7e455dfcaf22551a512fc 7e
 
 use List::MoreUtils qw(zip);
 # XXX Hrm, getting called twice, not sure why.
+=head2 diff_tree
+
+Given a L<Git::PurePerl> commit object return a list of hashes corresponding
+to the C<diff-tree> output.
+
+=cut
+
 sub diff_tree {
 	my($self, $commit) = @_;
 
@@ -515,14 +696,6 @@ sub diff_tree {
 	} @dtout;
 
 	return @difftree;
-}
-
-sub archive {
-  my ($self, $project, $rev) = @_;
-
-  #FIXME: huge memory consuption
-  #TODO: compression
-  return $self->run_cmd_in($project, qw/archive --format=tar/, "--prefix=${project}/", $rev);
 }
 
 1;
