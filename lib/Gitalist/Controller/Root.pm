@@ -91,13 +91,21 @@ The blob action i.e the contents of a file.
 sub blob : Local {
   my ( $self, $c ) = @_;
 
+  my $h  = $c->req->param('h')
+       || $c->model('Git')->hash_by_path($c->req->param('f'))
+       || die "No file or sha1 provided.";
+  my $hb = $c->req->param('hb')
+       || $c->model('Git')->head_hash
+       || die "Couldn't discern the corresponding head.";
+
   $c->stash(
-    blob   => $c->model('Git')->get_object($c->req->param('h'))->content,
-    action => 'blob',
+    blob     => $c->model('Git')->get_object($h)->content,
+    head     => $c->model('Git')->get_object($hb),
+    filename => $c->req->param('f') || '',
+    action   => 'blob',
   );
 
-  $c->forward('View::Syntax')
-    if $c->req->param('f') and $c->req->param('f') =~ /\.p[lm]$/;
+  $c->forward('View::SyntaxHighlight');
 }
 
 =head2 reflog

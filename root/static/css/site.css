@@ -11,6 +11,8 @@
 /* /commit page */
 .commit-message {
     font-family: monospace;
+    background-color: #ddd;
+    padding: 5px;
 }
 .commit-info dt {
     font-weight: bold;
@@ -24,4 +26,10 @@
 }
 .action-list {
   font-size: smaller;
+}
+
+.path {
+    border-bottom: solid 1px #ddd;
+    padding: 3px 0;
+    font-weight: bold;
 }

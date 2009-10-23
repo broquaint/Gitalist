@@ -187,10 +187,10 @@ sub git_dir_from_project_name {
   return dir($self->repo_dir)->subdir($project);
 }
 
-sub get_head_hash {
+sub head_hash {
   my ($self, $project) = @_;
 
-  my $output = $self->run_cmd_in($self->project, qw/rev-parse --verify HEAD/ );
+  my $output = $self->run_cmd_in($project || $self->project, qw/rev-parse --verify HEAD/ );
   return unless defined $output;
 
   my ($head) = $output =~ /^($SHA1RE)$/;
@@ -200,7 +200,7 @@ sub get_head_hash {
 sub list_tree {
   my ($self, $project, $rev) = @_;
 
-  $rev ||= $self->get_head_hash($project);
+  $rev ||= $self->head_hash($project);
 
   my $output = $self->run_cmd_in($project, qw/ls-tree -z/, $rev);
   return unless defined $output;
@@ -237,19 +237,19 @@ sub get_object_type {
   return $output;
 }
 
-sub get_hash_by_path {
+sub hash_by_path {
   my($self, $base, $path, $type) = @_;
 
   $path =~ s{/+$}();
 
-  my $line = $self->run_cmd_in($self->project, 'ls-tree', $base, '--', $path)
+  my($line) = $self->command('ls-tree', $base, '--', $path)
     or return;
 
   #'100644 blob 0fa3f3a66fb6a137f6ec2c19351ed4d807070ffa	panic.c'
   $line =~ m/^([0-9]+) (.+) ($SHA1RE)\t/;
   return defined $type && $type ne $2
     ? ()
-    : return $3;
+    : $3;
 }
 
 sub cat_file {
@@ -341,7 +341,7 @@ sub diff {
 sub list_revs {
   my ($self, $project, %args) = @_;
 
-  $args{rev} ||= $self->get_head_hash($project);
+  $args{rev} ||= $self->head_hash($project);
 
   my $output = $self->run_cmd_in($project, 'rev-list',
     '--header',
@@ -509,7 +509,7 @@ sub diff_tree {
 		my %line = zip @keys, @vals;
 		# Some convenience keys
 		$line{file}   = $line{src};
-		$line{sha1}   = $line{sha1src};
+		$line{sha1}   = $line{sha1dst};
 		$line{is_new} = $line{sha1src} =~ /^0+$/;
 		\%line;
 	} @dtout;
