@@ -180,6 +180,24 @@ sub commit : Local {
   );
 }
 
+=head2 commitdiff
+
+Exposes a given diff of a commit.
+
+=cut
+
+sub commitdiff : Local {
+  my ( $self, $c ) = @_;
+
+  my $commit = $c->model('Git')->get_object($c->req->param('h'));
+  $c->stash(
+      commit      => $commit,
+      diff_tree   => [$c->model('Git')->diff_tree($commit)],
+      diff        => $c->model('Git')->diff($commit->sha1, $commit->parent_sha1),
+      action      => 'commitdiff',
+  );
+}
+
 =head2 shortlog
 
 Expose an abbreviated log of a given sha1.

@@ -1,4 +1,5 @@
 [% INCLUDE 'commit-nav.tt2' object = commit %]
+
 <div class='commit-message'>
 [% commit.comment.substr(0, 85) %] ...
 [% FOREACH ref IN branches_on %]
@@ -8,7 +9,7 @@
 
 <dl class='commit-info'>
  <dt>author</dt>
-  <dd>[% commit.author.name %] &lt;[% commit.author.email %]&gt;<br/>
+  <dd>[% commit.author.name | html %] &lt;[% commit.author.email %]&gt;<br/>
       [% commit.authored_time %]</dd>
  <dt>committer</dt>
   <dd>[% commit.committer.name %] &lt;[% commit.committer.email %]&gt;<br/>
@@ -25,32 +26,7 @@
 
 <pre class='commit-message'>[% commit.comment %]</pre>
 
-<table class='diff-tree'>
- <thead>
-  <tr>
-   <td>file</td>
-   <td>actions</td>
-  </tr>
- </thead>
- <tbody>
-  [% FOREACH line IN diff_tree %]
-  <tr>
-   <td class='filename'>[% line.src %]</td>
-   <td class='action-list'>
-     [% IF !line.is_new %]<a href="/blobdiff?p=[% project %];f=[% line.file %];h=[% line.sha1dst %];hp=[% sha1src %]">diff</a>[% END %]
-     <a href="/blob?p=[% project %];f=[% line.file %];h=[% line.sha1 %];hb=[% commit.sha1 %]">blob</a>
-     [% IF !line.is_new %]<a href="/log?p=[% project %];f=[% line.file %];hb[% commit.sha1 %]=">history</a>[% END %]
-   </td>
-  </tr>
-  [% END %]
- </tbody>
- <tfoot>
-  <tr>
-   <td>file</td>
-   <td>actions</td>
-  </tr>
- </tfoot>
-</table>
+[% INCLUDE '_diff_tree.tt2' %]
 
 <!--
 

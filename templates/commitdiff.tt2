@@ -1,0 +1,15 @@
+[% PROCESS 'commit-nav.tt2' object = commit %]
+
+<div class='commit-message'>
+[% commit.comment.substr(0, 85) %] ...
+</div>
+
+<div class='author'>
+  [% commit.author.name | html %] [[% commit.authored_time %]]
+</div>
+
+[% INCLUDE '_diff_tree.tt2' %]
+
+<div class='diff'>
+<pre>[% diff | html %]</pre>
+</div>

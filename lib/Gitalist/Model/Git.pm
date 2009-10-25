@@ -413,14 +413,14 @@ sub valid_rev {
 =cut
 
 sub diff {
-  my ($self, @revs, $project) = @_;
+  my ($self, @revs) = @_;
 
-  croak("Gitalist::Model::Git::diff needs a project and either one or two revisions")
+  croak("Gitalist::Model::Git::diff needs either one or two revisions, got: @revs")
     if scalar @revs < 1
-      || scalar @revs > 2
-      || any { !$self->valid_rev($_) } @revs;
+    || scalar @revs > 2
+    || any { !$self->valid_rev($_) } @revs;
 
-  my $output = $self->run_cmd_in($project || $self->project, 'diff', @revs);
+  my $output = $self->run_cmd_in($self->project, 'diff', @revs);
   return unless $output;
 
   return $output;
@@ -570,7 +570,7 @@ sub heads {
     push @ret, { sha1 => $rev, name => $head };
 
     #FIXME: That isn't the time I'm looking for..
-    if (my ($epoch, $tz) = "@output" =~ /\s(\d+)\s+([+-]\d+)$/) {
+    if (my ($epoch, $tz) = $line =~ /\s(\d+)\s+([+-]\d+)$/) {
       my $dt = DateTime->from_epoch(epoch => $epoch);
       $dt->set_time_zone($tz);
       $ret[-1]->{last_change} = $dt;
