@@ -82,6 +82,41 @@ sub index :Path :Args(0) {
   );
 }
 
+=head2 summary
+
+A summary of what's happening in the repo.
+
+=cut
+
+sub summary : Local {
+  my ( $self, $c ) = @_;
+
+  my $commit = $c->model('Git')->get_object($c->model('Git')->head_hash);
+  $c->stash(
+    commit    => $commit,
+    info      => $c->model('Git')->project_info($c->model('Git')->project),
+    log_lines => [$c->model('Git')->list_revs(rev => $commit->sha1, count => 17)],
+    heads     => [$c->model('Git')->heads],
+    action    => 'summary',
+  );
+}
+
+=head2 heads
+
+The current list of heads (aka branches) in the repo.
+
+=cut
+
+sub heads : Local {
+  my ( $self, $c ) = @_;
+
+  $c->stash(
+    commit => $c->model('Git')->get_object($c->model('Git')->head_hash),
+    heads  => [$c->model('Git')->heads],
+    action => 'heads',
+  );
+}
+
 =head2 blob
 
 The blob action i.e the contents of a file.
@@ -136,9 +171,12 @@ Exposes a given commit.
 sub commit : Local {
   my ( $self, $c ) = @_;
 
+  my $commit = $c->model('Git')->get_object($c->req->param('h'));
   $c->stash(
-      commit => $c->model('Git')->get_object($c->req->param('h')),
-      action => 'commit',
+      commit      => $commit,
+      diff_tree   => [$c->model('Git')->diff_tree($commit)],
+      branches_on => [$c->model('Git')->refs_for($commit->sha1)],
+      action      => 'commit',
   );
 }
 
@@ -151,10 +189,23 @@ Expose an abbreviated log of a given sha1.
 sub shortlog : Local {
   my ( $self, $c ) = @_;
 
+  my $commit = $c->model('Git')->get_object($c->req->param('h'));
+  # XXX Needs paging.
   $c->stash(
-      commit => $c->model('Git')->get_object($c->req->param('h')),
-      action => 'shortlog',
+      commit    => $commit,
+      log_lines => [$c->model('Git')->list_revs(rev => $commit->sha1)],
+      action    => 'shortlog',
   );
+}
+
+=head2 log
+
+Calls shortlog internally. Perhaps that should be reversed ...
+
+=cut
+sub log : Local {
+    $_[0]->shortlog($_[1]);
+    $_[1]->stash->{action} = 'log';
 }
 
 =head2 tree
@@ -166,11 +217,13 @@ The tree of a given commit.
 sub tree : Local {
   my ( $self, $c ) = @_;
 
+  my $commit = $c->model('Git')->get_object($c->req->param('h'));
   $c->stash(
       # XXX Useful defaults needed ...
-      commit => $c->model('Git')->get_object($c->req->param('h')),
-      tree   => $c->model('Git')->get_object($c->req->param('hb')),
-      action => 'tree',
+      commit    => $commit,
+      tree      => $c->model('Git')->get_object($c->req->param('hb')),
+      list_tree => [$c->model('Git')->list_tree($commit->sha1)],
+      action    => 'tree',
   );
 }
 

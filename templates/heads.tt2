@@ -4,4 +4,4 @@
 [% project %]
 </div>
 
-[% INCLUDE '_shortlog.tt2' %]
+[% INCLUDE '_heads.tt2' %]

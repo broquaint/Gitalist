@@ -1,0 +1,19 @@
+[% PROCESS 'commit-nav.tt2' object = head %]
+
+<div class='summary'>
+<dl>
+<dt>description</dt><dd>[% info.description %]</dd>
+<dt>owner</dt><dd>[% info.owner %]</dd>
+<dt>last change</dt><dd>[% info.last_change %]</dd>
+</dl>
+</div>
+
+<div class='shortlog'>
+<h2>shortlog</h2>
+[% INCLUDE '_shortlog.tt2' %]
+</div>
+
+<div class='heads'>
+<h2>heads</h2>
+[% INCLUDE '_heads.tt2' %]
+</div>

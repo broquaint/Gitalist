@@ -476,7 +476,7 @@ sub list_revs {
 
   my @revs = $self->parse_rev_list($output);
 
-  return \@revs;
+  return @revs;
 }
 
 =head2 rev_info
@@ -550,35 +550,34 @@ sub reflog {
   } @entries;
 }
 
-=head2 get_heads
+=head2 heads
 
 Returns an array of hashes representing the heads (aka branches) for the
 given, or current, project.
 
 =cut
 
-sub get_heads {
+sub heads {
   my ($self, $project) = @_;
 
-  my $output = $self->run_cmd_in($project || $self->project, qw/for-each-ref --sort=-committerdate /, '--format=%(objectname)%00%(refname)%00%(committer)', 'refs/heads');
-  return unless $output;
+  my @output = $self->command(qw/for-each-ref --sort=-committerdate /, '--format=%(objectname)%00%(refname)%00%(committer)', 'refs/heads');
 
   my @ret;
-  for my $line (split /\n/, $output) {
+  for my $line (@output) {
     my ($rev, $head, $commiter) = split /\0/, $line, 3;
     $head =~ s!^refs/heads/!!;
 
-    push @ret, { rev => $rev, name => $head };
+    push @ret, { sha1 => $rev, name => $head };
 
     #FIXME: That isn't the time I'm looking for..
-    if (my ($epoch, $tz) = $output =~ /\s(\d+)\s+([+-]\d+)$/) {
+    if (my ($epoch, $tz) = "@output" =~ /\s(\d+)\s+([+-]\d+)$/) {
       my $dt = DateTime->from_epoch(epoch => $epoch);
       $dt->set_time_zone($tz);
       $ret[-1]->{last_change} = $dt;
     }
   }
 
-  return \@ret;
+  return @ret;
 }
 
 =head2 refs_for
