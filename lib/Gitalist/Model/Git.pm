@@ -406,13 +406,13 @@ sub valid_rev {
   return ($rev =~ /^($SHA1RE)$/);
 }
 
-=head2 diff
+=head2 raw_diff
 
-
+Provides the raw output of a diff.
 
 =cut
 
-sub diff {
+sub raw_diff {
   my ($self, @revs) = @_;
 
   croak("Gitalist::Model::Git::diff needs either one or two revisions, got: @revs")
@@ -420,10 +420,71 @@ sub diff {
     || scalar @revs > 2
     || any { !$self->valid_rev($_) } @revs;
 
-  my $output = $self->run_cmd_in($self->project, 'diff', @revs);
-  return unless $output;
+  return $self->command(diff => @revs);
+}
 
-  return $output;
+=begin
+diff --git a/TODO b/TODO
+index 6a05e77..2071fd0 100644
+--- a/TODO
++++ b/TODO
+@@ -2,4 +2,3 @@
+ * An action to find what branches have been merged, either as a list or through a search mechanism.
+ * An action to find which branches a given commit is on.
+ * Fix any not text/html bits e.g the patch action.
+-* Simplify the creation of links.
+diff --git a/lib/Gitalist/Controller/Root.pm b/lib/Gitalist/Controller/Root.pm
+index 706d024..7fac165 100644
+--- a/lib/Gitalist/Controller/Root.pm
++++ b/lib/Gitalist/Controller/Root.pm
+@@ -157,23 +157,6 @@ sub shortlog : Local {
+   );
+ }
+ 
+-=head2 tree
+-
+-The tree of a given commit.
+=cut
+
+=head2 diff
+
+Returns a list of diff chunks corresponding to the files contained in the diff
+and some associated metadata.
+
+=cut
+
+sub diff {
+  my($self, @revs) = @_;
+
+  my @diff = $self->raw_diff(@revs);
+
+  my @ret;
+  for my $line (@diff) {
+	# This regex is a little pathological.
+	if($line =~ m{^diff --git (a/(.*?)) (b/\2)}) {
+      push @ret, {
+      	head => $line,
+      	a    => $1,
+      	b    => $3,
+		file => $2,
+		diff => '',
+      };
+	  next;
+	}
+
+	if($line =~ /^index (\w+)\.\.(\w+) (\d+)$/) {
+	  @{$ret[-1]}{qw(index src dst mode)} = ($_, $1, $2, $3);
+	  next
+    }
+
+	croak("No diff found for @revs")
+	  unless @ret;
+
+	# XXX Somewhat hacky. Ahem.
+	$ret[-1]{diff} .= "$line\n";
+  }
+
+  return @ret;
 }
 
 =head2 parse_rev_list

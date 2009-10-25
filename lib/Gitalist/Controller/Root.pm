@@ -193,7 +193,7 @@ sub commitdiff : Local {
   $c->stash(
       commit      => $commit,
       diff_tree   => [$c->model('Git')->diff_tree($commit)],
-      diff        => $c->model('Git')->diff($commit->sha1, $commit->parent_sha1),
+      diff        => [$c->model('Git')->diff($commit->parent_sha1, $commit->sha1)],
       action      => 'commitdiff',
   );
 }
