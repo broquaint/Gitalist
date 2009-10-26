@@ -31,7 +31,7 @@ is( $projectList->[0]->{name}, 'bare.git', 'list_projects has correct name for "
 # Liberally borrowed from rafl's gitweb
 my $repo = 'repo1';
 
-like($m->head_hash($repo), qr/^([0-9a-fA-F]{40})$/, 'get_head_hash');
+like($m->head_hash('HEAD', $repo), qr/^([0-9a-fA-F]{40})$/, 'head_hash');
 
 {
     my @tree = $m->list_tree('3bc0634310b9c62222bb0e724c11ffdfb297b4ac', $repo);

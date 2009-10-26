@@ -60,9 +60,12 @@ sub run_gitweb {
 sub _get_commit {
   my($self, $c) = @_;
 
+  my $h = $c->req->param('h');
+  my $f = $c->req->param('f');
+
   # Either use the provided h(ash) parameter, the f(ile) parameter or just use HEAD.
-  my $hash = $c->req->param('h')
-          || ($c->req->param('f') ? $c->model('Git')->hash_by_path($c->req->param('f')) : '')
+  my $hash = ($h =~ /[^a-f0-9]/ ? $c->model('Git')->head_hash($h) : $h)
+          || ($f && $c->model('Git')->hash_by_path($f))
           || $c->model('Git')->head_hash
           # XXX This could definitely use more context.
           || Carp::croak("Couldn't find a hash for the commit object!");
@@ -111,8 +114,10 @@ sub summary : Local {
   $c->stash(
     commit    => $commit,
     info      => $c->model('Git')->project_info($c->model('Git')->project),
-    log_lines => [$c->model('Git')->list_revs(rev => $commit->sha1, count => 17)],
+    log_lines => [$c->model('Git')->list_revs(sha1 => $commit->sha1, count => 16)],
+    refs      => $c->model('Git')->references,
     heads     => [$c->model('Git')->heads],
+    HEAD      => $c->model('Git')->head_hash,
     action    => 'summary',
   );
 }
@@ -129,6 +134,7 @@ sub heads : Local {
   $c->stash(
     commit => $self->_get_commit($c),
     heads  => [$c->model('Git')->heads],
+    HEAD   => $c->model('Git')->head_hash,
     action => 'heads',
   );
 }
@@ -208,7 +214,8 @@ sub shortlog : Local {
   # XXX Needs paging.
   $c->stash(
       commit    => $commit,
-      log_lines => [$c->model('Git')->list_revs(rev => $commit->sha1)],
+      log_lines => [$c->model('Git')->list_revs(sha1 => $commit->sha1)],
+      refs      => $c->model('Git')->references,
       action    => 'shortlog',
   );
 }

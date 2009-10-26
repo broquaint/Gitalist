@@ -35,3 +35,11 @@ div.commit-message {
     padding: 3px 0;
     font-weight: bold;
 }
+
+/* /heads */
+.heads .head {
+    font-weight: bold;
+}
+.heads .current {
+    text-decoration: underline;
+}

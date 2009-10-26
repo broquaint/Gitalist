@@ -15,7 +15,16 @@
    <td>[% line.sha1.substr(0, 6) %]</td>
    <td>[% line.authored_time %]</td>
    <td>[% line.author.name | html %]</td>
-   <td class='commit-message'>[% line.comment.substr(0, 50) | html %]</td>
+   <td>
+    [% line.comment.substr(0, 50) | html %]
+    <span class='refs'>
+     [% FOREACH ref IN refs.${line.sha1} %]
+     <span class='[% ref.search('^remotes/') ? 'remote' : 'head' %]'>
+      <a href='/shortlog?p=[% project %];h=refs/[% ref %]'>[% ref.replace('^(remote|head)s/', '') %]</a>
+     </span>
+     [% END %]
+    </span>
+   </td>
    <td class='action-list'>
      <a href="/commit?p=[% project %];h=[% line.sha1 %]">commit</a>
      <a href="/commitdiff?p=[% project %];h=[% line.sha1 %]">commitdiff</a>

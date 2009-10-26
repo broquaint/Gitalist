@@ -1,4 +1,4 @@
-<table>
+<table class='heads'>
  <thead>
   <tr>
    <td>age</td>
@@ -11,7 +11,7 @@
  [% FOREACH head IN heads %]
   <tr>
    <td>[% head.last_change %]</td>
-   <td>[% head.name %]</td>
+   <td class='head[% head.sha1 == HEAD ? ' current' : '' %]'>[% head.name %]</td>
    <td class='action-list'>
      <a href="/shortlog?p=[% project %];h=[% head.sha1 %]">shortlog</a>
      <a href="/log?p=[% project %];h=[% head.sha1 %]">log</a>

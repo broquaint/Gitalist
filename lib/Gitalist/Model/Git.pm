@@ -277,14 +277,14 @@ sub dir_from_project_name {
 
 =head2 head_hash
 
-Find the C<HEAD> of given (or current) project.
+Find the hash of a given head (defaults to HEAD) of given (or current) project.
 
 =cut
 
 sub head_hash {
-  my ($self, $project) = @_;
+  my ($self, $head, $project) = @_;
 
-  my $output = $self->run_cmd_in($project || $self->project, qw/rev-parse --verify HEAD/ );
+  my $output = $self->run_cmd_in($project || $self->project, qw/rev-parse --verify/, $head || 'HEAD' );
   return unless defined $output;
 
   my ($head) = $output =~ /^($SHA1RE)$/;
@@ -318,6 +318,7 @@ sub list_tree {
 
     push @ret, {
       mode    => oct $mode,
+	  # XXX I wonder why directories always turn up as 040000 ...
       modestr => $self->get_object_mode_string({mode=>oct $mode}),
       type    => $type,
       object  => $object,
@@ -524,13 +525,13 @@ array of hashes.
 sub list_revs {
   my ($self, %args) = @_;
 
-  $args{rev} ||= $self->head_hash($args{project});
+  $args{sha1} ||= $self->head_hash($args{project});
 
   my $output = $self->run_cmd_in($args{project} || $self->project, 'rev-list',
     '--header',
     (defined $args{ count } ? "--max-count=$args{count}" : ()),
     (defined $args{ skip  } ? "--skip=$args{skip}"       : ()),
-    $args{rev},
+    $args{sha1},
     '--',
     ($args{file} ? $args{file} : ()),
   );
