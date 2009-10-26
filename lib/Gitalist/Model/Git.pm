@@ -85,7 +85,8 @@ A wrapper for the equivalent L<Git::PurePerl> method.
 =cut
 
 sub get_object {
-  $_[0]->gpp->get_object($_[1]);
+  # We either want an object or undef, *not* an empty list.
+  return $_[0]->gpp->get_object($_[1]) || undef;
 }
 
 =head2 is_git_repo
@@ -420,7 +421,7 @@ sub raw_diff {
     || scalar @revs > 2
     || any { !$self->valid_rev($_) } @revs;
 
-  return $self->command(diff => @revs);
+  return $self->command(diff => '--full-index', @revs);
 }
 
 =begin
@@ -459,11 +460,11 @@ sub diff {
   my @diff = $self->raw_diff(@revs);
 
   my @ret;
-  for my $line (@diff) {
+  for (@diff) {
 	# This regex is a little pathological.
-	if($line =~ m{^diff --git (a/(.*?)) (b/\2)}) {
+	if(m{^diff --git (a/(.*?)) (b/\2)}) {
       push @ret, {
-      	head => $line,
+      	head => $_,
       	a    => $1,
       	b    => $3,
 		file => $2,
@@ -472,7 +473,7 @@ sub diff {
 	  next;
 	}
 
-	if($line =~ /^index (\w+)\.\.(\w+) (\d+)$/) {
+	if(/^index (\w+)\.\.(\w+) (\d+)$/) {
 	  @{$ret[-1]}{qw(index src dst mode)} = ($_, $1, $2, $3);
 	  next
     }
@@ -481,7 +482,7 @@ sub diff {
 	  unless @ret;
 
 	# XXX Somewhat hacky. Ahem.
-	$ret[-1]{diff} .= "$line\n";
+	$ret[-1]{diff} .= "$_\n";
   }
 
   return @ret;

@@ -10,9 +10,4 @@
 
 [% INCLUDE '_diff_tree.tt2' %]
 
-<div class='diff'>
-[% USE dumper;
-FOREACH file IN diff %]
-<pre>[% dumper.dump(file) | html %]</pre>
-[% END %]
-</div>
+[% INCLUDE '_diff.tt2' %]

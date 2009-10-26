@@ -1,0 +1,13 @@
+[% FOREACH item IN diff %]
+<div class='diff-head'>
+ diff --git
+ <a href='/blob?p=[% project %];f=[% item.file %];h=[% item.src %]'>[% item.a %]</a>
+ <a href='/blob?p=[% project %];f=[% item.file %];h=[% item.dst %]'>[% item.b %]</a>
+</div>
+<div class='diff-index'>
+ [% item.index %]
+</div>
+<div class='diff-patch'>
+ <pre>[% item.diff | html %]</pre>
+</div>
+[% END %]

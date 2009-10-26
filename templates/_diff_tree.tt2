@@ -1,0 +1,26 @@
+<table class='diff-tree'>
+ <thead>
+  <tr>
+   <td>file</td>
+   <td>actions</td>
+  </tr>
+ </thead>
+ <tbody>
+  [% FOREACH line IN diff_tree %]
+  <tr>
+   <td class='filename'>[% line.src %]</td>
+   <td class='action-list'>
+     [% IF !line.is_new %]<a href="/blobdiff?p=[% project %];f=[% line.file %];h=[% line.sha1dst %];hp=[% sha1src %]">diff</a>[% END %]
+     <a href="/blob?p=[% project %];f=[% line.file %];h=[% line.sha1 %];hb=[% commit.sha1 %]">blob</a>
+     [% IF !line.is_new %]<a href="/log?p=[% project %];f=[% line.file %];hb=[% commit.sha1 %]">history</a>[% END %]
+   </td>
+  </tr>
+  [% END %]
+ </tbody>
+ <tfoot>
+  <tr>
+   <td>file</td>
+   <td>actions</td>
+  </tr>
+ </tfoot>
+</table>
