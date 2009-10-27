@@ -250,11 +250,15 @@ Expose an abbreviated log of a given sha1.
 sub shortlog : Local {
   my ( $self, $c ) = @_;
 
-  my $commit = $self->_get_commit($c);
+  my $commit  = $self->_get_commit($c);
+  my @logargs = (
+      sha1 => $commit->sha1,
+      ($c->req->param('f') ? (file => $c->req->param('f')) : ())
+  );
   # XXX Needs paging.
   $c->stash(
       commit    => $commit,
-      log_lines => [$c->model('Git')->list_revs(sha1 => $commit->sha1)],
+      log_lines => [$c->model('Git')->list_revs(@logargs)],
       refs      => $c->model('Git')->references,
       action    => 'shortlog',
   );
