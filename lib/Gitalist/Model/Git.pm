@@ -3,7 +3,8 @@ package Gitalist::Model::Git;
 use Moose;
 use namespace::autoclean;
 
-BEGIN { extends 'Catalyst::Model' }
+extends 'Catalyst::Model';
+with 'Catalyst::Component::InstancePerContext';
 
 use DateTime;
 use Path::Class;
@@ -40,7 +41,7 @@ has git      => ( isa => NonEmptySimpleStr, is => 'ro', lazy_build => 1 );
 has project  => ( isa => NonEmptySimpleStr, is => 'rw');
 has gpp      => ( isa => 'Git::PurePerl',   is => 'rw', lazy_build => 1 );
 
-sub ACCEPT_CONTEXT {
+sub build_per_context_instance {
   my ( $self, $c ) = @_;
   
   $self->project( $c->req->param('p') );
