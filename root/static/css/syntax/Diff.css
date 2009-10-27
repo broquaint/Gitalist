@@ -1,0 +1,16 @@
+span.Keyword {
+  color: #777;
+  font-weight: bold;
+}
+span.DataType {
+  color: purple;
+}
+span.Normal {
+  color: gray;
+}
+span.Others {
+  color: green;
+}
+span.String {
+  color: red;
+}

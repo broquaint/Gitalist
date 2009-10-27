@@ -158,10 +158,14 @@ sub blob : Local {
        || $c->model('Git')->head_hash
        || die "Couldn't discern the corresponding head.";
 
+  my $filename = $c->req->param('f') || '';
+
   $c->stash(
     blob     => $c->model('Git')->get_object($h)->content,
     head     => $c->model('Git')->get_object($hb),
-    filename => $c->req->param('f') || '',
+    filename => $filename,
+    # XXX Hack hack hack, see View::SyntaxHighlight
+    language => ($filename =~ /\.p[lm]$/ ? 'Perl' : ''),
     action   => 'blob',
   );
 
@@ -196,12 +200,18 @@ sub commitdiff : Local {
   my ( $self, $c ) = @_;
 
   my $commit = $self->_get_commit($c);
+  my @difflist = $c->model('Git')->diff($commit->parent_sha1, $commit->sha1);
   $c->stash(
-      commit      => $commit,
-      diff_tree   => [$c->model('Git')->diff_tree($commit)],
-      diff        => [$c->model('Git')->diff($commit->parent_sha1, $commit->sha1)],
-      action      => 'commitdiff',
+    commit    => $commit,
+    diff_tree => [$c->model('Git')->diff_tree($commit)],
+    diff      => \@difflist,
+    # XXX Hack hack hack, see View::SyntaxHighlight
+    blobs     => [map $_->{diff}, @difflist],
+    language  => 'Diff',
+    action    => 'commitdiff',
   );
+
+  $c->forward('View::SyntaxHighlight');
 }
 
 =head2 shortlog

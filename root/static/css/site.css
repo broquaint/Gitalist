@@ -43,3 +43,13 @@ div.commit-message {
 .heads .current {
     text-decoration: underline;
 }
+
+/* /blob */
+pre.blob {
+    background-color: #333;
+    color: #ddd;
+    border-left: solid 3px #c33;
+    padding: 5px;
+    padding-left: 15px;
+    margin: 10px 15px;
+}
