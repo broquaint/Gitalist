@@ -172,6 +172,33 @@ sub blob : Local {
   $c->forward('View::SyntaxHighlight');
 }
 
+=head2 blobdiff
+
+Exposes a given diff of a blob.
+
+=cut
+
+sub blobdiff : Local {
+  my ( $self, $c ) = @_;
+
+  my $commit = $self->_get_commit($c);
+  my $filename = $c->req->param('f')
+              || croak("No file specified!");
+  my @diff = $c->model('Git')->diff(
+    $commit->parent_sha1, $commit->sha1, '--', $filename
+  );
+  $c->stash(
+    commit    => $commit,
+    diff      => \@diff,
+    # XXX Hack hack hack, see View::SyntaxHighlight
+    blobs     => [$diff[0]->{diff}],
+    language  => 'Diff',
+    action    => 'blobdiff',
+  );
+
+  $c->forward('View::SyntaxHighlight');
+}
+
 =head2 commit
 
 Exposes a given commit.

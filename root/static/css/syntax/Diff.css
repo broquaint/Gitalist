@@ -8,9 +8,9 @@ span.DataType {
 span.Normal {
   color: gray;
 }
-span.Others {
+span.String {
   color: green;
 }
-span.String {
+span.Others {
   color: red;
 }

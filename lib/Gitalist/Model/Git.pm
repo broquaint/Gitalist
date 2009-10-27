@@ -418,14 +418,9 @@ Provides the raw output of a diff.
 =cut
 
 sub raw_diff {
-  my ($self, @revs) = @_;
+  my ($self, @args) = @_;
 
-  croak("Gitalist::Model::Git::diff needs either one or two revisions, got: @revs")
-    if scalar @revs < 1
-    || scalar @revs > 2
-    || any { !$self->valid_rev($_) } @revs;
-
-  return $self->command(diff => '--full-index', @revs);
+  return $self->command(diff => '--full-index', @args);
 }
 
 =begin
@@ -461,7 +456,11 @@ and some associated metadata.
 sub diff {
   my($self, @revs) = @_;
 
-  my @diff = $self->raw_diff(@revs);
+  return $self->parse_diff($self->raw_diff(@revs));
+}
+
+sub parse_diff {
+  my($self, @diff) = @_;
 
   my @ret;
   for (@diff) {
@@ -481,9 +480,6 @@ sub diff {
 	  @{$ret[-1]}{qw(index src dst mode)} = ($_, $1, $2, $3);
 	  next
     }
-
-	croak("No diff found for @revs")
-	  unless @ret;
 
 	# XXX Somewhat hacky. Ahem.
 	$ret[-1]{diff} .= "$_\n";

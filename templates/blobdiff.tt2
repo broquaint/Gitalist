@@ -1,0 +1,7 @@
+[% PROCESS 'commit-nav.tt2' object = commit %]
+
+<div class='commit-message'>
+[% commit.comment.substr(0, 85) %] ...
+</div>
+
+[% INCLUDE '_diff.tt2' %]

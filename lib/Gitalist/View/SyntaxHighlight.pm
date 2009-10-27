@@ -47,12 +47,10 @@ sub process {
 sub highlight {
     my($self, $lang, $blob) = @_;
 
-    # If we're not going to highlight the blob unsure that it's ready to go
-    # into HTML at least.
+    my $ret;
     if($lang) {
-        # via
-        # http://github.com/jrockway/angerwhale/blob/master/lib/Angerwhale/Format/Pod.pm#L136
-        my $ret = eval {
+        # via http://github.com/jrockway/angerwhale/blob/master/lib/Angerwhale/Format/Pod.pm#L136
+        $ret = eval {
             no warnings 'redefine';
             local *Syntax::Highlight::Engine::Kate::Template::logwarning
               = sub { die @_ }; # i really don't care
@@ -81,10 +79,9 @@ sub highlight {
             $hl->highlightText($blob);
         };
         warn $@ if $@;
-        return $ret || $blob;
-    } else {
-        return encode_entities($blob);
     }
+
+    return $ret || encode_entities($blob);
 }
 
 __PACKAGE__->meta->make_immutable;
