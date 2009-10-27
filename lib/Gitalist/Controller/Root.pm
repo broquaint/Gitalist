@@ -117,10 +117,11 @@ sub summary : Local {
   $c->stash(
     commit    => $commit,
     info      => $c->model('Git')->project_info($c->model('Git')->project),
-    log_lines => [$c->model('Git')->list_revs(sha1 => $commit->sha1, count => 16)],
+    log_lines => [$c->model('Git')->list_revs(
+      sha1 => $commit->sha1, count => Gitalist->config->{paging}{summary}
+    )],
     refs      => $c->model('Git')->references,
     heads     => [$c->model('Git')->heads],
-    HEAD      => $c->model('Git')->head_hash,
     action    => 'summary',
   );
 }
@@ -137,7 +138,6 @@ sub heads : Local {
   $c->stash(
     commit => $self->_get_commit($c),
     heads  => [$c->model('Git')->heads],
-    HEAD   => $c->model('Git')->head_hash,
     action => 'heads',
   );
 }
@@ -251,16 +251,22 @@ sub shortlog : Local {
   my ( $self, $c ) = @_;
 
   my $commit  = $self->_get_commit($c);
-  my @logargs = (
-      sha1 => $commit->sha1,
+  my %logargs = (
+      sha1   => $commit->sha1,
+      count  => Gitalist->config->{paging}{log},
       ($c->req->param('f') ? (file => $c->req->param('f')) : ())
   );
-  # XXX Needs paging.
+
+  my $page = $c->req->param('pg') || 0;
+  $logargs{skip} = $c->req->param('pg') * $logargs{count}
+    if $c->req->param('pg');
+
   $c->stash(
       commit    => $commit,
-      log_lines => [$c->model('Git')->list_revs(@logargs)],
+      log_lines => [$c->model('Git')->list_revs(%logargs)],
       refs      => $c->model('Git')->references,
       action    => 'shortlog',
+      page      => $page + 1,
   );
 }
 
@@ -320,10 +326,6 @@ Populate the header and footer. Perhaps not the best location.
 
 sub auto : Private {
     my($self, $c) = @_;
-
-    # XXX Temp hack until a decent solution is invented.
-    $c->model('Git')->project($c->req->param('p'))
-      if $c->req->param('p');
 
     # Yes, this is hideous.
     $self->header($c);
@@ -512,7 +514,10 @@ Attempt to render a view, if needed.
 
 =cut
 
-sub end : ActionClass('RenderView') {}
+sub end : ActionClass('RenderView') {
+  # Give every view the current HEAD.
+  $_[1]->stash->{HEAD} = $_[1]->model('Git')->head_hash;
+}
 
 =head1 AUTHOR
 
