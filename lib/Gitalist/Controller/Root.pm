@@ -62,16 +62,19 @@ sub _get_commit {
 
   my $h = $c->req->param('h');
   my $f = $c->req->param('f');
+  my $m = $c->model('Git');
 
   # Either use the provided h(ash) parameter, the f(ile) parameter or just use HEAD.
-  my $hash = ($h =~ /[^a-f0-9]/ ? $c->model('Git')->head_hash($h) : $h)
-          || ($f && $c->model('Git')->hash_by_path($f))
-          || $c->model('Git')->head_hash
+  my $hash = ($h =~ /[^a-f0-9]/ ? $m->head_hash($h) : $h)
+          || ($f && $m->hash_by_path($f))
+          || $m->head_hash
           # XXX This could definitely use more context.
           || Carp::croak("Couldn't find a hash for the commit object!");
 
-  my $commit = $c->model('Git')->get_object($hash)
-    or Carp::croak("Couldn't find a commit object for '$hash'!");
+    
+  (my $pd = $m->project_dir( $m->project )) =~ s{/\.git$}();
+  my $commit = $m->get_object($hash)
+    or Carp::croak("Couldn't find a commit object for '$hash' in '$pd'!");
 
   return $commit;
 }

@@ -16,6 +16,8 @@ use List::MoreUtils qw/any/;
 use Scalar::Util qw/blessed/;
 use MooseX::Types::Common::String qw/NonEmptySimpleStr/; # FIXME, use Types::Path::Class and coerce
 
+use Git::PurePerl;
+
 =head1 NAME
 
 Gitalist::Model::Git - the model for git interactions
@@ -31,9 +33,23 @@ Gitalist::Model::Git - the model for git interactions
 # Should these live in a separate module? Or perhaps extended Regexp::Common?
 our $SHA1RE = qr/[0-9a-fA-F]{40}/;
 
-has project  => ( isa => NonEmptySimpleStr, is => 'rw');
+# These are static and only need to be setup on app start.
 has repo_dir => ( isa => NonEmptySimpleStr, is => 'ro', lazy_build => 1 ); # Fixme - path::class
 has git      => ( isa => NonEmptySimpleStr, is => 'ro', lazy_build => 1 );
+# These are dynamic and can be different from one request to the next.
+has project  => ( isa => NonEmptySimpleStr, is => 'rw');
+has gpp      => ( isa => 'Git::PurePerl',   is => 'rw', lazy_build => 1 );
+
+sub ACCEPT_CONTEXT {
+  my ( $self, $c ) = @_;
+  
+  $self->project( $c->req->param('p') );
+
+  (my $pd = $self->project_dir( $self->project )) =~ s{/\.git$}();
+  $self->gpp( Git::PurePerl->new(directory => $pd) );
+
+  return $self;
+}
  
 =head2 BUILD
 
@@ -44,22 +60,6 @@ sub BUILD {
     $self->git; # Cause lazy value build.
     $self->repo_dir;
 }
-
-use Git::PurePerl;
-
-has gpp => (
- #isa => 'Git::PurePerl'
-  is       => 'ro',
-  required => 1,
-  lazy     => 1,
-  default  => sub {
-    my($self) = @_;
-	(my $pd = $self->project_dir( $self->project )) =~ s{/\.git$}();
-    return Git::PurePerl->new(
-      directory => $pd
-    );
-  },
-);
 
 sub _build_git {
     my $git = File::Which::which('git');
@@ -85,8 +85,10 @@ A wrapper for the equivalent L<Git::PurePerl> method.
 =cut
 
 sub get_object {
+  my($self, $sha1) = @_;
+
   # We either want an object or undef, *not* an empty list.
-  return $_[0]->gpp->get_object($_[1]) || undef;
+  return $self->gpp->get_object($sha1) || undef;
 }
 
 =head2 is_git_repo
@@ -287,8 +289,8 @@ sub head_hash {
   my $output = $self->run_cmd_in($project || $self->project, qw/rev-parse --verify/, $head || 'HEAD' );
   return unless defined $output;
 
-  my ($head) = $output =~ /^($SHA1RE)$/;
-  return $head;
+  my($sha1) = $output =~ /^($SHA1RE)$/;
+  return $sha1;
 }
 
 =head2 list_tree
