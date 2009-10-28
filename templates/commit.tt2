@@ -3,7 +3,7 @@
 <div class='commit-message'>
 [% commit.comment.substr(0, 85) %] ...
 [% FOREACH ref IN branches_on %]
- <span class='refs'><a href='/shortlog?h=[% commit.sha1 %];hb=[% ref %]'>[% ref %]</a></span>
+ <span class='refs'><a href='/shortlog?p=[% project %];h=[% commit.sha1 %];hb=[% ref %]'>[% ref %]</a></span>
 [% END %]
 </div>
 
@@ -17,16 +17,26 @@
  <dt>commit</dt>
   <dd>[% commit.sha1 %]</dd>
  <dt>tree</dt>
-  <dd>[% commit.tree_sha1 %] <a href="/tree?h=[% commit.sha1 %];hb=[% commit.tree_sha1 %]">tree</a></dd>
+  <dd>[% commit.tree_sha1 %] <a href="/tree?p=[% project %];h=[% commit.sha1 %];hb=[% commit.tree_sha1 %]">tree</a></dd>
  [% FOREACH parent IN commit.parents %]
  <dt>parent</dt>
-  <dd>[% parent %] <a href="/commit?h=[% commit.sha1 %]">commit</a></dd>
+  <dd>[% parent %]
+    <span class='action-list'>
+	 <a href="/commit?p=[% project %];h=[% parent %]">commit</a>
+	 <a href="/commitdiff?p=[% project %];h=[% commit.sha1 %];hp=[% parent %]">diff</a>
+	</span>
+   </dd>
  [% END %]
 </dl>
 
 <pre class='commit-message'>[% commit.comment %]</pre>
 
-[% INCLUDE '_diff_tree.tt2' %]
+[%
+# In the case of merge commits there will be no diff tree.
+IF diff_tree.size > 0;
+	INCLUDE '_diff_tree.tt2';
+END;
+%]
 
 <!--
 

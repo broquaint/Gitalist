@@ -13,7 +13,7 @@ use Carp qw/croak/;
 use File::Find::Rule;
 use DateTime::Format::Mail;
 use File::Stat::ModeString;
-use List::MoreUtils qw/any/;
+use List::MoreUtils qw/any zip/;
 use Scalar::Util qw/blessed/;
 use MooseX::Types::Common::String qw/NonEmptySimpleStr/; # FIXME, use Types::Path::Class and coerce
 
@@ -417,13 +417,21 @@ Provides the raw output of a diff.
 
 =cut
 
+# gitweb uses the following sort of command for diffing merges:
+# /home/dbrook/apps/bin/git --git-dir=/home/dbrook/dev/app/.git diff-tree -r -M --no-commit-id --patch-with-raw --full-index --cc 316cf158df3f6207afbae7270bcc5ba0 --
+# and for regular diffs
+# /home/dbrook/apps/bin/git --git-dir=/home/dbrook/dev/app/.git diff-tree -r -M --no-commit-id --patch-with-raw --full-index 2e3454ca0749641b42f063730b0090e1 316cf158df3f6207afbae7270bcc5ba0 --
+
 sub raw_diff {
   my ($self, @args) = @_;
 
-  return $self->command(diff => '--full-index', @args);
+  return $self->command(
+	  qw(diff-tree -r -M --no-commit-id --full-index),
+	  @args
+  );
 }
 
-=begin
+=pod
 diff --git a/TODO b/TODO
 index 6a05e77..2071fd0 100644
 --- a/TODO
@@ -453,10 +461,37 @@ and some associated metadata.
 
 =cut
 
+# XXX Ideally this would return a wee object instead of ad hoc structures.
 sub diff {
-  my($self, @revs) = @_;
+  my($self, %args) = @_;
 
-  return $self->parse_diff($self->raw_diff(@revs));
+  # So either a parent is specifed, or we use the commit's parent if there's
+  # only one, otherwise it was a merge commit.
+  my $parent = $args{parent}
+			 ? $args{parent}
+			 : @{$args{commit}->parents} <= 1
+			   ? $args{commit}->parent_sha1
+			   : '-c';
+  my @etc = (
+    ( $args{file}  ? ('--', $args{file}) : () ),
+  );
+
+  my @out = $self->raw_diff(
+	( $args{patch} ? '--patch-with-raw' : () ),
+	  $parent, $args{commit}->sha1, @etc
+  );
+
+  # XXX Yes, there is much wrongness having parse_diff_tree be destructive.
+  my @difftree = $self->parse_diff_tree(\@out);
+
+  return \@difftree
+	unless $args{patch};
+
+  # The blank line between the tree and the patch.
+  shift @out;
+
+  # XXX And no I'm not happy about having diff return tree + patch.
+  return \@difftree, [$self->parse_diff(@out)];
 }
 
 sub parse_diff {
@@ -483,6 +518,37 @@ sub parse_diff {
 
 	# XXX Somewhat hacky. Ahem.
 	$ret[-1]{diff} .= "$_\n";
+  }
+
+  return @ret;
+}
+
+# $ git diff-tree -r --no-commit-id -M b222ff0a7260cc1777c7e455dfcaf22551a512fc 7e54e579e196c6c545fee1030175f65a111039d4
+# :100644 100644 6a85d6c6315b55a99071974eb6ce643aeb2799d6 44c03ed6c328fa6de4b1d9b3f19a3de96b250370 M      templates/blob.tt2
+
+=head2 parse_diff_tree
+
+Given a L<Git::PurePerl> commit object return a list of hashes corresponding
+to the C<diff-tree> output.
+
+=cut
+
+sub parse_diff_tree {
+  my($self, $diff) = @_;
+
+  my @keys = qw(modesrc modedst sha1src sha1dst status src dst);
+  my @ret;
+  while($diff->[0] =~ /^:\d+/) {
+	local $_ = shift @$diff;
+    # see. man git-diff-tree for more info
+    # mode src, mode dst, sha1 src, sha1 dst, status, src[, dst]
+    my @vals = /^:(\d+) (\d+) ($SHA1RE) ($SHA1RE) ([ACDMRTUX])\t([^\t]+)(?:\t([^\n]+))?$/;
+    my %line = zip @keys, @vals;
+    # Some convenience keys
+    $line{file}   = $line{src};
+    $line{sha1}   = $line{sha1dst};
+    $line{is_new} = $line{sha1src} =~ /^0+$/;
+    push @ret, \%line;
   }
 
   return @ret;
@@ -571,8 +637,7 @@ sub reflog {
     =  $self->run_cmd_in($self->project, qw(log -g), @logargs)
     =~ /(^commit.+?(?:(?=^commit)|(?=\z)))/msg;
 
-=begin
-
+=pod
   commit 02526fc15beddf2c64798a947fecdd8d11bf993d
   Reflog: HEAD@{14} (The Git Server <git@git.dev.venda.com>)
   Reflog message: push
@@ -681,51 +746,6 @@ sub references {
 	}
 
 	return $self->{references} = \%refs;
-}
-
-=begin
-
-$ git diff-tree -r --no-commit-id -M b222ff0a7260cc1777c7e455dfcaf22551a512fc 7e54e579e196c6c545fee1030175f65a111039d4
-:100644 100644 8976ebc7df65475b3def53a1653533c3f61070d0 852b6e170f1bad1fbd9930d3178dda8fdf1feae7 M      TODO
-:100644 100644 75f5e5f9ed10ae82a960fde77ecf138159c37610 7f54f8c3a4ad426f6889b13cfba5f5ad9969e3c6 M      lib/Gitalist/Controller/Root.pm
-:100644 100644 2c65caa46b56302502b9e6eef952b6f379c71fee e418acf5f7b5f771b0b2ef8be784e8dcd60a4271 M      lib/Gitalist/View/Default.pm
-:000000 100644 0000000000000000000000000000000000000000 642599f9ccfc4dbc7034987ad3233655010ff348 A      lib/Gitalist/View/SyntaxHighlight.pm
-:000000 100644 0000000000000000000000000000000000000000 3d2e533c41f01276b6f844bae98297273b38dffc A      root/static/css/syntax-dark.css
-:100644 100644 6a85d6c6315b55a99071974eb6ce643aeb2799d6 44c03ed6c328fa6de4b1d9b3f19a3de96b250370 M      templates/blob.tt2
-
-=cut
-
-use List::MoreUtils qw(zip);
-# XXX Hrm, getting called twice, not sure why.
-=head2 diff_tree
-
-Given a L<Git::PurePerl> commit object return a list of hashes corresponding
-to the C<diff-tree> output.
-
-=cut
-
-sub diff_tree {
-	my($self, $commit) = @_;
-
-	my @dtout = $self->command(
-		# XXX should really deal with multple parents ...
-		qw(diff-tree -r --no-commit-id -M), $commit->parent_sha1, $commit->sha1
-	);
-
-	my @keys = qw(modesrc modedst sha1src sha1dst status src dst);
-	my @difftree = map {
-		# see. man git-diff-tree for more info
-		# mode src, mode dst, sha1 src, sha1 dst, status, src[, dst]
-		my @vals = /^:(\d+) (\d+) ($SHA1RE) ($SHA1RE) ([ACDMRTUX])\t([^\t]+)(?:\t([^\n]+))?$/;
-		my %line = zip @keys, @vals;
-		# Some convenience keys
-		$line{file}   = $line{src};
-		$line{sha1}   = $line{sha1dst};
-		$line{is_new} = $line{sha1src} =~ /^0+$/;
-		\%line;
-	} @dtout;
-
-	return @difftree;
 }
 
 1;

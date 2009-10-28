@@ -8,6 +8,23 @@
   [% commit.author.name | html %] [[% commit.authored_time %]]
 </div>
 
-[% INCLUDE '_diff_tree.tt2' %]
 
-[% INCLUDE '_diff.tt2' %]
+[%
+# In the case of merge commits there will be no diff tree.
+IF diff_tree.size > 0;
+  INCLUDE '_diff_tree.tt2';
+END;
+IF diff.size > 0;
+  INCLUDE '_diff.tt2';
+ELSE
+%]
+<div class='no-difference'>
+[%
+  IF commit.parents > 1;
+    'Trivial merge';
+  ELSE;
+    'No differences found';
+  END;
+%]
+</div>
+[% END %]

@@ -1,0 +1,9 @@
+<div class='pager'>
+ <a href='/[% action %]?p=[% project %];h=[% HEAD %]'>HEAD</a>
+ [% IF log_lines.size == 50 %]
+ <a href='/[% action %]?p=[% project %];h=[% commit.sha1 %];pg=[% page %]'>next</a>
+ [% END %]
+ [% IF log_lines.first.sha1 != HEAD %]
+ <a href='/[% action %]?p=[% project %];h=[% commit.sha1 %];pg=[% page - 1 %]'>prev</a>
+ [% END %]
+</div>

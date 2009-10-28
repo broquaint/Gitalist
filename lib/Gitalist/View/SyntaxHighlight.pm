@@ -44,6 +44,7 @@ sub process {
     $c->forward('View::Default');
 }
 
+# XXX This takes for freakin' ever on big merges. A cache may be needed.
 sub highlight {
     my($self, $lang, $blob) = @_;
 

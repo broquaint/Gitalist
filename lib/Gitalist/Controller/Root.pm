@@ -184,14 +184,17 @@ sub blobdiff : Local {
   my $commit = $self->_get_commit($c);
   my $filename = $c->req->param('f')
               || croak("No file specified!");
-  my @diff = $c->model('Git')->diff(
-    $commit->parent_sha1, $commit->sha1, '--', $filename
+  my($tree, $patch) = $c->model('Git')->diff(
+    commit => $commit,
+    parent => $c->req->param('hp') || '',
+    file   => $filename,
+    patch  => 1,
   );
   $c->stash(
     commit    => $commit,
-    diff      => \@diff,
+    diff      => $patch,
     # XXX Hack hack hack, see View::SyntaxHighlight
-    blobs     => [$diff[0]->{diff}],
+    blobs     => [$patch->[0]->{diff}],
     language  => 'Diff',
     action    => 'blobdiff',
   );
@@ -211,7 +214,7 @@ sub commit : Local {
   my $commit = $self->_get_commit($c);
   $c->stash(
       commit      => $commit,
-      diff_tree   => [$c->model('Git')->diff_tree($commit)],
+      diff_tree   => ($c->model('Git')->diff(commit => $commit))[0],
       branches_on => [$c->model('Git')->refs_for($commit->sha1)],
       action      => 'commit',
   );
@@ -227,13 +230,17 @@ sub commitdiff : Local {
   my ( $self, $c ) = @_;
 
   my $commit = $self->_get_commit($c);
-  my @difflist = $c->model('Git')->diff($commit->parent_sha1, $commit->sha1);
+  my($tree, $patch) = $c->model('Git')->diff(
+      commit => $commit,
+      parent => $c->req->param('hp') || '',
+      patch  => 1,
+  );
   $c->stash(
     commit    => $commit,
-    diff_tree => [$c->model('Git')->diff_tree($commit)],
-    diff      => \@difflist,
+    diff_tree => $tree,
+    diff      => $patch,
     # XXX Hack hack hack, see View::SyntaxHighlight
-    blobs     => [map $_->{diff}, @difflist],
+    blobs     => [map $_->{diff}, @$patch],
     language  => 'Diff',
     action    => 'commitdiff',
   );

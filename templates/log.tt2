@@ -1,5 +1,7 @@
 [% INCLUDE 'commit-nav.tt2' object = commit %]
 
+[% INCLUDE '_log_pager.tt2' %]
+
 [%# XXX Nabbed the HTML below from gitweb's log action. %]
 [% FOREACH line IN log_lines %]
 <div class="header">
@@ -22,3 +24,5 @@
  [% line.comment | html %]
 </div>
 [% END %]
+
+[% INCLUDE '_log_pager.tt2' %]

@@ -1,15 +1,4 @@
-[% BLOCK pager %]
-<div class='pager'>
- [% IF log_lines.size == 50 %]
- <a href='/[% action %]?p=[% project %];h=[% commit.sha1 %];pg=[% page %]'>next</a>
- [% END %]
- [% IF log_lines.first.sha1 != HEAD %]
- <a href='/[% action %]?p=[% project %];h=[% commit.sha1 %];pg=[% page - 1 %]'>prev</a>
- [% END %]
-</div>
-[% END %]
-
-[% INCLUDE pager %]
+[% INCLUDE '_log_pager.tt2' %]
 <table>
  <thead>
   <tr>
@@ -56,4 +45,4 @@
   </tr>
  </tfoot>
 </table>
-[% INCLUDE pager %]
+[% INCLUDE '_log_pager.tt2' %]
