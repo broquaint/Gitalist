@@ -325,6 +325,14 @@ sub reflog : Local {
   );
 }
 
+sub search : Local {
+    Carp::croak "Not implemented.";
+}
+
+sub search_help : Local {
+    Carp::croak "Not implemented.";
+}
+
 =head2 auto
 
 Populate the header and footer. Perhaps not the best location.
@@ -422,7 +430,7 @@ sub header {
 
   if(defined $project) {
     $c->stash(
-      search_text => ( $c->req->param('s') || $c->req->param('searchtext') ),
+      search_text => ( $c->req->param('s') || $c->req->param('searchtext') || ''),
       search_hash => ( $c->req->param('hb') || $c->req->param('hashbase')
           || $c->req->param('h')  || $c->req->param('hash')
           || 'HEAD' ),

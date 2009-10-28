@@ -35,7 +35,7 @@
   <a title="[% logo_label | url %]" href="[% logo_url | url %]"><img src="[% logo_img %]" alt="git" class="logo"/></a>
   <a href="[% home_link | url %]">[% home_link_str %]</a>
   [%- IF project %]
-  / <a href="/?p=[% project %];a=summary">[% project %]</a>
+  / <a href="/summary?p=[% project %]">[% project %]</a>
   [% IF action;  " / " _ action; END;
   END %]
 </div>
@@ -52,7 +52,7 @@
       <option value="author">author</option>
       <option value="committer">committer</option>
       <option value="pickaxe">pickaxe</option>
-  </select><sup><a href="/?p=[% project %];a=search_help">?</a></sup> search:
+  </select><sup><a href="/search_help?p=[% project %]">?</a></sup> search:
   <input type="text" name="s" value="[% search_text %]"/>
   <span title="Extended regular expression"><label><input type="checkbox" name="sr" value="1" />re</label></span>
   </form>
