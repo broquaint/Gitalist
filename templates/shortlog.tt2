@@ -4,4 +4,8 @@
 [% project %]
 </div>
 
-[% INCLUDE '_shortlog.tt2' %]
+[%
+INCLUDE '_log_pager.tt2';
+INCLUDE '_shortlog.tt2';
+INCLUDE '_log_pager.tt2';
+%]

@@ -4,5 +4,5 @@
     <a href="/log?p=[% project %];h=[% object.sha1 %]">log</a> |
     <a href="/commit?p=[% project %];h=[% object.sha1 %]">commit</a> |
     <a href="/commitdiff?p=[% project %];h=[% object.sha1 %]">commitdiff</a> |
-    <a href="/tree?p=[% project %];h=[% object.tree_sha1 %]">tree</a>
+    <a href="/tree?p=[% project %];h=[% object.tree_sha1 %];hb=[% object.sha1 %]">tree</a>
 </div>

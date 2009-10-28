@@ -17,7 +17,9 @@
  <dt>commit</dt>
   <dd>[% commit.sha1 %]</dd>
  <dt>tree</dt>
-  <dd>[% commit.tree_sha1 %] <a href="/tree?p=[% project %];h=[% commit.sha1 %];hb=[% commit.tree_sha1 %]">tree</a></dd>
+  <dd>[% commit.tree_sha1 %]
+      <span class='action-list'><a href="/tree?p=[% project %];h=[% commit.tree_sha1 %];hb=[% commit.sha1 %]">tree</a></span>
+  </dd>
  [% FOREACH parent IN commit.parents %]
  <dt>parent</dt>
   <dd>[% parent %]

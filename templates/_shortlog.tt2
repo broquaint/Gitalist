@@ -1,4 +1,3 @@
-[% INCLUDE '_log_pager.tt2' %]
 <table>
  <thead>
   <tr>
@@ -45,4 +44,3 @@
   </tr>
  </tfoot>
 </table>
-[% INCLUDE '_log_pager.tt2' %]

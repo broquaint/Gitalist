@@ -4,4 +4,15 @@
 [% commit.comment.substr(0, 85) %] ...
 </div>
 
+[% IF path -%]
+<div>
+ <a href='/tree?p=[% project %];hb=[% commit.sha1 %]'>[% project %]</a>
+ [% fullpath = ''-%]
+ [% FOREACH part IN path.split('/') -%]
+ / <a href='/tree?p=[% project %];h=[% tree.sha1 %];hb=[% commit.sha1 %];f=[% fullpath _ part %]'>[% part %]</a>
+ [% fullpath = fullpath _ part _ '/'; %]
+ [% END -%]
+</div>
+[% END -%]
+
 [% INCLUDE '_tree.tt2' %]

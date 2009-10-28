@@ -13,7 +13,7 @@
    <td>[% item.modestr %]</td>
    [% theact = item.type == 'tree' ? 'tree' : 'blob' -%]
    <td class='filename'>
-    <a href="/[% theact %]?h=[% item.object %];hb=[% commit.sha1 %];f=[% item.file %]">[% item.file %]</a>
+    <a href="/[% theact %]?p=[% project %];h=[% item.object %];hb=[% commit.sha1 %];f=[% IF path; path _ '/'; END; item.file %]">[% item.file %]</a>
    </td>
    <td class='action-list'>
      <a href="/[% theact %]?p=[% project %];h=[% item.object %];hb=[% commit.sha1 %];f=[% item.file %]">[% theact %]</a>
@@ -32,4 +32,3 @@
   </tr>
  </tfoot>
 </table>
-

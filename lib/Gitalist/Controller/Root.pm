@@ -58,9 +58,9 @@ sub run_gitweb {
 }
 
 sub _get_commit {
-  my($self, $c) = @_;
+  my($self, $c, $haveh) = @_;
 
-  my $h = $c->req->param('h');
+  my $h = $haveh || $c->req->param('h');
   my $f = $c->req->param('f');
   my $m = $c->model('Git');
 
@@ -273,7 +273,7 @@ sub shortlog : Local {
       log_lines => [$c->model('Git')->list_revs(%logargs)],
       refs      => $c->model('Git')->references,
       action    => 'shortlog',
-      page      => $page + 1,
+      page      => $page,
   );
 }
 
@@ -296,12 +296,14 @@ The tree of a given commit.
 sub tree : Local {
   my ( $self, $c ) = @_;
 
-  my $commit = $self->_get_commit($c);
+  my $commit = $self->_get_commit($c, $c->req->param('hb'));
+  my $tree   = $c->model('Git')->get_object($c->req->param('h') || $commit->tree_sha1);
   $c->stash(
       # XXX Useful defaults needed ...
       commit    => $commit,
-      tree      => $c->model('Git')->get_object($c->req->param('hb')),
-      tree_list => [$c->model('Git')->list_tree($commit->sha1)],
+      tree      => $tree,
+      tree_list => [$c->model('Git')->list_tree($tree->sha1)],
+	  path      => $c->req->param('f') || '',
       action    => 'tree',
   );
 }

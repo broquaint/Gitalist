@@ -538,16 +538,19 @@ sub parse_diff_tree {
 
   my @keys = qw(modesrc modedst sha1src sha1dst status src dst);
   my @ret;
-  while($diff->[0] =~ /^:\d+/) {
-	local $_ = shift @$diff;
+  while(@$diff and $diff->[0] =~ /^:\d+/) {
+	my $line = shift @$diff;
     # see. man git-diff-tree for more info
     # mode src, mode dst, sha1 src, sha1 dst, status, src[, dst]
-    my @vals = /^:(\d+) (\d+) ($SHA1RE) ($SHA1RE) ([ACDMRTUX])\t([^\t]+)(?:\t([^\n]+))?$/;
+    my @vals = $line =~ /^:(\d+) (\d+) ($SHA1RE) ($SHA1RE) ([ACDMRTUX]\d*)\t([^\t]+)(?:\t([^\n]+))?$/;
     my %line = zip @keys, @vals;
     # Some convenience keys
     $line{file}   = $line{src};
     $line{sha1}   = $line{sha1dst};
-    $line{is_new} = $line{sha1src} =~ /^0+$/;
+    $line{is_new} = $line{sha1src} =~ /^0+$/
+		if $line{sha1src};
+	@line{qw/status sim/} = $line{status} =~ /(R)(\d+)/
+      if $line{status} =~ /^R/;
     push @ret, \%line;
   }
 
