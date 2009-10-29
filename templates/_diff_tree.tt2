@@ -1,0 +1,42 @@
+<table class='diff-tree'>
+ <thead>
+  <tr>
+   <td>file</td>
+   <td>status</td>
+   <td>actions</td>
+  </tr>
+ </thead>
+ <tbody>
+  [% FOREACH line IN diff_tree -%]
+  <tr>
+   <td class='filename'>
+    [% line.file %]
+   </td>
+   <td class='status'>
+    [%
+    SWITCH line.status;
+      CASE 'R';
+        '[moved from ' _ line.src _ ' with ' _ line.sim _ '% similarity]';
+      CASE 'A';
+        '[new file with mode: ' _ line.modedst _ ']';
+      CASE 'D';
+        '[deleted file]';
+    END;
+    %]
+   </td>
+   <td class='action-list'>
+     [% IF !line.is_new %]<a href="/blobdiff?p=[% project %];f=[% line.file %];h=[% commit.sha1 %];hp=[% commit.parent_sha1 %]">diff</a>[% END %]
+     <a href="/blob?p=[% project %];f=[% line.file %];h=[% line.sha1 %];hb=[% commit.sha1 %]">blob</a>
+     [% IF !line.is_new %]<a href="/shortlog?p=[% project %];f=[% line.file %];hb=[% commit.sha1 %]">history</a>[% END %]
+   </td>
+  </tr>
+  [% END %]
+ </tbody>
+ <tfoot>
+  <tr>
+   <td>file</td>
+   <td>status</td>
+   <td>actions</td>
+  </tr>
+ </tfoot>
+</table>

@@ -1,0 +1,11 @@
+[% INCLUDE 'commit-nav.tt2' object = commit %]
+
+<div>
+[% project %]
+</div>
+
+[%
+INCLUDE '_log_pager.tt2';
+INCLUDE '_shortlog.tt2';
+INCLUDE '_log_pager.tt2';
+%]

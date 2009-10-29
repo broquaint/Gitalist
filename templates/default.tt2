@@ -9,10 +9,11 @@
   <meta http-equiv="content-type" content="[% content_type %]; charset=utf-8"/>
   <meta name="generator" content="gitweb/[% version %] git/[% git_version %][% mod_perl_version %]"/>
   <meta name="robots" content="index, nofollow"/>
-  <title>[% title %] (Gitalist)</title>
+  <title>[% title | html %] (Gitalist)</title>
   [% IF baseurl %]
   <base href="[% baseurl %]" />
   [% END %]
+  <link rel="stylesheet" type="text/css" href="/static/css/site.css"/>
   <link rel="stylesheet" type="text/css" href="[% stylesheet %]"/>
   [% FOR link IN links %]
             <link rel="[% link.rel %]"
@@ -31,10 +32,10 @@
 [% site_header %]
 
 <div class="page_header">
-  <a title="[% logo_label %]" href="[% logo_url %]"><img src="[% logo_img %]" alt="git" class="logo"/></a>
-  <a href="[% home_link %]">[% home_link_str %]</a>
+  <a title="[% logo_label | url %]" href="[% logo_url | url %]"><img src="[% logo_img %]" alt="git" class="logo"/></a>
+  <a href="[% home_link | url %]">[% home_link_str %]</a>
   [%- IF project %]
-  / <a href="/git/gitweb.cgi?p=[% project %];a=summary">[% project %]</a>
+  / <a href="/summary?p=[% project %]">[% project %]</a>
   [% IF action;  " / " _ action; END;
   END %]
 </div>
@@ -51,7 +52,7 @@
       <option value="author">author</option>
       <option value="committer">committer</option>
       <option value="pickaxe">pickaxe</option>
-  </select><sup><a href="/?p=[% project %];a=search_help">?</a></sup> search:
+  </select><sup><a href="/search_help?p=[% project %]">?</a></sup> search:
   <input type="text" name="s" value="[% search_text %]"/>
   <span title="Extended regular expression"><label><input type="checkbox" name="sr" value="1" />re</label></span>
   </form>
@@ -64,21 +65,24 @@
   IF page_nav;
     INCLUDE "page_nav.tt2";
   END;
-
+%]
+<div id='body'>
+[%
   IF action;
-    # XXX Err ... yeah, slight hack here ... ahem.
-    INCLUDE "index.tt2";
+    SET actmpl = action _ ".tt2";
+    INCLUDE $actmpl;
   ELSE;
     # The output of gitweb.cgi is injected at this point.
     content;
   END;
 %]
+</div>
 
 [%- # git_footer_html
 -%]
 <div class="page_footer">
 [% IF project AND project_description %]
-  <div class="page_footer_text">[% project_description %]</div>
+  <div class="page_footer_text">[% project_description | html %]</div>
 [% END %]
 [% FOR feed IN feeds %]
     <a class="[% feed.class %]" title="[% feed.title %]" href="[% feed.href %]">[% feed.name %]</a>

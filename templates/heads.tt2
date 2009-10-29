@@ -1,0 +1,7 @@
+[% INCLUDE 'commit-nav.tt2' object = commit %]
+
+<div>
+[% project %]
+</div>
+
+[% INCLUDE '_heads.tt2' %]
