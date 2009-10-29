@@ -46,11 +46,11 @@ sub run_gitweb {
       $action->();
     };
     $capture->stop();
-    
+
     use Data::Dumper;
     die Dumper($@)
       if $@;
-  
+
     my $output = join '', $capture->read;
     $c->stash->{gitweb_output} = $output;
     $c->stash->{template} = 'gitweb.tt2';
@@ -71,7 +71,7 @@ sub _get_commit {
           # XXX This could definitely use more context.
           || Carp::croak("Couldn't find a hash for the commit object!");
 
-    
+
   (my $pd = $m->project_dir( $m->project )) =~ s{/\.git$}();
   my $commit = $m->get_object($hash)
     or Carp::croak("Couldn't find a commit object for '$hash' in '$pd'!");

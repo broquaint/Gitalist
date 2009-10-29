@@ -43,7 +43,11 @@ has gpp      => ( isa => 'Git::PurePerl',   is => 'rw', lazy_build => 1 );
 
 sub build_per_context_instance {
   my ( $self, $c ) = @_;
-  
+
+  # If we don't have a project param it probably means we're at /  
+  return $self
+   unless $c->req->param('p');
+
   $self->project( $c->req->param('p') );
 
   (my $pd = $self->project_dir( $self->project )) =~ s{/\.git$}();
@@ -499,25 +503,25 @@ sub parse_diff {
 
   my @ret;
   for (@diff) {
-	# This regex is a little pathological.
-	if(m{^diff --git (a/(.*?)) (b/\2)}) {
+    # This regex is a little pathological.
+    if(m{^diff --git (a/(.*?)) (b/\2)}) {
       push @ret, {
-      	head => $_,
-      	a    => $1,
-      	b    => $3,
-		file => $2,
-		diff => '',
+        head => $_,
+        a    => $1,
+        b    => $3,
+        file => $2,
+        diff => '',
       };
-	  next;
-	}
-
-	if(/^index (\w+)\.\.(\w+) (\d+)$/) {
-	  @{$ret[-1]}{qw(index src dst mode)} = ($_, $1, $2, $3);
-	  next
+      next;
     }
-
-	# XXX Somewhat hacky. Ahem.
-	$ret[-1]{diff} .= "$_\n";
+  
+    if(/^index (\w+)\.\.(\w+) (\d+)$/) {
+      @{$ret[-1]}{qw(index src dst mode)} = ($_, $1, $2, $3);
+      next
+    }
+  
+    # XXX Somewhat hacky. Ahem.
+    $ret[@ret ? -1 : 0]{diff} .= "$_\n";
   }
 
   return @ret;

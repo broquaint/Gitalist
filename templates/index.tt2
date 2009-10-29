@@ -14,9 +14,10 @@
 <thead>
     <tr>
         <th>Project</th>
-        <th><a class="header" href="/projects?o=descr">Description</a></th>
-        <th><a class="header" href="/projects?o=owner">Owner</a></th>
-        <th><a class="header" href="/projects?o=age">Last Change</a></th>
+        <!-- XXX These do nothing presently -->
+        <th><a class="header" href="/?o=descr">Description</a></th>
+        <th><a class="header" href="/?o=owner">Owner</a></th>
+        <th><a class="header" href="/?o=age">Last Change</a></th>
         <th></th>
     </tr>
 </thead>
