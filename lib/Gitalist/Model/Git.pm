@@ -371,7 +371,7 @@ Return the contents of a given file.
 sub cat_file {
   my ($self, $object, $project) = @_;
 
-  my $type = $self->get_object_type($object);
+  my $type = $self->get_object_type($object, $project);
   die "object `$object' is not a file\n"
     if (!defined $type || $type ne 'blob');
 
