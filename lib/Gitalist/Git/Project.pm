@@ -6,6 +6,7 @@ class Gitalist::Git::Project {
     use DateTime;
     use Path::Class;
     use Gitalist::Git::Util;
+    use aliased 'Gitalist::Git::Object';
 
     our $SHA1RE = qr/[0-9a-fA-F]{40}/;
     
@@ -78,6 +79,38 @@ Find the hash of a given head (defaults to HEAD).
         my($sha1) = $output =~ /^($SHA1RE)$/;
         return $sha1;
     }
+
+=head2 list_tree
+
+Return an array of contents for a given tree.
+The tree is specified by sha1, and defaults to HEAD.
+The keys for each item will be:
+
+	mode
+	type
+	object
+	file
+
+=cut
+
+    method list_tree (Str $sha1?) {
+        $sha1 ||= $self->head_hash;
+
+        my $output = $self->run_cmd(qw/ls-tree -z/, $sha1);
+        return unless defined $output;
+
+        my @ret;
+        for my $line (split /\0/, $output) {
+            my ($mode, $type, $object, $file) = split /\s+/, $line, 4;
+            push @ret, Object->new( mode => oct $mode,
+                                    type => $type,
+                                    sha1 => $object,
+                                    file => $file,
+                                  );
+        }
+        return @ret;
+    }
+
 
     method project_dir (Path::Class::Dir $project) {
         my $dir = $project->stringify;
