@@ -2,22 +2,10 @@ package Gitalist::Model::Git;
 
 use Moose;
 use namespace::autoclean;
+use Moose::Autobox;
 
 extends 'Catalyst::Model';
 with 'Catalyst::Component::InstancePerContext';
-
-use DateTime;
-use Path::Class;
-use File::Which;
-use Carp qw/croak/;
-use File::Find::Rule;
-use DateTime::Format::Mail;
-use File::Stat::ModeString;
-use List::MoreUtils qw/any zip/;
-use Scalar::Util qw/blessed/;
-use MooseX::Types::Common::String qw/NonEmptySimpleStr/; # FIXME, use Types::Path::Class and coerce
-
-use Git::PurePerl;
 
 =head1 NAME
 
@@ -31,7 +19,39 @@ Gitalist::Model::Git - the model for git interactions
 
 =cut
 
+use Git::PurePerl;
+
+sub build_per_context_instance {
+  my ( $self, $c ) = @_;
+
+  my $model = Git::Repos->new(
+    project => ([$c->req->parameters->{p} || '/']->flatten)[0],
+  );
+
+  # This is fugly as fuck. Move Git::PurePerl construction into attribute builders..
+  (my $pd = $self->project_dir( $self->project )) =~ s{/\.git$}();
+  $model->gpp( Git::PurePerl->new(directory => $pd) );
+
+  return $model;
+}
+
+package Git::Repos; # Better name? Split out into own file once we have a sane name.
+use Moose;
+use namespace::autoclean;
+use DateTime;
+use Path::Class;
+use File::Which;
+use Carp qw/croak/;
+use File::Find::Rule;
+use DateTime::Format::Mail;
+use File::Stat::ModeString;
+use List::MoreUtils qw/any zip/;
+use MooseX::Types::Common::String qw/NonEmptySimpleStr/; # FIXME, use Types::Path::Class and coerce
+
+use Git::PurePerl;
+
 # Should these live in a separate module? Or perhaps extended Regexp::Common?
+# No, should be a MooseX::Types module!!
 our $SHA1RE = qr/[0-9a-fA-F]{40}/;
 
 # These are static and only need to be setup on app start.
@@ -41,21 +61,8 @@ has git      => ( isa => NonEmptySimpleStr, is => 'ro', lazy_build => 1 );
 has project  => ( isa => NonEmptySimpleStr, is => 'rw');
 has gpp      => ( isa => 'Git::PurePerl',   is => 'rw', lazy_build => 1 );
 
-sub build_per_context_instance {
-  my ( $self, $c ) = @_;
 
-  # If we don't have a project param it probably means we're at /  
-  return $self
-   unless $c->req->param('p');
 
-  $self->project( $c->req->param('p') );
-
-  (my $pd = $self->project_dir( $self->project )) =~ s{/\.git$}();
-  $self->gpp( Git::PurePerl->new(directory => $pd) );
-
-  return $self;
-}
- 
 =head2 BUILD
 
 =cut
