@@ -1,4 +1,4 @@
-[% INCLUDE 'commit-nav.tt2' object = commit %]
+[% INCLUDE 'nav/actions.tt2' object = commit %]
 
 <div class='commit-message'>
 [% commit.comment.substr(0, 85) %] ...

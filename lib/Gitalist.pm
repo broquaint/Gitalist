@@ -9,19 +9,34 @@ extends 'Catalyst';
 use Catalyst qw/-Debug
                 ConfigLoader
                 Static::Simple
-				StackTrace/;
+                StackTrace/;
+
+use Class::C3::Adopt::NEXT -no_warn;
+
 our $VERSION = '0.01';
 
 # Bring in the libified gitweb.cgi.
 use gitweb;
 
 __PACKAGE__->config(
-	name => 'Gitalist',
-	default_view => 'Default',
+    name => 'Gitalist',
+    default_view => 'Default',
 );
 
 # Start the application
 __PACKAGE__->setup();
+
+sub uri_for {
+    my $p = ref $_[-1] eq 'HASH'
+          ? $_[-1]
+          : push(@_, {}) && $_[-1];
+    $p->{p} = $_[0]->model('Git')->project;
+
+    (my $uri = $_[0]->NEXT::uri_for(@_[1 .. $#_]))
+      # Ampersand! What is this, the 90s?
+      =~ s/&/;/g;
+    return $uri;
+}
 
 =head1 NAME
 

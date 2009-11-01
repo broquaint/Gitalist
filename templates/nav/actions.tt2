@@ -1,0 +1,8 @@
+<div id='commit-nav'>
+    <a href="[% c.uri_for('summary') %]">summary</a> |
+    <a href="[% c.uri_for('shortlog', {h=object.sha1}) %]">shortlog</a> |
+    <a href="[% c.uri_for('log', {h=object.sha1}) %]">log</a> |
+    <a href="[% c.uri_for('commit', {h=object.sha1}) %]">commit</a> |
+    <a href="[% c.uri_for('commitdiff', {h=object.sha1}) %]">commitdiff</a> |
+    <a href="[% c.uri_for('tree', {h=object.tree_sha1, hb=object.sha1}) %]">tree</a>
+</div>
