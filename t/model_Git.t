@@ -1,13 +1,13 @@
 use strict;
 use warnings;
 use FindBin qw/$Bin/;
-use Test::More qw/no_plan/;
+use Test::More;
 
 BEGIN { use_ok 'Gitalist::Model::Git' }
 
 my $c = bless {}, 'Gitalist';
-my $m = Gitalist::Model::Git->new($c, { repo_dir => "$Bin/lib/repositories" });
-isa_ok($m, 'Gitalist::Model::Git');
+my $m = Git::Repos->new($c, { repo_dir => "$Bin/lib/repositories" });
+isa_ok($m, 'Git::Repos');
 
 # 'bare.git' is a bare git repository in the repository dir
 use Path::Class;
@@ -64,4 +64,5 @@ index 257cc56..5716ca5 100644
 +bar
 EOD
 
-# end
+done_testing;
+
