@@ -1,6 +1,6 @@
 <link rel="stylesheet" type="text/css" href="/static/css/syntax/[% language %].css"/>
 
-[% PROCESS 'commit-nav.tt2' object = head %]
+[% PROCESS 'nav/actions.tt2' object = head %]
 <div class='commit-message'>
 [% head.comment.substr(0, 85) %] ...
 </div>

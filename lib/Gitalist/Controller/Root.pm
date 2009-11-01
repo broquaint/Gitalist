@@ -94,7 +94,7 @@ sub index :Path :Args(0) {
 
   my $list = $c->model('Git')->list_projects;
   unless(@$list) {
-    die "No projects found";
+    die "No projects found in ".Gitalist->config->{repodir};
   }
 
   $c->stash(
