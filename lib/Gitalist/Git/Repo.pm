@@ -65,12 +65,6 @@ each item will contain the contents of L</project_info>.
             push @ret, Gitalist::Git::Project->new( name => $name,
                                      path => $obj,
                                  );
-            #push @ret, {
-            #    name => ($name . ( $is_bare ? '' : '/.git' )),
-               # $self->get_project_properties(
-               #     $is_bare ? $obj : $obj->subdir('.git')
-               # ),
-            #};
         }
 
         return [sort { $a->{name} cmp $b->{name} } @ret];
