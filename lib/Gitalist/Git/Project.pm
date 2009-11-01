@@ -5,6 +5,7 @@ class Gitalist::Git::Project {
     use MooseX::Types::Common::String qw/NonEmptySimpleStr/;
     use DateTime;
     use Path::Class;
+    use Gitalist::Git::Util;
 
     has name => ( isa => NonEmptySimpleStr,
                   is => 'ro' );
@@ -23,7 +24,18 @@ class Gitalist::Git::Project {
                          is => 'ro',
                          lazy_build => 1,
                      );
+    has _util => ( isa => 'Gitalist::Git::Util',
+                   is => 'ro',
+                   lazy_build => 1,
+                   handles => [ 'run_cmd' ],
+               );
 
+    method _build__util {
+        my $util = Gitalist::Git::Util->new(
+            gitdir => $self->path,
+        );
+        return $util;
+    }
     
     method _build_description {
         my $description = $self->path->file('description')->slurp;
@@ -51,48 +63,6 @@ class Gitalist::Git::Project {
         return $last_change;
     }
 
-
-=head2 run_cmd
-
-Call out to the C<git> binary and return a string consisting of the output.
-
-=cut
-
-        method run_cmd (@args) {
-            unshift @args, ( '--git-dir' => $self->path );
-            print STDERR 'RUNNING: ', $self->_git, qq[ @args], $/;
-
-            open my $fh, '-|', $self->_git, @args
-                or die "failed to run git command";
-            binmode $fh, ':encoding(UTF-8)';
-
-            my $output = do { local $/ = undef; <$fh> };
-            close $fh;
-
-            return $output;
-        }
-
-    has _git      => ( isa => NonEmptySimpleStr, is => 'ro', lazy_build => 1 );
-    use File::Which;
-    method _build__git {
-        my $git = File::Which::which('git');
-
-        if (!$git) {
-            die <<EOR;
-Could not find a git executable.
-Please specify the which git executable to use in gitweb.yml
-EOR
-        }
-
-        return $git;
-    }
-    has _gpp      => ( isa => 'Git::PurePerl',   is => 'rw', lazy_build => 1 );
-    use Git::PurePerl;
-    method _build__gpp {
-        my $gpp = Git::PurePerl->new(gitdir => $self->path);
-        return $gpp;
-    }
-
     method project_dir (Path::Class::Dir $project) {
         my $dir = $project->stringify;
         $dir .= '/.git'
@@ -100,7 +70,6 @@ EOR
         return $dir;
     }
 
-    
     # Compatibility
 
 =head2 project_info
