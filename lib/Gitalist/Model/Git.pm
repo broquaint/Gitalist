@@ -24,8 +24,10 @@ use Git::PurePerl;
 sub build_per_context_instance {
   my ( $self, $c ) = @_;
 
+  my $app = blessed($c) || $c;
   my $model = Git::Repos->new(
     project => ([$c->req->parameters->{p} || '/']->flatten)[0],
+    repo_dir => $app->config->{repo_dir}, # FIXME - Move to model config
   );
 
   # This is fugly as fuck. Move Git::PurePerl construction into attribute builders..
@@ -55,7 +57,7 @@ use Git::PurePerl;
 our $SHA1RE = qr/[0-9a-fA-F]{40}/;
 
 # These are static and only need to be setup on app start.
-has repo_dir => ( isa => NonEmptySimpleStr, is => 'ro', lazy_build => 1 ); # Fixme - path::class
+has repo_dir => ( isa => NonEmptySimpleStr, is => 'ro' ); # Fixme - path::class
 has git      => ( isa => NonEmptySimpleStr, is => 'ro', lazy_build => 1 );
 # These are dynamic and can be different from one request to the next.
 has project  => ( isa => NonEmptySimpleStr, is => 'rw');
@@ -84,10 +86,6 @@ EOR
     }
 
     return $git;
-}
- 
-sub _build_repo_dir {
-  return Gitalist->config->{repo_dir};
 }
 
 =head2 get_object
