@@ -25,15 +25,17 @@ sub build_per_context_instance {
   my ( $self, $c ) = @_;
 
   my $app = blessed($c) || $c;
-  my $model = Git::Repos->new(
-    project => ([$c->req->parameters->{p} || '/']->flatten)[0],
-    repo_dir => $app->config->{repo_dir}, # FIXME - Move to model config
-  );
+  my $model = Git::Repos->new( repo_dir => $app->config->{repo_dir} );
 
-  # This is fugly as fuck. Move Git::PurePerl construction into attribute builders..
-  (my $pd = $self->project_dir( $self->project )) =~ s{/\.git$}();
-  $model->gpp( Git::PurePerl->new(directory => $pd) );
+  if ($c->req->parameters->{p}) {
+      # A Project was passed in
+      my $project = ([$c->req->parameters->{p} || '/']->flatten)[0];
+      $model->project( $project );
 
+      # This is fugly as fuck. Move Git::PurePerl construction into attribute builders..
+      (my $pd = $model->project_dir($project)) =~ s{/\.git$}();
+      $model->gpp( Git::PurePerl->new(directory => $pd) );
+  }
   return $model;
 }
 
