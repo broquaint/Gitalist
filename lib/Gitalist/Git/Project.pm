@@ -7,6 +7,8 @@ class Gitalist::Git::Project {
     use Path::Class;
     use Gitalist::Git::Util;
 
+    our $SHA1RE = qr/[0-9a-fA-F]{40}/;
+    
     has name => ( isa => NonEmptySimpleStr,
                   is => 'ro' );
     has path => ( isa => "Path::Class::Dir",
@@ -61,6 +63,20 @@ class Gitalist::Git::Project {
             $last_change = $dt;
         }
         return $last_change;
+    }
+
+=head2 head_hash
+
+Find the hash of a given head (defaults to HEAD).
+
+=cut
+
+    method head_hash (Str $head?) {
+        my $output = $self->run_cmd(qw/rev-parse --verify/, $head || 'HEAD' );
+        return unless defined $output;
+
+        my($sha1) = $output =~ /^($SHA1RE)$/;
+        return $sha1;
     }
 
     method project_dir (Path::Class::Dir $project) {
