@@ -26,4 +26,4 @@ is($proj->head_hash, qw/36c6c6708b8360d7023e8a1649c45bcf9b3bd818/, 'head_hash fo
 
 is(scalar $proj->list_tree, 2, 'expected number of entries in tree');
 isa_ok(($proj->list_tree)[0], 'Gitalist::Git::Object');
-warn( Dumper($proj->list_tree) );
+
