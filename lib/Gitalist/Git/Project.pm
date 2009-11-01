@@ -106,6 +106,7 @@ The keys for each item will be:
                                     type => $type,
                                     sha1 => $object,
                                     file => $file,
+                                    project => $self,
                                   );
         }
         return @ret;
