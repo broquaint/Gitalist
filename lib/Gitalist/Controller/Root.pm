@@ -60,7 +60,7 @@ sub run_gitweb {
 sub _get_commit {
   my($self, $c, $haveh) = @_;
 
-  my $h = $haveh || $c->req->param('h');
+  my $h = $haveh || $c->req->param('h') || '';
   my $f = $c->req->param('f');
   my $m = $c->model('Git');
 

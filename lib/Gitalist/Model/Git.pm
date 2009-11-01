@@ -144,7 +144,7 @@ sub project_dir {
        : $self->dir_from_project_name($project);
 
   $dir .= '/.git'
-  	if -f dir($dir)->file('.git/HEAD');
+      if -f dir($dir)->file('.git/HEAD');
 
   return $dir;
 }
@@ -181,10 +181,10 @@ sub command {
 Returns a hash corresponding to a given project's properties. The keys will
 be:
 
-	name
-	description (empty if .git/description is empty/unnamed)
-	owner
-	last_change
+    name
+    description (empty if .git/description is empty/unnamed)
+    owner
+    last_change
 
 =cut
 
@@ -289,10 +289,10 @@ Find the hash of a given head (defaults to HEAD) of given (or current) project.
 =cut
 
 sub head_hash {
-  my ($self, $head, $project) = @_;
+  my ($self, $head) = @_;
 
-  my $output = $self->run_cmd_in($project || $self->project, qw/rev-parse --verify/, $head || 'HEAD' );
-  return unless defined $output;
+  my($output) = $self->command(qw/rev-parse --verify/, $head || 'HEAD' );
+  return unless $output;
 
   my($sha1) = $output =~ /^($SHA1RE)$/;
   return $sha1;
@@ -303,21 +303,22 @@ sub head_hash {
 For a given tree sha1 return an array describing the tree's contents. Where
 the keys for each item will be:
 
-	mode
-	type
-	object
-	file
+    mode
+    type
+    object
+    file
 
 =cut
 
 sub list_tree {
-  my ($self, $rev, $project) = @_;
+  my ($self, $sha1) = @_;
 
-  $project ||= $self->project;
-  $rev ||= $self->head_hash($project);
+  $sha1 = $self->head_hash($sha1)
+  	if !$sha1 or $sha1 !~ $SHA1RE;
 
-  my $output = $self->run_cmd_in($project, qw/ls-tree -z/, $rev);
-  return unless defined $output;
+  my($output) = $self->command(qw/ls-tree -z/, $sha1);
+  return
+  	unless $output;
 
   my @ret;
   for my $line (split /\0/, $output) {
@@ -325,7 +326,7 @@ sub list_tree {
 
     push @ret, {
       mode    => oct $mode,
-	  # XXX I wonder why directories always turn up as 040000 ...
+      # XXX I wonder why directories always turn up as 040000 ...
       modestr => $self->get_object_mode_string({mode=>oct $mode}),
       type    => $type,
       object  => $object,
@@ -354,10 +355,10 @@ sub get_object_mode_string {
 =cut
 
 sub get_object_type {
-  my ($self, $object, $project) = @_;
+  my ($self, $object) = @_;
 
-  chomp(my $output = $self->run_cmd_in($project || $self->project, qw/cat-file -t/, $object));
-  return unless $output;
+  my($output) = $self->command(qw/cat-file -t/, $object)
+    or return;
 
   return $output;
 }
@@ -369,14 +370,14 @@ Return the contents of a given file.
 =cut
 
 sub cat_file {
-  my ($self, $object, $project) = @_;
+  my ($self, $object) = @_;
 
   my $type = $self->get_object_type($object);
   die "object `$object' is not a file\n"
     if (!defined $type || $type ne 'blob');
 
-  my $output = $self->run_cmd_in($project || $self->project, qw/cat-file -p/, $object);
-  return unless $output;
+  my($output) = $self->command(qw/cat-file -p/, $object)
+    or return;
 
   return $output;
 }
@@ -395,7 +396,7 @@ sub hash_by_path {
   my($line) = $self->command('ls-tree', $base, '--', $path)
     or return;
 
-  #'100644 blob 0fa3f3a66fb6a137f6ec2c19351ed4d807070ffa	panic.c'
+  #'100644 blob 0fa3f3a66fb6a137f6ec2c19351ed4d807070ffa    panic.c'
   $line =~ m/^([0-9]+) (.+) ($SHA1RE)\t/;
   return defined $type && $type ne $2
     ? ()
@@ -430,8 +431,8 @@ sub raw_diff {
   my ($self, @args) = @_;
 
   return $self->command(
-	  qw(diff-tree -r -M --no-commit-id --full-index),
-	  @args
+      qw(diff-tree -r -M --no-commit-id --full-index),
+      @args
   );
 }
 
@@ -472,24 +473,24 @@ sub diff {
   # So either a parent is specifed, or we use the commit's parent if there's
   # only one, otherwise it was a merge commit.
   my $parent = $args{parent}
-			 ? $args{parent}
-			 : @{$args{commit}->parents} <= 1
-			   ? $args{commit}->parent_sha1
-			   : '-c';
+             ? $args{parent}
+             : @{$args{commit}->parents} <= 1
+               ? $args{commit}->parent_sha1
+               : '-c';
   my @etc = (
     ( $args{file}  ? ('--', $args{file}) : () ),
   );
 
   my @out = $self->raw_diff(
-	( $args{patch} ? '--patch-with-raw' : () ),
-	  $parent, $args{commit}->sha1, @etc
+    ( $args{patch} ? '--patch-with-raw' : () ),
+      $parent, $args{commit}->sha1, @etc
   );
 
   # XXX Yes, there is much wrongness having parse_diff_tree be destructive.
   my @difftree = $self->parse_diff_tree(\@out);
 
   return \@difftree
-	unless $args{patch};
+    unless $args{patch};
 
   # The blank line between the tree and the patch.
   shift @out;
@@ -543,7 +544,7 @@ sub parse_diff_tree {
   my @keys = qw(modesrc modedst sha1src sha1dst status src dst);
   my @ret;
   while(@$diff and $diff->[0] =~ /^:\d+/) {
-	my $line = shift @$diff;
+    my $line = shift @$diff;
     # see. man git-diff-tree for more info
     # mode src, mode dst, sha1 src, sha1 dst, status, src[, dst]
     my @vals = $line =~ /^:(\d+) (\d+) ($SHA1RE) ($SHA1RE) ([ACDMRTUX]\d*)\t([^\t]+)(?:\t([^\n]+))?$/;
@@ -552,8 +553,8 @@ sub parse_diff_tree {
     $line{file}   = $line{src};
     $line{sha1}   = $line{sha1dst};
     $line{is_new} = $line{sha1src} =~ /^0+$/
-		if $line{sha1src};
-	@line{qw/status sim/} = $line{status} =~ /(R)(\d+)/
+        if $line{sha1src};
+    @line{qw/status sim/} = $line{status} =~ /(R)(\d+)/
       if $line{status} =~ /^R/;
     push @ret, \%line;
   }
@@ -581,7 +582,7 @@ sub parse_rev_list {
       if ($self->valid_rev($line)) {
         push @ret, $self->get_object($line);
       }
-	}
+    }
   }
 
   return @ret;
@@ -626,8 +627,8 @@ sub rev_info {
   return unless $self->valid_rev($rev);
 
   return $self->list_revs(
-	  rev => $rev, count => 1,
-	  ( $project ? (project => $project) : () )
+      rev => $rev, count => 1,
+      ( $project ? (project => $project) : () )
   );
 }
 
@@ -721,11 +722,11 @@ For a given sha1 check which branches currently point at it.
 =cut
 
 sub refs_for {
-	my($self, $sha1) = @_;
+    my($self, $sha1) = @_;
 
-	my $refs = $self->references->{$sha1};
+    my $refs = $self->references->{$sha1};
 
-	return $refs ? @$refs : ();
+    return $refs ? @$refs : ();
 }
 
 =head2 references
@@ -736,23 +737,23 @@ C<git_get_references>.
 =cut
 
 sub references {
-	my($self) = @_;
+    my($self) = @_;
 
-	return $self->{references}
-		if $self->{references};
+    return $self->{references}
+        if $self->{references};
 
-	# 5dc01c595e6c6ec9ccda4f6f69c131c0dd945f8c refs/tags/v2.6.11
-	# c39ae07f393806ccf406ef966e9a15afc43cc36a refs/tags/v2.6.11^{}
-	my @reflist = $self->command(qw(show-ref --dereference))
-		or return;
+    # 5dc01c595e6c6ec9ccda4f6f69c131c0dd945f8c refs/tags/v2.6.11
+    # c39ae07f393806ccf406ef966e9a15afc43cc36a refs/tags/v2.6.11^{}
+    my @reflist = $self->command(qw(show-ref --dereference))
+        or return;
 
-	my %refs;
-	for(@reflist) {
-		push @{$refs{$1}}, $2
-			if m!^($SHA1RE)\srefs/(.*)$!;
-	}
+    my %refs;
+    for(@reflist) {
+        push @{$refs{$1}}, $2
+            if m!^($SHA1RE)\srefs/(.*)$!;
+    }
 
-	return $self->{references} = \%refs;
+    return $self->{references} = \%refs;
 }
 
 1;
