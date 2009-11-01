@@ -1,0 +1,19 @@
+<div class="search">
+  <form method="get" action="[% c.uri_for('search') %]" enctype="application/x-www-form-urlencoded">
+  <input name="p" type="hidden" value="[% project %]" />
+  <input name="a" type="hidden" value="search" />
+  <input name="h" type="hidden" value="[% commit.sha1 %]" />
+  <input name="f" type="hidden" value="[% c.req.param('f') %]" />
+  <select name="type" >
+      <option value="commit">commit</option>
+      <option value="author">author</option>
+      <option value="committer">committer</option>
+      <!-- Not supported, maybe later.
+      <option value="grep">grep</option>
+      <option value="pickaxe">pickaxe</option>
+      -->
+  </select><sup><a href="/search_help?p=[% project %]">?</a></sup> search:
+  <input type="text" name="text" value="[% search_text %]"/>
+  <span title="Extended regular expression"><label><input type="checkbox" name="regexp" value="1" />re</label></span>
+  </form>
+</div>

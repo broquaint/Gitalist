@@ -328,7 +328,27 @@ sub reflog : Local {
 }
 
 sub search : Local {
-    Carp::croak "Not implemented.";
+  my($self, $c) = @_;
+
+  my $commit  = $self->_get_commit($c);
+  # Lifted from /shortlog.
+  my %logargs = (
+    sha1   => $commit->sha1,
+    count  => Gitalist->config->{paging}{log},
+    ($c->req->param('f') ? (file => $c->req->param('f')) : ()),
+	search => {
+	  type   => $c->req->param('type'),
+	  text   => $c->req->param('text'),
+	  regexp => $c->req->param('regexp') || 0,
+    }
+  );
+
+  $c->stash(
+      commit  => $commit,
+      results => [$c->model('Git')->list_revs(%logargs)],
+      action  => 'search',
+	  # This could be added - page      => $page,
+  );
 }
 
 sub search_help : Local {

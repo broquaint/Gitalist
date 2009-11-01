@@ -570,22 +570,11 @@ Given the output of the C<rev-list> command return a list of hashes.
 
 sub parse_rev_list {
   my ($self, $output) = @_;
-  my @ret;
 
-  my @revs = split /\0/, $output;
-
-  for my $rev (split /\0/, $output) {
-    for my $line (split /\n/, $rev, 6) {
-      chomp $line;
-      next unless $line;
-
-      if ($self->valid_rev($line)) {
-        push @ret, $self->get_object($line);
-      }
-    }
-  }
-
-  return @ret;
+  return
+    map  $self->get_object($_),
+    grep $self->valid_rev($_),
+    map  split(/\n/, $_, 6), split /\0/, $output;
 }
 
 =head2 list_revs
@@ -598,12 +587,28 @@ array of hashes.
 sub list_revs {
   my ($self, %args) = @_;
 
-  $args{sha1} ||= $self->head_hash($args{project});
+  $args{sha1} = $self->head_hash($args{sha1})
+    if !$args{sha1} || $args{sha1} !~ $SHA1RE;
 
+	my @search_opts;
+  if($args{search}) {
+    my $sargs = $args{search};
+    $sargs->{type} = 'grep'
+      if $sargs->{type} eq 'commit';
+    @search_opts = (
+       # This seems a little fragile ...
+       qq[--$sargs->{type}=$sargs->{text}],
+       '--regexp-ignore-case',
+       $sargs->{regexp} ? '--extended-regexp' : '--fixed-strings'
+    );
+  }
+
+  $DB::single=1;
   my $output = $self->run_cmd_in($args{project} || $self->project, 'rev-list',
     '--header',
-    (defined $args{ count } ? "--max-count=$args{count}" : ()),
-    (defined $args{ skip  } ? "--skip=$args{skip}"       : ()),
+    (defined $args{ count  } ? "--max-count=$args{count}" : ()),
+    (defined $args{ skip   } ? "--skip=$args{skip}"       : ()),
+    @search_opts,
     $args{sha1},
     '--',
     ($args{file} ? $args{file} : ()),
