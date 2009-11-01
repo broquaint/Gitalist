@@ -5,8 +5,7 @@ use Test::More;
 
 BEGIN { use_ok 'Gitalist::Model::Git' }
 
-my $c = bless {}, 'Gitalist';
-my $m = Git::Repos->new($c, { repo_dir => "$Bin/lib/repositories" });
+my $m = Git::Repos->new({ repo_dir => "$Bin/lib/repositories" });
 isa_ok($m, 'Git::Repos');
 
 # 'bare.git' is a bare git repository in the repository dir
