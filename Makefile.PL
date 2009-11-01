@@ -18,13 +18,25 @@ requires 'namespace::autoclean';
 requires 'Config::General'; # This should reflect the config file format you've chosen
                  # See Catalyst::Plugin::ConfigLoader for supported formats
 requires 'MooseX::Types::Common';
-catalyst;
 requires 'File::Find::Rule';
 requires 'File::Stat::ModeString';
 requires 'File::Slurp';
 requires 'DateTime::Format::Mail';
 requires 'IO::Capture::Stdout';
 requires 'File::Which';
+requires 'CGI';
+requires 'DateTime';
+requires 'Git::PurePerl';
+requires 'List::MoreUtils';
+requires 'MooseX::Declare';
+requires 'Path::Class';
+requires 'Sub::Exporter';
+requires 'Syntax::Highlight::Engine::Kate';
+requires 'Moose::Autobox';
+
+test_requires 'Test::More' => '0.88';
+
+catalyst;
 
 install_script glob('script/*.pl');
 auto_install;
