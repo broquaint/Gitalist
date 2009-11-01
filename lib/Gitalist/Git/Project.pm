@@ -112,8 +112,8 @@ The keys for each item will be:
     }
 
 
-    method project_dir (Path::Class::Dir $project) {
-        my $dir = $project->stringify;
+    method project_dir {
+        my $dir = $self->path->stringify;
         $dir .= '/.git'
             if -f dir($dir)->file('.git/HEAD');
         return $dir;
@@ -121,7 +121,7 @@ The keys for each item will be:
 
     # Compatibility
 
-=head2 project_info
+=head2 info
 
 Returns a hash containing properties of this project. The keys will
 be:
@@ -133,7 +133,7 @@ be:
 
 =cut
 
-    method project_info {
+    method info {
         return {
             name => $self->name,
             description => $self->description,
