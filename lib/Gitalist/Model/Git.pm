@@ -2,10 +2,13 @@ package Gitalist::Model::Git;
 
 use Moose;
 use namespace::autoclean;
+use MooseX::Types::Common::String qw/NonEmptySimpleStr/;
 use Moose::Autobox;
 
 extends 'Catalyst::Model';
 with 'Catalyst::Component::InstancePerContext';
+
+has repo_dir => ( is => 'ro', required => 1, isa => NonEmptySimpleStr );
 
 =head1 NAME
 
@@ -27,7 +30,7 @@ sub build_per_context_instance {
   my $app = blessed($c) || $c;
   my $model = Git::Repos->new(
     project => ([$c->req->parameters->{p} || '/']->flatten)[0],
-    repo_dir => $app->config->{repo_dir}, # FIXME - Move to model config
+    repo_dir => $self->repo_dir,
   );
 
   # This is fugly as fuck. Move Git::PurePerl construction into attribute builders..
