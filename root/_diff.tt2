@@ -1,4 +1,4 @@
-<link rel="stylesheet" type="text/css" href="/static/css/syntax/[% language %].css"/>
+<link rel="stylesheet" type="text/css" href="[% c.uri_for('/static/css/syntax/' + language + '.css') %]"/>
 [% FOREACH item IN diff %]
 <div class='diff-head'>
  diff --git
