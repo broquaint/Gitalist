@@ -1,3 +1,5 @@
+git-daemon-export-ok
+script/gitalist.cgi
 META.yml
 Makefile
 Makefile.old
