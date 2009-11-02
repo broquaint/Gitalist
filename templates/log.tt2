@@ -13,9 +13,9 @@
 
 <div class="title_text">
  <div class="log_link">
-   <a href="/commit?p=gitweb/.git;h=[% line.sha %]">commit</a>
- | <a href="/commitdiff?p=gitweb/.git;h=[% line.sha1 %]">commitdiff</a>
- | <a href="/tree?p=gitweb/.git;h=[% line.sha1 %];hb=[% line.sha1 %]">tree</a>
+   <a href="[% c.uri_for("commit", {h=line.sha}) %]">commit</a>
+ | <a href="[% c.uri_for("commitdiff", {h=line.sha1}) %]">commitdiff</a>
+ | <a href="[% c.uri_for("tree", {h=line.sha1, hb=line.sha1}) %]">tree</a>
  </div>
  <i>[% line.author.name | html %] [% line.authored_time %]</i>
 </div>

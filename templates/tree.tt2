@@ -6,10 +6,10 @@
 
 [% IF path -%]
 <div>
- <a href='/tree?p=[% project %];hb=[% commit.sha1 %]'>[% project %]</a>
+ <a href='[% c.uri_for("tree", {hb=commit.sha1}) %]'>[% project %]</a>
  [% fullpath = ''-%]
  [% FOREACH part IN path.split('/') -%]
- / <a href='/tree?p=[% project %];h=[% tree.sha1 %];hb=[% commit.sha1 %];f=[% fullpath _ part %]'>[% part %]</a>
+ / <a href='[% c.uri_for("tree", {h=tree.sha1, hb=commit.sha1, f=fullpath _ part}) %]'>[% part %]</a>
  [% fullpath = fullpath _ part _ '/'; %]
  [% END -%]
 </div>

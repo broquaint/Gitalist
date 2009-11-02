@@ -8,12 +8,8 @@
 </dl>
 </div>
 
-<div class='shortlog'>
-<h2><a href='[% c.uri_for('shortlog') %]'>shortlog</a></h2>
+<h2><a href='[% c.uri_for("shortlog") %]'>shortlog</a></h2>
 [% INCLUDE '_shortlog.tt2' %]
-</div>
 
-<div class='heads'>
-<h2><a href='[% c.uri_for('heads') %]'>heads</a></h2>
+<h2><a href='[% c.uri_for("heads") %]'>heads</a></h2>
 [% INCLUDE '_heads.tt2' %]
-</div>

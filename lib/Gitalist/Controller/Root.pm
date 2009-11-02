@@ -30,7 +30,8 @@ use IO::Capture::Stdout;
 
 =head2 run_gitweb
 
-The main shim around C<gitweb.pm>.
+The C<gitweb> shim. It should now only be explicitly accessible by
+modifying the URL.
 
 =cut
 
@@ -554,11 +555,25 @@ Attempt to render a view, if needed.
 sub end : ActionClass('RenderView') {
   # Give every view the current HEAD.
   $_[1]->stash->{HEAD} = $_[1]->model('Git')->head_hash;
+  
+  # XXX Move this into a plugin!
+  use DateTime::Format::Human::Duration;
+  $_[1]->stash->{time_since} = sub {
+    my($dt, $now) = ($_[0], DateTime->now);
+
+    my($age) = $dt < (DateTime->now - DateTime::Duration->new(days=>12))
+      ? $dt->ymd
+      : DateTime::Format::Human::Duration->new->format_duration($now - $dt)
+          =~ /^(?:.*?weeks?, )?(\d+ [^\d]+)(?:,|$) /;
+
+    
+    return $age;
+  };
 }
 
 =head1 AUTHOR
 
-Dan Brook,,,
+Dan Brook
 
 =head1 LICENSE
 

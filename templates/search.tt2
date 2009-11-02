@@ -13,9 +13,9 @@
 
 <div class="title_text">
  <div class="log_link">
-   <a href="[% c.uri_for('commit', {h=result.sha1}) %]">commit</a>
- | <a href="[% c.uri_for('commitdiff', {h=result.sha1}) %]">commitdiff</a>
- | <a href="[% c.uri_for('tree', {h=result.tree_sha1, hb=line.sha1}) %]">tree</a>
+   <a href="[% c.uri_for("", {h=result.sha1}) %]">commit</a>
+ | <a href="[% c.uri_for("", {h=result.sha1}) %]">commitdiff</a>
+ | <a href="[% c.uri_for("", {h=result.tree_sha1, hb=line.sha1}) %]">tree</a>
  </div>
  <i>[% result.author.name | html %] [% line.authored_time %]</i>
 </div>

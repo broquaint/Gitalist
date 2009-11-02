@@ -1,5 +1,4 @@
-/* XXX A good framework would be handy */
-/* XXX Also colours. Lots of colours. */
+/* XXX Colours. Lots of colours. */
 #body {
   margin: 1em;
 }
@@ -50,6 +49,9 @@ div.commit-message {
 }
 .heads .current {
   text-decoration: underline;
+}
+table.heads {
+	width: 50%;
 }
 
 /* /blob */

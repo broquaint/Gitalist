@@ -610,7 +610,6 @@ sub list_revs {
     );
   }
 
-  $DB::single=1;
   my $output = $self->run_cmd_in($args{project} || $self->project, 'rev-list',
     '--header',
     (defined $args{ count  } ? "--max-count=$args{count}" : ()),
