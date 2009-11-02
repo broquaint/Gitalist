@@ -33,6 +33,7 @@ requires 'Path::Class' => '0.17';
 requires 'Sub::Exporter';
 requires 'Syntax::Highlight::Engine::Kate';
 requires 'Moose::Autobox';
+requires 'DateTime::Format::Human::Duration';
 
 test_requires 'Test::More' => '0.88';
 
