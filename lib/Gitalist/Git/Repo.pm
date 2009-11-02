@@ -6,11 +6,7 @@ class Gitalist::Git::Repo {
     use Gitalist::Git::Project;
     has repo_dir => ( isa => NonEmptySimpleStr,
                       is => 'ro',
-                      lazy_build => 1 );
-
-    method _build_repo_dir {
-        return Gitalist->config->{repo_dir};
-    }
+                      required => 1 );
 
 =head2 _is_git_repo
 
