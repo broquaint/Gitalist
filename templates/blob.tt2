@@ -5,118 +5,12 @@
 [% head.comment.substr(0, 85) %] ...
 </div>
 <div class='path'>
- <a href="/tree?p=[% project %];hb=[% head.sha1 %]">[% project %]</a>
+ <a href="[% c.uri_for("tree", {hb=head.sha1}) %]">[% project %]</a>
  [% # XXX The last part should link to blob_plain (or something) but doesn't ATM
     FOREACH part IN filename.split('/') %]
- / <a href="/tree?p=[% project %];hb=[% head.sha1 %]">[% part %]</a>
+ / <a href="[% c.uri_for("tree", {hb=head.sha1}) %]">[% part %]</a>
  [% END %]
 </div>
 <div>
  <pre class='blob'>[% blob %]</pre>
 </div>
-
-<!--
-$Git_PurePerl_Object_Blob1 = bless( {
-                               content => "* Fix git_blob_plain i.e don't use the wrapper.\n",
-                               git     => bless( {
-                                            directory => {
-                                                           dirs     => [ '.' ],
-                                                           file_spec_class
-                                                                    => undef,
-                                                           volume   => ''
-                                                         },
-                                            gitdir    => {
-                                                           dirs     => [ '.git' ],
-                                                           file_spec_class
-                                                                    => undef,
-                                                           volume   => ''
-                                                         },
-                                            loose     => bless( { directory => {
-                                                           dirs     => [
-                                                                         '.git',
-                                                                         'objects'
-                                                                       ],
-                                                           file_spec_class
-                                                                    => undef,
-                                                           volume   => ''
-                                                         } }, 'Git::PurePerl::Loose' ),
-                                            packs     => [ bless( {
-                                                           fh      => bless( do{ require Symbol; Symbol::gensym }, 'IO::File' ),
-                                                           filename
-                                                                   => {
-                                                                        dir     => {
-                                                                                     dirs     => [
-                                                                                                   '.git',
-                                                                                                   'objects',
-                                                                                                   'pack'
-                                                                                                 ],
-                                                                                     file_spec_class
-                                                                                              => undef,
-                                                                                     volume   => ''
-                                                                                   },
-                                                                        file    => 'pack-76da0c32a0a4918d1828d110636caad32af6ec6c.pack',
-                                                                        file_spec_class
-                                                                                => undef
-                                                                      },
-                                                           index   => bless( {
-                                                                        fh       => bless( Symbol::gensym, 'IO::File' ),
-                                                                        filename => {
-                                                                                      dir     => {
-                                                                                                   dirs     => [
-                                                                                                                 '.git',
-                                                                                                                 'objects',
-                                                                                                                 'pack'
-                                                                                                               ],
-                                                                                                   file_spec_class
-                                                                                                            => undef,
-                                                                                                   volume   => ''
-                                                                                                 },
-                                                                                      file    => 'pack-76da0c32a0a4918d1828d110636caad32af6ec6c.idx',
-                                                                                      file_spec_class
-                                                                                              => undef
-                                                                                    },
-                                                                        offsets  => [
-                                                                                      ( 0 ) x 23,
-                                                                                      ( 1 ) x 29,
-                                                                                      ( 2 ) x 11,
-                                                                                      ( 3 ) x 6,
-                                                                                      ( 4 ) x 22,
-                                                                                      ( 5 ) x 51,
-                                                                                      ( 6 ) x 78,
-                                                                                      ( 7 ) x 3,
-                                                                                      ( 8 ) x 34
-                                                                                    ],
-                                                                        size     => 8
-                                                                      }, 'Git::PurePerl::PackIndex::Version2' ),
-                                                           index_filename
-                                                                   => {
-                                                                        dir     => {
-                                                                                     dirs     => [
-                                                                                                   '.git',
-                                                                                                   'objects',
-                                                                                                   'pack'
-                                                                                                 ],
-                                                                                     file_spec_class
-                                                                                              => undef,
-                                                                                     volume   => ''
-                                                                                   },
-                                                                        file    => 'pack-76da0c32a0a4918d1828d110636caad32af6ec6c.idx',
-                                                                        file_spec_class
-                                                                                => undef
-                                                                      }
-                                                         }, 'Git::PurePerl::Pack::WithIndex' ) ]
-                                          }, 'Git::PurePerl' ),
-                               kind    => 'blob',
-                               sha1    => '8976ebc7df65475b3def53a1653533c3f61070d0',
-                               size    => 48
-                             }, 'Git::PurePerl::Object::Blob' );
-bless( $Git_PurePerl_Object_Blob1->{git}{directory}, 'Path::Class::Dir' );
-bless( $Git_PurePerl_Object_Blob1->{git}{gitdir}, 'Path::Class::Dir' );
-bless( $Git_PurePerl_Object_Blob1->{git}{loose}{directory}, 'Path::Class::Dir' );
-bless( $Git_PurePerl_Object_Blob1->{git}{packs}[0]{filename}{dir}, 'Path::Class::Dir' );
-bless( $Git_PurePerl_Object_Blob1->{git}{packs}[0]{filename}, 'Path::Class::File' );
-bless( $Git_PurePerl_Object_Blob1->{git}{packs}[0]{index}{filename}{dir}, 'Path::Class::Dir' );
-bless( $Git_PurePerl_Object_Blob1->{git}{packs}[0]{index}{filename}, 'Path::Class::File' );
-bless( $Git_PurePerl_Object_Blob1->{git}{packs}[0]{index_filename}{dir}, 'Path::Class::Dir' );
-bless( $Git_PurePerl_Object_Blob1->{git}{packs}[0]{index_filename}, 'Path::Class::File' );
--->

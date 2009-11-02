@@ -1,18 +1,22 @@
 [%- # git_header_html
 -%]
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-US" lang="en-US">
-<!-- git web interface version [% version %], (C) 2005-2006, Kay Sievers <kay.sievers\@vrfy.org>, Christian Gierke -->
-<!-- git core binaries version [% git_version %] -->
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta http-equiv="content-type" content="[% content_type %]; charset=utf-8"/>
+  <!-- git web interface version [% version %], (C) 2005-2006, Kay Sievers <kay.sievers\@vrfy.org>, Christian Gierke -->
+  <!-- git core binaries version [% git_version %] -->
+  <meta charset="utf-8"/>
   <meta name="generator" content="gitweb/[% version %] git/[% git_version %][% mod_perl_version %]"/>
   <meta name="robots" content="index, nofollow"/>
   <title>[% title | html %] (Gitalist)</title>
   [% IF baseurl %]
   <base href="[% baseurl %]" />
   [% END %]
+  <link rel="stylesheet" href="/static/css/blueprint/screen.css" type="text/css" media="screen, projection">
+  <link rel="stylesheet" href="/static/css/blueprint/print.css" type="text/css" media="print">
+  <!--[if lt IE 8]>
+    <link rel="stylesheet" href="/static/css/blueprint/ie.css" type="text/css" media="screen, projection">
+  <![endif]-->  
   <link rel="stylesheet" type="text/css" href="/static/css/site.css"/>
   <link rel="stylesheet" type="text/css" href="[% stylesheet %]"/>
   [% FOR link IN links %]
@@ -35,7 +39,7 @@
   <a title="[% logo_label | url %]" href="[% logo_url | url %]"><img src="[% logo_img %]" alt="git" class="logo"/></a>
   <a href="[% home_link | url %]">[% home_link_str %]</a>
   [%- IF project %]
-  / <a href="/summary?p=[% project %]">[% project %]</a>
+  / <a href="[% c.uri_for('summary') %]">[% project %]</a>
   [% IF action;  " / " _ action; END;
   END %]
 </div>

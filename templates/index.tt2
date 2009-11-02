@@ -31,10 +31,10 @@
         <td><a class="list" title="[% p.description %]" href="/summary?p=[% p.name %]">[% p.description.substr(0, 20) %]</a></td>
         <td>[% p.owner %]</td>
         <td class="age2">[% p.last_change %]</td>
-        <td class="link"><a href="/summary?p=[% p.name %]">summary</a>
-            | <a href="/shortlog?p=[% p.name %]">shortlog</a>
-            | <a href="/log?p=[% p.name %]">log</a>
-            | <a href="/tree?p=[% p.name %]">tree</a></td>
+        <td class="link"><a href="[% c.uri_for("summary") %]">summary</a>
+            | <a href="[% c.uri_for("shortlog") %]">shortlog</a>
+            | <a href="[% c.uri_for("log") %]">log</a>
+            | <a href="[% c.uri_for("tree") %]">tree</a></td>
     </tr>
   [% END %]
 </tbody>

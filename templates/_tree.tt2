@@ -13,12 +13,12 @@
    <td>[% item.modestr %]</td>
    [% theact = item.type == 'tree' ? 'tree' : 'blob' -%]
    <td class='filename'>
-    <a href="/[% theact %]?p=[% project %];h=[% item.object %];hb=[% commit.sha1 %];f=[% IF path; path _ '/'; END; item.file %]">[% item.file %]</a>
+    <a href="[% c.uri_for(theact, {h=item.object, hb=commit.sha1, f=(path ? path _ '/' _ item.file : item.file)}) %]">[% item.file %]</a>
    </td>
    <td class='action-list'>
-     <a href="/[% theact %]?p=[% project %];h=[% item.object %];hb=[% commit.sha1 %];f=[% item.file %]">[% theact %]</a>
-     <a href="/history?p=[% project %];h=[% item.object %]">history</a>
-     <a href="/raw?p=[% project %];h=[% item.object %]">raw</a>
+     <a href="[% c.uri_for(theact, {h=item.object, hb=commit.sha1, f=item.file}) %]">[% theact %]</a>
+     <a href="[% c.uri_for('history', {h=item.object}) %]">history</a>
+     <a href="[% c.uri_for('raw', {h=item.object}) %]">raw</a>
    </td>
   </tr>
   [% END %]

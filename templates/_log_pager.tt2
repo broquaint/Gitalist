@@ -1,9 +1,9 @@
 <div class='pager'>
- <a href='/[% action %]?p=[% project %];h=[% HEAD %]'>HEAD</a>
+ <a href='[% c.uri_for(action, {h=HEAD}) %]'>HEAD</a>
  [% IF log_lines.size == 50 %]
- <a href='/[% action %]?p=[% project %];h=[% commit.sha1 %];pg=[% page + 1 %]'>next</a>
+ <a href='[% c.uri_for(action, {pg=page + 1, h=commit.sha1}) %]'>next</a>
  [% END %]
  [% IF log_lines.first.sha1 != commit.sha1 %]
- <a href='/[% action %]?p=[% project %];h=[% commit.sha1 %];pg=[% page - 1 %]'>prev</a>
+ <a href='[% c.uri_for(action, {pg=page - 1, h=commit.sha1}) %]'>prev</a>
  [% END %]
 </div>
