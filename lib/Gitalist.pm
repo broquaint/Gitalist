@@ -19,6 +19,7 @@ use gitweb;
 __PACKAGE__->config(
     name => 'Gitalist',
     default_view => 'Default',
+    default_model => 'Git', # Yes, we are going to be changing this.
 );
 
 # Start the application
