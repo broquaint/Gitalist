@@ -6,7 +6,7 @@ use Catalyst::Runtime 5.80;
 
 extends 'Catalyst';
 
-use Catalyst qw/-Debug
+use Catalyst qw/
                 ConfigLoader
                 Static::Simple
 				StackTrace/;
