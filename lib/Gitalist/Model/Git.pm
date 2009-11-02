@@ -41,6 +41,8 @@ sub build_per_context_instance {
   return $model;
 }
 
+__PACKAGE__->meta->make_immutable;
+
 package Git::Repos; # Better name? Split out into own file once we have a sane name.
 use Moose;
 use namespace::autoclean;
