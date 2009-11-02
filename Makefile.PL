@@ -1,7 +1,11 @@
 #!/usr/bin/env perl
 # IMPORTANT: if you delete this file your app will not work as
 # expected.  You have been warned.
+use strict;
+use warnings;
 use inc::Module::Install;
+use Module::Install::AuthorRequires;
+use Module::Install::AuthorTests;
 
 name 'Gitalist';
 all_from 'lib/Gitalist.pm';
@@ -35,9 +39,15 @@ requires 'Syntax::Highlight::Engine::Kate';
 requires 'Moose::Autobox';
 requires 'DateTime::Format::Human::Duration';
 
+author_requires 'Test::NoTabs';
+author_requires 'Test::Pod' => '1.14';
+author_requires 'Test::Pod::Coverage' => '1.04';
+
 test_requires 'Test::More' => '0.88';
 
 catalyst;
+
+author_tests 't/author';
 
 install_script glob('script/*.pl');
 auto_install;
