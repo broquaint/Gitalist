@@ -247,9 +247,30 @@ each item will contain the contents of L</project_info>.
 =cut
 
 sub list_projects {
-  my ($self, $dir) = @_;
+    my ($self, $dir) = @_;
 
-  my $base = dir($dir || $self->repo_dir);
+    my $base = dir($dir || $self->repo_dir);
+
+    my @ret;
+    my $dh = $base->open or die("Cannot open dir $base");
+    while (my $file = $dh->read) {
+        next if $file =~ /^.{1,2}$/;
+
+        my $obj = $base->subdir($file);
+        next unless -d $obj;
+        next unless $self->is_git_repo($obj);
+		# XXX Leaky abstraction alert!
+		my $is_bare = !-d $obj->subdir('.git');
+
+		my $name = (File::Spec->splitdir($obj))[-1];
+        push @ret, {
+            name => ($name . ( $is_bare ? '' : '/.git' )),
+            $self->get_project_properties(
+				$is_bare ? $obj : $obj->subdir('.git')
+			),
+        };
+    }
+>>>>>>> 6ccff25e7c826deca31f450f33049ba7fd62ded9:lib/Gitalist/Model/Git.pm
 
   my @ret;
   my $dh = $base->open;
