@@ -6,7 +6,7 @@ use Catalyst::Runtime 5.80;
 
 extends 'Catalyst';
 
-use Catalyst qw/-Debug
+use Catalyst qw/
                 ConfigLoader
                 Static::Simple
                 StackTrace/;
@@ -19,6 +19,7 @@ use gitweb;
 __PACKAGE__->config(
     name => 'Gitalist',
     default_view => 'Default',
+    default_model => 'Git', # Yes, we are going to be changing this.
 );
 
 # Start the application

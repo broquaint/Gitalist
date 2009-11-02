@@ -61,9 +61,9 @@ sub run_gitweb {
 sub _get_commit {
   my($self, $c, $haveh) = @_;
 
-  my $h = $haveh || $c->req->param('h') || '';
+  my $h = $haveh || $c->req->param('h');
   my $f = $c->req->param('f');
-  my $m = $c->model('Git');
+  my $m = $c->model();
 
   # Either use the provided h(ash) parameter, the f(ile) parameter or just use HEAD.
   my $hash = ($h =~ /[^a-f0-9]/ ? $m->head_hash($h) : $h)
@@ -93,7 +93,7 @@ sub index :Path :Args(0) {
   return $self->run_gitweb($c)
     if $c->req->param('a');
 
-  my $list = $c->model('Git')->list_projects;
+  my $list = $c->model()->list_projects;
   unless(@$list) {
     die "No projects found in ".Gitalist->config->{repodir};
   }
@@ -117,12 +117,12 @@ sub summary : Local {
   my $commit = $self->_get_commit($c);
   $c->stash(
     commit    => $commit,
-    info      => $c->model('Git')->project_info($c->model('Git')->project),
-    log_lines => [$c->model('Git')->list_revs(
+    info      => $c->model()->project_info($c->model()->project),
+    log_lines => [$c->model()->list_revs(
       sha1 => $commit->sha1, count => Gitalist->config->{paging}{summary}
     )],
-    refs      => $c->model('Git')->references,
-    heads     => [$c->model('Git')->heads],
+    refs      => $c->model()->references,
+    heads     => [$c->model()->heads],
     action    => 'summary',
   );
 }
@@ -138,7 +138,7 @@ sub heads : Local {
 
   $c->stash(
     commit => $self->_get_commit($c),
-    heads  => [$c->model('Git')->heads],
+    heads  => [$c->model()->heads],
     action => 'heads',
   );
 }
@@ -153,17 +153,17 @@ sub blob : Local {
   my ( $self, $c ) = @_;
 
   my $h  = $c->req->param('h')
-       || $c->model('Git')->hash_by_path($c->req->param('f'))
+       || $c->model()->hash_by_path($c->req->param('f'))
        || die "No file or sha1 provided.";
   my $hb = $c->req->param('hb')
-       || $c->model('Git')->head_hash
+       || $c->model()->head_hash
        || die "Couldn't discern the corresponding head.";
 
   my $filename = $c->req->param('f') || '';
 
   $c->stash(
-    blob     => $c->model('Git')->get_object($h)->content,
-    head     => $c->model('Git')->get_object($hb),
+    blob     => $c->model()->get_object($h)->content,
+    head     => $c->model()->get_object($hb),
     filename => $filename,
     # XXX Hack hack hack, see View::SyntaxHighlight
     language => ($filename =~ /\.p[lm]$/ ? 'Perl' : ''),
@@ -185,7 +185,7 @@ sub blobdiff : Local {
   my $commit = $self->_get_commit($c);
   my $filename = $c->req->param('f')
               || croak("No file specified!");
-  my($tree, $patch) = $c->model('Git')->diff(
+  my($tree, $patch) = $c->model()->diff(
     commit => $commit,
     parent => $c->req->param('hp') || '',
     file   => $filename,
@@ -215,8 +215,8 @@ sub commit : Local {
   my $commit = $self->_get_commit($c);
   $c->stash(
       commit      => $commit,
-      diff_tree   => ($c->model('Git')->diff(commit => $commit))[0],
-      branches_on => [$c->model('Git')->refs_for($commit->sha1)],
+      diff_tree   => ($c->model()->diff(commit => $commit))[0],
+      branches_on => [$c->model()->refs_for($commit->sha1)],
       action      => 'commit',
   );
 }
@@ -231,7 +231,7 @@ sub commitdiff : Local {
   my ( $self, $c ) = @_;
 
   my $commit = $self->_get_commit($c);
-  my($tree, $patch) = $c->model('Git')->diff(
+  my($tree, $patch) = $c->model()->diff(
       commit => $commit,
       parent => $c->req->param('hp') || '',
       patch  => 1,
@@ -271,8 +271,8 @@ sub shortlog : Local {
 
   $c->stash(
       commit    => $commit,
-      log_lines => [$c->model('Git')->list_revs(%logargs)],
-      refs      => $c->model('Git')->references,
+      log_lines => [$c->model()->list_revs(%logargs)],
+      refs      => $c->model()->references,
       action    => 'shortlog',
       page      => $page,
   );
@@ -298,12 +298,12 @@ sub tree : Local {
   my ( $self, $c ) = @_;
 
   my $commit = $self->_get_commit($c, $c->req->param('hb'));
-  my $tree   = $c->model('Git')->get_object($c->req->param('h') || $commit->tree_sha1);
+  my $tree   = $c->model()->get_object($c->req->param('h') || $commit->tree_sha1);
   $c->stash(
       # XXX Useful defaults needed ...
       commit    => $commit,
       tree      => $tree,
-      tree_list => [$c->model('Git')->list_tree($tree->sha1)],
+      tree_list => [$c->model()->list_tree($tree->sha1)],
 	  path      => $c->req->param('f') || '',
       action    => 'tree',
   );
@@ -318,7 +318,7 @@ Expose the local reflog. This may go away.
 sub reflog : Local {
   my ( $self, $c ) = @_;
 
-  my @log = $c->model('Git')->reflog(
+  my @log = $c->model()->reflog(
       '--since=yesterday'
   );
 
@@ -346,7 +346,7 @@ sub search : Local {
 
   $c->stash(
       commit  => $commit,
-      results => [$c->model('Git')->list_revs(%logargs)],
+      results => [$c->model()->list_revs(%logargs)],
       action  => 'search',
 	  # This could be added - page      => $page,
   );
@@ -395,7 +395,7 @@ sub header {
   }
 
   $c->stash->{version}     = $c->config->{version};
-  $c->stash->{git_version} = $c->model('Git')->run_cmd('--version');
+  $c->stash->{git_version} = $c->model()->run_cmd('--version');
   $c->stash->{title}       = $title;
 
   #$c->stash->{baseurl} = $ENV{PATH_INFO} && uri_escape($base_url);
@@ -471,7 +471,7 @@ sub footer {
   my $project = $c->req->param('project')  || $c->req->param('p');
   if(defined $project) {
     (my $pstr = $project) =~ s[/?\.git$][];
-    my $descr = $c->model('Git')->project_info($project)->{description};
+    my $descr = $c->model()->project_info($project)->{description};
     $c->stash->{project_description} = defined $descr
       ? $descr
       : '';
@@ -554,7 +554,7 @@ Attempt to render a view, if needed.
 
 sub end : ActionClass('RenderView') {
   # Give every view the current HEAD.
-  $_[1]->stash->{HEAD} = $_[1]->model('Git')->head_hash;
+  $_[1]->stash->{HEAD} = $_[1]->model()->head_hash;
   
   # XXX Move this into a plugin!
   use DateTime::Format::Human::Duration;

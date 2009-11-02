@@ -2,22 +2,13 @@ package Gitalist::Model::Git;
 
 use Moose;
 use namespace::autoclean;
+use MooseX::Types::Common::String qw/NonEmptySimpleStr/;
+use Moose::Autobox;
 
 extends 'Catalyst::Model';
 with 'Catalyst::Component::InstancePerContext';
 
-use DateTime;
-use Path::Class;
-use File::Which;
-use Carp qw/croak/;
-use File::Find::Rule;
-use DateTime::Format::Mail;
-use File::Stat::ModeString;
-use List::MoreUtils qw/any zip/;
-use Scalar::Util qw/blessed/;
-use MooseX::Types::Common::String qw/NonEmptySimpleStr/; # FIXME, use Types::Path::Class and coerce
-
-use Git::PurePerl;
+has repo_dir => ( is => 'ro', required => 1, isa => NonEmptySimpleStr );
 
 =head1 NAME
 
@@ -31,31 +22,55 @@ Gitalist::Model::Git - the model for git interactions
 
 =cut
 
+use Git::PurePerl;
+use Path::Class qw/dir/;
+sub build_per_context_instance {
+  my ( $self, $c ) = @_;
+
+  my $app = blessed($c) || $c;
+  my $model = Git::Repos->new(
+    project => ([$c->req->parameters->{p} || '/']->flatten)[0],
+    repo_dir => $self->repo_dir,
+  );
+
+  # This is fugly as fuck. Move Git::PurePerl construction into attribute builders..
+  my ($pd, $gd) = $model->project_dir( $model->project )->resolve =~ m{((.+?)(:?/\/\.git)?$)};
+  $gd .= '/.git' if ($gd !~ /\.git$/ and -d "$gd/.git");
+  $model->gpp( Git::PurePerl->new(gitdir => $gd, directory => $pd) );
+
+  return $model;
+}
+
+__PACKAGE__->meta->make_immutable;
+
+package Git::Repos; # Better name? Split out into own file once we have a sane name.
+use Moose;
+use namespace::autoclean;
+use DateTime;
+use Path::Class;
+use File::Which;
+use Carp qw/croak/;
+use File::Find::Rule;
+use DateTime::Format::Mail;
+use File::Stat::ModeString;
+use List::MoreUtils qw/any zip/;
+use MooseX::Types::Common::String qw/NonEmptySimpleStr/; # FIXME, use Types::Path::Class and coerce
+
+use Git::PurePerl;
+
 # Should these live in a separate module? Or perhaps extended Regexp::Common?
+# No, should be a MooseX::Types module!!
 our $SHA1RE = qr/[0-9a-fA-F]{40}/;
 
 # These are static and only need to be setup on app start.
-has repo_dir => ( isa => NonEmptySimpleStr, is => 'ro', lazy_build => 1 ); # Fixme - path::class
+has repo_dir => ( isa => NonEmptySimpleStr, is => 'ro', required => 1 ); # Fixme - path::class
 has git      => ( isa => NonEmptySimpleStr, is => 'ro', lazy_build => 1 );
 # These are dynamic and can be different from one request to the next.
 has project  => ( isa => NonEmptySimpleStr, is => 'rw');
 has gpp      => ( isa => 'Git::PurePerl',   is => 'rw', lazy_build => 1 );
 
-sub build_per_context_instance {
-  my ( $self, $c ) = @_;
 
-  # If we don't have a project param it probably means we're at /  
-  return $self
-   unless $c->req->param('p');
 
-  $self->project( $c->req->param('p') );
-
-  (my $pd = $self->project_dir( $self->project )) =~ s{/\.git$}();
-  $self->gpp( Git::PurePerl->new(directory => $pd) );
-
-  return $self;
-}
- 
 =head2 BUILD
 
 =cut
@@ -77,10 +92,6 @@ EOR
     }
 
     return $git;
-}
- 
-sub _build_repo_dir {
-  return Gitalist->config->{repo_dir};
 }
 
 =head2 get_object
@@ -242,29 +253,28 @@ each item will contain the contents of L</project_info>.
 =cut
 
 sub list_projects {
-  my ($self, $dir) = @_;
+    my ($self, $dir) = @_;
 
-  my $base = dir($dir || $self->repo_dir);
+    my $base = dir($dir || $self->repo_dir);
 
-  my @ret;
-  my $dh = $base->open;
-  while (my $file = $dh->read) {
-    next if $file =~ /^.{1,2}$/;
+    my @ret;
+    my $dh = $base->open or die("Cannot open dir $base");
+    while (my $file = $dh->read) {
+        next if $file =~ /^.{1,2}$/;
 
-    my $obj = $base->subdir($file);
-    next unless -d $obj;
-    next unless $self->is_git_repo($obj);
+        my $obj = $base->subdir($file);
+        next unless -d $obj;
+        next unless $self->is_git_repo($obj);
+		# XXX Leaky abstraction alert!
+		my $is_bare = !-d $obj->subdir('.git');
 
-    # XXX Leaky abstraction alert!
-    my $is_bare = !-d $obj->subdir('.git');
-
-    my $name = (File::Spec->splitdir($obj))[-1];
-    push @ret, {
-      name => ($name . ( $is_bare ? '' : '/.git' )),
-      $self->get_project_properties(
-        $is_bare ? $obj : $obj->subdir('.git')
-        ),
-      };
+		my $name = (File::Spec->splitdir($obj))[-1];
+        push @ret, {
+            name => ($name . ( $is_bare ? '' : '/.git' )),
+            $self->get_project_properties(
+				$is_bare ? $obj : $obj->subdir('.git')
+			),
+        };
   }
 
   return [sort { $a->{name} cmp $b->{name} } @ret];
@@ -372,7 +382,7 @@ Return the contents of a given file.
 sub cat_file {
   my ($self, $object) = @_;
 
-  my $type = $self->get_object_type($object);
+  my $type = $self->get_object_type($object, $project);
   die "object `$object' is not a file\n"
     if (!defined $type || $type ne 'blob');
 

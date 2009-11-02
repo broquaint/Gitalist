@@ -1,6 +1,5 @@
 package Gitalist::View::Default;
 use Moose;
-use Gitalist; # ->path_to
 use namespace::autoclean;
 
 extends 'Catalyst::View::TT';
@@ -28,8 +27,6 @@ it under the same terms as Perl itself.
 
 __PACKAGE__->config(
 	TEMPLATE_EXTENSION => '.tt2',
-	# Set the location for TT files
-	INCLUDE_PATH       => [ Gitalist->path_to( 'templates' ) ],
 	WRAPPER            => 'default.tt2',
 );
 
