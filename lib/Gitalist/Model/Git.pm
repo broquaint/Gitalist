@@ -23,7 +23,7 @@ Gitalist::Model::Git - the model for git interactions
 =cut
 
 use Git::PurePerl;
-
+use Path::Class qw/dir/;
 sub build_per_context_instance {
   my ( $self, $c ) = @_;
 
@@ -34,8 +34,9 @@ sub build_per_context_instance {
   );
 
   # This is fugly as fuck. Move Git::PurePerl construction into attribute builders..
-  (my $pd = $self->project_dir( $self->project )) =~ s{/\.git$}();
-  $model->gpp( Git::PurePerl->new(directory => $pd) );
+  my ($pd, $gd) = $model->project_dir( $model->project )->resolve =~ m{((.+?)(:?/\/\.git)?$)};
+  $gd .= '/.git' if ($gd !~ /\.git$/ and -d "$gd/.git");
+  $model->gpp( Git::PurePerl->new(gitdir => $gd, directory => $pd) );
 
   return $model;
 }

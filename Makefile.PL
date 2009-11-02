@@ -29,7 +29,7 @@ requires 'DateTime';
 requires 'Git::PurePerl';
 requires 'List::MoreUtils';
 requires 'MooseX::Declare';
-requires 'Path::Class';
+requires 'Path::Class' => '0.17';
 requires 'Sub::Exporter';
 requires 'Syntax::Highlight::Engine::Kate';
 requires 'Moose::Autobox';
