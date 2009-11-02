@@ -89,7 +89,7 @@ sub list_projects {
     my $base = dir($self->repo_dir);
 
     my @ret;
-    my $dh = $base->open;
+    my $dh = $base->open or die("Cannot open dir $base");
     while (my $file = $dh->read) {
         next if $file =~ /^.{1,2}$/;
 
