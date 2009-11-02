@@ -11,8 +11,6 @@ use Catalyst qw/
                 Static::Simple
                 StackTrace/;
 
-use Class::C3::Adopt::NEXT -no_warn;
-
 our $VERSION = '0.01';
 
 # Bring in the libified gitweb.cgi.
@@ -26,17 +24,16 @@ __PACKAGE__->config(
 # Start the application
 __PACKAGE__->setup();
 
-sub uri_for {
-    my $p = ref $_[-1] eq 'HASH'
-          ? $_[-1]
-          : push(@_, {}) && $_[-1];
-    $p->{p} = $_[0]->model('Git')->project;
-
-    (my $uri = $_[0]->NEXT::uri_for(@_[1 .. $#_]))
-      # Ampersand! What is this, the 90s?
-      =~ s/&/;/g;
-    return $uri;
-}
+around uri_for => sub {
+  my ($orig, $c) = (shift, shift);
+  my $params = Catalyst::Utils::merge_hashes(
+    { p => $c->model('Git')->project },
+    ref($_[-1]) eq 'HASH' ? pop @_ : {}
+  );
+  (my $uri = $c->$orig(@_, $params))
+    =~ tr[&][;];
+  return $uri;
+};
 
 =head1 NAME
 

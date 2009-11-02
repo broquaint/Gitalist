@@ -1,0 +1,34 @@
+[% INCLUDE 'nav/actions.tt2' object = commit %]
+
+[%# INCLUDE '_log_pager.tt2' %]
+
+[%# XXX Nabbed the HTML below from gitweb's log action. %]
+[% FOREACH result IN results %]
+<div class="header">
+ <a class="title" href="[% c.uri_for('commit', {h=result.sha1}) %]">
+  <span class="age">[% result.authored_time %]</span>
+  [% result.comment.substr(0, 50) | html %]
+ </a>
+</div>
+
+<div class="title_text">
+ <div class="log_link">
+   <a href="[% c.uri_for('commit', {h=result.sha1}) %]">commit</a>
+ | <a href="[% c.uri_for('commitdiff', {h=result.sha1}) %]">commitdiff</a>
+ | <a href="[% c.uri_for('tree', {h=result.tree_sha1, hb=line.sha1}) %]">tree</a>
+ </div>
+ <i>[% result.author.name | html %] [% line.authored_time %]</i>
+</div>
+
+<div class="log_body">
+ [%
+   # XXX This is fragile at best.
+   html_comment = result.comment | html;
+   html_comment.replace(
+     c.req.param('text'), '<span class="match">' _ c.req.param('text') _ '</span>'
+   );
+ %]
+</div>
+[% END %]
+
+[%# INCLUDE '_log_pager.tt2' %]

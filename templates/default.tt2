@@ -40,31 +40,11 @@
   END %]
 </div>
 
-[% IF project AND have_search %]
-<div class="search">
-  <form method="get" action="/" enctype="application/x-www-form-urlencoded">
-  <input name="p" type="hidden" value="[% project %]" />
-  <input name="a" type="hidden" value="search" />
-  <input name="h" type="hidden" value="[% search_hash %]" />
-  <select name="st" >
-      <option value="commit">commit</option>
-      <option value="grep">grep</option>
-      <option value="author">author</option>
-      <option value="committer">committer</option>
-      <option value="pickaxe">pickaxe</option>
-  </select><sup><a href="/search_help?p=[% project %]">?</a></sup> search:
-  <input type="text" name="s" value="[% search_text %]"/>
-  <span title="Extended regular expression"><label><input type="checkbox" name="sr" value="1" />re</label></span>
-  </form>
-</div>
-[% END %]
-
-[%- # / git_header_html
--%]
 [%
-  IF page_nav;
-    INCLUDE "page_nav.tt2";
+  IF project;
+    INCLUDE 'nav/search.tt2';
   END;
+# / git_header_html
 %]
 <div id='body'>
 [%
