@@ -61,7 +61,7 @@ sub run_gitweb {
 sub _get_commit {
   my($self, $c, $haveh) = @_;
 
-  my $h = $haveh || $c->req->param('h');
+  my $h = $haveh || $c->req->param('h') || '';
   my $f = $c->req->param('f');
   my $m = $c->model();
 
@@ -564,9 +564,8 @@ sub end : ActionClass('RenderView') {
     my($age) = $dt < (DateTime->now - DateTime::Duration->new(days=>12))
       ? $dt->ymd
       : DateTime::Format::Human::Duration->new->format_duration($now - $dt)
-          =~ /^(?:.*?weeks?, )?(\d+ [^\d]+)(?:,|$) /;
+          =~ /^(?:.*?weeks?, )?(\d+ [^\d]+)(?:,| and|$)/;
 
-    
     return $age;
   };
 }

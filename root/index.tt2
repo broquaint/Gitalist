@@ -27,14 +27,14 @@
     USE Cycle('dark', 'light');
     FOR p IN projects %]
     <tr class="[% Cycle.next %]">
-        <td><a class="list" href="[% c.uri_for('/summary', { 'p' => p.name } ) %]">[% p.name %]</a></td>
-        <td><a class="list" title="[% p.description %]" href="[% c.uri_for('/summary', { 'p' => p.name } ) %]">[% p.description.substr(0, 20) %]</a></td>
+        <td><a class="list" href="[% c.uri_for('/summary', {p=p.name}) %]">[% p.name %]</a></td>
+        <td><a class="list" title="[% p.description %]" href="[% c.uri_for('/summary', {p=p.name} ) %]">[% p.description.substr(0, 20) %]</a></td>
         <td>[% p.owner %]</td>
         <td class="age2">[% p.last_change %]</td>
-        <td class="link"><a href="[% c.uri_for("summary") %]">summary</a>
-            | <a href="[% c.uri_for("shortlog") %]">shortlog</a>
-            | <a href="[% c.uri_for("log") %]">log</a>
-            | <a href="[% c.uri_for("tree") %]">tree</a></td>
+        <td class="link"><a href="[% c.uri_for("summary", {p=p.name}) %]">summary</a>
+            | <a href="[% c.uri_for("shortlog", {p=p.name}) %]">shortlog</a>
+            | <a href="[% c.uri_for("log", {p=p.name}) %]">log</a>
+            | <a href="[% c.uri_for("tree", {p=p.name}) %]">tree</a></td>
     </tr>
   [% END %]
 </tbody>
