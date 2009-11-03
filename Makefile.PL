@@ -30,7 +30,7 @@ requires 'IO::Capture::Stdout';
 requires 'File::Which';
 requires 'CGI';
 requires 'DateTime';
-requires 'Git::PurePerl';
+requires 'Git::PurePerl'; # Note - need the git version in broquaint's fork
 requires 'List::MoreUtils';
 requires 'MooseX::Declare';
 requires 'Path::Class' => '0.17';

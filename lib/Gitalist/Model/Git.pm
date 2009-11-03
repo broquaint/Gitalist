@@ -381,7 +381,7 @@ Return the contents of a given file.
 sub cat_file {
   my ($self, $object, $project) = @_;
 
-  my $type = $self->get_object_type($object, $project);
+  my $type = $self->get_object_type($object, $self->project);
   die "object `$object' is not a file\n"
     if (!defined $type || $type ne 'blob');
 
@@ -482,10 +482,10 @@ sub diff {
   # So either a parent is specifed, or we use the commit's parent if there's
   # only one, otherwise it was a merge commit.
   my $parent = $args{parent}
-			 ? $args{parent}
-			 : @{$args{commit}->parents} <= 1
-			   ? $args{commit}->parent_sha1
-			   : '-c';
+             ? $args{parent}
+             : $args{commit}->parents <= 1
+               ? $args{commit}->parent_sha1
+               : '-c';
   my @etc = (
     ( $args{file}  ? ('--', $args{file}) : () ),
   );
