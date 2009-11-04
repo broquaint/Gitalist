@@ -1,11 +1,18 @@
 <table class='heads'>
  <thead>
   <tr>
+   <th>age</th>
+   <th>branch</th>
+   <th>actions</th>
+  </tr>
+ </thead>
+ <tfoot>
+  <tr>
    <td>age</td>
    <td>branch</td>
    <td>actions</td>
   </tr>
- </thead>
+ </tfoot>
 
  <tbody>
  [% FOREACH head IN heads %]
@@ -20,14 +27,4 @@
   </tr>
  [% END %]
  </tbody>
-
- <tfoot>
-  <tr>
-   <td>age</td>
-   <td>branch</td>
-   <td>actions</td>
-  </tr>
- </tfoot>
 </table>
-
-

@@ -1,0 +1,4 @@
+[% sha1 = sha1 || HEAD %]
+<div class='chroma-hash'>
+  <span style='background-color: #[% sha1.substr(0, 6) %];'>&nbsp;</span><span style='background-color: #[% sha1.substr(6, 6) %];'>&nbsp</span><span style='background-color: #[% sha1.substr(12, 6) %];'>&nbsp</span>
+</div>

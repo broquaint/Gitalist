@@ -556,18 +556,43 @@ sub end : ActionClass('RenderView') {
   # Give every view the current HEAD.
   $_[1]->stash->{HEAD} = $_[1]->model()->head_hash;
   
-  # XXX Move this into a plugin!
-  use DateTime::Format::Human::Duration;
+  # XXX This should be in a plugin.
   $_[1]->stash->{time_since} = sub {
-    my($dt, $now) = ($_[0], DateTime->now);
-
-    my($age) = $dt < (DateTime->now - DateTime::Duration->new(days=>12))
-      ? $dt->ymd
-      : DateTime::Format::Human::Duration->new->format_duration($now - $dt)
-          =~ /^(?:.*?weeks?, )?(\d+ [^\d]+)(?:,| and|$)/;
-
-    return $age;
+    return age_string(time - $_[0]->epoch);
   };
+}
+
+# XXX Ripped straight from gitweb.pm
+# convert age in seconds to "nn units ago" string
+sub age_string {
+	my $age = shift;
+	my $age_str;
+
+	if ($age > 60*60*24*365*2) {
+		$age_str = (int $age/60/60/24/365);
+		$age_str .= " years ago";
+	} elsif ($age > 60*60*24*(365/12)*2) {
+		$age_str = int $age/60/60/24/(365/12);
+		$age_str .= " months ago";
+	} elsif ($age > 60*60*24*7*2) {
+		$age_str = int $age/60/60/24/7;
+		$age_str .= " weeks ago";
+	} elsif ($age > 60*60*24*2) {
+		$age_str = int $age/60/60/24;
+		$age_str .= " days ago";
+	} elsif ($age > 60*60*2) {
+		$age_str = int $age/60/60;
+		$age_str .= " hours ago";
+	} elsif ($age > 60*2) {
+		$age_str = int $age/60;
+		$age_str .= " min ago";
+	} elsif ($age > 2) {
+		$age_str = int $age;
+		$age_str .= " sec ago";
+	} else {
+		$age_str .= " right now";
+	}
+	return $age_str;
 }
 
 =head1 AUTHOR

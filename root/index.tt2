@@ -21,6 +21,16 @@
         <th></th>
     </tr>
 </thead>
+<tfoot>
+    <tr>
+        <td>Project</td>
+        <!-- XXX These do nothing presently -->
+        <td><a href="/?o=descr">Description</a></td>
+        <td><a href="/?o=owner">Owner</a></td>
+        <td><a href="/?o=age">Last Change</a></td>
+        <td></td>
+    </tr>
+</tfoot>
 
 <tbody>
   [%
@@ -30,7 +40,7 @@
         <td><a class="list" href="[% c.uri_for('/summary', {p=p.name}) %]">[% p.name %]</a></td>
         <td><a class="list" title="[% p.description %]" href="[% c.uri_for('/summary', {p=p.name} ) %]">[% p.description.substr(0, 20) %]</a></td>
         <td>[% p.owner %]</td>
-        <td class="age2">[% p.last_change %]</td>
+        <td class="age2">[% time_since(p.last_change) %]</td>
         <td class="link"><a href="[% c.uri_for("summary", {p=p.name}) %]">summary</a>
             | <a href="[% c.uri_for("shortlog", {p=p.name}) %]">shortlog</a>
             | <a href="[% c.uri_for("log", {p=p.name}) %]">log</a>

@@ -2,27 +2,36 @@
 
 [% INCLUDE '_log_pager.tt2' %]
 
+<div id='log'>
 [%# XXX Nabbed the HTML below from gitweb's log action. %]
 [% FOREACH line IN log_lines %]
-<div class="header">
- <a class="title" href="/commit?p=gitweb/.git;h=[% line.sha1 %]">
-  <span class="age">[% line.authored_time %]</span>
-  [% line.comment.substr(0, 50) | html %]
- </a>
-</div>
+  <div class='entry'>
+  <div class="message">
+     [% message = line.comment | html;
+        message.replace("\n", "<br/>") %]
+     [% INCLUDE '_chroma_hash.tt2' sha1 = line.sha1 %]
+    </div>
+    <div class="meta">
+     <table class='summary' cellspacing='0' cellpadding='0'>
+      <tr><td>commit</td><td>[% line.sha1 %]</td></tr>
+      <tr><td>author</td><td>[% line.author.name | html %]</td></tr>
+      <tr><td>authored time</td><td>[% line.authored_time %]</td></tr>
+      [% IF line.author.name != line.committer.name %]
+      <tr><td>committer</td><td>[% line.committer.name | html %]</td></tr>
+      <tr><td>committered time</td><td>[% line.committed_time %]</td></tr>
+      [% END %]
+     </table>
+     <span class="age">[% time_since(line.authored_time) %]</span>
+     <div class="action-list">
+       <a href="[% c.uri_for("commit", {h=line.sha}) %]">commit</a>
+     | <a href="[% c.uri_for("commitdiff", {h=line.sha1}) %]">commitdiff</a>
+     | <a href="[% c.uri_for("tree", {h=line.sha1, hb=line.sha1}) %]">tree</a>
+     </div>
+    </div>
 
-<div class="title_text">
- <div class="log_link">
-   <a href="[% c.uri_for("commit", {h=line.sha}) %]">commit</a>
- | <a href="[% c.uri_for("commitdiff", {h=line.sha1}) %]">commitdiff</a>
- | <a href="[% c.uri_for("tree", {h=line.sha1, hb=line.sha1}) %]">tree</a>
- </div>
- <i>[% line.author.name | html %] [% line.authored_time %]</i>
-</div>
-
-<div class="log_body">
- [% line.comment | html %]
-</div>
+  </div>
 [% END %]
+</div>
+
 
 [% INCLUDE '_log_pager.tt2' %]

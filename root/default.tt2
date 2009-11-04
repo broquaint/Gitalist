@@ -18,7 +18,7 @@
     <link rel="stylesheet" href="[% c.uri_for('/static/css/blueprint/ie.css') %]" type="text/css" media="screen, projection">
   <![endif]-->  
   <link rel="stylesheet" type="text/css" href="[% c.uri_for('/static/css/site.css') %]"/>
-  [% IF stylesheet %]<link rel="stylesheet" type="text/css" href="[% stylesheet %]"/>[% END %]
+ 
   [% FOR link IN links %]
             <link rel="[% link.rel %]"
                   title="[% link.title %]"
@@ -35,7 +35,7 @@
 
 [% site_header %]
 
-<div class="page_header">
+<div id="page-header">
   <a title="[% logo_label | url %]" href="[% logo_url | url %]"><img src="[% logo_img %]" alt="git" class="logo"/></a>
   <a href="[% home_link | url %]">[% home_link_str %]</a>
   [%- IF project %]
@@ -64,7 +64,7 @@
 
 [%- # git_footer_html
 -%]
-<div class="page_footer">
+<div class="page-footer">
 [% IF project AND project_description %]
   <div class="page_footer_text">[% project_description | html %]</div>
 [% END %]
