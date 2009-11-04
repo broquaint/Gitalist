@@ -88,14 +88,14 @@ Provides the project listing.
 
 sub index :Path :Args(0) {
   my ( $self, $c ) = @_;
-
+  $c->stash(current_model => 'GitRepos');
   # Leave actions up to gitweb at this point.
   return $self->run_gitweb($c)
     if $c->req->param('a');
 
   my $list = $c->model()->list_projects;
   unless(@$list) {
-    die "No projects found in ".Gitalist->config->{repodir};
+    die "No projects found in ". $c->model->repo_dir;
   }
 
   $c->stash(
