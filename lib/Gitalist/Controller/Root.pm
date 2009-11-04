@@ -546,6 +546,7 @@ sub feed_info {
 
   return %res;
 }
+
 =head2 end
 
 Attempt to render a view, if needed.
@@ -553,22 +554,24 @@ Attempt to render a view, if needed.
 =cut
 
 sub end : ActionClass('RenderView') {
-  # Give every view the current HEAD.
-  $_[1]->stash->{HEAD} = $_[1]->model()->head_hash;
-  
-  # XXX Move this into a plugin!
-  use DateTime::Format::Human::Duration;
-  $_[1]->stash->{time_since} = sub {
-    my($dt, $now) = ($_[0], DateTime->now);
+    my ($self, $c) = @_;
+    # Give project views the current HEAD.
+    if ($c->stash->{project}) {
+        $c->stash->{HEAD} = $c->model()->head_hash;
+    }
 
-    my($age) = $dt < (DateTime->now - DateTime::Duration->new(days=>12))
-      ? $dt->ymd
-      : DateTime::Format::Human::Duration->new->format_duration($now - $dt)
-          =~ /^(?:.*?weeks?, )?(\d+ [^\d]+)(?:,|$) /;
+    # XXX Move this into a plugin!
+    use DateTime::Format::Human::Duration;
+    $c->stash->{time_since} = sub {
+        my($dt, $now) = ($self, DateTime->now);
 
-    
-    return $age;
-  };
+        my($age) = $dt < (DateTime->now - DateTime::Duration->new(days=>12))
+            ? $dt->ymd
+                : DateTime::Format::Human::Duration->new->format_duration($now - $dt)
+                    =~ /^(?:.*?weeks?, )?(\d+ [^\d]+)(?:,|$) /;
+
+        return $age;
+    };
 }
 
 =head1 AUTHOR

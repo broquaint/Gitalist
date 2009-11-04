@@ -35,14 +35,18 @@ class Gitalist::Git::Project {
 
     method _build__util {
         my $util = Gitalist::Git::Util->new(
-            gitdir => $self->path,
+            gitdir => $self->project_dir($self->path),
         );
         return $util;
     }
     
     method _build_description {
-        my $description = $self->path->file('description')->slurp;
-        chomp $description;
+        my $description;
+        eval {
+            $description = $self->path->file('description')->slurp;
+            chomp $description;
+        };
+        $description ||= " ";
         return $description;
     }
 
