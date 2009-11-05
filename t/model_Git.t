@@ -32,6 +32,7 @@ is( $projectList->[0]->{name}, 'bare.git', 'list_projects has correct name for "
 $m->project('repo1');
 is($m->project, 'repo1', 'model project correct');
 my $pd = $m->project_dir($m->project);
+isa_ok($pd, 'Path::Class::Dir', 'model project_dir');
 is($pd, $m->repo_dir . '/' . $m->project, 'model project_dir correct');
 ok( $m->gpp(Git::PurePerl->new( gitdir => $pd, directory => $pd )), 'model gpp set ok' );
 like($m->head_hash('HEAD'), qr/^([0-9a-fA-F]{40})$/, 'head_hash');
@@ -81,7 +82,6 @@ is($patch->{diff}, '--- a/file1
 +bar
 ', 'patch->{diff} is correct');
 is($patch->{dst}, '5716ca5987cbf97d6bb54920bea6adde242d87e6', 'patch->{dst} is correct');
-warn(Dumper($patch));
 
 done_testing;
 

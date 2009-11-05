@@ -563,7 +563,7 @@ sub end : ActionClass('RenderView') {
     # XXX Move this into a plugin!
     use DateTime::Format::Human::Duration;
     $c->stash->{time_since} = sub {
-        my($dt, $now) = ($self, DateTime->now);
+        my($dt, $now) = ($_[0], DateTime->now);
 
         my($age) = $dt < (DateTime->now - DateTime::Duration->new(days=>12))
             ? $dt->ymd

@@ -34,7 +34,7 @@ sub build_per_context_instance {
   );
 
   # This is fugly as fuck. Move Git::PurePerl construction into attribute builders..
-  my ($pd, $gd) = $model->project_dir( $model->project )->resolve =~ m{((.+?)(:?/\/\.git)?$)};
+  my ($pd, $gd) = $model->project_dir( $model->project ) =~ m{((.+?)(:?/\/\.git)?$)};
   $gd .= '/.git' if ($gd !~ /\.git$/ and -d "$gd/.git");
   $model->gpp( Git::PurePerl->new(gitdir => $gd, directory => $pd) );
 
