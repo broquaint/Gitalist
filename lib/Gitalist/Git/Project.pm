@@ -15,7 +15,7 @@ class Gitalist::Git::Project {
     has path => ( isa => "Path::Class::Dir",
                   is => 'ro');
 
-    has description => ( isa => NonEmptySimpleStr,
+    has description => ( isa => 'Str',
                          is => 'ro',
                          lazy_build => 1,
                      );
@@ -41,12 +41,11 @@ class Gitalist::Git::Project {
     }
     
     method _build_description {
-        my $description;
+        my $description = "";
         eval {
             $description = $self->path->file('description')->slurp;
             chomp $description;
         };
-        $description ||= " ";
         return $description;
     }
 
