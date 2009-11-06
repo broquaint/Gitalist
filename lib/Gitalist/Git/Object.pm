@@ -1,32 +1,26 @@
 use MooseX::Declare;
 
 class Gitalist::Git::Object {
+    use MooseX::Types::Moose qw/Str Int/;
     use File::Stat::ModeString qw/mode_to_string/;
     has project => ( isa => 'Gitalist::Git::Project',
                      required => 1,
                      is => 'ro',
                      handles => [ 'run_cmd' ],
                  );
-    has sha1 => ( isa => 'Str',
+    has $_ => ( isa => Str,
                   required => 1,
-                  is => 'ro' );
-    has type => ( isa => 'Str',
+                  is => 'ro' )
+        for qw/sha1 file/;
+    has $_ => ( isa => Str,
                   required => 1,
                   is => 'ro',
-                  lazy_build => 1 );
-    has file => ( isa => 'Str',
+                  lazy_build => 1 )
+        for qw/type modestr/;
+    has $_ => ( isa => Int,
                   required => 1,
-                  is => 'ro' );
-    has mode => ( isa => 'Int',
-                  required => 1,
-                  is => 'ro' );
-    has modestr => ( isa => 'Str',
-                     is => 'ro',
-                     lazy_build => 1,
-                 );
-    has size => ( isa => 'Int',
-                  is => 'ro',
-                  lazy_build => 1);
+                  is => 'ro' )
+        for qw/mode size/;
 
     method _build_type {
         my $output = $self->run_cmd(qw/cat-file -t/, $self->{sha1});

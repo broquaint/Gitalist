@@ -3,19 +3,20 @@ use MooseX::Declare;
 class Gitalist::Git::Project {
     # FIXME, use Types::Path::Class and coerce
     use MooseX::Types::Common::String qw/NonEmptySimpleStr/;
+    use MooseX::Types::Moose qw/Str Maybe/;
     use DateTime;
     use Path::Class;
     use Gitalist::Git::Util;
     use aliased 'Gitalist::Git::Object';
 
     our $SHA1RE = qr/[0-9a-fA-F]{40}/;
-    
-    has name => ( isa => NonEmptySimpleStr,
-                  is => 'ro' );
-    has path => ( isa => "Path::Class::Dir",
-                  is => 'ro');
 
-    has description => ( isa => NonEmptySimpleStr,
+    has name => ( isa => NonEmptySimpleStr,
+                  is => 'ro', required => 1 );
+    has path => ( isa => "Path::Class::Dir",
+                  is => 'ro', required => 1);
+
+    has description => ( isa => Str,
                          is => 'ro',
                          lazy_build => 1,
                      );
@@ -23,7 +24,7 @@ class Gitalist::Git::Project {
                    is => 'ro',
                    lazy_build => 1,
                );
-    has last_change => ( isa => 'DateTime',
+    has last_change => ( isa => Maybe['DateTime'],
                          is => 'ro',
                          lazy_build => 1,
                      );
@@ -33,25 +34,32 @@ class Gitalist::Git::Project {
                    handles => [ 'run_cmd' ],
                );
 
+    method BUILD {
+        $self->$_() for qw/_util last_change owner description/; # Ensure to build early.
+    }
+
     method _build__util {
         my $util = Gitalist::Git::Util->new(
-            gitdir => $self->path,
+            gitdir => $self->project_dir($self->path),
         );
         return $util;
     }
-    
+
     method _build_description {
-        my $description = $self->path->file('description')->slurp;
-        chomp $description;
+        my $description = "";
+        eval {
+            $description = $self->path->file('description')->slurp;
+            chomp $description;
+        };
         return $description;
     }
 
     method _build_owner {
-        my $owner = (getpwuid $self->path->stat->uid)[6];
-        $owner =~ s/,+$//;
-        return $owner;
+        my ($gecos, $name) = (getpwuid $self->path->stat->uid)[6,0];
+        $gecos =~ s/,+$//;
+        return length($gecos) ? $gecos : $name;
     }
-    
+
     method _build_last_change {
         my $last_change;
         my $output = $self->run_cmd(
@@ -112,7 +120,7 @@ The keys for each item will be:
         return @ret;
     }
 
-
+    # FIXME - Why not just stay in Path::Class land and return a P::C::D here?
     method project_dir {
         my $dir = $self->path->stringify;
         $dir .= '/.git'
@@ -142,5 +150,5 @@ be:
             last_change => $self->last_change,
         };
     };
-    
+
 } # end class
