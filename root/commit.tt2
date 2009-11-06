@@ -1,10 +1,10 @@
 [% INCLUDE 'nav/actions.tt2' object = commit %]
 
 <div class='commit-message'>
-[% commit.comment.substr(0, 85) %] ...
-[% FOREACH ref IN branches_on %]
- <span class='refs'><a href='[% c.uri_for("shortlog", {h=commit.sha1, hb=ref}) %]'>[% ref %]</a></span>
-[% END %]
+[%
+  short_cmt(commit.comment) | html;
+  INCLUDE '_refs.tt2' object = commit;
+%]
 </div>
 
 <dl class='commit-info'>
@@ -31,11 +31,11 @@
  [% END %]
 </dl>
 
-<pre class='commit-message'>[% commit.comment %]</pre>
+<pre class='commit-message'>[% commit.comment | html%]</pre>
 
 [%
-# In the case of merge commits there will be no diff tree.
-IF diff_tree.size > 0;
-	INCLUDE '_diff_tree.tt2';
-END;
+  # In the case of merge commits there will be no diff tree.
+  IF diff_tree.size > 0;
+    INCLUDE '_diff_tree.tt2';
+  END;
 %]

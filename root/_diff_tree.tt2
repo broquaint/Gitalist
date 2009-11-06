@@ -1,11 +1,18 @@
 <table class='diff-tree'>
  <thead>
   <tr>
+   <th>file</th>
+   <th>status</th>
+   <th>actions</th>
+  </tr>
+ </thead>
+ <tfoot>
+  <tr>
    <td>file</td>
    <td>status</td>
    <td>actions</td>
   </tr>
- </thead>
+ </tfoot>
  <tbody>
   [% FOREACH line IN diff_tree -%]
   <tr>
@@ -32,11 +39,4 @@
   </tr>
   [% END %]
  </tbody>
- <tfoot>
-  <tr>
-   <td>file</td>
-   <td>status</td>
-   <td>actions</td>
-  </tr>
- </tfoot>
 </table>

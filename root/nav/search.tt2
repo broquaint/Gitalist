@@ -1,4 +1,4 @@
-<div class="search">
+<div id="page-search">
   <form method="get" action="[% c.uri_for('search') %]" enctype="application/x-www-form-urlencoded">
   <input name="p" type="hidden" value="[% project %]" />
   <input name="a" type="hidden" value="search" />

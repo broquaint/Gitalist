@@ -1,40 +1,13 @@
-<table>
+<table class='shortlog'>
  <thead>
   <tr>
-   <td>sha1</td>
-   <td>time</td>
-   <td>author</td>
-   <td>message</td>
-   <td>actions</td>
+   <th>sha1</th>
+   <th>time</th>
+   <th>author</th>
+   <th>message</th>
+   <th>actions</th>
   </tr>
  </thead>
-
- <tbody>
- [% FOREACH line IN log_lines %]
-  <tr>
-   <td>[% line.sha1.substr(0, 6) %]</td>
-   <td>[% time_since(line.authored_time) %]</td>
-   <td>[% line.author.name | html %]</td>
-   <td>
-    [% # XXX This needs to be moved into a Template::Plugin or some such.
-       cmt = line.comment.split("\n").0;
-       (cmt.length > 80 ? cmt.substr(0, 80) _ '...' : cmt) | html %]
-    <span class='refs'>
-     [% FOREACH ref IN refs.${line.sha1} %]
-     <span class='[% ref.search('^remotes/') ? 'remote' : 'head' %]'>
-      <a href='[% c.uri_for("shortlog", {h='refs/' _ ref}) %]'>[% ref.replace('^(remote|head)s/', '') %]</a>
-     </span>
-     [% END %]
-    </span>
-   </td>
-   <td class='action-list'>
-     <a href="[% c.uri_for("commit", {h=line.sha1}) %]">commit</a>
-     <a href="[% c.uri_for("commitdiff", {h=line.sha1}) %]">commitdiff</a>
-     <a href="[% c.uri_for("tree", {h=line.sha1, hb=line.tree_sha1}) %]">tree</a>
-   </td>
-  </tr>
- [% END %]
- </tbody>
 
  <tfoot>
   <tr>
@@ -45,4 +18,23 @@
    <td>actions</td>
   </tr>
  </tfoot>
+
+ <tbody>
+ [% FOREACH line IN log_lines %]
+  <tr>
+   <td class='sha1'>[% INCLUDE '_chroma_hash.tt2' sha1 = line.sha1.substr(0, 7) %]</td>
+   <td class='time-since'>[% time_since(line.authored_time) %]</td>
+   <td class='author'>[% line.author.name | html %]</td>
+   <td>
+     [% short_cmt(line.comment) | html %]
+     [% INCLUDE '_refs.tt2' object = line %]
+   </td>
+   <td class='action-list'>
+     <a href="[% c.uri_for("commit", {h=line.sha1}) %]">commit</a>
+     <a href="[% c.uri_for("commitdiff", {h=line.sha1}) %]">commitdiff</a>
+     <a href="[% c.uri_for("tree", {h=line.sha1, hb=line.tree_sha1}) %]">tree</a>
+   </td>
+  </tr>
+ [% END %]
+ </tbody>
 </table>

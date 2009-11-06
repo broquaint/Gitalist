@@ -61,7 +61,7 @@ sub run_gitweb {
 sub _get_commit {
   my($self, $c, $haveh) = @_;
 
-  my $h = $haveh || $c->req->param('h');
+  my $h = $haveh || $c->req->param('h') || '';
   my $f = $c->req->param('f');
   my $m = $c->model();
 
@@ -216,7 +216,7 @@ sub commit : Local {
   $c->stash(
       commit      => $commit,
       diff_tree   => ($c->model()->diff(commit => $commit))[0],
-      branches_on => [$c->model()->refs_for($commit->sha1)],
+      refs      => $c->model()->references,
       action      => 'commit',
   );
 }
@@ -363,11 +363,24 @@ Populate the header and footer. Perhaps not the best location.
 =cut
 
 sub auto : Private {
-    my($self, $c) = @_;
+  my($self, $c) = @_;
 
-    # Yes, this is hideous.
-    $self->header($c);
-    $self->footer($c);
+  # XXX Move these to a plugin!
+  $c->stash(
+    time_since => sub {
+      return age_string(time - $_[0]->epoch);
+    },
+    short_cmt => sub {
+      my $cmt = shift;
+      my($line) = split /\n/, $cmt;
+      $line =~ s/^(.{70,80}\b).*/$1 …/;
+      return $line;
+    },
+  );
+
+  # Yes, this is hideous.
+  $self->header($c);
+  $self->footer($c);
 }
 
 # XXX This could probably be dropped altogether.
@@ -554,24 +567,42 @@ Attempt to render a view, if needed.
 =cut
 
 sub end : ActionClass('RenderView') {
-    my ($self, $c) = @_;
-    # Give project views the current HEAD.
-    if ($c->stash->{project}) {
-        $c->stash->{HEAD} = $c->model()->head_hash;
-    }
+  my ($self, $c) = @_;
+  # Give project views the current HEAD.
+  if ($c->stash->{project}) {
+      $c->stash->{HEAD} = $c->model()->head_hash;
+  }
+}
 
-    # XXX Move this into a plugin!
-    use DateTime::Format::Human::Duration;
-    $c->stash->{time_since} = sub {
-        my($dt, $now) = ($_[0], DateTime->now);
+sub age_string {
+	my $age = shift;
+	my $age_str;
 
-        my($age) = $dt < (DateTime->now - DateTime::Duration->new(days=>12))
-            ? $dt->ymd
-                : DateTime::Format::Human::Duration->new->format_duration($now - $dt)
-                    =~ /^(?:.*?weeks?, )?(\d+ [^\d]+)(?:,|$) /;
-
-        return $age;
-    };
+	if ($age > 60*60*24*365*2) {
+		$age_str = (int $age/60/60/24/365);
+		$age_str .= " years ago";
+	} elsif ($age > 60*60*24*(365/12)*2) {
+		$age_str = int $age/60/60/24/(365/12);
+		$age_str .= " months ago";
+	} elsif ($age > 60*60*24*7*2) {
+		$age_str = int $age/60/60/24/7;
+		$age_str .= " weeks ago";
+	} elsif ($age > 60*60*24*2) {
+		$age_str = int $age/60/60/24;
+		$age_str .= " days ago";
+	} elsif ($age > 60*60*2) {
+		$age_str = int $age/60/60;
+		$age_str .= " hours ago";
+	} elsif ($age > 60*2) {
+		$age_str = int $age/60;
+		$age_str .= " min ago";
+	} elsif ($age > 2) {
+		$age_str = int $age;
+		$age_str .= " sec ago";
+	} else {
+		$age_str .= " right now";
+	}
+	return $age_str;
 }
 
 =head1 AUTHOR

@@ -1,11 +1,18 @@
 <table>
  <thead>
   <tr>
+   <th>mode</th>
+   <th>file</th>
+   <th>actions</th>
+  </tr>
+ </thead>
+ <tfoot>
+  <tr>
    <td>mode</td>
    <td>file</td>
    <td>actions</td>
   </tr>
- </thead>
+ </tfoot>
 
  <tbody>
   [% FOREACH item IN tree_list %]
@@ -23,12 +30,4 @@
   </tr>
   [% END %]
  </tbody>
-
- <tfoot>
-  <tr>
-   <td>mode</td>
-   <td>file</td>
-   <td>actions</td>
-  </tr>
- </tfoot>
 </table>

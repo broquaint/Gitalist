@@ -53,9 +53,11 @@ __PACKAGE__->setup();
 
 around uri_for => sub {
   my ($orig, $c) = (shift, shift);
+  local $c->stash->{current_model}; # FIXME - for zts..
+  my $hash = ref($_[-1]) eq 'HASH' ? pop @_ : {};
   my $params = Catalyst::Utils::merge_hashes(
-    { p => $c->model('Git')->project },
-    ref($_[-1]) eq 'HASH' ? pop @_ : {}
+    { p => $hash->{p} || $c->model()->project },
+    $hash,
   );
   (my $uri = $c->$orig(@_, $params))
     =~ tr[&][;];
