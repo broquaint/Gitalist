@@ -10,7 +10,7 @@ class Gitalist::Git::Project {
     use aliased 'Gitalist::Git::Object';
 
     our $SHA1RE = qr/[0-9a-fA-F]{40}/;
-    
+
     has name => ( isa => NonEmptySimpleStr,
                   is => 'ro', required => 1 );
     has path => ( isa => "Path::Class::Dir",
@@ -39,12 +39,11 @@ class Gitalist::Git::Project {
     }
 
     method _build__util {
-        my $util = Gitalist::Git::Util->new(
-            gitdir => $self->project_dir($self->path),
+        Gitalist::Git::Util->new(
+            gitdir => $self->path,
         );
-        return $util;
     }
-    
+
     method _build_description {
         my $description = "";
         eval {
@@ -55,11 +54,11 @@ class Gitalist::Git::Project {
     }
 
     method _build_owner {
-        my $owner = (getpwuid $self->path->stat->uid)[6];
-        $owner =~ s/,+$//;
-        return $owner;
+        my ($gecos, $name) = (getpwuid $self->path->stat->uid)[6,0];
+        $gecos =~ s/,+$//;
+        return length($gecos) ? $gecos : $name;
     }
-    
+
     method _build_last_change {
         my $last_change;
         my $output = $self->run_cmd(
@@ -120,14 +119,6 @@ The keys for each item will be:
         return @ret;
     }
 
-    # FIXME - Why not just stay in Path::Class land and return a P::C::D here?
-    method project_dir {
-        my $dir = $self->path->stringify;
-        $dir .= '/.git'
-            if -f dir($dir)->file('.git/HEAD');
-        return $dir;
-    }
-
     # Compatibility
 
 =head2 info
@@ -150,5 +141,5 @@ be:
             last_change => $self->last_change,
         };
     };
-    
+
 } # end class

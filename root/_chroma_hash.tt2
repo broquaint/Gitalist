@@ -1,0 +1,11 @@
+[% sha1 = sha1 || HEAD %]
+<span class='chroma-hash'>
+  [%
+    hptr = 0;
+    WHILE hptr < sha1.length - 6;
+      sha1part = sha1.substr(hptr, 6);
+      "<span style='border-bottom: solid 4px #" _ sha1part _ ";'>" _ sha1part _ "</span>";
+      hptr = hptr + 6;
+    END;
+  %]
+</span>

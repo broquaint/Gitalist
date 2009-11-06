@@ -77,7 +77,9 @@ sub highlight {
                 },
             );
 
-            $hl->highlightText($blob);
+            my $hltxt = $hl->highlightText($blob);
+            $hltxt =~ s/([^[:ascii:]])/encode_entities($1)/eg;
+            $hltxt;
         };
         warn $@ if $@;
     }

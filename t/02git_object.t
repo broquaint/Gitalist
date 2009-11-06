@@ -8,7 +8,8 @@ use Data::Dumper;
 use Path::Class;
 use Gitalist::Git::Project;
 my $project = Gitalist::Git::Project->new(
-    path => dir("$Bin/../lib/repositories/repo1"),
+    name => 'repo1',
+    path => dir("$Bin/lib/repositories/repo1"),
 );
 
 BEGIN { use_ok 'Gitalist::Git::Object' }
@@ -26,6 +27,7 @@ is($object->type, 'tree', 'type is correct');
 is($object->file, 'dir1', 'file is correct');
 is($object->mode, 16384, 'mode is correct');
 is($object->modestr, 'd---------', "modestr is correct" );
+is($object->size, 33, "size is correct");
 
 # Create object from hash.
 my $obj2 = Gitalist::Git::Object->new(
@@ -41,4 +43,4 @@ is($obj2->file, 'file1', 'file is correct');
 is($obj2->mode, 33188, 'mode is correct');
 is($obj2->modestr, '-rw-r--r--', "modestr is correct" );
 is($obj2->contents, "bar\n", 'obj2 contents is correct');
-
+is($obj2->size, 4, "size is correct");

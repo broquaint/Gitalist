@@ -25,7 +25,7 @@ C<git> repo.
 =cut
 
     method _is_git_repo ($dir) {
-        return -f $dir->file('HEAD') || -f $dir->file('.git/HEAD');
+        return -f $dir->file('HEAD') || -f $dir->file('.git', 'HEAD');
     }
 
 =head2 project_dir
@@ -35,14 +35,9 @@ The directory under which the given project will reside i.e C<.git/..>
 =cut
 
     method project_dir ($project) {
-        my $dir = blessed($project) && $project->isa('Path::Class::Dir')
-            ? $project->stringify
-                : $self->dir_from_project_name($project);
-
-        $dir .= '/.git'
-            if -f dir($dir)->file('.git/HEAD');
-
-        return $dir;
+        -f $project->file('.git', 'HEAD')
+            ? $project->subdir('.git')
+            : $project;
     }
 
 =head2 list_projects
@@ -63,12 +58,12 @@ each item will contain the contents of L</project_info>.
             next unless -d $obj;
             next unless $self->_is_git_repo($obj);
 
-            # XXX Leaky abstraction alert!
-            my $is_bare = !-d $obj->subdir('.git');
-
-            my $name = (File::Spec->splitdir($obj))[-1];
-            push @ret, Gitalist::Git::Project->new( name => $name,
-                                     path => $obj,
+            # FIXME - Is resolving project_dir here sane?
+            #         I think not, just pass $obj down, and
+            #         resolve $project->path and $project->is_bare
+            #         in BUILDARGS
+            push @ret, Gitalist::Git::Project->new( name => $file,
+                                     path => $self->project_dir($obj),
                                  );
         }
 
