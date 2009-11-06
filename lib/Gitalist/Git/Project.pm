@@ -3,6 +3,7 @@ use MooseX::Declare;
 class Gitalist::Git::Project {
     # FIXME, use Types::Path::Class and coerce
     use MooseX::Types::Common::String qw/NonEmptySimpleStr/;
+    use MooseX::Types::Moose qw/Str Maybe/;
     use DateTime;
     use Path::Class;
     use Gitalist::Git::Util;
@@ -15,7 +16,7 @@ class Gitalist::Git::Project {
     has path => ( isa => "Path::Class::Dir",
                   is => 'ro');
 
-    has description => ( isa => 'Str',
+    has description => ( isa => Str,
                          is => 'ro',
                          lazy_build => 1,
                      );
@@ -23,7 +24,7 @@ class Gitalist::Git::Project {
                    is => 'ro',
                    lazy_build => 1,
                );
-    has last_change => ( isa => 'DateTime',
+    has last_change => ( isa => Maybe['DateTime'],
                          is => 'ro',
                          lazy_build => 1,
                      );

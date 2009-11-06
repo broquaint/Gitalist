@@ -4,7 +4,8 @@ class Gitalist::Git::Util {
     use File::Which;
     use Git::PurePerl;
     use MooseX::Types::Common::String qw/NonEmptySimpleStr/;
-    has gitdir => ( isa => "Str", is => 'ro', required => 1 );
+    use MooseX::Types::Moose qw/Str/;
+    has gitdir => ( isa => Str, is => 'ro', required => 1 );
     has _git      => ( isa => NonEmptySimpleStr, is => 'ro', lazy_build => 1 );
     sub _build__git {
         my $git = File::Which::which('git');

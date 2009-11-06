@@ -4,6 +4,7 @@ package Gitalist::Model::GPP;
 
 #use base 'Catalyst::Model::Adaptor';
 use Moose;
+use MooseX::Types::Moose qw/Str/;
 use namespace::autoclean;
 
 extends 'Catalyst::Model';
@@ -25,7 +26,7 @@ has git => (
 
 has project => (
   is => 'rw',
-  isa => 'Str',
+  isa => Str,
 );
 has project_path => (
   is => 'rw',
