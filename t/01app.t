@@ -15,5 +15,8 @@ for my $p (qw/ bare.git repo1 nodescription /) {
     ok( request($path)->is_success, "$path should succeed");
 }
 
+is request('/summary?p=DoesNotExist')->code, 404,
+    '/summary?p=DoesNotExist 404s';
+
 done_testing;
 
