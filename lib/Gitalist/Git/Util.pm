@@ -4,7 +4,12 @@ class Gitalist::Git::Util {
     use File::Which;
     use Git::PurePerl;
     use MooseX::Types::Common::String qw/NonEmptySimpleStr/;
-    has gitdir => ( isa => 'Path::Class::Dir', is => 'ro', required => 1 );
+    has project => (
+        isa => 'Gitalist::Git::Project',
+        handles => { gitdir => 'project_dir' },
+        is => 'bare', # No accessor
+        weak_ref => 1, # Weak, you have to hold onto me.
+    );
     has _git      => ( isa => NonEmptySimpleStr, is => 'ro', lazy_build => 1 );
     sub _build__git {
         my $git = File::Which::which('git');
@@ -19,16 +24,15 @@ EOR
         return $git;
     }
 
-    has _gpp      => ( isa => 'Git::PurePerl',   is => 'rw', lazy_build => 1 );
-    method _build__gpp {
-        my $gpp = Git::PurePerl->new(gitdir => $self->gitdir);
-        return $gpp;
-    }
+    has _gpp      => (
+        isa => 'Git::PurePerl', is => 'ro', lazy => 1,
+        default => sub { Git::PurePerl->new(gitdir => shift->gitdir) },
+    );
 
     method run_cmd (@args) {
         unshift @args, ( '--git-dir' => $self->gitdir );
         print STDERR 'RUNNING: ', $self->_git, qq[ @args], $/;
-        
+
         open my $fh, '-|', $self->_git, @args
             or die "failed to run git command";
         binmode $fh, ':encoding(UTF-8)';
@@ -38,10 +42,4 @@ EOR
 
         return $output;
     }
-
-
-
-
-
-#
 } # end class

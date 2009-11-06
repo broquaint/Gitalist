@@ -3,9 +3,9 @@ use MooseX::Declare;
 class Gitalist::Git::Project {
     # FIXME, use Types::Path::Class and coerce
     use MooseX::Types::Common::String qw/NonEmptySimpleStr/;
-    use MooseX::Types::Moose qw/Str Maybe/;
+    use MooseX::Types::Moose qw/Str Maybe Bool/;
     use DateTime;
-    use Path::Class;
+    use MooseX::Types::Path::Class qw/Dir/;
     use Gitalist::Git::Util;
     use aliased 'Gitalist::Git::Object';
 
@@ -13,7 +13,7 @@ class Gitalist::Git::Project {
 
     has name => ( isa => NonEmptySimpleStr,
                   is => 'ro', required => 1 );
-    has path => ( isa => "Path::Class::Dir",
+    has path => ( isa => Dir,
                   is => 'ro', required => 1);
 
     has description => ( isa => Str,
@@ -34,6 +34,31 @@ class Gitalist::Git::Project {
                    handles => [ 'run_cmd' ],
                );
 
+    has project_dir => ( isa => Dir,
+        is => 'ro',
+        lazy => 1,
+        default => sub {
+            my $self = shift;
+            $self->is_bare
+                ? $self->path
+                : $self->path->subdir('.git')
+        },
+    );
+    has is_bare => (
+        isa => Bool,
+        is => 'ro',
+        lazy => 1,
+        default => sub {
+            my $self = shift;
+            -f $self->path->file('.git', 'HEAD')
+                ? 0
+                : -f $self->path->file('HEAD')
+                    ? 1
+                    : confess("Cannot find " . $self->path . "/.git/HEAD or "
+                        . $self->path . "/HEAD");
+        },
+    );
+
     method BUILD {
         $self->$_() for qw/_util last_change owner description/; # Ensure to build early.
     }
@@ -46,21 +71,21 @@ class Gitalist::Git::Project {
 
     method _build__util {
         Gitalist::Git::Util->new(
-            gitdir => $self->_project_dir($self->path),
+            project => $self,
         );
     }
 
     method _build_description {
         my $description = "";
         eval {
-            $description = $self->path->file('description')->slurp;
+            $description = $self->project_dir->file('description')->slurp;
             chomp $description;
         };
         return $description;
     }
 
     method _build_owner {
-        my ($gecos, $name) = (getpwuid $self->path->stat->uid)[6,0];
+        my ($gecos, $name) = (getpwuid $self->project_dir->stat->uid)[6,0];
         $gecos =~ s/,+$//;
         return length($gecos) ? $gecos : $name;
     }

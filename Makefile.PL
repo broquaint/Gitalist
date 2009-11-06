@@ -24,12 +24,14 @@ requires 'namespace::autoclean';
 requires 'Config::General'; # This should reflect the config file format you've chosen
                  # See Catalyst::Plugin::ConfigLoader for supported formats
 requires 'MooseX::Types::Common';
+requires 'MooseX::Types::Path::Class';
+requires 'MooseX::Types';
 requires 'File::Find::Rule';
 requires 'File::Stat::ModeString';
-requires 'File::Slurp';
 requires 'DateTime::Format::Mail';
 requires 'IO::Capture::Stdout';
 requires 'File::Which';
+requires 'aliased';
 requires 'CGI';
 requires 'DateTime';
 requires 'Git::PurePerl'; # Note - need the git version in broquaint's fork

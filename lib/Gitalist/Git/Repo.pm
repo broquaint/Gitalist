@@ -2,11 +2,15 @@ use MooseX::Declare;
 
 class Gitalist::Git::Repo {
     use MooseX::Types::Common::String qw/NonEmptySimpleStr/;
-    use Path::Class;
+    use MooseX::Types::Path::Class qw/Dir/;
+    use MooseX::Types::Moose qw/ArrayRef/;
     use Gitalist::Git::Project;
-    has repo_dir => ( isa => NonEmptySimpleStr,
-                      is => 'ro',
-                      required => 1 );
+    has repo_dir => (
+        isa => Dir,
+        is => 'ro',
+        required => 1,
+        coerce => 1,
+    );
 
     method project (NonEmptySimpleStr $project) {
         my $pd = $self->dir_from_project_name($project);
@@ -28,18 +32,6 @@ C<git> repo.
         return -f $dir->file('HEAD') || -f $dir->file('.git', 'HEAD');
     }
 
-=head2 project_dir
-
-The directory under which the given project will reside i.e C<.git/..>
-
-=cut
-
-    method project_dir ($project) {
-        -f $project->file('.git', 'HEAD')
-            ? $project->subdir('.git')
-            : $project;
-    }
-
 =head2 list_projects
 
 For the C<repo_dir> specified in the config return an array of projects where
@@ -47,10 +39,16 @@ each item will contain the contents of L</project_info>.
 
 =cut
 
-    method list_projects {
-        my $base = dir($self->repo_dir);
-        my @ret;
+    has projects => (
+        isa => ArrayRef['Gitalist::Git::Project'],
+        reader => 'list_projects',
+        lazy_build => 1,
+    );
+
+    method _build_projects {
+        my $base = $self->repo_dir;
         my $dh = $base->open || die "Could not open $base";
+        my @ret;
         while (my $file = $dh->read) {
             next if $file =~ /^.{1,2}$/;
 
@@ -58,28 +56,12 @@ each item will contain the contents of L</project_info>.
             next unless -d $obj;
             next unless $self->_is_git_repo($obj);
 
-            # FIXME - Is resolving project_dir here sane?
-            #         I think not, just pass $obj down, and
-            #         resolve $project->path and $project->is_bare
-            #         in BUILDARGS
-            push @ret, Gitalist::Git::Project->new( name => $file,
-                                     path => $self->project_dir($obj),
-                                 );
+            push @ret, Gitalist::Git::Project->new(
+                name => $file,
+                path => $obj,
+            );
         }
 
-        return [sort { $a->{name} cmp $b->{name} } @ret];
+        return [sort { $a->name cmp $b->name } @ret];
     }
-
-=head2 dir_from_project_name
-
-Get the corresponding directory of a given project.
-
-=cut
-
-    method dir_from_project_name (Str $project) {
-        return dir($self->repo_dir)->subdir($project);
-    }
-
-
-
 }                               # end class
