@@ -39,10 +39,9 @@ class Gitalist::Git::Project {
     }
 
     method _build__util {
-        my $util = Gitalist::Git::Util->new(
-            gitdir => $self->project_dir($self->path),
+        Gitalist::Git::Util->new(
+            gitdir => $self->path,
         );
-        return $util;
     }
 
     method _build_description {
@@ -118,14 +117,6 @@ The keys for each item will be:
                                   );
         }
         return @ret;
-    }
-
-    # FIXME - Why not just stay in Path::Class land and return a P::C::D here?
-    method project_dir {
-        my $dir = $self->path->stringify;
-        $dir .= '/.git'
-            if -f dir($dir)->file('.git/HEAD');
-        return $dir;
     }
 
     # Compatibility
