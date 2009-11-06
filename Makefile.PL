@@ -6,9 +6,11 @@ use warnings;
 use inc::Module::Install;
 use Module::Install::AuthorRequires;
 use Module::Install::AuthorTests;
+use Module::Install::ReadmeFromPod;
 
 name 'Gitalist';
 all_from 'lib/Gitalist.pm';
+readme_from 'lib/Gitalist.pm';
 
 requires 'Catalyst::Runtime' => '5.80003';
 requires 'Catalyst::Plugin::ConfigLoader';
@@ -48,7 +50,6 @@ test_requires 'Test::More' => '0.88';
 catalyst;
 
 author_tests 't/author';
-
 install_script glob('script/*.pl');
 auto_install;
 WriteAll;

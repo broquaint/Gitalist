@@ -1,46 +1,26 @@
-Gitalist - a transitional project to convert gitweb.cgi to a Catalyst app.
+NAME
+    Gitalist - Catalyst based application
 
-The idea behind this project is to move gitweb.cgi away from a single
-monolithic CGI script and into a modern Catalyst app. Fortunately this is not
-as daunting as it might seem at first as gitweb.cgi follows an MVC type
-structure. Once gitweb.cgi has been suitably Catalysed then it can move from
-being "this was once gitweb.cgi" to a project of its own (hence the
-"transitional" in the description).
+SYNOPSIS
+        script/gitalist_server.pl
 
-As it stands Gitalist is very much in its infancy and hasn't got far
-beyond a layout template and a single controller.
+DESCRIPTION
+    [enter your description here]
 
-USAGE
+SEE ALSO
+    Gitalist::Controller::Root, Catalyst
 
-To get Gitalist up and running just set projectroot & repo_dir (one in
-the same unfortunately at this point) in gitalist.conf to point to the
-directory that contains your repositories. With that done just run:
+AUTHORS AND COPYRIGHT
+      Catalyst application:
+        (C) 2009 Venda Ltd and Dan Brook <dbrook@venda.com>
 
-  perl script/gitalist_server.pl
+      Original gitweb.cgi from which this was derived:
+        (C) 2005-2006, Kay Sievers <kay.sievers@vrfy.org>
+        (C) 2005, Christian Gierke
 
-DEPENDENCIES
+LICENSE
+    FIXME - Is this going to be GPLv2 as per gitweb? If so this is broken..
 
-  Catalyst
-  IO::Capture::Stdout
-  Catalyst::View::ContentNegotiation::XHTML
-  Template::Plugin::Cycle
-  DateTime
-  Path::Class
-  File::Find::Rule;
-  DateTime::Format::Mail
-  File::Stat::ModeString
-  List::MoreUtils
-  MooseX::Types::Common
-  # Probably others ...
+    This library is free software. You can redistribute it and/or modify it
+    under the same terms as Perl itself.
 
-COPYRIGHT AND LICENCE
-
-Copyright (C) 2009 Venda Ltd
-
-This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself, either Perl version 5.8.8 or,
-at your option, any later version of Perl 5 you may have available.
-
-gitweb.pm is based on the gitweb.perl from git-1.6.3.3
-(C) 2005-2006, Kay Sievers <kay.sievers@vrfy.org>
-(C) 2005, Christian Gierke
