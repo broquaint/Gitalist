@@ -55,9 +55,9 @@ class Gitalist::Git::Project {
     }
 
     method _build_owner {
-        my $owner = (getpwuid $self->path->stat->uid)[6];
-        $owner =~ s/,+$//;
-        return $owner;
+        my ($gecos, $name) = (getpwuid $self->path->stat->uid)[6,0];
+        $gecos =~ s/,+$//;
+        return length($gecos) ? $gecos : $name;
     }
     
     method _build_last_change {
