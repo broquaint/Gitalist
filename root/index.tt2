@@ -38,7 +38,7 @@
     FOR p IN projects %]
     <tr class="[% Cycle.next %]">
         <td><a class="list" href="[% c.uri_for('/summary', {p=p.name}) %]">[% p.name %]</a></td>
-        <td><a class="list" title="[% p.description %]" href="[% c.uri_for('/summary', {p=p.name} ) %]">[% p.description.substr(0, 20) %]</a></td>
+        <td><a class="list" title="[% p.description %]" href="[% c.uri_for('/summary', {p=p.name} ) %]">[% p.description.split(' ').slice(0, 10).join(' ') %]</a></td>
         <td>[% p.owner %]</td>
         <td class="age2">[% time_since(p.last_change) %]</td>
         <td class="link"><a href="[% c.uri_for("summary", {p=p.name}) %]">summary</a>

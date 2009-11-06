@@ -9,11 +9,10 @@
   <div class="message">
      [% message = line.comment | html;
         message.replace("\n", "<br/>") %]
-     [% INCLUDE '_chroma_hash.tt2' sha1 = line.sha1 %]
+     <div class='chroma-hash'>[% INCLUDE '_chroma_hash.tt2' sha1 = line.sha1 %]</div>
     </div>
     <div class="meta">
      <table class='summary' cellspacing='0' cellpadding='0'>
-      <tr><td>commit</td><td>[% line.sha1 %]</td></tr>
       <tr><td>author</td><td>[% line.author.name | html %]</td></tr>
       <tr><td>authored time</td><td>[% line.authored_time %]</td></tr>
       [% IF line.author.name != line.committer.name %]

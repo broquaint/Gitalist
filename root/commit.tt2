@@ -1,10 +1,10 @@
 [% INCLUDE 'nav/actions.tt2' object = commit %]
 
 <div class='commit-message'>
-[% commit.comment.substr(0, 85) %] ...
-[% FOREACH ref IN branches_on %]
- <span class='refs'><a href='[% c.uri_for("shortlog", {h=commit.sha1, hb=ref}) %]'>[% ref %]</a></span>
-[% END %]
+[%
+  short_cmt(commit.comment) | html;
+  INCLUDE '_refs.tt2' object = commit;
+%]
 </div>
 
 <dl class='commit-info'>

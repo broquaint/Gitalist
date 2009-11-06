@@ -56,9 +56,6 @@ dl dt {font-weight:bold;}
 dd {margin-left:1.5em;}
 table {width:100%;}
 th {font-weight:bold;}
-thead th {background:#c3d9ff;}
-
-tr.even td {background:#e5ecf9;}
 
 caption {background:#eee;}
 .small {font-size:.8em;margin-bottom:1.875em;line-height:1.875em;}

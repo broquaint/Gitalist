@@ -216,7 +216,7 @@ sub commit : Local {
   $c->stash(
       commit      => $commit,
       diff_tree   => ($c->model()->diff(commit => $commit))[0],
-      branches_on => [$c->model()->refs_for($commit->sha1)],
+      refs      => $c->model()->references,
       action      => 'commit',
   );
 }
@@ -554,25 +554,54 @@ Attempt to render a view, if needed.
 =cut
 
 sub end : ActionClass('RenderView') {
-    my ($self, $c) = @_;
-    # Give project views the current HEAD.
-    if ($c->stash->{project}) {
-        $c->stash->{HEAD} = $c->model()->head_hash;
-    }
+  my ($self, $c) = @_;
+  # Give project views the current HEAD.
+  if ($c->stash->{project}) {
+      $c->stash->{HEAD} = $c->model()->head_hash;
+  }
 
-    # XXX Move this into a plugin!
-    use DateTime::Format::Human::Duration;
-    $c->stash->{time_since} = sub {
-        return '' unless $_[0];
-        my($dt, $now) = ($_[0], DateTime->now);
+  # XXX Move these to a plugin!
+  $c->stash->{time_since} = sub {
+    return age_string(time - $_[0]->epoch);
+  };
+  $c->stash->{short_cmt} = sub {
+    my $cmt = shift;
+    print STDERR "got [$cmt]\n";
+    my($line) = split /\n/, $cmt;
+    $line =~ s/^(.{70,80}\b).*/$1 …/;
+    return $line;
+  };
+}
 
-        my($age) = $dt < (DateTime->now - DateTime::Duration->new(days=>12))
-            ? $dt->ymd
-                : DateTime::Format::Human::Duration->new->format_duration($now - $dt)
-                    =~ /^(?:.*?weeks?, )?(\d+ [^\d]+)(?:,|$) /;
+sub age_string {
+	my $age = shift;
+	my $age_str;
 
-        return $age;
-    };
+	if ($age > 60*60*24*365*2) {
+		$age_str = (int $age/60/60/24/365);
+		$age_str .= " years ago";
+	} elsif ($age > 60*60*24*(365/12)*2) {
+		$age_str = int $age/60/60/24/(365/12);
+		$age_str .= " months ago";
+	} elsif ($age > 60*60*24*7*2) {
+		$age_str = int $age/60/60/24/7;
+		$age_str .= " weeks ago";
+	} elsif ($age > 60*60*24*2) {
+		$age_str = int $age/60/60/24;
+		$age_str .= " days ago";
+	} elsif ($age > 60*60*2) {
+		$age_str = int $age/60/60;
+		$age_str .= " hours ago";
+	} elsif ($age > 60*2) {
+		$age_str = int $age/60;
+		$age_str .= " min ago";
+	} elsif ($age > 2) {
+		$age_str = int $age;
+		$age_str .= " sec ago";
+	} else {
+		$age_str .= " right now";
+	}
+	return $age_str;
 }
 
 =head1 AUTHOR

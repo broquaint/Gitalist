@@ -42,14 +42,14 @@
   / <a href="[% c.uri_for('summary') %]">[% project %]</a>
   [% IF action;  " / " _ action; END;
   END %]
-</div>
-
 [%
   IF project;
     INCLUDE 'nav/search.tt2';
   END;
 # / git_header_html
 %]
+</div>
+
 <div id='body'>
 [%
   IF action;

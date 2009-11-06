@@ -1,7 +1,8 @@
 [% PROCESS 'nav/actions.tt2' object = commit %]
 
 <div class='commit-message'>
-[% commit.comment.substr(0, 85) %] ...
+[% # XXX Wah, stuff like this doesn't work because end() isn't called as we forward to View::SyntaxHighlight
+short_cmt(commit.comment) | html %]
 </div>
 
 <div class='author'>

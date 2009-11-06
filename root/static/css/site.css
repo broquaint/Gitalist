@@ -1,26 +1,65 @@
-/* XXX Colours. Lots of colours. */
-
 body {
   margin: 1em;
 }
 
-#commit-nav {
-  padding-bottom: 4px;
-  border-bottom: solid 1px #ccc;
-  font-style: italic;
-}
-
 thead, tfoot {
+  /* FTR all table columns should be sortable hence the colour to indicate clickableness. */
   color: navy;
   font-size: small;
   font-weight: bold !important;
-  background-color: #C3D9FF;
+}
+thead th {
+  border-bottom: solid 1px #777;
+}
+tfoot td {
+  border-top: solid 1px #777;
 }
 
-table.shortlog tr {
+span.chroma-hash {
+  font-family: monospace;
+  font-size:   1em;
+  font-style: normal;
+}
+div.chroma-hash {
+  float: right;
+}
+
+.time-since {
+  font-style: italic;
+}
+.author, .head {
+  font-weight: bold;
+  font-family: "Trebuchet MS", "Lucida Grande", serif;
+}
+
+/* actions include */
+.actions {
+  padding-bottom: 4px 0;
+  font-style: italic;
+  border-top: solid 1px #777;
+  border-bottom: solid 1px #777;
+  margin-bottom: 10px;
+  padding: 5px 0;
+}
+
+/* pager include */
+.pager {
+  text-align: center;
+}
+
+/* search include */
+#page-search {
+  text-align: right;
+  float: right;
+  font-size: 0.7em;
+  padding-right: 20px;
+}
+
+/* shortlog include */
+table.shortlog tbody tr {
   padding: 1px 0px;
 }
-table.shortlog td {
+table.shortlog tbody td {
   padding: 0 1px;
 }
 
@@ -29,7 +68,11 @@ table.shortlog td {
   font-family: monospace;
 }
 div.commit-message {
-  background-color: #ddd;
+  margin-bottom: 10px;
+}
+pre.commit-message {
+  border-top:  solid 2px green;
+  border-bottom:  solid 2px red;
   padding: 5px;
 }
 .commit-info dt {
@@ -108,52 +151,48 @@ pre.blob {
   font-size: 0.85em;
   font-style: italic;
 }
-.chroma-hash {
-  float: right;
-  font-family: monospace;
-  font-size:   1em;
-}
 
 /**
  * from gitweb.css
  * XXX These can be rejigged once gitweb.css has gone away.
  */
 #page-header {
-	height: 25px;
-	padding: 8px;
-	font-size: 150%;
-	font-weight: bold;
-	background-color: #d9d8d1;
+  height: 25px;
+  padding: 8px;
+  font-size: 1.5em;
+  font-weight: bold;
+  background-color: #d9d8d1;
 }
+
 img.logo {
-	float: right;
-	border-width: 0px;
+  float: right;
+  border-width: 0px;
 }
 
 span.refs span {
-	padding: 0px 4px;
-	font-size: 80%;
-        /* XXX needs more families */
-        font-family: Verdana;
-        letter-spacing: -1px;
-	border: 1px solid;
-	background-color: #ffaaff;
-	border-color: #ffccff #ff00ee #ff00ee #ffccff;
+  padding: 0px 4px;
+  font-size: 80%;
+  /* XXX needs more families */
+  font-family: Verdana;
+  letter-spacing: -1px;
+  border: 1px solid;
+  background-color: #ffaaff;
+  border-color: #ffccff #ff00ee #ff00ee #ffccff;
 }
 
 span.refs span.ref {
-	background-color: #aaaaff;
-	border-color: #ccccff #0033cc #0033cc #ccccff;
+  background-color: #aaaaff;
+  border-color: #ccccff #0033cc #0033cc #ccccff;
 }
 
 span.refs span.tag {
-	background-color: #ffffaa;
-	border-color: #ffffcc #ffee00 #ffee00 #ffffcc;
+  background-color: #ffffaa;
+  border-color: #ffffcc #ffee00 #ffee00 #ffffcc;
 }
 
 span.refs span.head {
-	background-color: #aaffaa;
-	border-color: #ccffcc #00cc33 #00cc33 #ccffcc;
+  background-color: #aaffaa;
+  border-color: #ccffcc #00cc33 #00cc33 #ccffcc;
 }
 span.refs a {
   text-decoration: none;
