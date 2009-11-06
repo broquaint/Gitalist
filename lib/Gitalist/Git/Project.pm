@@ -12,9 +12,9 @@ class Gitalist::Git::Project {
     our $SHA1RE = qr/[0-9a-fA-F]{40}/;
     
     has name => ( isa => NonEmptySimpleStr,
-                  is => 'ro' );
+                  is => 'ro', required => 1 );
     has path => ( isa => "Path::Class::Dir",
-                  is => 'ro');
+                  is => 'ro', required => 1);
 
     has description => ( isa => Str,
                          is => 'ro',
@@ -33,6 +33,10 @@ class Gitalist::Git::Project {
                    lazy_build => 1,
                    handles => [ 'run_cmd' ],
                );
+
+    method BUILD {
+        $self->$_() for qw/_util last_change owner description/; # Ensure to build early.
+    }
 
     method _build__util {
         my $util = Gitalist::Git::Util->new(
@@ -116,7 +120,7 @@ The keys for each item will be:
         return @ret;
     }
 
-
+    # FIXME - Why not just stay in Path::Class land and return a P::C::D here?
     method project_dir {
         my $dir = $self->path->stringify;
         $dir .= '/.git'
