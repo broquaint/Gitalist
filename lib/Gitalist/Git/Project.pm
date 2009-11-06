@@ -10,7 +10,7 @@ class Gitalist::Git::Project {
     use aliased 'Gitalist::Git::Object';
 
     our $SHA1RE = qr/[0-9a-fA-F]{40}/;
-    
+
     has name => ( isa => NonEmptySimpleStr,
                   is => 'ro', required => 1 );
     has path => ( isa => "Path::Class::Dir",
@@ -44,7 +44,7 @@ class Gitalist::Git::Project {
         );
         return $util;
     }
-    
+
     method _build_description {
         my $description = "";
         eval {
@@ -59,7 +59,7 @@ class Gitalist::Git::Project {
         $gecos =~ s/,+$//;
         return length($gecos) ? $gecos : $name;
     }
-    
+
     method _build_last_change {
         my $last_change;
         my $output = $self->run_cmd(
@@ -150,5 +150,5 @@ be:
             last_change => $self->last_change,
         };
     };
-    
+
 } # end class
