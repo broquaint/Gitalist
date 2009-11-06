@@ -16,11 +16,11 @@ class Gitalist::Git::Object {
                   required => 1,
                   is => 'ro',
                   lazy_build => 1 )
-        for qw/type modestr/;
+        for qw/type modestr size/;
     has $_ => ( isa => Int,
                   required => 1,
                   is => 'ro' )
-        for qw/mode size/;
+        for qw/mode/;
 
     method _build_type {
         my $output = $self->run_cmd(qw/cat-file -t/, $self->{sha1});
