@@ -8,6 +8,15 @@ class Gitalist::Git::Repo {
                       is => 'ro',
                       required => 1 );
 
+    method project (NonEmptySimpleStr $project) {
+        my $pd = $self->dir_from_project_name($project);
+        return Gitalist::Git::Project->new(
+            name => $project,
+            path => $pd,
+        );
+    }
+
+
 =head2 _is_git_repo
 
 Determine whether a given directory (as a L<Path::Class::Dir> object) is a
