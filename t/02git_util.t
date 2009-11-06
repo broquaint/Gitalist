@@ -8,7 +8,7 @@ use Data::Dumper;
 BEGIN { use_ok 'Gitalist::Git::Util' }
 
 use Path::Class;
-my $gitdir = dir("$Bin/../lib/repositories/repo1");
+my $gitdir = dir("$Bin/lib/repositories/repo1");
 
 my $proj = Gitalist::Git::Util->new(
     gitdir => $gitdir,

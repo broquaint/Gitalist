@@ -9,7 +9,7 @@ use Path::Class;
 use Gitalist::Git::Project;
 my $project = Gitalist::Git::Project->new(
     name => 'repo1',
-    path => dir("$Bin/../lib/repositories/repo1"),
+    path => dir("$Bin/lib/repositories/repo1"),
 );
 
 BEGIN { use_ok 'Gitalist::Git::Object' }
