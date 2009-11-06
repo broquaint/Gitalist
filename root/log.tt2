@@ -20,7 +20,7 @@
       <tr><td>committered time</td><td>[% line.committed_time %]</td></tr>
       [% END %]
      </table>
-     <span class="age">[% time_since(line.authored_time) %]</span>
+     <span class="time-since">[% time_since(line.authored_time) %]</span>
      <div class="action-list">
        <a href="[% c.uri_for("commit", {h=line.sha}) %]">commit</a>
      | <a href="[% c.uri_for("commitdiff", {h=line.sha1}) %]">commitdiff</a>

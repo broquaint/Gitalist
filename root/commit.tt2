@@ -31,11 +31,11 @@
  [% END %]
 </dl>
 
-<pre class='commit-message'>[% commit.comment %]</pre>
+<pre class='commit-message'>[% commit.comment | html%]</pre>
 
 [%
-# In the case of merge commits there will be no diff tree.
-IF diff_tree.size > 0;
-	INCLUDE '_diff_tree.tt2';
-END;
+  # In the case of merge commits there will be no diff tree.
+  IF diff_tree.size > 0;
+    INCLUDE '_diff_tree.tt2';
+  END;
 %]

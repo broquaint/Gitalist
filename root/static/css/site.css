@@ -71,8 +71,8 @@ div.commit-message {
   margin-bottom: 10px;
 }
 pre.commit-message {
-  border-top:  solid 2px green;
-  border-bottom:  solid 2px red;
+  border-top:  solid 2px red;
+  border-bottom:  solid 2px green;
   padding: 5px;
 }
 .commit-info dt {
@@ -103,7 +103,7 @@ pre.commit-message {
   text-decoration: underline;
 }
 table.heads {
-  width: 50%;
+  width: 75%;
 }
 
 /* /blob */

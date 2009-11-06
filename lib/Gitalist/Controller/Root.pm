@@ -363,11 +363,24 @@ Populate the header and footer. Perhaps not the best location.
 =cut
 
 sub auto : Private {
-    my($self, $c) = @_;
+  my($self, $c) = @_;
 
-    # Yes, this is hideous.
-    $self->header($c);
-    $self->footer($c);
+  # XXX Move these to a plugin!
+  $c->stash(
+    time_since => sub {
+      return age_string(time - $_[0]->epoch);
+    },
+    short_cmt => sub {
+      my $cmt = shift;
+      my($line) = split /\n/, $cmt;
+      $line =~ s/^(.{70,80}\b).*/$1 …/;
+      return $line;
+    },
+  );
+
+  # Yes, this is hideous.
+  $self->header($c);
+  $self->footer($c);
 }
 
 # XXX This could probably be dropped altogether.
@@ -559,18 +572,6 @@ sub end : ActionClass('RenderView') {
   if ($c->stash->{project}) {
       $c->stash->{HEAD} = $c->model()->head_hash;
   }
-
-  # XXX Move these to a plugin!
-  $c->stash->{time_since} = sub {
-    return age_string(time - $_[0]->epoch);
-  };
-  $c->stash->{short_cmt} = sub {
-    my $cmt = shift;
-    print STDERR "got [$cmt]\n";
-    my($line) = split /\n/, $cmt;
-    $line =~ s/^(.{70,80}\b).*/$1 …/;
-    return $line;
-  };
 }
 
 sub age_string {
