@@ -66,7 +66,8 @@ sub _get_commit {
 
   # FIXME this can die when everything is migrated
   my ($m, $pd);
-  if ($c->stash->{current_model} eq 'GitRepos') {
+  if (defined $c->stash->{current_model} &&
+          $c->stash->{current_model} eq 'GitRepos') {
       $m = $c->model()->project($c->stash->{project});
       $pd = $m->path;
   } else {
@@ -582,7 +583,8 @@ sub end : ActionClass('RenderView') {
   my ($self, $c) = @_;
   # Give project views the current HEAD.
   if ($c->stash->{project}) {
-      if ($c->stash->{current_model} eq 'GitRepos') {
+      if ($c->stash->{current_model} &&
+              $c->stash->{current_model} eq 'GitRepos') {
           my $project = $c->model()->project($c->stash->{project});
           $c->stash->{HEAD} = $project->head_hash;
       } else {
