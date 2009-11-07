@@ -377,6 +377,7 @@ sub auto : Private {
   # XXX Move these to a plugin!
   $c->stash(
     time_since => sub {
+      return 'never' unless $_[0];
       return age_string(time - $_[0]->epoch);
     },
     short_cmt => sub {
@@ -384,6 +385,9 @@ sub auto : Private {
       my($line) = split /\n/, $cmt;
       $line =~ s/^(.{70,80}\b).*/$1 …/;
       return $line;
+    },
+    abridged_description => sub {
+        join(' ', grep { defined } (split / /, shift)[0..10]);
     },
   );
 
