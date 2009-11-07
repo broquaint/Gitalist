@@ -20,11 +20,21 @@ SKIP: {
   use Data::Dumper;
   my $test_repo1 = curry_test_uri('repo1');
   &$test_repo1('/summary');
+  &$test_repo1('/heads');
   &$test_repo1('/shortlog');
   &$test_repo1('/log');
   &$test_repo1('/commit');
-  &$test_repo1('/commitdiff', 'h=36c6c6708b8360d7023e8a1649c45bcf9b3bd818');
-  &$test_repo1('/tree', 'h=145dc3ef5d307be84cb9b325d70bd08aeed0eceb;hb=36c6c6708b8360d7023e8a1649c45bcf9b3bd818');
+  &$test_repo1('/commitdiff');
+  &$test_repo1('/tree');
+
+  # legacy URIs
+  &$test_repo1('/', 'a=summary');
+  &$test_repo1('/', 'a=heads');
+  &$test_repo1('/', 'a=shortlog');
+  &$test_repo1('/', 'a=log');
+  &$test_repo1('/', 'a=commit');
+  &$test_repo1('/', 'a=commitdiff');
+  &$test_repo1('/', 'a=tree');
 #  &$test_repo1('/', 'a=blob;f=file1');
 
 } # Close APP_TEST skip
@@ -41,7 +51,7 @@ sub test_uri {
 sub curry_test_uri {
     my $p = shift;
     sub {
-        my $uri = shift;
-        test_uri($p, $uri);
+        my ($uri, $qs) = @_;
+        test_uri($p, $uri, $qs);
     };
 };
