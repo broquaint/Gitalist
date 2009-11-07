@@ -376,6 +376,7 @@ sub auto : Private {
   # XXX Move these to a plugin!
   $c->stash(
     time_since => sub {
+      return 'never' unless $_[0];
       return age_string(time - $_[0]->epoch);
     },
     short_cmt => sub {
