@@ -1,23 +1,28 @@
 use strict;
 use warnings;
 use FindBin qw/$Bin/;
-use Test::More qw/no_plan/;
+use Test::More;
 
 use Data::Dumper;
 
-BEGIN { use_ok 'Gitalist::Git::Util' }
+BEGIN {
+    use_ok 'Gitalist::Git::Util';
+    use_ok 'Gitalist::Git::Project';
+}
 
 use Path::Class;
 my $gitdir = dir("$Bin/lib/repositories/repo1");
 
-my $proj = Gitalist::Git::Util->new(
-    gitdir => $gitdir,
+my $proj = Gitalist::Git::Project->new(
+    path => $gitdir,
+    name => "repo1",
 );
-isa_ok($proj, 'Gitalist::Git::Util');
+my $util = Gitalist::Git::Util->new(
+    project => $proj,
+);
+isa_ok($util, 'Gitalist::Git::Util');
 
-like( $proj->_git, qr#/git$#, 'git binary found');
-isa_ok($proj->_gpp, 'Git::PurePerl', 'gpp instance created');
-is($proj->gitdir, $gitdir, 'repository path is set');
+like( $util->_git, qr#/git$#, 'git binary found');
+isa_ok($util->_gpp, 'Git::PurePerl', 'gpp instance created');
 
-
-
+done_testing;
