@@ -385,6 +385,9 @@ sub auto : Private {
       $line =~ s/^(.{70,80}\b).*/$1 …/;
       return $line;
     },
+    abridged_description => sub {
+        join(' ', grep { defined } (split / /, shift)[0..10]);
+    },
   );
 
   # Yes, this is hideous.
