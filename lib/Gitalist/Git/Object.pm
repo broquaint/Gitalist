@@ -33,18 +33,18 @@ class Gitalist::Git::Object {
     }
 
     method _build_type {
-        my $output = $self->run_cmd(qw/cat-file -t/, $self->{sha1});
+        my $output = $self->run_cmd(qw/cat-file -t/, $self->sha1);
         chomp($output);
         return $output;
     }
 
     method _build_modestr {
-        my $modestr = mode_to_string($self->{mode});
+        my $modestr = mode_to_string($self->mode);
         return $modestr;
     }
 
     method _build_size {
-        my $output = $self->run_cmd(qw/cat-file -s/, $self->{sha1});
+        my $output = $self->run_cmd(qw/cat-file -s/, $self->sha1);
         chomp($output);
         return $output;
     }
