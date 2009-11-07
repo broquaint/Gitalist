@@ -29,18 +29,15 @@ is($object->mode, 16384, 'mode is correct');
 is($object->modestr, 'd---------', "modestr is correct" );
 is($object->size, 33, "size is correct");
 
-# Create object from hash.
+# Create object from sha1.
 my $obj2 = Gitalist::Git::Object->new(
     project => $project,
     sha1 => '5716ca5987cbf97d6bb54920bea6adde242d87e6',
-    file => 'file1',
-    mode => 33188,
 );
 isa_ok($obj2, 'Gitalist::Git::Object');
 is($obj2->sha1,'5716ca5987cbf97d6bb54920bea6adde242d87e6', 'sha1 is correct');
 is($obj2->type, 'blob', 'type is correct');
-is($obj2->file, 'file1', 'file is correct');
-is($obj2->mode, 33188, 'mode is correct');
-is($obj2->modestr, '-rw-r--r--', "modestr is correct" );
+is($obj2->mode, 0, 'mode is correct');
+is($obj2->modestr, '?---------', "modestr is correct" );
 is($obj2->contents, "bar\n", 'obj2 contents is correct');
 is($obj2->size, 4, "size is correct");

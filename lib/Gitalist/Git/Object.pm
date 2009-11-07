@@ -3,31 +3,41 @@ use MooseX::Declare;
 class Gitalist::Git::Object {
     use MooseX::Types::Moose qw/Str Int/;
     use File::Stat::ModeString qw/mode_to_string/;
+    # project and sha1 are required initargs
     has project => ( isa => 'Gitalist::Git::Project',
                      required => 1,
                      is => 'ro',
                      handles => [ 'run_cmd' ],
                  );
-    has $_ => ( isa => Str,
-                  required => 1,
-                  is => 'ro' )
-        for qw/sha1 file/;
+    has sha1 ( isa => Str,
+               required => 1,
+               is => 'ro' );
+
     has $_ => ( isa => Str,
                   required => 1,
                   is => 'ro',
                   lazy_build => 1 )
         for qw/type modestr size/;
-    has $_ => ( isa => Int,
-                  required => 1,
-                  is => 'ro' )
-        for qw/mode/;
+
+    # objects can't determine their mode or filename
+    has file => ( isa => Str,
+                  required => 0,
+                  is => 'ro' );
+    has mode => ( isa => Int,
+                required => 1,
+                default => 0,
+                is => 'ro' );
+
+    method BUILD {
+        $self->$_() for qw/type modestr size/; # Ensure to build early.
+    }
 
     method _build_type {
         my $output = $self->run_cmd(qw/cat-file -t/, $self->{sha1});
         chomp($output);
         return $output;
     }
-    
+
     method _build_modestr {
         my $modestr = mode_to_string($self->{mode});
         return $modestr;

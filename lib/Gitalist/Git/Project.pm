@@ -119,6 +119,55 @@ The keys for each item will be:
         return @ret;
     }
 
+    use Gitalist::Git::Object;
+    method get_object (Str $sha1) {
+        return Gitalist::Git::Object->new(
+            project => $self,
+            sha1 => $sha1,
+        );
+    }
+    
+    # Should be in ::Object
+    method get_object_mode_string (Gitalist::Git::Object $object) {
+        return unless $object && $object->{mode};
+        return $object->{modestr};
+    }
+
+    method get_object_type ($object) {
+        chomp(my $output = $self->run_cmd(qw/cat-file -t/, $object));
+        return unless $output;
+
+        return $output;
+    }
+
+    method cat_file ($object) {
+        my $type = $self->get_object_type($object);
+        die "object `$object' is not a file\n"
+            if (!defined $type || $type ne 'blob');
+
+        my $output = $self->run_cmd(qw/cat-file -p/, $object);
+        return unless $output;
+
+        return $output;
+    }
+
+    method hash_by_path ($base, $path?, $type?) {
+        $path ||= '';
+        $path =~ s{/+$}();
+
+        my $output = $self->run_cmd('ls-tree', $base, '--', $path)
+            or return;
+        my($line) = $output ? split(/\n/, $output) : ();
+
+        #'100644 blob 0fa3f3a66fb6a137f6ec2c19351ed4d807070ffa	panic.c'
+        $line =~ m/^([0-9]+) (.+) ($SHA1RE)\t/;
+        return defined $type && $type ne $2
+            ? ()
+                : $3;
+    }
+
+
+
     # Compatibility
 
 =head2 info
