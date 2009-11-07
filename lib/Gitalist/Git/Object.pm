@@ -9,7 +9,7 @@ class Gitalist::Git::Object {
                      is => 'ro',
                      handles => [ 'run_cmd' ],
                  );
-    has sha1 ( isa => Str,
+    has sha1 => ( isa => Str,
                required => 1,
                is => 'ro' );
 

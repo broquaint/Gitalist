@@ -63,7 +63,16 @@ sub _get_commit {
 
   my $h = $haveh || $c->req->param('h') || '';
   my $f = $c->req->param('f');
-  my $m = $c->model();
+
+  # FIXME this can die when everything is migrated
+  my ($m, $pd);
+  if ($c->stash->{current_model} eq 'GitRepos') {
+      $m = $c->model()->project($c->stash->{project});
+      $pd = $m->path;
+  } else {
+      $m = $c->model();
+      ($pd = $m->project_dir( $m->project )) =~ s{/\.git$}();
+  }
 
   # Either use the provided h(ash) parameter, the f(ile) parameter or just use HEAD.
   my $hash = ($h =~ /[^a-f0-9]/ ? $m->head_hash($h) : $h)
@@ -72,8 +81,6 @@ sub _get_commit {
           # XXX This could definitely use more context.
           || Carp::croak("Couldn't find a hash for the commit object!");
 
-
-  (my $pd = $m->project_dir( $m->project )) =~ s{/\.git$}();
   my $commit = $m->get_object($hash)
     or Carp::croak("Couldn't find a commit object for '$hash' in '$pd'!");
 
@@ -135,10 +142,11 @@ The current list of heads (aka branches) in the repo.
 
 sub heads : Local {
   my ( $self, $c ) = @_;
-
+  $c->stash( current_model => 'GitRepos' );
+  my $project = $c->model()->project( $c->stash->{project} );
   $c->stash(
     commit => $self->_get_commit($c),
-    heads  => [$c->model()->heads],
+    heads  => [$project->heads],
     action => 'heads',
   );
 }
@@ -570,7 +578,12 @@ sub end : ActionClass('RenderView') {
   my ($self, $c) = @_;
   # Give project views the current HEAD.
   if ($c->stash->{project}) {
-      $c->stash->{HEAD} = $c->model()->head_hash;
+      if ($c->stash->{current_model} eq 'GitRepos') {
+          my $project = $c->model()->project($c->stash->{project});
+          $c->stash->{HEAD} = $project->head_hash;
+      } else {
+          $c->stash->{HEAD} = $c->model()->head_hash;
+      }
   }
 }
 

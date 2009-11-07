@@ -38,9 +38,15 @@ class Gitalist::Git::Project {
         $self->$_() for qw/_util last_change owner description/; # Ensure to build early.
     }
 
+    method _project_dir {
+        -f $self->{path}->file('.git', 'HEAD')
+            ? $self->{path}->subdir('.git')
+            : $self->{path};
+    }
+
     method _build__util {
         Gitalist::Git::Util->new(
-            gitdir => $self->path,
+            gitdir => $self->_project_dir($self->path),
         );
     }
 
@@ -72,6 +78,28 @@ class Gitalist::Git::Project {
         }
         return $last_change;
     }
+
+    method heads {
+        my $cmdout = $self->run_cmd(qw/for-each-ref --sort=-committerdate /, '--format=%(objectname)%00%(refname)%00%(committer)', 'refs/heads');
+        my @output = $cmdout ? split(/\n/, $cmdout) : ();
+        my @ret;
+        for my $line (@output) {
+            my ($rev, $head, $commiter) = split /\0/, $line, 3;
+            $head =~ s!^refs/heads/!!;
+
+            push @ret, { sha1 => $rev, name => $head };
+
+            #FIXME: That isn't the time I'm looking for..
+            if (my ($epoch, $tz) = $line =~ /\s(\d+)\s+([+-]\d+)$/) {
+                my $dt = DateTime->from_epoch(epoch => $epoch);
+                $dt->set_time_zone($tz);
+                $ret[-1]->{last_change} = $dt;
+            }
+        }
+
+        return @ret;
+    }
+
 
 =head2 head_hash
 

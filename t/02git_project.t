@@ -22,6 +22,8 @@ isa_ok($proj->last_change, 'DateTime', 'last_change');
 
 is($proj->info->{name}, qw/repo1/, 'repo name in info hash');
 
+ok($proj->heads, '->heads returns stuff');
+     
 is($proj->head_hash, qw/36c6c6708b8360d7023e8a1649c45bcf9b3bd818/, 'head_hash for HEAD is correct');
 
 is(scalar $proj->list_tree, 2, 'expected number of entries in tree');
