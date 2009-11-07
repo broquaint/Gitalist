@@ -13,10 +13,9 @@ class Gitalist::Git::Repo {
     );
 
     method project (NonEmptySimpleStr $project) {
-        my $pd = $self->dir_from_project_name($project);
         return Gitalist::Git::Project->new(
             name => $project,
-            path => $pd,
+            path => $self->repo_dir->subdir($project),
         );
     }
 
