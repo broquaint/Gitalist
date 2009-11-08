@@ -31,7 +31,7 @@ EOR
 
     method run_cmd (@args) {
         unshift @args, ( '--git-dir' => $self->gitdir );
-        print STDERR 'RUNNING: ', $self->_git, qq[ @args], $/;
+#        print STDERR 'RUNNING: ', $self->_git, qq[ @args], $/;
 
         open my $fh, '-|', $self->_git, @args
             or die "failed to run git command";
@@ -42,4 +42,9 @@ EOR
 
         return $output;
     }
+
+    method get_gpp_object (NonEmptySimpleStr $sha1) {
+        return $self->_gpp->get_object($sha1) || undef;
+    }
+
 } # end class

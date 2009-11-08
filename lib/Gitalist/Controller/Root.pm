@@ -121,18 +121,27 @@ A summary of what's happening in the repo.
 
 sub summary : Local {
   my ( $self, $c ) = @_;
-
+  $c->stash(current_model => 'GitRepos');
+  warn("project is " . $c->stash->{project});
+  my $project;
+  eval {
+      $project = $c->model()->project($c->stash->{project});
+  };
+  if ($@) {
+      $c->detach('error_404');
+  }
   my $commit = $self->_get_commit($c);
   $c->stash(
     commit    => $commit,
-    info      => $c->model()->project_info($c->model()->project),
-    log_lines => [$c->model()->list_revs(
-      sha1 => $commit->sha1, count => Gitalist->config->{paging}{summary}
+    info      => $project->info,
+    log_lines => [$project->list_revs(
+        sha1 => $commit->sha1,
+        count => Gitalist->config->{paging}{summary} || 50
     )],
-    refs      => $c->model()->references,
-    heads     => [$c->model()->heads],
+    refs      => $project->references,
+    heads     => [$project->heads],
     action    => 'summary',
-  );
+);
 }
 
 =head2 heads
@@ -591,6 +600,15 @@ sub end : ActionClass('RenderView') {
           $c->stash->{HEAD} = $c->model()->head_hash;
       }
   }
+}
+
+sub error_404 :Private {
+    my ($self, $c) = @_;
+    $c->response->status(404);
+    $c->stash(
+        title => 'Page not found',
+        content => 'Page not found',
+    )
 }
 
 sub age_string {

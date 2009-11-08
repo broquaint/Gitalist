@@ -3,7 +3,7 @@ use MooseX::Declare;
 class Gitalist::Git::Project {
     # FIXME, use Types::Path::Class and coerce
     use MooseX::Types::Common::String qw/NonEmptySimpleStr/;
-    use MooseX::Types::Moose qw/Str Maybe Bool/;
+    use MooseX::Types::Moose qw/Str Maybe Bool HashRef/;
     use DateTime;
     use MooseX::Types::Path::Class qw/Dir/;
     use Gitalist::Git::Util;
@@ -31,7 +31,7 @@ class Gitalist::Git::Project {
     has _util => ( isa => 'Gitalist::Git::Util',
                    is => 'ro',
                    lazy_build => 1,
-                   handles => [ 'run_cmd' ],
+                   handles => [ 'run_cmd', 'get_gpp_object' ],
                );
 
     has project_dir => ( isa => Dir,
@@ -123,6 +123,28 @@ class Gitalist::Git::Project {
         }
 
         return @ret;
+    }
+
+    method references {
+	return $self->{references}
+		if $self->{references};
+
+	# 5dc01c595e6c6ec9ccda4f6f69c131c0dd945f8c refs/tags/v2.6.11
+	# c39ae07f393806ccf406ef966e9a15afc43cc36a refs/tags/v2.6.11^{}
+	my $cmdout = $self->run_cmd(qw(show-ref --dereference))
+		or return;
+        my @reflist = $cmdout ? split(/\n/, $cmdout) : ();
+	my %refs;
+	for(@reflist) {
+		push @{$refs{$1}}, $2
+			if m!^($SHA1RE)\srefs/(.*)$!;
+	}
+
+	return $self->{references} = \%refs;
+}
+
+    method valid_rev (Str $rev) {
+        return ($rev =~ /^($SHA1RE)$/);
     }
 
 
@@ -219,6 +241,50 @@ The keys for each item will be:
                 : $3;
     }
 
+    method list_revs ( NonEmptySimpleStr :$sha1!,
+                       Int :$count?,
+                       Int :$skip?,
+                       HashRef :$search?,
+                       NonEmptySimpleStr :$file?
+                   ) {
+        $sha1 = $self->head_hash($sha1)
+            if !$sha1 || $sha1 !~ $SHA1RE;
+
+	my @search_opts;
+        if($search) {
+            $search->{type} = 'grep'
+                if $search->{type} eq 'commit';
+            @search_opts = (
+                # This seems a little fragile ...
+                qq[--$search->{type}=$search->{text}],
+                '--regexp-ignore-case',
+                $search->{regexp} ? '--extended-regexp' : '--fixed-strings'
+            );
+        }
+
+        my $output = $self->run_cmd(
+            'rev-list',
+            '--header',
+            (defined $count ? "--max-count=$count" : ()),
+            (defined $skip ? "--skip=$skip"       : ()),
+            @search_opts,
+            $sha1,
+            '--',
+            ($file ? $file : ()),
+        );
+        return unless $output;
+
+        my @revs = $self->parse_rev_list($output);
+
+        return @revs;
+    }
+
+    method parse_rev_list ($output) {
+        return
+            map  $self->get_gpp_object($_),
+                grep $self->valid_rev($_),
+                    map  split(/\n/, $_, 6), split /\0/, $output;
+    }
 
 
     # Compatibility
