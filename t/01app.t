@@ -26,6 +26,7 @@ SKIP: {
   &$test_repo1('/commit');
   &$test_repo1('/commitdiff');
   &$test_repo1('/tree');
+  &$test_repo1('/blobdiff', 'f=file1;h=5716ca5987cbf97d6bb54920bea6adde242d87e6;hp=257cc5642cb1a054f08cc83f2d943e56fd3ebe99;hb=refs/heads/master;hpb=3bc0634310b9c62222bb0e724c11ffdfb297b4ac');
 
   # legacy URIs
   &$test_repo1('/', 'a=summary');
