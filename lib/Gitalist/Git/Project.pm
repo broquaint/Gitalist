@@ -195,13 +195,16 @@ The keys for each item will be:
         return @ret;
     }
 
-    method get_object (Str $sha1) {
+    method get_object (NonEmptySimpleStr $sha1) {
+        unless ( $self->valid_rev($sha1) ) {
+            $sha1 = $self->head_hash($sha1);
+        }
         return Object->new(
             project => $self,
             sha1 => $sha1,
         );
     }
-    
+
     # Should be in ::Object
     method get_object_mode_string (Gitalist::Git::Object $object) {
         return unless $object && $object->{mode};
@@ -304,7 +307,7 @@ The keys for each item will be:
 
         my @out = $self->raw_diff(
             ( $patch ? '--patch-with-raw' : () ),
-            $parent, $commit->sha1, @etc
+            $parent, $commit->sha1, @etc,
         );
 
         # XXX Yes, there is much wrongness having parse_diff_tree be destructive.

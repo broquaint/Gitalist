@@ -160,19 +160,20 @@ The blob action i.e the contents of a file.
 
 sub blob : Local {
   my ( $self, $c ) = @_;
-
+  $c->stash(current_model => 'GitRepos');
+  my $project = $c->stash->{Project};
   my $h  = $c->req->param('h')
-       || $c->model()->hash_by_path($c->req->param('f'))
+       || $project->hash_by_path($c->req->param('hb'), $c->req->param('f'))
        || die "No file or sha1 provided.";
   my $hb = $c->req->param('hb')
-       || $c->model()->head_hash
+       || $project->head_hash
        || die "Couldn't discern the corresponding head.";
 
   my $filename = $c->req->param('f') || '';
 
   $c->stash(
-    blob     => $c->model()->get_object($h)->content,
-    head     => $c->model()->get_object($hb),
+    blob     => $project->get_object($h)->contents,
+    head     => $project->get_object($hb),
     filename => $filename,
     # XXX Hack hack hack, see View::SyntaxHighlight
     language => ($filename =~ /\.p[lm]$/ ? 'Perl' : ''),
@@ -190,13 +191,13 @@ Exposes a given diff of a blob.
 
 sub blobdiff : Local {
   my ( $self, $c ) = @_;
-
-  my $commit = $self->_get_commit($c);
+  $c->stash(current_model => 'GitRepos');
+  my $commit = $self->_get_commit($c, $c->req->param('hb'));
   my $filename = $c->req->param('f')
               || croak("No file specified!");
-  my($tree, $patch) = $c->model()->diff(
+  my($tree, $patch) = $c->stash->{Project}->diff(
     commit => $commit,
-    parent => $c->req->param('hp') || '',
+    parent => $c->req->param('hpb') || '',
     file   => $filename,
     patch  => 1,
   );
@@ -366,8 +367,56 @@ sub search : Local {
 }
 
 sub search_help : Local {
+    # FIXME - implement search_help
     Carp::croak "Not implemented.";
 }
+
+sub atom : Local {
+    # FIXME - implement atom
+    Carp::croak "Not implemented.";
+}
+
+sub rss : Local {
+    # FIXME - implement rss
+    Carp::croak "Not implemented.";
+}
+
+sub blobdiff_plain : Local {
+    # FIXME - implement blobdiff_plain
+    Carp::croak "Not implemented.";
+}
+
+sub blob_plain : Local {
+    # FIXME - implement blobdiff_plain
+    Carp::croak "Not implemented.";
+}
+
+sub patch : Local {
+    # FIXME - implement patches
+    Carp::croak "Not implemented.";
+}
+
+sub patches : Local {
+    # FIXME - implement patches
+    Carp::croak "Not implemented.";
+}
+
+sub snapshot : Local {
+    # FIXME - implement snapshot
+    Carp::croak "Not implemented.";
+}
+
+sub history : Local {
+    # FIXME - implement history
+    Carp::croak "Not implemented.";
+}
+
+sub commitdiff_plain : Local {
+    # FIXME - implement commitdiff_plain
+    Carp::croak "Not implemented.";
+}
+
+
 
 =head2 auto
 
