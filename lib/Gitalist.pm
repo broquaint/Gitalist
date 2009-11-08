@@ -53,12 +53,13 @@ __PACKAGE__->setup();
 
 around uri_for => sub {
   my ($orig, $c) = (shift, shift);
-  local $c->stash->{current_model}; # FIXME - for zts..
+  my $project_name = $c->stash->{'Project'} && $c->stash->{'Project'}->name;
   my $hash = ref($_[-1]) eq 'HASH' ? pop @_ : {};
   my $params = Catalyst::Utils::merge_hashes(
-    { p => $hash->{p} || $c->model()->project },
+    { p => $hash->{p} || $project_name },
     $hash,
   );
+  delete $params->{p} unless defined $params->{p} && length $params->{p};
   (my $uri = $c->$orig(@_, $params))
     =~ tr[&][;];
   return $uri;
