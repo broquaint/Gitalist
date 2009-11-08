@@ -474,7 +474,7 @@ sub header {
   }
 
   $c->stash->{version}     = $c->config->{version};
-  $c->stash->{git_version} = $c->model()->run_cmd('--version');
+  $c->stash->{git_version} = $c->model('GitRepos')->run_cmd('--version');
   $c->stash->{title}       = $title;
 
   #$c->stash->{baseurl} = $ENV{PATH_INFO} && uri_escape($base_url);
