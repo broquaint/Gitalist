@@ -27,6 +27,15 @@ is request('/summary?p=DoesNotExist')->code, 404,
   test('/commit');
   test('/commitdiff', 'h=36c6c6708b8360d7023e8a1649c45bcf9b3bd818');
   test('/tree', 'h=145dc3ef5d307be84cb9b325d70bd08aeed0eceb;hb=36c6c6708b8360d7023e8a1649c45bcf9b3bd818');
+
+  # legacy URIs
+  test('/', 'a=summary');
+  test('/', 'a=heads');
+  test('/', 'a=shortlog');
+  test('/', 'a=log');
+  test('/', 'a=commit');
+  test('/', 'a=commitdiff');
+  test('/', 'a=tree');
 #  $test_repo1->('/', 'a=blob;f=file1');
 }
 
@@ -44,7 +53,7 @@ sub test_uri {
 sub curry_test_uri {
     my $p = shift;
     sub {
-        my $uri = shift;
-        test_uri($p, $uri);
+        my ($uri, $qs) = @_;
+        test_uri($p, $uri, $qs);
     };
 };

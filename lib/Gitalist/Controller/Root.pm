@@ -95,22 +95,20 @@ Provides the project listing.
 =cut
 
 sub index :Path :Args(0) {
-  my ( $self, $c ) = @_;
-  $c->stash(current_model => 'GitRepos');
-  # Leave actions up to gitweb at this point.
-  return $self->run_gitweb($c)
-    if $c->req->param('a');
+    my ( $self, $c ) = @_;
+    $c->detach($c->req->param('a')) if $c->req->param('a');
+    $c->stash(current_model => 'GitRepos');
 
-  my $list = $c->model()->list_projects;
-  unless(@$list) {
-    die "No projects found in ". $c->model->repo_dir;
-  }
+    my $list = $c->model()->list_projects;
+    unless(@$list) {
+        die "No projects found in ". $c->model->repo_dir;
+    }
 
-  $c->stash(
-    searchtext => $c->req->param('searchtext') || '',
-    projects   => $list,
-    action     => 'index',
-  );
+    $c->stash(
+        searchtext => $c->req->param('searchtext') || '',
+        projects   => $list,
+        action     => 'index',
+    );
 }
 
 =head2 summary
