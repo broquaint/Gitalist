@@ -307,14 +307,15 @@ The tree of a given commit.
 
 sub tree : Local {
   my ( $self, $c ) = @_;
-
+  $c->stash(current_model => 'GitRepos');
+  my $project = $c->stash->{Project};
   my $commit = $self->_get_commit($c, $c->req->param('hb'));
-  my $tree   = $c->model()->get_object($c->req->param('h') || $commit->tree_sha1);
+  my $tree   = $project->get_object($c->req->param('h') || $commit->tree_sha1);
   $c->stash(
       # XXX Useful defaults needed ...
       commit    => $commit,
       tree      => $tree,
-      tree_list => [$c->model()->list_tree($tree->sha1)],
+      tree_list => [$project->list_tree($tree->sha1)],
 	  path      => $c->req->param('f') || '',
       action    => 'tree',
   );
