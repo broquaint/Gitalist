@@ -35,7 +35,9 @@ class Gitalist::Git::Object {
 
     foreach my $key (qw/ type size /) {
         method "_build_$key" {
-            $self->_cat_file_with_flag(substr($key, 0, 1))->chomp;
+            my $v = $self->_cat_file_with_flag(substr($key, 0, 1));
+            chomp($v);
+            return $v;
         }
     }
 

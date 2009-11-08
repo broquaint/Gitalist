@@ -11,7 +11,7 @@ BEGIN {
 
 ok( request('/')->is_success, 'Request should succeed' );
 
-for my $p (qw/ bare.git repo1 nodescription /) {
+for my $p (qw/ repo1 nodescription /) {
     my $path = '/summary?p=' . $p;
     ok( request($path)->is_success, "$path should succeed");
 }

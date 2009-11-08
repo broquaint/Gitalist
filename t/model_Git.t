@@ -23,7 +23,7 @@ my $repoEmpty = Path::Class::Dir->new('t/lib/repositories/empty.git');
 ok( ! $m->is_git_repo( $repoEmpty ), 'is_git_repo is false for empty dir' );
 
 my $projectList = $m->list_projects('t/lib/repositories');
-ok( scalar @{$projectList} == 2, 'list_projects returns an array with the correct number of members' );
+ok( scalar @{$projectList} == 3, 'list_projects returns an array with the correct number of members' );
 is( $projectList->[0]->{name}, 'bare.git', 'list_projects has correct name for "bare.git" repo' );
 #ok( $projectList->[1]->{name} eq 'working/.git', 'list_projects has correct name for "working" repo' );
 

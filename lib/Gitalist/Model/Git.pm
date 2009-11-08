@@ -129,7 +129,7 @@ Call out to the C<git> binary and return a string consisting of the output.
 sub run_cmd {
   my ($self, @args) = @_;
 
-  print STDERR 'RUNNING: ', $self->git, qq[ @args], $/;
+#  print STDERR 'RUNNING: ', $self->git, qq[ @args], $/;
 
   open my $fh, '-|', $self->git, @args
     or die "failed to run git command";
