@@ -329,8 +329,8 @@ Expose the local reflog. This may go away.
 
 sub reflog : Local {
   my ( $self, $c ) = @_;
-
-  my @log = $c->model()->reflog(
+  $c->stash(current_model => 'GitRepos');
+  my @log = $c->stash->{Project}->reflog(
       '--since=yesterday'
   );
 
@@ -342,7 +342,8 @@ sub reflog : Local {
 
 sub search : Local {
   my($self, $c) = @_;
-
+  $c->stash(current_action => 'GitRepos');
+  my $project = $c->stash->{Project};
   my $commit  = $self->_get_commit($c);
   # Lifted from /shortlog.
   my %logargs = (
@@ -358,7 +359,7 @@ sub search : Local {
 
   $c->stash(
       commit  => $commit,
-      results => [$c->model()->list_revs(%logargs)],
+      results => [$project->list_revs(%logargs)],
       action  => 'search',
 	  # This could be added - page      => $page,
   );

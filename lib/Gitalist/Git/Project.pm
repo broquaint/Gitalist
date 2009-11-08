@@ -382,6 +382,50 @@ The keys for each item will be:
         return @ret;
     }
 
+    method reflog (@logargs) {
+        my @entries
+            =  $self->run_cmd(qw(log -g), @logargs)
+                =~ /(^commit.+?(?:(?=^commit)|(?=\z)))/msg;
+
+=pod
+  commit 02526fc15beddf2c64798a947fecdd8d11bf993d
+  Reflog: HEAD@{14} (The Git Server <git@git.dev.venda.com>)
+  Reflog message: push
+  Author: Foo Barsby <fbarsby@example.com>
+  Date:   Thu Sep 17 12:26:05 2009 +0100
+
+      Merge branch 'abc123'
+
+=cut
+
+        return map {
+            # XXX Stuff like this makes me want to switch to Git::PurePerl
+            my($sha1, $type, $author, $date)
+                = m{
+                       ^ commit \s+ ($SHA1RE)$
+                       .*?
+                       Reflog[ ]message: \s+ (.+?)$ \s+
+                     Author: \s+ ([^<]+) <.*?$ \s+
+                   Date: \s+ (.+?)$
+               }xms;
+
+            pos($_) = index($_, $date) + length $date;
+
+            # Yeah, I just did that.
+            my($msg) = /\G\s+(\S.*)/sg;
+            {
+                hash    => $sha1,
+                type    => $type,
+                author  => $author,
+
+                # XXX Add DateTime goodness.
+                date    => $date,
+                message => $msg,
+            }
+            ;
+        } @entries;
+    }
+
     # Compatibility
 
 =head2 info

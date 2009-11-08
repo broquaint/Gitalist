@@ -24,9 +24,11 @@ is request('/summary?p=DoesNotExist')->code, 404,
   test('/summary');
   test('/shortlog');
   test('/log');
+  test('/reflog');
   test('/commit');
   test('/commitdiff', 'h=36c6c6708b8360d7023e8a1649c45bcf9b3bd818');
   test('/tree', 'h=145dc3ef5d307be84cb9b325d70bd08aeed0eceb;hb=36c6c6708b8360d7023e8a1649c45bcf9b3bd818');
+  test('/search', 'h=36c6c6708b8360d7023e8a1649c45bcf9b3bd818&f=&type=commit&text=added');
 }
 
 done_testing;
