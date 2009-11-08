@@ -220,12 +220,13 @@ Exposes a given commit.
 
 sub commit : Local {
   my ( $self, $c ) = @_;
-
+  $c->stash(current_model => 'GitRepos');
+  my $project = $c->stash->{Project};
   my $commit = $self->_get_commit($c);
   $c->stash(
       commit      => $commit,
-      diff_tree   => ($c->model()->diff(commit => $commit))[0],
-      refs      => $c->model()->references,
+      diff_tree   => ($project->diff(commit => $commit))[0],
+      refs      => $project->references,
       action      => 'commit',
   );
 }

@@ -10,7 +10,10 @@ class Gitalist::Git::Object {
                      required => 1,
                      is => 'ro',
                      weak_ref => 1,
-                     handles => [ 'run_cmd' ],
+                     handles => {
+                         _run_cmd => 'run_cmd',
+                         _get_gpp_object => 'get_gpp_object',
+                     },
                  );
     has sha1 => ( isa => NonEmptySimpleStr,
                required => 1,
@@ -22,6 +25,21 @@ class Gitalist::Git::Object {
                   lazy_build => 1 )
         for qw/type modestr size/;
 
+    has _gpp_obj => ( isa => 'Git::PurePerl::Object',
+                      required => 1,
+                      is => 'ro',
+                      lazy_build => 1,
+                      handles => [ 'parents',
+                                   'parent_sha1',
+                                   'comment',
+                                   'author',
+                                   'authored_time',
+                                   'committer',
+                                   'committed_time',
+                                   'tree_sha1',
+                               ],
+                  );
+
     # objects can't determine their mode or filename
     has file => ( isa => NonEmptySimpleStr,
                   required => 0,
@@ -31,7 +49,11 @@ class Gitalist::Git::Object {
                 default => 0,
                 is => 'ro' );
 
-    method BUILD { $self->$_() for qw/type size modestr/ }
+    method BUILD { $self->$_() for qw/_gpp_obj type size modestr/ }
+
+    method _build__gpp_obj {
+        return $self->_get_gpp_object($self->sha1)
+    }
 
     foreach my $key (qw/ type size /) {
         method "_build_$key" {
@@ -47,7 +69,7 @@ class Gitalist::Git::Object {
     }
 
     method _cat_file_with_flag ($flag) {
-        $self->run_cmd('cat-file', '-' . $flag, $self->{sha1})
+        $self->_run_cmd('cat-file', '-' . $flag, $self->{sha1})
     }
 
 =head2 contents

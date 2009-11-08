@@ -22,10 +22,10 @@
   </dd>
  [% FOREACH parent IN commit.parents %]
  <dt>parent</dt>
-  <dd>[% parent %]
+  <dd>[% parent.sha1  %]
     <span class='action-list'>
-	 <a href="[% c.uri_for("commit", {h=parent}) %]">commit</a>
-	 <a href="[% c.uri_for("commitdiff", {hp=parent, h=commit.sha1}) %]">diff</a>
+	 <a href="[% c.uri_for("commit", {h=parent.sha1}) %]">commit</a>
+	 <a href="[% c.uri_for("commitdiff", {hp=parent.sha1, h=commit.sha1}) %]">diff</a>
 	</span>
    </dd>
  [% END %]
