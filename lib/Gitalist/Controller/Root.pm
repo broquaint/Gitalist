@@ -127,7 +127,7 @@ sub summary : Local {
     info      => $project->info,
     log_lines => [$project->list_revs(
         sha1 => $commit->sha1,
-        count => Gitalist->config->{paging}{summary} || 50
+        count => Gitalist->config->{paging}{summary} || 10
     )],
     refs      => $project->references,
     heads     => [$project->heads],
@@ -266,11 +266,12 @@ Expose an abbreviated log of a given sha1.
 
 sub shortlog : Local {
   my ( $self, $c ) = @_;
-
+  $c->stash(current_model => 'GitRepos');
+  my $project = $c->stash->{Project};
   my $commit  = $self->_get_commit($c);
   my %logargs = (
       sha1   => $commit->sha1,
-      count  => Gitalist->config->{paging}{log},
+      count  => Gitalist->config->{paging}{log} || 25,
       ($c->req->param('f') ? (file => $c->req->param('f')) : ())
   );
 
@@ -280,8 +281,8 @@ sub shortlog : Local {
 
   $c->stash(
       commit    => $commit,
-      log_lines => [$c->model()->list_revs(%logargs)],
-      refs      => $c->model()->references,
+      log_lines => [$project->list_revs(%logargs)],
+      refs      => $project->references,
       action    => 'shortlog',
       page      => $page,
   );
