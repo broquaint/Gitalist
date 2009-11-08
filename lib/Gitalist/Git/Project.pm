@@ -289,7 +289,7 @@ The keys for each item will be:
     # XXX Ideally this would return a wee object instead of ad hoc structures.
     method diff ( Gitalist::Git::Object :$commit,
                   Bool :$patch?,
-                  NonEmptySimpleStr :$parent?,
+                  Maybe[NonEmptySimpleStr] :$parent?,
                   NonEmptySimpleStr :$file? ) {
         # Use parent if specifed, else take the parent from the commit
         # if there is only one, otherwise it was a merge commit.

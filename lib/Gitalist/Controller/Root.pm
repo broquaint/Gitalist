@@ -239,11 +239,11 @@ Exposes a given diff of a commit.
 
 sub commitdiff : Local {
   my ( $self, $c ) = @_;
-
+  $c->stash(current_model => 'GitRepos');
   my $commit = $self->_get_commit($c);
-  my($tree, $patch) = $c->model()->diff(
+  my($tree, $patch) = $c->stash->{Project}->diff(
       commit => $commit,
-      parent => $c->req->param('hp') || '',
+      parent => $c->req->param('hp') || undef,
       patch  => 1,
   );
   $c->stash(
