@@ -160,19 +160,20 @@ The blob action i.e the contents of a file.
 
 sub blob : Local {
   my ( $self, $c ) = @_;
-
+  $c->stash(current_model => 'GitRepos');
+  my $project = $c->stash->{Project};
   my $h  = $c->req->param('h')
-       || $c->model()->hash_by_path($c->req->param('f'))
+       || $project->hash_by_path($c->req->param('hb'), $c->req->param('f'))
        || die "No file or sha1 provided.";
   my $hb = $c->req->param('hb')
-       || $c->model()->head_hash
+       || $project->head_hash
        || die "Couldn't discern the corresponding head.";
 
   my $filename = $c->req->param('f') || '';
 
   $c->stash(
-    blob     => $c->model()->get_object($h)->content,
-    head     => $c->model()->get_object($hb),
+    blob     => $project->get_object($h)->contents,
+    head     => $project->get_object($hb),
     filename => $filename,
     # XXX Hack hack hack, see View::SyntaxHighlight
     language => ($filename =~ /\.p[lm]$/ ? 'Perl' : ''),
