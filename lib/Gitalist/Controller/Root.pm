@@ -68,7 +68,7 @@ sub _get_commit {
   my ($m, $pd);
   if (defined $c->stash->{current_model} &&
           $c->stash->{current_model} eq 'GitRepos') {
-      $m = $c->model()->project($c->stash->{project});
+      $m = $c->stash->{Project};
       $pd = $m->path;
   } else {
       $m = $c->model();
@@ -120,14 +120,7 @@ A summary of what's happening in the repo.
 sub summary : Local {
   my ( $self, $c ) = @_;
   $c->stash(current_model => 'GitRepos');
-  warn("project is " . $c->stash->{project});
-  my $project;
-  eval {
-      $project = $c->model()->project($c->stash->{project});
-  };
-  if ($@) {
-      $c->detach('error_404');
-  }
+  my $project = $c->stash->{Project};
   my $commit = $self->_get_commit($c);
   $c->stash(
     commit    => $commit,
@@ -151,7 +144,7 @@ The current list of heads (aka branches) in the repo.
 sub heads : Local {
   my ( $self, $c ) = @_;
   $c->stash( current_model => 'GitRepos' );
-  my $project = $c->model()->project( $c->stash->{project} );
+  my $project = $c->stash->{Project};
   $c->stash(
     commit => $self->_get_commit($c),
     heads  => [$project->heads],
@@ -485,11 +478,13 @@ sub header {
     );
 
   if(defined $project) {
-    $c->stash(
-      search_text => ( $c->req->param('s') || $c->req->param('searchtext') || ''),
-      search_hash => ( $c->req->param('hb') || $c->req->param('hashbase')
-          || $c->req->param('h')  || $c->req->param('hash')
-          || 'HEAD' ),
+      $c->stash(
+          search_text => ( $c->req->param('s') ||
+                               $c->req->param('searchtext') || ''),
+          search_hash => ( $c->req->param('hb') || $c->req->param('hashbase')
+                               || $c->req->param('h')  || $c->req->param('hash')
+                                   || 'HEAD' ),
+          Project => $c->model('GitRepos')->project($project),
       );
   }
 }
@@ -592,8 +587,7 @@ sub end : ActionClass('RenderView') {
   if ($c->stash->{project}) {
       if ($c->stash->{current_model} &&
               $c->stash->{current_model} eq 'GitRepos') {
-          my $project = $c->model()->project($c->stash->{project});
-          $c->stash->{HEAD} = $project->head_hash;
+          $c->stash->{HEAD} = $c->stash->{Project}->head_hash;
       } else {
           $c->stash->{HEAD} = $c->model()->head_hash;
       }
