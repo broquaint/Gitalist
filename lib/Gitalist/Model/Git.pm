@@ -54,6 +54,7 @@ use File::Find::Rule;
 use DateTime::Format::Mail;
 use File::Stat::ModeString;
 use List::MoreUtils qw/any zip/;
+use MooseX::Types::Moose qw/Bool/;
 use MooseX::Types::Common::String qw/NonEmptySimpleStr/; # FIXME, use Types::Path::Class and coerce
 
 use Git::PurePerl;
@@ -69,14 +70,27 @@ has git      => ( isa => NonEmptySimpleStr, is => 'ro', lazy_build => 1 );
 has project  => ( isa => NonEmptySimpleStr, is => 'rw');
 has gpp      => ( isa => 'Git::PurePerl',   is => 'rw', lazy_build => 1 );
 
-
-
 =head2 BUILD
 
 =cut
 
+{   # Show us the deprecated methods.
+    my $meta = __PACKAGE__->meta;
+    my @methods =map { $_->name }
+            grep { $_->package_name eq __PACKAGE__ }
+            $meta->get_all_methods;
+    foreach my $name (@methods) {
+        $meta->add_before_method_modifier($name, sub {
+            my ($package, $file, $line) = caller(2);
+            warn("Method " . $name . " called from $package line $line\n")
+                if $package ne __PACKAGE__;
+        });
+    }
+}
+
 sub BUILD {
     my ($self) = @_;
+    my $meta = $self->meta;
     $self->git; # Cause lazy value build.
     $self->repo_dir;
 }
@@ -771,4 +785,5 @@ sub references {
 
 1;
 
-__PACKAGE__->meta->make_immutable;
+# Yes, yes, I am a bad man. So sue me.
+#__PACKAGE__->meta->make_immutable;
