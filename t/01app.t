@@ -35,7 +35,6 @@ sub test_uri {
     my ($p, $uri, $qs) = @_;
     $qs ||= '';
     my $request = "$uri?p=repo1;$qs";
-    warn("request: $request");
     my $response = request($request);
     ok($response->is_success, "ok $p - $uri");
 }
