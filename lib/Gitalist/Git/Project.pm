@@ -1,13 +1,12 @@
 use MooseX::Declare;
 
-class Gitalist::Git::Project {
+class Gitalist::Git::Project with Gitalist::Git::HasUtils {
     # FIXME, use Types::Path::Class and coerce
     use MooseX::Types::Common::String qw/NonEmptySimpleStr/;
     use MooseX::Types::Moose qw/Str Maybe Bool HashRef/;
     use DateTime;
     use MooseX::Types::Path::Class qw/Dir/;
     use List::MoreUtils qw/any zip/;
-    use Gitalist::Git::Util;
     use aliased 'Gitalist::Git::Object';
 
     our $SHA1RE = qr/[0-9a-fA-F]{40}/;
@@ -29,11 +28,6 @@ class Gitalist::Git::Project {
                          is => 'ro',
                          lazy_build => 1,
                      );
-    has _util => ( isa => 'Gitalist::Git::Util',
-                   is => 'ro',
-                   lazy_build => 1,
-                   handles => [ 'run_cmd', 'get_gpp_object' ],
-               );
 
     has project_dir => ( isa => Dir,
         is => 'ro',
@@ -61,7 +55,7 @@ class Gitalist::Git::Project {
     );
 
     method BUILD {
-        $self->$_() for qw/_util last_change owner description/; # Ensure to build early.
+        $self->$_() for qw/last_change owner description/; # Ensure to build early.
     }
 
     method _project_dir {

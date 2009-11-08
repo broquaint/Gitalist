@@ -1,10 +1,17 @@
 use MooseX::Declare;
 
-class Gitalist::Git::Repo {
+class Gitalist::Git::Repo with Gitalist::Git::HasUtils {
     use MooseX::Types::Common::String qw/NonEmptySimpleStr/;
     use MooseX::Types::Path::Class qw/Dir/;
     use MooseX::Types::Moose qw/ArrayRef/;
-    use Gitalist::Git::Project;
+    use aliased 'Gitalist::Git::Project';
+
+    # FIXME - this is nasty as we build the Git::Utils thing without a project name
+    #         should refactor or something?
+    method _build__util {
+        Gitalist::Git::Util->new();
+    }
+
     has repo_dir => (
         isa => Dir,
         is => 'ro',
@@ -13,7 +20,7 @@ class Gitalist::Git::Repo {
     );
 
     method project (NonEmptySimpleStr $project) {
-        return Gitalist::Git::Project->new(
+        return Project->new(
             name => $project,
             path => $self->repo_dir->subdir($project),
         );
@@ -55,10 +62,7 @@ each item will contain the contents of L</project_info>.
             next unless -d $obj;
             next unless $self->_is_git_repo($obj);
 
-            push @ret, Gitalist::Git::Project->new(
-                name => $file,
-                path => $obj,
-            );
+            push @ret, $self->project($file);
         }
 
         return [sort { $a->name cmp $b->name } @ret];

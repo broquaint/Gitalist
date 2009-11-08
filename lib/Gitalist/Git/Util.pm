@@ -9,6 +9,7 @@ class Gitalist::Git::Util {
         handles => { gitdir => 'project_dir' },
         is => 'bare', # No accessor
         weak_ref => 1, # Weak, you have to hold onto me.
+        predicate => 'has_project',
     );
     has _git      => ( isa => NonEmptySimpleStr, is => 'ro', lazy_build => 1 );
     sub _build__git {
@@ -26,11 +27,17 @@ EOR
 
     has _gpp      => (
         isa => 'Git::PurePerl', is => 'ro', lazy => 1,
-        default => sub { Git::PurePerl->new(gitdir => shift->gitdir) },
+        default => sub {
+            my $self = shift;
+            confess("Cannot get gpp without project")
+                unless $self->has_project;
+            Git::PurePerl->new(gitdir => $self->gitdir);
+        },
     );
 
     method run_cmd (@args) {
-        unshift @args, ( '--git-dir' => $self->gitdir );
+        unshift @args, ( '--git-dir' => $self->gitdir )
+            if $self->has_project;
 #        print STDERR 'RUNNING: ', $self->_git, qq[ @args], $/;
 
         open my $fh, '-|', $self->_git, @args
