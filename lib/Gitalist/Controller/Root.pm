@@ -552,10 +552,8 @@ sub footer {
   my $project = $c->req->param('project')  || $c->req->param('p');
   if(defined $project) {
     (my $pstr = $project) =~ s[/?\.git$][];
-    my $descr = $c->model()->project_info($project)->{description};
-    $c->stash->{project_description} = defined $descr
-      ? $descr
-      : '';
+    my $descr = $c->stash->{project_description}
+            = $c->stash->{Project} ? $c->stash->{Project}->description : '';
 
     my %href_params = $self->feed_info($c);
     if (!%href_params) {
