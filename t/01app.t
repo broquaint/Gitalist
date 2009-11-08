@@ -29,6 +29,7 @@ is request('/summary?p=DoesNotExist')->code, 404,
   test('/commitdiff', 'h=36c6c6708b8360d7023e8a1649c45bcf9b3bd818');
   test('/tree', 'h=145dc3ef5d307be84cb9b325d70bd08aeed0eceb;hb=36c6c6708b8360d7023e8a1649c45bcf9b3bd818');
   test('/search', 'h=36c6c6708b8360d7023e8a1649c45bcf9b3bd818&f=&type=commit&text=added');
+  test('/blobdiff', 'f=file1;h=5716ca5987cbf97d6bb54920bea6adde242d87e6;hp=257cc5642cb1a054f08cc83f2d943e56fd3ebe99;hb=refs/heads/master;hpb=3bc0634310b9c62222bb0e724c11ffdfb297b4ac');
 }
 
 done_testing;
@@ -38,7 +39,7 @@ sub test_uri {
     $qs ||= '';
     my $request = "$uri?p=repo1;$qs";
     my $response = request($request);
-    ok($response->is_success, "ok $p - $uri");
+    ok($response->is_success, "ok $p - $uri - $qs");
 }
 
 sub curry_test_uri {
