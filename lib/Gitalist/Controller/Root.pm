@@ -64,16 +64,8 @@ sub _get_commit {
   my $h = $haveh || $c->req->param('h') || '';
   my $f = $c->req->param('f');
 
-  # FIXME this can die when everything is migrated
-  my ($m, $pd);
-  if (defined $c->stash->{current_model} &&
-          $c->stash->{current_model} eq 'GitRepos') {
-      $m = $c->stash->{Project};
-      $pd = $m->path;
-  } else {
-      $m = $c->model();
-      ($pd = $m->project_dir( $m->project )) =~ s{/\.git$}();
-  }
+  my $m = $c->stash->{Project};
+  my $pd = $m->path;
 
   # Either use the provided h(ash) parameter, the f(ile) parameter or just use HEAD.
   my $hash = ($h =~ /[^a-f0-9]/ ? $m->head_hash($h) : $h)
@@ -97,7 +89,6 @@ Provides the project listing.
 sub index :Path :Args(0) {
     my ( $self, $c ) = @_;
     $c->detach($c->req->param('a')) if $c->req->param('a');
-    $c->stash(current_model => 'GitRepos');
 
     my $list = $c->model()->list_projects;
     unless(@$list) {
@@ -119,7 +110,6 @@ A summary of what's happening in the repo.
 
 sub summary : Local {
   my ( $self, $c ) = @_;
-  $c->stash(current_model => 'GitRepos');
   my $project = $c->stash->{Project};
   my $commit = $self->_get_commit($c);
   $c->stash(
@@ -143,7 +133,6 @@ The current list of heads (aka branches) in the repo.
 
 sub heads : Local {
   my ( $self, $c ) = @_;
-  $c->stash( current_model => 'GitRepos' );
   my $project = $c->stash->{Project};
   $c->stash(
     commit => $self->_get_commit($c),
@@ -160,7 +149,6 @@ The blob action i.e the contents of a file.
 
 sub blob : Local {
   my ( $self, $c ) = @_;
-  $c->stash(current_model => 'GitRepos');
   my $project = $c->stash->{Project};
   my $h  = $c->req->param('h')
        || $project->hash_by_path($c->req->param('hb'), $c->req->param('f'))
@@ -191,7 +179,6 @@ Exposes a given diff of a blob.
 
 sub blobdiff : Local {
   my ( $self, $c ) = @_;
-  $c->stash(current_model => 'GitRepos');
   my $commit = $self->_get_commit($c, $c->req->param('hb'));
   my $filename = $c->req->param('f')
               || croak("No file specified!");
@@ -221,7 +208,6 @@ Exposes a given commit.
 
 sub commit : Local {
   my ( $self, $c ) = @_;
-  $c->stash(current_model => 'GitRepos');
   my $project = $c->stash->{Project};
   my $commit = $self->_get_commit($c);
   $c->stash(
@@ -240,7 +226,6 @@ Exposes a given diff of a commit.
 
 sub commitdiff : Local {
   my ( $self, $c ) = @_;
-  $c->stash(current_model => 'GitRepos');
   my $commit = $self->_get_commit($c);
   my($tree, $patch) = $c->stash->{Project}->diff(
       commit => $commit,
@@ -268,7 +253,6 @@ Expose an abbreviated log of a given sha1.
 
 sub shortlog : Local {
   my ( $self, $c ) = @_;
-  $c->stash(current_model => 'GitRepos');
   my $project = $c->stash->{Project};
   my $commit  = $self->_get_commit($c);
   my %logargs = (
@@ -308,7 +292,6 @@ The tree of a given commit.
 
 sub tree : Local {
   my ( $self, $c ) = @_;
-  $c->stash(current_model => 'GitRepos');
   my $project = $c->stash->{Project};
   my $commit = $self->_get_commit($c, $c->req->param('hb'));
   my $tree   = $project->get_object($c->req->param('h') || $commit->tree_sha1);
@@ -330,7 +313,6 @@ Expose the local reflog. This may go away.
 
 sub reflog : Local {
   my ( $self, $c ) = @_;
-  $c->stash(current_model => 'GitRepos');
   my @log = $c->stash->{Project}->reflog(
       '--since=yesterday'
   );
@@ -473,7 +455,7 @@ sub header {
     }
   }
 
-  $c->stash->{version}     = $c->config->{version};
+  $c->stash->{version}     = $Gitalist::VERSION;
   $c->stash->{git_version} = $c->model('GitRepos')->run_cmd('--version');
   $c->stash->{title}       = $title;
 
@@ -633,16 +615,11 @@ Attempt to render a view, if needed.
 =cut
 
 sub end : ActionClass('RenderView') {
-  my ($self, $c) = @_;
-  # Give project views the current HEAD.
-  if ($c->stash->{project}) {
-      if ($c->stash->{current_model} &&
-              $c->stash->{current_model} eq 'GitRepos') {
-          $c->stash->{HEAD} = $c->stash->{Project}->head_hash;
-      } else {
-          $c->stash->{HEAD} = $c->model()->head_hash;
-      }
-  }
+    my ($self, $c) = @_;
+    # Give project views the current HEAD.
+    if ($c->stash->{Project}) {
+        $c->stash->{HEAD} = $c->stash->{Project}->head_hash;
+    }
 }
 
 sub error_404 :Private {
@@ -651,7 +628,7 @@ sub error_404 :Private {
     $c->stash(
         title => 'Page not found',
         content => 'Page not found',
-    )
+    );
 }
 
 sub age_string {
