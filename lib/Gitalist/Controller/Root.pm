@@ -456,10 +456,10 @@ sub header {
   }
 
   $c->stash->{version}     = $Gitalist::VERSION;
-  $c->stash->{git_version} = $c->model('GitRepos')->run_cmd('--version');
+  # check git's version by running it on the first project in the list.
+  $c->stash->{git_version} = $c->model()->list_projects->[0]->run_cmd('--version');
   $c->stash->{title}       = $title;
 
-  #$c->stash->{baseurl} = $ENV{PATH_INFO} && uri_escape($base_url);
   $c->stash->{stylesheet} = $c->config->{stylesheet} || 'gitweb.css';
 
   $c->stash->{project} = $project;

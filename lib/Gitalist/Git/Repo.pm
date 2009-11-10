@@ -1,16 +1,10 @@
 use MooseX::Declare;
 
-class Gitalist::Git::Repo with Gitalist::Git::HasUtils {
+class Gitalist::Git::Repo {
     use MooseX::Types::Common::String qw/NonEmptySimpleStr/;
     use MooseX::Types::Path::Class qw/Dir/;
     use MooseX::Types::Moose qw/ArrayRef/;
     use aliased 'Gitalist::Git::Project';
-
-    # FIXME - this is nasty as we build the Git::Utils thing without a project name
-    #         should refactor or something?
-    method _build__util {
-        Gitalist::Git::Util->new();
-    }
 
     has repo_dir => (
         isa => Dir,
