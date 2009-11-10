@@ -301,7 +301,8 @@ The keys for each item will be:
 
         my @out = $self->raw_diff(
             ( $patch ? '--patch-with-raw' : () ),
-            $parent, $commit->sha1, @etc,
+            ( $parent ? $parent : () ),
+            $commit->sha1, @etc,
         );
 
         # XXX Yes, there is much wrongness having parse_diff_tree be destructive.
