@@ -90,7 +90,7 @@ sub index :Path :Args(0) {
     my ( $self, $c ) = @_;
     $c->detach($c->req->param('a')) if $c->req->param('a');
 
-    my $list = $c->model()->list_projects;
+    my $list = $c->model()->projects;
     unless(@$list) {
         die "No projects found in ". $c->model->repo_dir;
     }
@@ -111,6 +111,7 @@ A summary of what's happening in the repo.
 sub summary : Local {
   my ( $self, $c ) = @_;
   my $project = $c->stash->{Project};
+  $c->detach('error_404') unless $project;
   my $commit = $self->_get_commit($c);
   $c->stash(
     commit    => $commit,
@@ -457,7 +458,7 @@ sub header {
 
   $c->stash->{version}     = $Gitalist::VERSION;
   # check git's version by running it on the first project in the list.
-  $c->stash->{git_version} = $c->model()->list_projects->[0]->run_cmd('--version');
+  $c->stash->{git_version} = $c->model()->projects->[0]->run_cmd('--version');
   $c->stash->{title}       = $title;
 
   $c->stash->{stylesheet} = $c->config->{stylesheet} || 'gitweb.css';
@@ -512,14 +513,19 @@ sub header {
     home_link_str => $c->config->{home_link_str},
     );
 
-  if(defined $project) {
+  if (defined $project) {
+      eval {
+          $c->stash(Project => $c->model('GitRepos')->project($project));
+      };
+      if ($@) {
+          $c->detach('error_404');
+      }
       $c->stash(
           search_text => ( $c->req->param('s') ||
                                $c->req->param('searchtext') || ''),
           search_hash => ( $c->req->param('hb') || $c->req->param('hashbase')
                                || $c->req->param('h')  || $c->req->param('hash')
                                    || 'HEAD' ),
-          Project => $c->model('GitRepos')->project($project),
       );
   }
 }
