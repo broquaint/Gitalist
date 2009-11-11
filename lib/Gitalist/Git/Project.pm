@@ -2,16 +2,13 @@ use MooseX::Declare;
 
 =head1 NAME
 
-Git::Project - Model of a git repository
+Gitalist::Git::Project - Model of a git repository
 
 =head1 SYNOPSIS
 
     my $project = Gitalist::Git::Project->new( name => 'Gitalist',
                                                path => $project_dir );
     my $project = Gitalist::Git::Project->new($project_dir);
-    my $project_list = $repo->projects;
-    my $first_project = @$project_list[0];
-    my $named_project = $repo->project('Gitalist');
 
 =head1 DESCRIPTION
 
@@ -114,9 +111,9 @@ Bool indicating whether this Project is bare.
             project => $self,
         );
     }
-    
+
     our $SHA1RE = qr/[0-9a-fA-F]{40}/;
-    
+
     method _build_description {
         my $description = "";
         eval {
@@ -146,6 +143,12 @@ Bool indicating whether this Project is bare.
         return $last_change;
     }
 
+=head2 heads
+
+Return an array containing the list of heads.
+
+=cut
+
     method heads {
         my $cmdout = $self->run_cmd(qw/for-each-ref --sort=-committerdate /, '--format=%(objectname)%00%(refname)%00%(committer)', 'refs/heads');
         my @output = $cmdout ? split(/\n/, $cmdout) : ();
@@ -167,6 +170,12 @@ Bool indicating whether this Project is bare.
         return @ret;
     }
 
+=head2 references
+
+Return a hash of references.
+
+=cut
+
     method references {
 	return $self->{references}
 		if $self->{references};
@@ -184,11 +193,6 @@ Bool indicating whether this Project is bare.
 
 	return $self->{references} = \%refs;
 }
-
-    method valid_rev (Str $rev) {
-        return ($rev =~ /^($SHA1RE)$/);
-    }
-
 
 =head2 head_hash
 
@@ -237,7 +241,7 @@ The keys for each item will be:
     }
 
     method get_object (NonEmptySimpleStr $sha1) {
-        unless ( $self->valid_rev($sha1) ) {
+        unless ( $self->_is_valid_rev($sha1) ) {
             $sha1 = $self->head_hash($sha1);
         }
         return Object->new(
@@ -246,28 +250,21 @@ The keys for each item will be:
         );
     }
 
+    method _is_valid_rev (Str $rev) {
+        return ($rev =~ /^($SHA1RE)$/);
+    }
+
     # Should be in ::Object
     method get_object_mode_string (Gitalist::Git::Object $object) {
-        return unless $object && $object->{mode};
-        return $object->{modestr};
+        return $object->modestr;
     }
 
-    method get_object_type ($object) {
-        chomp(my $output = $self->run_cmd(qw/cat-file -t/, $object));
-        return unless $output;
-
-        return $output;
+    method get_object_type (NonEmptySimpleStr $sha1) {
+        return $self->get_object($sha1)->type;
     }
 
-    method cat_file ($object) {
-        my $type = $self->get_object_type($object);
-        die "object `$object' is not a file\n"
-            if (!defined $type || $type ne 'blob');
-
-        my $output = $self->run_cmd(qw/cat-file -p/, $object);
-        return unless $output;
-
-        return $output;
+    method cat_file (NonEmptySimpleStr $sha1) {
+        return $self->get_object($sha1)->contents;
     }
 
     method hash_by_path ($base, $path?, $type?) {
@@ -326,7 +323,7 @@ The keys for each item will be:
     method parse_rev_list ($output) {
         return
             map  $self->get_gpp_object($_),
-                grep $self->valid_rev($_),
+                grep $self->_is_valid_rev($_),
                     map  split(/\n/, $_, 6), split /\0/, $output;
     }
 
