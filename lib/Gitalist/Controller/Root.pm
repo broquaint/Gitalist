@@ -87,19 +87,28 @@ Provides the project listing.
 =cut
 
 sub index :Path :Args(0) {
-    my ( $self, $c ) = @_;
-    $c->detach($c->req->param('a')) if $c->req->param('a');
+  my ( $self, $c ) = @_;
 
-    my $list = $c->model()->projects;
-    unless(@$list) {
-        die "No projects found in ". $c->model->repo_dir;
-    }
+  $c->detach($c->req->param('a'))
+    if $c->req->param('a');
 
-    $c->stash(
-        searchtext => $c->req->param('searchtext') || '',
-        projects   => $list,
-        action     => 'index',
-    );
+  my @list = @{ $c->model()->projects };
+  die 'No projects found in '. $c->model->repo_dir
+    unless @list;
+
+  my $search = $c->req->param('s') || '';
+  if($search) {
+    @list = grep {
+         index($_->name, $search) > -1
+      or ( $_->description !~ /^Unnamed repository/ and index($_->description, $search) > -1 )
+    } @list
+  }
+
+  $c->stash(
+    search_text => $search,
+    projects    => \@list,
+    action      => 'index',
+  );
 }
 
 =head2 summary
