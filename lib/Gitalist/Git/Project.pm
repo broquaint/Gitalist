@@ -6,9 +6,11 @@ Gitalist::Git::Project - Model of a git repository
 
 =head1 SYNOPSIS
 
-    my $project = Gitalist::Git::Project->new( name => 'Gitalist',
-                                               path => $project_dir );
-    my $project = Gitalist::Git::Project->new($project_dir);
+    my $gitrepo = dir('/repo/base/Gitalist');
+    my $project = Gitalist::Git::Project->new($gitrepo);
+     $project->name;        # 'Gitalist'
+     $project->path;        # '/repo/base/Gitalist/.git'
+     $project->description; # 'Unnamed repository.'
 
 =head1 DESCRIPTION
 
