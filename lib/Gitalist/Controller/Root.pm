@@ -112,17 +112,19 @@ sub summary : Local {
   my ( $self, $c ) = @_;
   my $project = $c->stash->{Project};
   my $commit = $self->_get_commit($c);
+  my @heads  = $project->heads;
+  my $maxitems = Gitalist->config->{paging}{summary} || 10;
   $c->stash(
     commit    => $commit,
     info      => $project->info,
     log_lines => [$project->list_revs(
         sha1 => $commit->sha1,
-        count => Gitalist->config->{paging}{summary} || 10
+        count => $maxitems,
     )],
     refs      => $project->references,
-    heads     => [$project->heads],
+    heads     => [ @heads[0 .. $maxitems] ],
     action    => 'summary',
-);
+  );
 }
 
 =head2 heads

@@ -32,6 +32,30 @@ div.chroma-hash {
   font-family: "Trebuchet MS", "Lucida Grande", serif;
 }
 
+/* header */
+#page-header {
+  height: 25px;
+  padding: 8px;
+  font-size: 1.5em;
+  font-weight: bold;
+  background-color: #d9d8d1;
+}
+
+img.logo {
+  float: right;
+  border-width: 0px;
+}
+
+/* footer */
+#page-footer {
+  height: 20px;
+  padding: 8px;
+  margin-top: 10px;
+  font-style: italic;
+  background-color: #d9d8d1;
+  border-top: solid 1px #777;
+}
+
 /* actions include */
 .actions {
   padding-bottom: 4px 0;
@@ -156,18 +180,6 @@ pre.blob {
  * from gitweb.css
  * XXX These can be rejigged once gitweb.css has gone away.
  */
-#page-header {
-  height: 25px;
-  padding: 8px;
-  font-size: 1.5em;
-  font-weight: bold;
-  background-color: #d9d8d1;
-}
-
-img.logo {
-  float: right;
-  border-width: 0px;
-}
 
 span.refs span {
   padding: 0px 4px;

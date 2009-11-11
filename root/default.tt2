@@ -64,7 +64,7 @@
 
 [%- # git_footer_html
 -%]
-<div class="page-footer">
+<div id="page-footer">
 [% IF project AND project_description %]
   <div class="page_footer_text">[% project_description | html %]</div>
 [% END %]
