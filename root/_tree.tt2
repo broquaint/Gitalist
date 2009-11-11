@@ -20,7 +20,7 @@
    <td>[% item.modestr %]</td>
    [% theact = item.type == 'tree' ? 'tree' : 'blob' -%]
    <td class='filename'>
-    <a href="[% c.uri_for(theact, {h=item.object, hb=commit.sha1, f=(path ? path _ '/' _ item.file : item.file)}) %]">[% item.file %]</a>
+    <a href="[% c.uri_for(theact, {h=item.sha1, hb=commit.sha1, f=(path ? path _ '/' _ item.file : item.file)}) %]">[% item.file %]</a>
    </td>
    <td class='action-list'>
      <a href="[% c.uri_for(theact, {h=item.object, hb=commit.sha1, f=item.file}) %]">[% theact %]</a>
