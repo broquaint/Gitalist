@@ -2,7 +2,7 @@ use MooseX::Declare;
 
 =head1 NAME
 
-Git::Repo - Model of a repository directory
+Gitalist::Git::Repo - Model of a repository directory
 
 =head1 SYNOPSIS
 
