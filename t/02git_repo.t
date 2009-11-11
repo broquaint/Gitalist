@@ -14,7 +14,7 @@ isa_ok($repo, 'Gitalist::Git::Repo');
 
 is($repo->repo_dir, $repo_dir, "repo->repo_dir is correct" );
 
-my $project_list = $repo->{projects};
+my $project_list = $repo->projects;
 isa_ok(@$project_list[0], 'Gitalist::Git::Project');
 
 dies_ok {
