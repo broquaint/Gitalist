@@ -2,7 +2,7 @@ use MooseX::Declare;
 
 =head1 NAME
 
-Git::Repo - Model of a repository directory
+Gitalist::Git::Repo - Model of a repository directory
 
 =head1 SYNOPSIS
 
@@ -54,8 +54,6 @@ found in repo_dir.
         required => 1,
         lazy_build => 1,
     );
-
-    method BUILD { $self->projects() }
 
 
 =head1 METHODS

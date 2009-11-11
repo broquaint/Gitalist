@@ -458,7 +458,6 @@ sub header {
 
   $c->stash->{version}     = $Gitalist::VERSION;
   # check git's version by running it on the first project in the list.
-  $c->stash->{git_version} = $c->model()->projects->[0]->run_cmd('--version');
   $c->stash->{title}       = $title;
 
   $c->stash->{stylesheet} = $c->config->{stylesheet} || 'gitweb.css';
@@ -528,6 +527,8 @@ sub header {
                                    || 'HEAD' ),
       );
   }
+  my $a_project = $c->stash->{Project} || $c->model()->projects->[0];
+  $c->stash->{git_version} = $a_project->run_cmd('--version');
 }
 
 # Formally git_footer_html
