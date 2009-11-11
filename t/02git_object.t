@@ -42,4 +42,4 @@ is($obj2->modestr, '?---------', "modestr is correct" );
 is($obj2->contents, "bar\n", 'obj2 contents is correct');
 is($obj2->size, 4, "size is correct");
 is($obj2->tree_sha1, '', 'tree_sha1 is an empty string');
-is($obj2->comments, '', 'comments is an empty string');
+is($obj2->comment, '', 'comment is an empty string');
