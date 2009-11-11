@@ -90,7 +90,7 @@ sub index :Path :Args(0) {
     my ( $self, $c ) = @_;
     $c->detach($c->req->param('a')) if $c->req->param('a');
 
-    my $list = $c->model()->list_projects;
+    my $list = $c->model()->projects;
     unless(@$list) {
         die "No projects found in ". $c->model->repo_dir;
     }
@@ -111,6 +111,7 @@ A summary of what's happening in the repo.
 sub summary : Local {
   my ( $self, $c ) = @_;
   my $project = $c->stash->{Project};
+  $c->detach('error_404') unless $project;
   my $commit = $self->_get_commit($c);
   my @heads  = $project->heads;
   my $maxitems = Gitalist->config->{paging}{summary} || 10;
@@ -458,10 +459,9 @@ sub header {
   }
 
   $c->stash->{version}     = $Gitalist::VERSION;
-  $c->stash->{git_version} = $c->model('GitRepos')->run_cmd('--version');
+  # check git's version by running it on the first project in the list.
   $c->stash->{title}       = $title;
 
-  #$c->stash->{baseurl} = $ENV{PATH_INFO} && uri_escape($base_url);
   $c->stash->{stylesheet} = $c->config->{stylesheet} || 'gitweb.css';
 
   $c->stash->{project} = $project;
@@ -514,16 +514,23 @@ sub header {
     home_link_str => $c->config->{home_link_str},
     );
 
-  if(defined $project) {
+  if (defined $project) {
+      eval {
+          $c->stash(Project => $c->model('GitRepos')->project($project));
+      };
+      if ($@) {
+          $c->detach('error_404');
+      }
       $c->stash(
           search_text => ( $c->req->param('s') ||
                                $c->req->param('searchtext') || ''),
           search_hash => ( $c->req->param('hb') || $c->req->param('hashbase')
                                || $c->req->param('h')  || $c->req->param('hash')
                                    || 'HEAD' ),
-          Project => $c->model('GitRepos')->project($project),
       );
   }
+  my $a_project = $c->stash->{Project} || $c->model()->projects->[0];
+  $c->stash->{git_version} = $a_project->run_cmd('--version');
 }
 
 # Formally git_footer_html

@@ -2,18 +2,19 @@ use strict;
 use warnings;
 use FindBin qw/$Bin/;
 use Test::More qw/no_plan/;
-
+use Test::Exception;
 use Data::Dumper;
 
 BEGIN { use_ok 'Gitalist::Git::Project' }
 
+dies_ok {
+    my $proj = Gitalist::Git::Project->new();
+} 'New project with no args';
+
 use Path::Class;
 my $gitdir = dir("$Bin/lib/repositories/repo1");
 
-my $proj = Gitalist::Git::Project->new(
-    path => $gitdir,
-    name => "repo1",
-);
+my $proj = Gitalist::Git::Project->new($gitdir);
 isa_ok($proj, 'Gitalist::Git::Project');
 is($proj->path, $gitdir, 'repository path is set');
 is($proj->name, qw/repo1/, 'repository name is set');

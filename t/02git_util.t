@@ -13,10 +13,7 @@ BEGIN {
 use Path::Class;
 my $gitdir = dir("$Bin/lib/repositories/repo1");
 
-my $proj = Gitalist::Git::Project->new(
-    path => $gitdir,
-    name => "repo1",
-);
+my $proj = Gitalist::Git::Project->new($gitdir);
 my $util = Gitalist::Git::Util->new(
     project => $proj,
 );

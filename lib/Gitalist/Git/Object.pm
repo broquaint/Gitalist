@@ -31,14 +31,26 @@ class Gitalist::Git::Object {
                       lazy_build => 1,
                       handles => [ 'parents',
                                    'parent_sha1',
-                                   'comment',
                                    'author',
                                    'authored_time',
                                    'committer',
                                    'committed_time',
-                                   'tree_sha1',
                                ],
                   );
+
+    # This feels wrong, but current templates assume
+    # these attributes are present on every object.
+    foreach my $key (qw/tree_sha1 comment/) {
+        has $key => ( isa => Str,
+                      required => 1,
+                      is => 'ro',
+                      lazy_build => 1,
+                  );
+        method "_build_$key" {
+            return '' unless $self->_gpp_obj->can($key);
+            return $self->_gpp_obj->$key;
+        }
+    }
 
     # objects can't determine their mode or filename
     has file => ( isa => NonEmptySimpleStr,
