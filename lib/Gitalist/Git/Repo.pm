@@ -55,8 +55,6 @@ found in repo_dir.
         lazy_build => 1,
     );
 
-    method BUILD { $self->projects() }
-
 
 =head1 METHODS
 
