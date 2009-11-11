@@ -1,67 +1,112 @@
 use MooseX::Declare;
 
+=head1 NAME
+
+Git::Project - Model of a git repository
+
+=head1 SYNOPSIS
+
+    my $project = Gitalist::Git::Project->new( name => 'Gitalist',
+                                               path => $project_dir );
+    my $project = Gitalist::Git::Project->new($project_dir);
+    my $project_list = $repo->projects;
+    my $first_project = @$project_list[0];
+    my $named_project = $repo->project('Gitalist');
+
+=head1 DESCRIPTION
+
+This class models a git repository, referred to in Gitalist
+as a "Project".
+
+=cut
+
 class Gitalist::Git::Project with Gitalist::Git::HasUtils {
     # FIXME, use Types::Path::Class and coerce
     use MooseX::Types::Common::String qw/NonEmptySimpleStr/;
-    use MooseX::Types::Moose qw/Str Maybe Bool HashRef/;
-    use DateTime;
     use MooseX::Types::Path::Class qw/Dir/;
+    use MooseX::Types::Moose qw/Str Maybe Bool HashRef/;
     use List::MoreUtils qw/any zip/;
+    use DateTime;
     use aliased 'Gitalist::Git::Object';
 
-    our $SHA1RE = qr/[0-9a-fA-F]{40}/;
+=head1 ATTRIBUTES
+
+=head2 name
+
+=cut
 
     has name => ( isa => NonEmptySimpleStr,
                   is => 'ro', required => 1 );
+
+=head2 path
+
+L<Path::Class:Dir> for the location of the git repository.
+
+=cut
+
     has path => ( isa => Dir,
                   is => 'ro', required => 1);
+
+=head2 description
+
+String containing .git/description
+
+=cut
 
     has description => ( isa => Str,
                          is => 'ro',
                          lazy_build => 1,
                      );
+
+=head2 owner
+
+Owner of the files on disk.
+
+=cut
+
     has owner => ( isa => NonEmptySimpleStr,
                    is => 'ro',
                    lazy_build => 1,
                );
+
+=head2 last_change
+
+L<DateTime> for the time of the last update.
+undef if the repository has never been used.
+
+=cut
+
     has last_change => ( isa => Maybe['DateTime'],
                          is => 'ro',
                          lazy_build => 1,
                      );
 
-    has project_dir => ( isa => Dir,
-        is => 'ro',
-        lazy => 1,
-        default => sub {
-            my $self = shift;
-            $self->is_bare
-                ? $self->path
-                : $self->path->subdir('.git')
-        },
-    );
-    has is_bare => (
-        isa => Bool,
-        is => 'ro',
-        lazy => 1,
-        default => sub {
-            my $self = shift;
-            -f $self->path->file('.git', 'HEAD')
-                ? 0
-                : -f $self->path->file('HEAD')
-                    ? 1
-                    : confess("Cannot find " . $self->path . "/.git/HEAD or "
-                        . $self->path . "/HEAD");
-        },
-    );
+=head2 is_bare
+
+Bool indicating whether this Project is bare.
+
+=cut
+
+    has is_bare => ( isa => Bool,
+                     is => 'ro',
+                     lazy => 1,
+                     default => sub {
+                         -d $_[0]->path->parent->subdir->($_[0]->name)
+                             ? 1 : 0
+                         },
+                     );
 
     method BUILD {
         $self->$_() for qw/last_change owner description/; # Ensure to build early.
     }
 
-    method _project_dir {
-        -f $self->{path}->file('.git', 'HEAD')
-            ? $self->{path}->subdir('.git')
-            : $self->{path};
+    around BUILDARGS (ClassName $class: Dir $dir) {
+        my $name = $dir->dir_list(-1);
+        $dir = $dir->subdir('.git') if (-f $dir->file('.git', 'HEAD'));
+        confess("Can't find a git repository at " . $dir)
+            unless ( -f $dir->file('HEAD') );
+        return $class->$orig(name => $name,
+                             path => $dir);
     }
 
     method _build__util {
@@ -69,18 +114,20 @@ class Gitalist::Git::Project with Gitalist::Git::HasUtils {
             project => $self,
         );
     }
-
+    
+    our $SHA1RE = qr/[0-9a-fA-F]{40}/;
+    
     method _build_description {
         my $description = "";
         eval {
-            $description = $self->project_dir->file('description')->slurp;
+            $description = $self->{path}->file('description')->slurp;
             chomp $description;
         };
         return $description;
     }
 
     method _build_owner {
-        my ($gecos, $name) = (getpwuid $self->project_dir->stat->uid)[6,0];
+        my ($gecos, $name) = (getpwuid $self->{path}->stat->uid)[6,0];
         $gecos =~ s/,+$//;
         return length($gecos) ? $gecos : $name;
     }
@@ -446,5 +493,27 @@ be:
             last_change => $self->last_change,
         };
     };
+
+=head1 SEE ALSO
+
+L<Gitalist::Git::Util> L<Gitalist::Git::Object>
+
+=head1 AUTHORS AND COPYRIGHT
+
+  Catalyst application:
+    (C) 2009 Venda Ltd and Dan Brook <dbrook@venda.com>
+
+  Original gitweb.cgi from which this was derived:
+    (C) 2005-2006, Kay Sievers <kay.sievers@vrfy.org>
+    (C) 2005, Christian Gierke
+
+=head1 LICENSE
+
+FIXME - Is this going to be GPLv2 as per gitweb? If so this is broken..
+
+This library is free software. You can redistribute it and/or modify
+it under the same terms as Perl itself.
+
+=cut
 
 } # end class

@@ -70,10 +70,7 @@ name.
     method project (NonEmptySimpleStr $project) {
         my $path = $self->repo_dir->subdir($project);
         die "Not a valid Project" unless $self->_is_git_repo($path);
-        return Project->new(
-            name => $project,
-            path => $self->repo_dir->subdir($project),
-        );
+        return Project->new( $self->repo_dir->subdir($project) );
     }
 
 
