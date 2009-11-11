@@ -1,7 +1,15 @@
 [% PROCESS 'nav/actions.tt2' object = head %]
 
+<div class='summary'>
+<dl>
+<dt>description</dt><dd>[% info.description %]</dd>
+<dt>owner</dt><dd>[% info.owner %]</dd>
+<dt>last change</dt><dd>[% info.last_change %]</dd>
+</dl>
+</div>
+
 <h2><a href='[% c.uri_for("shortlog") %]'>shortlog</a></h2>
 [% INCLUDE '_shortlog.tt2' %]
 
-<h2><a href='[% c.uri_for("heads") %]'>heads</a></h2>
+<h2><a href='[% c.uri_for("heads") %]'>branches</a></h2>
 [% INCLUDE '_heads.tt2' %]

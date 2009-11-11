@@ -123,7 +123,7 @@ sub summary : Local {
         count => $maxitems,
     )],
     refs      => $project->references,
-    heads     => [ @heads[0 .. $maxitems] ],
+    heads     => [ @heads[0 .. ($#heads < $maxitems ? $#heads : $maxitems)] ],
     action    => 'summary',
   );
 }
