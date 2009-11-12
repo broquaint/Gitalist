@@ -21,8 +21,6 @@ is($proj->name, qw/repo1/, 'repository name is set');
 is($proj->description, qq/some test repository/, 'repository description loaded');
 isa_ok($proj->last_change, 'DateTime', 'last_change');
 
-is($proj->info->{name}, qw/repo1/, 'repo name in info hash');
-
 my %references = %{$proj->references};
 ok(keys %references >= 2, '->references hash has elements');
 is($references{'36c6c6708b8360d7023e8a1649c45bcf9b3bd818'}->[0], 'heads/master', 'reference looks ok');
@@ -46,4 +44,4 @@ isa_ok($obj1, 'Gitalist::Git::Object');
 my $hbp_sha1 = $proj->hash_by_path('36c6c6708b8360d7023e8a1649c45bcf9b3bd818', 'dir1/file2');
 my $obj2 = $proj->get_object($hbp_sha1);
 is($obj2->type, 'blob', 'hash_by_path obj is a file');
-is($obj2->contents, "foo\n", 'hash_by_path obj is a file');
+is($obj2->content, "foo\n", 'hash_by_path obj is a file');

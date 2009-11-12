@@ -2,7 +2,7 @@ use strict;
 use warnings;
 use FindBin qw/$Bin/;
 use Test::More qw/no_plan/;
-
+use Test::Exception;
 use Data::Dumper;
 
 use Path::Class;
@@ -38,7 +38,11 @@ is($obj2->sha1,'5716ca5987cbf97d6bb54920bea6adde242d87e6', 'sha1 is correct');
 is($obj2->type, 'blob', 'type is correct');
 is($obj2->mode, 0, 'mode is correct');
 is($obj2->modestr, '?---------', "modestr is correct" );
-is($obj2->contents, "bar\n", 'obj2 contents is correct');
+is($obj2->content, "bar\n", 'obj2 contents is correct');
 is($obj2->size, 4, "size is correct");
-is($obj2->tree_sha1, '', 'tree_sha1 is an empty string');
-is($obj2->comment, '', 'comment is an empty string');
+dies_ok {
+    print $obj2->tree_sha1;
+} 'tree_sha1 on a blob is an exception';
+dies_ok {
+    print $obj2->comment;
+} 'comment is an empty string';
