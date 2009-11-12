@@ -23,17 +23,32 @@ class Gitalist::Git::Project with Gitalist::Git::HasUtils {
     # FIXME, use Types::Path::Class and coerce
     use MooseX::Types::Common::String qw/NonEmptySimpleStr/;
     use MooseX::Types::Path::Class qw/Dir/;
-    use MooseX::Types::Moose qw/Str Maybe Bool HashRef/;
+    use MooseX::Types::Moose qw/Str Maybe Bool HashRef ArrayRef/;
     use List::MoreUtils qw/any zip/;
     use DateTime;
     use aliased 'Gitalist::Git::Object';
+
+    our $SHA1RE = qr/[0-9a-fA-F]{40}/;
+
+    around BUILDARGS (ClassName $class: Dir $dir) {
+        # Allows us to be called as Project->new($dir)
+        # Last path component becomes $self->name
+        # Full path to git objects becomes $self->path
+        my $name = $dir->dir_list(-1);
+        $dir = $dir->subdir('.git') if (-f $dir->file('.git', 'HEAD'));
+        confess("Can't find a git repository at " . $dir)
+            unless ( -f $dir->file('HEAD') );
+        return $class->$orig(name => $name,
+                             path => $dir);
+    }
 
 =head1 ATTRIBUTES
 
 =head2 name
 
-=cut
+The name of the Project.  By default, this is derived from the path to the git repository.
 
+=cut
     has name => ( isa => NonEmptySimpleStr,
                   is => 'ro', required => 1 );
 
@@ -42,7 +57,6 @@ class Gitalist::Git::Project with Gitalist::Git::HasUtils {
 L<Path::Class:Dir> for the location of the git repository.
 
 =cut
-
     has path => ( isa => Dir,
                   is => 'ro', required => 1);
 
@@ -51,7 +65,6 @@ L<Path::Class:Dir> for the location of the git repository.
 String containing .git/description
 
 =cut
-
     has description => ( isa => Str,
                          is => 'ro',
                          lazy_build => 1,
@@ -62,7 +75,6 @@ String containing .git/description
 Owner of the files on disk.
 
 =cut
-
     has owner => ( isa => NonEmptySimpleStr,
                    is => 'ro',
                    lazy_build => 1,
@@ -74,7 +86,6 @@ L<DateTime> for the time of the last update.
 undef if the repository has never been used.
 
 =cut
-
     has last_change => ( isa => Maybe['DateTime'],
                          is => 'ro',
                          lazy_build => 1,
@@ -85,7 +96,6 @@ undef if the repository has never been used.
 Bool indicating whether this Project is bare.
 
 =cut
-
     has is_bare => ( isa => Bool,
                      is => 'ro',
                      lazy => 1,
@@ -95,134 +105,50 @@ Bool indicating whether this Project is bare.
                          },
                      );
 
+=head2 heads
+
+ArrayRef of hashes containing the name and sha1 of all heads.
+
+=cut
+    has heads => ( isa => ArrayRef[HashRef],
+                   is => 'ro',
+                   lazy_build => 1);
+
+=head2 references
+
+Hashref of ArrayRefs for each reference.
+
+=cut
+    has references => ( isa => HashRef[ArrayRef[Str]],
+                        is => 'ro',
+                        lazy_build => 1 );
+
     method BUILD {
         $self->$_() for qw/last_change owner description/; # Ensure to build early.
     }
 
-    around BUILDARGS (ClassName $class: Dir $dir) {
-        my $name = $dir->dir_list(-1);
-        $dir = $dir->subdir('.git') if (-f $dir->file('.git', 'HEAD'));
-        confess("Can't find a git repository at " . $dir)
-            unless ( -f $dir->file('HEAD') );
-        return $class->$orig(name => $name,
-                             path => $dir);
-    }
+=head1 METHODS
 
-    method _build__util {
-        Gitalist::Git::Util->new(
-            project => $self,
-        );
-    }
+=head2 head_hash ($head?)
 
-    our $SHA1RE = qr/[0-9a-fA-F]{40}/;
-
-    method _build_description {
-        my $description = "";
-        eval {
-            $description = $self->path->file('description')->slurp;
-            chomp $description;
-        };
-        return $description;
-    }
-
-    method _build_owner {
-        my ($gecos, $name) = (getpwuid $self->path->stat->uid)[6,0];
-        $gecos =~ s/,+$//;
-        return length($gecos) ? $gecos : $name;
-    }
-
-    method _build_last_change {
-        my $last_change;
-        my $output = $self->run_cmd(
-            qw{ for-each-ref --format=%(committer)
-                --sort=-committerdate --count=1 refs/heads
-          });
-        if (my ($epoch, $tz) = $output =~ /\s(\d+)\s+([+-]\d+)$/) {
-            my $dt = DateTime->from_epoch(epoch => $epoch);
-            $dt->set_time_zone($tz);
-            $last_change = $dt;
-        }
-        return $last_change;
-    }
-
-=head2 heads
-
-Return an array containing the list of heads.
+Return the sha1 for HEAD, or any specified head.
 
 =cut
-
-    method heads {
-        my $cmdout = $self->run_cmd(qw/for-each-ref --sort=-committerdate /, '--format=%(objectname)%00%(refname)%00%(committer)', 'refs/heads');
-        my @output = $cmdout ? split(/\n/, $cmdout) : ();
-        my @ret;
-        for my $line (@output) {
-            my ($rev, $head, $commiter) = split /\0/, $line, 3;
-            $head =~ s!^refs/heads/!!;
-
-            push @ret, { sha1 => $rev, name => $head };
-
-            #FIXME: That isn't the time I'm looking for..
-            if (my ($epoch, $tz) = $line =~ /\s(\d+)\s+([+-]\d+)$/) {
-                my $dt = DateTime->from_epoch(epoch => $epoch);
-                $dt->set_time_zone($tz);
-                $ret[-1]->{last_change} = $dt;
-            }
-        }
-
-        return @ret;
-    }
-
-=head2 references
-
-Return a hash of references.
-
-=cut
-
-    has references => ( isa => HashRef[Str], is => 'ro', lazy_build => 1 );
-
-    method _build_references {
-
-    	# 5dc01c595e6c6ec9ccda4f6f69c131c0dd945f8c refs/tags/v2.6.11
-    	# c39ae07f393806ccf406ef966e9a15afc43cc36a refs/tags/v2.6.11^{}
-    	my $cmdout = $self->run_cmd(qw(show-ref --dereference))
-	    	or return;
-            my @reflist = $cmdout ? split(/\n/, $cmdout) : ();
-	    my %refs;
-	    for(@reflist) {
-		    push @{$refs{$1}}, $2
-			    if m!^($SHA1RE)\srefs/(.*)$!;
-	    }
-
-	    return \%refs;
-    }
-
-=head2 head_hash
-
-Find the hash of a given head (defaults to HEAD).
-
-=cut
-
     method head_hash (Str $head?) {
         my $output = $self->run_cmd(qw/rev-parse --verify/, $head || 'HEAD' );
-        return unless defined $output;
+        confess("No such head: " . $head) unless defined $output;
 
         my($sha1) = $output =~ /^($SHA1RE)$/;
         return $sha1;
     }
 
-=head2 list_tree
+=head2 list_tree ($sha1?)
 
 Return an array of contents for a given tree.
 The tree is specified by sha1, and defaults to HEAD.
-The keys for each item will be:
-
-	mode
-	type
-	object
-	file
+Each item is a L<Gitalist::Git::Object>.
 
 =cut
-
     method list_tree (Str $sha1?) {
         $sha1 ||= $self->head_hash;
 
@@ -242,6 +168,11 @@ The keys for each item will be:
         return @ret;
     }
 
+=head2 get_object ($sha1)
+
+Return a L<Gitalist::Git::Object> for the given sha1.
+
+=cut
     method get_object (NonEmptySimpleStr $sha1) {
         unless ( $self->_is_valid_rev($sha1) ) {
             $sha1 = $self->head_hash($sha1);
@@ -252,30 +183,17 @@ The keys for each item will be:
         );
     }
 
-    method _is_valid_rev (Str $rev) {
-        return ($rev =~ /^($SHA1RE)$/);
-    }
+=head2 hash_by_path($sha1, $path, $type?)
 
-    # Should be in ::Object
-    method get_object_mode_string (Gitalist::Git::Object $object) {
-        return $object->modestr;
-    }
+Returns the sha1 for a given path, optionally limited by type.
 
-    method get_object_type (NonEmptySimpleStr $sha1) {
-        return $self->get_object($sha1)->type;
-    }
-
-    method cat_file (NonEmptySimpleStr $sha1) {
-        return $self->get_object($sha1)->contents;
-    }
-
-    method hash_by_path ($base, $path?, $type?) {
-        $path ||= '';
+=cut
+    method hash_by_path ($base, $path = '', $type?) {
         $path =~ s{/+$}();
-
-        my $output = $self->run_cmd('ls-tree', $base, '--', $path)
+        # FIXME should this really just take the first result?
+        my @paths = $self->run_cmd('ls-tree', $base, '--', $path)
             or return;
-        my($line) = $output ? split(/\n/, $output) : ();
+        my $line = $paths[0];
 
         #'100644 blob 0fa3f3a66fb6a137f6ec2c19351ed4d807070ffa	panic.c'
         $line =~ m/^([0-9]+) (.+) ($SHA1RE)\t/;
@@ -284,6 +202,11 @@ The keys for each item will be:
                 : $3;
     }
 
+=head2 list_revs($sha1, $count?, $skip?, \%search?, $file?)
+
+Returns a list of revs for the given head ($sha1).
+
+=cut
     method list_revs ( NonEmptySimpleStr :$sha1!,
                        Int :$count?,
                        Int :$skip?,
@@ -317,20 +240,21 @@ The keys for each item will be:
         );
         return unless $output;
 
-        my @revs = $self->parse_rev_list($output);
+        my @revs = $self->_parse_rev_list($output);
 
         return @revs;
     }
 
-    method parse_rev_list ($output) {
-        return
-            map  $self->get_gpp_object($_),
-                grep $self->_is_valid_rev($_),
-                    map  split(/\n/, $_, 6), split /\0/, $output;
-    }
+=head2 diff($commit, $patch?, $parent?, $file?)
+
+Generate a diff.
+
+FIXME this should be a method on the commit object.
+
+=cut
 
     # XXX Ideally this would return a wee object instead of ad hoc structures.
-    method diff ( Gitalist::Git::Object :$commit,
+    method diff ( Gitalist::Git::Object :$commit!,
                   Bool :$patch?,
                   Maybe[NonEmptySimpleStr] :$parent?,
                   NonEmptySimpleStr :$file? ) {
@@ -345,14 +269,14 @@ The keys for each item will be:
             ( $file  ? ('--', $file) : () ),
         );
 
-        my @out = $self->raw_diff(
+        my @out = $self->_raw_diff(
             ( $patch ? '--patch-with-raw' : () ),
             ( $parent ? $parent : () ),
             $commit->sha1, @etc,
         );
 
-        # XXX Yes, there is much wrongness having parse_diff_tree be destructive.
-        my @difftree = $self->parse_diff_tree(\@out);
+        # XXX Yes, there is much wrongness having _parse_diff_tree be destructive.
+        my @difftree = $self->_parse_diff_tree(\@out);
 
         return \@difftree
             unless $patch;
@@ -361,71 +285,16 @@ The keys for each item will be:
         shift @out;
 
         # XXX And no I'm not happy about having diff return tree + patch.
-        return \@difftree, [$self->parse_diff(@out)];
+        return \@difftree, [$self->_parse_diff(@out)];
     }
 
-    method parse_diff (@diff) {
-        my @ret;
-        for (@diff) {
-            # This regex is a little pathological.
-            if(m{^diff --git (a/(.*?)) (b/\2)}) {
-                push @ret, {
-                    head => $_,
-                    a    => $1,
-                    b    => $3,
-                    file => $2,
-                    diff => '',
-                };
-                next;
-            }
+=head2 reflog(@lorgargs)
 
-            if(/^index (\w+)\.\.(\w+) (\d+)$/) {
-                @{$ret[-1]}{qw(index src dst mode)} = ($_, $1, $2, $3);
-                next
-            }
+Return a list of hashes representing each reflog entry.
 
-            # XXX Somewhat hacky. Ahem.
-            $ret[@ret ? -1 : 0]{diff} .= "$_\n";
-        }
+FIXME Should this return objects?
 
-        return @ret;
-    }
-
-    # gitweb uses the following sort of command for diffing merges:
-# /home/dbrook/apps/bin/git --git-dir=/home/dbrook/dev/app/.git diff-tree -r -M --no-commit-id --patch-with-raw --full-index --cc 316cf158df3f6207afbae7270bcc5ba0 --
-# and for regular diffs
-# /home/dbrook/apps/bin/git --git-dir=/home/dbrook/dev/app/.git diff-tree -r -M --no-commit-id --patch-with-raw --full-index 2e3454ca0749641b42f063730b0090e1 316cf158df3f6207afbae7270bcc5ba0 --
-
-    method raw_diff (@args) {
-        my $cmdout = $self->run_cmd(
-            qw(diff-tree -r -M --no-commit-id --full-index),
-            @args
-        );
-        return $cmdout ? split(/\n/, $cmdout) : ();
-    }
-
-    method parse_diff_tree ($diff) {
-        my @keys = qw(modesrc modedst sha1src sha1dst status src dst);
-        my @ret;
-        while (@$diff and $diff->[0] =~ /^:\d+/) {
-            my $line = shift @$diff;
-            # see. man git-diff-tree for more info
-            # mode src, mode dst, sha1 src, sha1 dst, status, src[, dst]
-            my @vals = $line =~ /^:(\d+) (\d+) ($SHA1RE) ($SHA1RE) ([ACDMRTUX]\d*)\t([^\t]+)(?:\t([^\n]+))?$/;
-            my %line = zip @keys, @vals;
-            # Some convenience keys
-            $line{file}   = $line{src};
-            $line{sha1}   = $line{sha1dst};
-            $line{is_new} = $line{sha1src} =~ /^0+$/
-		if $line{sha1src};
-            @line{qw/status sim/} = $line{status} =~ /(R)(\d+)/
-                if $line{status} =~ /^R/;
-            push @ret, \%line;
-        }
-
-        return @ret;
-    }
-
+=cut
     method reflog (@logargs) {
         my @entries
             =  $self->run_cmd(qw(log -g), @logargs)
@@ -467,28 +336,146 @@ The keys for each item will be:
         } @entries;
     }
 
-    # Compatibility
+    ## BUILDERS
+    method _build__util {
+        Gitalist::Git::Util->new(
+            project => $self,
+        );
+    }
 
-=head2 info
-
-Returns a hash containing properties of this project. The keys will
-be:
-
-	name
-	description (empty if .git/description is empty/unnamed)
-	owner
-	last_change
-
-=cut
-
-    method info {
-        return {
-            name => $self->name,
-            description => $self->description,
-            owner => $self->owner,
-            last_change => $self->last_change,
+    method _build_description {
+        my $description = "";
+        eval {
+            $description = $self->path->file('description')->slurp;
+            chomp $description;
         };
-    };
+        return $description;
+    }
+
+    method _build_owner {
+        my ($gecos, $name) = (getpwuid $self->path->stat->uid)[6,0];
+        $gecos =~ s/,+$//;
+        return length($gecos) ? $gecos : $name;
+    }
+
+    method _build_last_change {
+        my $last_change;
+        my $output = $self->run_cmd(
+            qw{ for-each-ref --format=%(committer)
+                --sort=-committerdate --count=1 refs/heads
+          });
+        if (my ($epoch, $tz) = $output =~ /\s(\d+)\s+([+-]\d+)$/) {
+            my $dt = DateTime->from_epoch(epoch => $epoch);
+            $dt->set_time_zone($tz);
+            $last_change = $dt;
+        }
+        return $last_change;
+    }
+
+    method _build_heads {
+        my @revlines = $self->run_cmd_list(qw/for-each-ref --sort=-committerdate /, '--format=%(objectname)%00%(refname)%00%(committer)', 'refs/heads');
+        my @ret;
+        for my $line (@revlines) {
+            my ($rev, $head, $commiter) = split /\0/, $line, 3;
+            $head =~ s!^refs/heads/!!;
+
+            push @ret, { sha1 => $rev, name => $head };
+
+            #FIXME: That isn't the time I'm looking for..
+            if (my ($epoch, $tz) = $line =~ /\s(\d+)\s+([+-]\d+)$/) {
+                my $dt = DateTime->from_epoch(epoch => $epoch);
+                $dt->set_time_zone($tz);
+                $ret[-1]->{last_change} = $dt;
+            }
+        }
+
+        return \@ret;
+    }
+
+    method _build_references {
+    	# 5dc01c595e6c6ec9ccda4f6f69c131c0dd945f8c refs/tags/v2.6.11
+    	# c39ae07f393806ccf406ef966e9a15afc43cc36a refs/tags/v2.6.11^{}
+    	my @reflist = $self->run_cmd_list(qw(show-ref --dereference))
+	    	or return;
+        my %refs;
+	    for(@reflist) {
+		    push @{$refs{$1}}, $2
+			    if m!^($SHA1RE)\srefs/(.*)$!;
+	    }
+
+	    return \%refs;
+    }
+
+    ## Private methods
+    method _is_valid_rev (Str $rev) {
+        return ($rev =~ /^($SHA1RE)$/);
+    }
+
+    method _parse_rev_list ($output) {
+        return
+            map  $self->get_gpp_object($_),
+                grep $self->_is_valid_rev($_),
+                    map  split(/\n/, $_, 6), split /\0/, $output;
+    }
+
+    method _parse_diff_tree ($diff) {
+        my @keys = qw(modesrc modedst sha1src sha1dst status src dst);
+        my @ret;
+        while (@$diff and $diff->[0] =~ /^:\d+/) {
+            my $line = shift @$diff;
+            # see. man git-diff-tree for more info
+            # mode src, mode dst, sha1 src, sha1 dst, status, src[, dst]
+            my @vals = $line =~ /^:(\d+) (\d+) ($SHA1RE) ($SHA1RE) ([ACDMRTUX]\d*)\t([^\t]+)(?:\t([^\n]+))?$/;
+            my %line = zip @keys, @vals;
+            # Some convenience keys
+            $line{file}   = $line{src};
+            $line{sha1}   = $line{sha1dst};
+            $line{is_new} = $line{sha1src} =~ /^0+$/
+		if $line{sha1src};
+            @line{qw/status sim/} = $line{status} =~ /(R)(\d+)/
+                if $line{status} =~ /^R/;
+            push @ret, \%line;
+        }
+
+        return @ret;
+    }
+    method _parse_diff (@diff) {
+        my @ret;
+        for (@diff) {
+            # This regex is a little pathological.
+            if(m{^diff --git (a/(.*?)) (b/\2)}) {
+                push @ret, {
+                    head => $_,
+                    a    => $1,
+                    b    => $3,
+                    file => $2,
+                    diff => '',
+                };
+                next;
+            }
+
+            if(/^index (\w+)\.\.(\w+) (\d+)$/) {
+                @{$ret[-1]}{qw(index src dst mode)} = ($_, $1, $2, $3);
+                next
+            }
+
+            # XXX Somewhat hacky. Ahem.
+            $ret[@ret ? -1 : 0]{diff} .= "$_\n";
+        }
+
+        return @ret;
+    }
+
+    # gitweb uses the following sort of command for diffing merges:
+# /home/dbrook/apps/bin/git --git-dir=/home/dbrook/dev/app/.git diff-tree -r -M --no-commit-id --patch-with-raw --full-index --cc 316cf158df3f6207afbae7270bcc5ba0 --
+# and for regular diffs
+# /home/dbrook/apps/bin/git --git-dir=/home/dbrook/dev/app/.git diff-tree -r -M --no-commit-id --patch-with-raw --full-index 2e3454ca0749641b42f063730b0090e1 316cf158df3f6207afbae7270bcc5ba0 --
+    method _raw_diff (@args) {
+        return $self->run_cmd_list(
+            qw(diff-tree -r -M --no-commit-id --full-index),
+            @args
+        );
+    }
 
 =head1 SEE ALSO
 

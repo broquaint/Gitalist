@@ -122,11 +122,11 @@ sub summary : Local {
   my $project = $c->stash->{Project};
   $c->detach('error_404') unless $project;
   my $commit = $self->_get_object($c);
-  my @heads  = $project->heads;
+  my @heads  = @{$project->heads};
   my $maxitems = Gitalist->config->{paging}{summary} || 10;
   $c->stash(
     commit    => $commit,
-    info      => $project->info,
+#    info      => $project->info,
     log_lines => [$project->list_revs(
         sha1 => $commit->sha1,
         count => $maxitems,
@@ -148,7 +148,7 @@ sub heads : Local {
   my $project = $c->stash->{Project};
   $c->stash(
     commit => $self->_get_object($c),
-    heads  => [$project->heads],
+    heads  => $project->heads,
     action => 'heads',
   );
 }
@@ -172,7 +172,7 @@ sub blob : Local {
   my $filename = $c->req->param('f') || '';
 
   $c->stash(
-    blob     => $project->get_object($h)->contents,
+    blob     => $project->get_object($h)->content,
     head     => $project->get_object($hb),
     filename => $filename,
     # XXX Hack hack hack, see View::SyntaxHighlight

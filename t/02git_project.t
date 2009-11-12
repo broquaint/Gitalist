@@ -21,10 +21,15 @@ is($proj->name, qw/repo1/, 'repository name is set');
 is($proj->description, qq/some test repository/, 'repository description loaded');
 isa_ok($proj->last_change, 'DateTime', 'last_change');
 
-is($proj->info->{name}, qw/repo1/, 'repo name in info hash');
-
-ok($proj->heads, '->heads returns stuff');
-     
+my %references = %{$proj->references};
+ok(keys %references >= 2, '->references hash has elements');
+is($references{'36c6c6708b8360d7023e8a1649c45bcf9b3bd818'}->[0], 'heads/master', 'reference looks ok');
+my @heads = @{$proj->heads};
+ok(scalar @heads > 1, '->heads list has more than one element');
+my %head = %{$heads[1]};
+ok(keys %head == 3, '->heads[1] has the right number of keys');
+ok(defined $head{sha1}, '->heads[1]-sha1 is defined');
+ok(defined $head{name}, '->heads[1]-name is defined');
 is($proj->head_hash, '36c6c6708b8360d7023e8a1649c45bcf9b3bd818', 'head_hash for HEAD is correct');
 is($proj->head_hash('refs/heads/master'), '36c6c6708b8360d7023e8a1649c45bcf9b3bd818', 'head_hash for refs/heads/master is correct');
 is($proj->head_hash('rafs/head/mister'), undef, 'head_hash for rafs/head/mister is undef');
@@ -36,10 +41,7 @@ isa_ok(($proj->list_tree)[1], 'Gitalist::Git::Object');
 my $obj1 = $proj->get_object('5716ca5987cbf97d6bb54920bea6adde242d87e6');
 isa_ok($obj1, 'Gitalist::Git::Object');
 
-# Test methods that really should be called on ::Object
-# This is transitional from Git.pm
-my $obj = ($proj->list_tree)[1];
-isa_ok($obj, 'Gitalist::Git::Object');
-is($proj->get_object_mode_string($obj), '-rw-r--r--', "get_object_mode_string");
-is($proj->get_object_type('5716ca5987cbf97d6bb54920bea6adde242d87e6'), 'blob', "get_object_type");
-is($proj->cat_file('5716ca5987cbf97d6bb54920bea6adde242d87e6'), "bar\n", 'cat_file');
+my $hbp_sha1 = $proj->hash_by_path('36c6c6708b8360d7023e8a1649c45bcf9b3bd818', 'dir1/file2');
+my $obj2 = $proj->get_object($hbp_sha1);
+is($obj2->type, 'blob', 'hash_by_path obj is a file');
+is($obj2->content, "foo\n", 'hash_by_path obj is a file');

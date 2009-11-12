@@ -2,9 +2,9 @@
 
 <div class='summary'>
 <dl>
-<dt>description</dt><dd>[% info.description %]</dd>
-<dt>owner</dt><dd>[% info.owner %]</dd>
-<dt>last change</dt><dd>[% info.last_change %]</dd>
+<dt>description</dt><dd>[% Project.description %]</dd>
+<dt>owner</dt><dd>[% Project.owner %]</dd>
+<dt>last change</dt><dd>[% Project.last_change %]</dd>
 </dl>
 </div>
 
