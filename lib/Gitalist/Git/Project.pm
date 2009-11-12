@@ -223,21 +223,7 @@ The keys for each item will be:
         return ($rev =~ /^($SHA1RE)$/);
     }
 
-    # Should be in ::Object
-    method get_object_mode_string (Gitalist::Git::Object $object) {
-        return $object->modestr;
-    }
-
-    method get_object_type (NonEmptySimpleStr $sha1) {
-        return $self->get_object($sha1)->type;
-    }
-
-    method cat_file (NonEmptySimpleStr $sha1) {
-        return $self->get_object($sha1)->contents;
-    }
-
-    method hash_by_path ($base, $path?, $type?) {
-        $path ||= '';
+    method hash_by_path ($base, $path = '', $type?) {
         $path =~ s{/+$}();
         # FIXME should this really just take the first result?
         my @paths = $self->run_cmd('ls-tree', $base, '--', $path)

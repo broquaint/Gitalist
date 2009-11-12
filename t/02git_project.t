@@ -43,10 +43,7 @@ isa_ok(($proj->list_tree)[1], 'Gitalist::Git::Object');
 my $obj1 = $proj->get_object('5716ca5987cbf97d6bb54920bea6adde242d87e6');
 isa_ok($obj1, 'Gitalist::Git::Object');
 
-# Test methods that really should be called on ::Object
-# This is transitional from Git.pm
-my $obj = ($proj->list_tree)[1];
-isa_ok($obj, 'Gitalist::Git::Object');
-is($proj->get_object_mode_string($obj), '-rw-r--r--', "get_object_mode_string");
-is($proj->get_object_type('5716ca5987cbf97d6bb54920bea6adde242d87e6'), 'blob', "get_object_type");
-is($proj->cat_file('5716ca5987cbf97d6bb54920bea6adde242d87e6'), "bar\n", 'cat_file');
+my $hbp_sha1 = $proj->hash_by_path('36c6c6708b8360d7023e8a1649c45bcf9b3bd818', 'dir1/file2');
+my $obj2 = $proj->get_object($hbp_sha1);
+is($obj2->type, 'blob', 'hash_by_path obj is a file');
+is($obj2->contents, "foo\n", 'hash_by_path obj is a file');
