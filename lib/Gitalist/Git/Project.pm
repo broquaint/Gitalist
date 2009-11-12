@@ -23,7 +23,7 @@ class Gitalist::Git::Project with Gitalist::Git::HasUtils {
     # FIXME, use Types::Path::Class and coerce
     use MooseX::Types::Common::String qw/NonEmptySimpleStr/;
     use MooseX::Types::Path::Class qw/Dir/;
-    use MooseX::Types::Moose qw/Str Maybe Bool HashRef/;
+    use MooseX::Types::Moose qw/Str Maybe Bool HashRef ArrayRef/;
     use List::MoreUtils qw/any zip/;
     use DateTime;
     use aliased 'Gitalist::Git::Object';
@@ -178,7 +178,7 @@ Return a hash of references.
 
 =cut
 
-    has references => ( isa => HashRef[Str], is => 'ro', lazy_build => 1 );
+    has references => ( isa => HashRef[ArrayRef[Str]], is => 'ro', lazy_build => 1 );
 
     method _build_references {
 
