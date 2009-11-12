@@ -23,8 +23,12 @@ isa_ok($proj->last_change, 'DateTime', 'last_change');
 
 is($proj->info->{name}, qw/repo1/, 'repo name in info hash');
 
-ok($proj->heads, '->heads returns stuff');
-     
+my @heads = $proj->heads;
+ok(scalar @heads > 1, '->heads list has more than one element');
+my %head = %{$heads[1]};
+ok(keys %head == 3, '->heads[1] has the right number of keys');
+ok(defined $head{sha1}, '->heads[1]-sha1 is defined');
+ok(defined $head{name}, '->heads[1]-name is defined');
 is($proj->head_hash, '36c6c6708b8360d7023e8a1649c45bcf9b3bd818', 'head_hash for HEAD is correct');
 is($proj->head_hash('refs/heads/master'), '36c6c6708b8360d7023e8a1649c45bcf9b3bd818', 'head_hash for refs/heads/master is correct');
 is($proj->head_hash('rafs/head/mister'), undef, 'head_hash for rafs/head/mister is undef');
