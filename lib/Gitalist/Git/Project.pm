@@ -129,11 +129,13 @@ Return the sha1 for HEAD, or any specified head.
 
 =head2 heads
 
-Returns a list of hashes containing the name and sha1 of all heads.
+ArrayRef of hashes containing the name and sha1 of all heads.
 
 =cut
 
-    method heads {
+    has heads => ( isa => ArrayRef[HashRef], is => 'ro', lazy_build => 1);
+
+    method _build_heads {
         my @revlines = $self->run_cmd_list(qw/for-each-ref --sort=-committerdate /, '--format=%(objectname)%00%(refname)%00%(committer)', 'refs/heads');
         my @ret;
         for my $line (@revlines) {
@@ -150,12 +152,12 @@ Returns a list of hashes containing the name and sha1 of all heads.
             }
         }
 
-        return @ret;
+        return \@ret;
     }
 
 =head2 references
 
-Returns a hash of references.
+Hashref of ArrayRefs for each reference.
 
 =cut
 

@@ -122,7 +122,7 @@ sub summary : Local {
   my $project = $c->stash->{Project};
   $c->detach('error_404') unless $project;
   my $commit = $self->_get_object($c);
-  my @heads  = $project->heads;
+  my @heads  = @{$project->heads};
   my $maxitems = Gitalist->config->{paging}{summary} || 10;
   $c->stash(
     commit    => $commit,
@@ -148,7 +148,7 @@ sub heads : Local {
   my $project = $c->stash->{Project};
   $c->stash(
     commit => $self->_get_object($c),
-    heads  => [$project->heads],
+    heads  => $project->heads,
     action => 'heads',
   );
 }

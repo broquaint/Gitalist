@@ -23,7 +23,10 @@ isa_ok($proj->last_change, 'DateTime', 'last_change');
 
 is($proj->info->{name}, qw/repo1/, 'repo name in info hash');
 
-my @heads = $proj->heads;
+my %references = %{$proj->references};
+ok(keys %references >= 2, '->references hash has elements');
+is($references{'36c6c6708b8360d7023e8a1649c45bcf9b3bd818'}->[0], 'heads/master', 'reference looks ok');
+my @heads = @{$proj->heads};
 ok(scalar @heads > 1, '->heads list has more than one element');
 my %head = %{$heads[1]};
 ok(keys %head == 3, '->heads[1] has the right number of keys');
