@@ -1,9 +1,10 @@
 #!/usr/bin/env perl
-# IMPORTANT: if you delete this file your app will not work as
-# expected.  You have been warned.
+
 use strict;
 use warnings;
+
 use inc::Module::Install;
+use Module::AutoInstall;
 use Module::Install::AuthorRequires;
 use Module::Install::AuthorTests;
 use Module::Install::ReadmeFromPod;
@@ -17,31 +18,38 @@ requires 'Catalyst::Plugin::ConfigLoader';
 requires 'Catalyst::Plugin::StackTrace';
 requires 'Catalyst::Plugin::Static::Simple';
 requires 'Catalyst::Action::RenderView';
-requires 'Catalyst::View::ContentNegotiation::XHTML';
+
+requires 'Template';
+requires 'Template::Provider::Encoding';
+requires 'Catalyst::View::TT';
 requires 'Template::Plugin::Cycle';
+
+requires 'Config::General';
+
 requires 'Moose';
-requires 'namespace::autoclean';
-requires 'Config::General'; # This should reflect the config file format you've chosen
-                 # See Catalyst::Plugin::ConfigLoader for supported formats
+requires 'Moose::Autobox';
+requires 'MooseX::Declare';
 requires 'MooseX::Types::Common';
 requires 'MooseX::Types::Path::Class';
 requires 'MooseX::Types';
-requires 'File::Find::Rule';
-requires 'File::Stat::ModeString';
-requires 'DateTime::Format::Mail';
-requires 'IO::Capture::Stdout';
-requires 'File::Which';
+requires 'namespace::autoclean';
+
+requires 'Git::PurePerl'; # Note - need the git version in broquaint's fork
+
 requires 'aliased';
 requires 'CGI';
 requires 'DateTime';
-requires 'Git::PurePerl'; # Note - need the git version in broquaint's fork
+requires 'DateTime::Format::Mail';
+requires 'File::Copy::Recursive';
+requires 'File::Stat::ModeString';
+requires 'File::Which';
+requires 'HTML::Entities';
+requires 'IO::Capture::Stdout';
+requires 'IPC::Run';
 requires 'List::MoreUtils';
-requires 'MooseX::Declare';
 requires 'Path::Class' => '0.17';
 requires 'Sub::Exporter';
 requires 'Syntax::Highlight::Engine::Kate';
-requires 'Moose::Autobox';
-requires 'DateTime::Format::Human::Duration';
 
 author_requires 'Test::NoTabs';
 author_requires 'Test::Pod' => '1.14';
