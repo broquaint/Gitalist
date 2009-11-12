@@ -126,7 +126,7 @@ sub summary : Local {
   my $maxitems = Gitalist->config->{paging}{summary} || 10;
   $c->stash(
     commit    => $commit,
-    info      => $project->info,
+#    info      => $project->info,
     log_lines => [$project->list_revs(
         sha1 => $commit->sha1,
         count => $maxitems,
