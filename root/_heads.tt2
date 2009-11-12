@@ -25,7 +25,7 @@
    <td class='action-list'>
      <a href="[% c.uri_for("shortlog", {h='refs/head/' _ head.name}) %]">shortlog</a>
      <a href="[% c.uri_for("log", {h='refs/head/' _ head.name}) %]">log</a>
-     <a href="[% c.uri_for("tree", {h='refs/head/' _ head.name}) %]">tree</a>
+     <a href="[% c.uri_for("tree", {h='refs/head/' _ head.name, hb=head.name}) %]">tree</a>
    </td>
   </tr>
  [% END %]

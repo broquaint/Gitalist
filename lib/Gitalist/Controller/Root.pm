@@ -58,7 +58,7 @@ sub run_gitweb {
   }
 }
 
-sub _get_commit {
+sub _get_object {
   my($self, $c, $haveh) = @_;
 
   my $h = $haveh || $c->req->param('h') || '';
@@ -121,7 +121,7 @@ sub summary : Local {
   my ( $self, $c ) = @_;
   my $project = $c->stash->{Project};
   $c->detach('error_404') unless $project;
-  my $commit = $self->_get_commit($c);
+  my $commit = $self->_get_object($c);
   my @heads  = $project->heads;
   my $maxitems = Gitalist->config->{paging}{summary} || 10;
   $c->stash(
@@ -147,7 +147,7 @@ sub heads : Local {
   my ( $self, $c ) = @_;
   my $project = $c->stash->{Project};
   $c->stash(
-    commit => $self->_get_commit($c),
+    commit => $self->_get_object($c),
     heads  => [$project->heads],
     action => 'heads',
   );
@@ -191,7 +191,7 @@ Exposes a given diff of a blob.
 
 sub blobdiff : Local {
   my ( $self, $c ) = @_;
-  my $commit = $self->_get_commit($c, $c->req->param('hb'));
+  my $commit = $self->_get_object($c, $c->req->param('hb'));
   my $filename = $c->req->param('f')
               || croak("No file specified!");
   my($tree, $patch) = $c->stash->{Project}->diff(
@@ -221,7 +221,7 @@ Exposes a given commit.
 sub commit : Local {
   my ( $self, $c ) = @_;
   my $project = $c->stash->{Project};
-  my $commit = $self->_get_commit($c);
+  my $commit = $self->_get_object($c);
   $c->stash(
       commit      => $commit,
       diff_tree   => ($project->diff(commit => $commit))[0],
@@ -238,7 +238,7 @@ Exposes a given diff of a commit.
 
 sub commitdiff : Local {
   my ( $self, $c ) = @_;
-  my $commit = $self->_get_commit($c);
+  my $commit = $self->_get_object($c);
   my($tree, $patch) = $c->stash->{Project}->diff(
       commit => $commit,
       parent => $c->req->param('hp') || undef,
@@ -266,7 +266,7 @@ Expose an abbreviated log of a given sha1.
 sub shortlog : Local {
   my ( $self, $c ) = @_;
   my $project = $c->stash->{Project};
-  my $commit  = $self->_get_commit($c);
+  my $commit  = $self->_get_object($c);
   my %logargs = (
       sha1   => $commit->sha1,
       count  => Gitalist->config->{paging}{log} || 25,
@@ -305,14 +305,13 @@ The tree of a given commit.
 sub tree : Local {
   my ( $self, $c ) = @_;
   my $project = $c->stash->{Project};
-  my $commit = $self->_get_commit($c, $c->req->param('hb'));
-  my $tree   = $project->get_object($c->req->param('h') || $commit->tree_sha1);
+  my $commit  = $self->_get_object($c, $c->req->param('hb'));
+  my $tree    = $self->_get_object($c, $c->req->param('h') || $commit->tree_sha1);
   $c->stash(
-      # XXX Useful defaults needed ...
       commit    => $commit,
       tree      => $tree,
       tree_list => [$project->list_tree($tree->sha1)],
-	  path      => $c->req->param('f') || '',
+      path      => $c->req->param('f') || '',
       action    => 'tree',
   );
 }
@@ -339,7 +338,7 @@ sub search : Local {
   my($self, $c) = @_;
   $c->stash(current_action => 'GitRepos');
   my $project = $c->stash->{Project};
-  my $commit  = $self->_get_commit($c);
+  my $commit  = $self->_get_object($c);
   # Lifted from /shortlog.
   my %logargs = (
     sha1   => $commit->sha1,
@@ -400,17 +399,10 @@ sub snapshot : Local {
     Carp::croak "Not implemented.";
 }
 
-sub history : Local {
-    # FIXME - implement history
-    Carp::croak "Not implemented.";
-}
-
 sub commitdiff_plain : Local {
     # FIXME - implement commitdiff_plain
     Carp::croak "Not implemented.";
 }
-
-
 
 =head2 auto
 
