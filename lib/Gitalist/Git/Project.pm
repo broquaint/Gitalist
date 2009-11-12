@@ -31,6 +31,9 @@ class Gitalist::Git::Project with Gitalist::Git::HasUtils {
     our $SHA1RE = qr/[0-9a-fA-F]{40}/;
 
     around BUILDARGS (ClassName $class: Dir $dir) {
+        # Allows us to be called as Project->new($dir)
+        # Last path component becomes $self->name
+        # Full path to git objects becomes $self->path
         my $name = $dir->dir_list(-1);
         $dir = $dir->subdir('.git') if (-f $dir->file('.git', 'HEAD'));
         confess("Can't find a git repository at " . $dir)
