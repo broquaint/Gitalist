@@ -1,4 +1,4 @@
-<table>
+<table class='tree listing'>
  <thead>
   <tr>
    <th>mode</th>
@@ -17,9 +17,9 @@
  <tbody>
   [% FOREACH item IN tree_list %]
   <tr>
-   <td>[% item.modestr %]</td>
+   <td class='file-mode'>[% item.modestr %]</td>
    [% theact = item.type == 'tree' ? 'tree' : 'blob' -%]
-   <td class='filename'>
+   <td class='file-name'>
     <a href="[% c.uri_for(theact, {h=item.sha1, hb=commit.sha1, f=(path ? path _ '/' _ item.file : item.file)}) %]">[% item.file %]</a>
    </td>
    <td class='action-list'>
