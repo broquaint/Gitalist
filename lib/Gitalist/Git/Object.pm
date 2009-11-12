@@ -40,14 +40,14 @@ class Gitalist::Git::Object {
 
     # This feels wrong, but current templates assume
     # these attributes are present on every object.
-    foreach my $key (qw/tree_sha1 comment/) {
+    foreach my $key (qw/tree_sha1 comment content/) {
         has $key => ( isa => Str,
                       required => 1,
                       is => 'ro',
                       lazy_build => 1,
                   );
         method "_build_$key" {
-            return '' unless $self->_gpp_obj->can($key);
+            confess("Object can't " . $key) unless $self->_gpp_obj->can($key);
             return $self->_gpp_obj->$key;
         }
     }
@@ -82,21 +82,6 @@ class Gitalist::Git::Object {
 
     method _cat_file_with_flag ($flag) {
         $self->_run_cmd('cat-file', '-' . $flag, $self->{sha1})
-    }
-
-=head2 contents
-
-Return the contents of a given file.
-
-=cut
-
-    # FIXME - Should be an attribute so it gets cached?
-    method contents {
-        if ( $self->type ne 'blob' ) {
-            die "object $self->sha1 is not a file\n"
-        }
-
-        $self->_cat_file_with_flag('p');
     }
 
 } # end class

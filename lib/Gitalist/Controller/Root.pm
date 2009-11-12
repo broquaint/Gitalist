@@ -172,7 +172,7 @@ sub blob : Local {
   my $filename = $c->req->param('f') || '';
 
   $c->stash(
-    blob     => $project->get_object($h)->contents,
+    blob     => $project->get_object($h)->content,
     head     => $project->get_object($hb),
     filename => $filename,
     # XXX Hack hack hack, see View::SyntaxHighlight
