@@ -3,7 +3,9 @@ use MooseX::Declare;
 class Gitalist::Git::Util {
     use File::Which;
     use Git::PurePerl;
+    use IPC::Run qw(run);
     use MooseX::Types::Common::String qw/NonEmptySimpleStr/;
+
     has project => (
         isa => 'Gitalist::Git::Project',
         handles => { gitdir => 'path' },
@@ -38,16 +40,10 @@ EOR
     method run_cmd (@args) {
         unshift @args, ( '--git-dir' => $self->gitdir )
             if $self->has_project;
-#        print STDERR 'RUNNING: ', $self->_git, qq[ @args], $/;
 
-        open my $fh, '-|', $self->_git, @args
-            or die "failed to run git command";
-        binmode $fh, ':encoding(UTF-8)';
+        run [$self->_git, @args], \my($in, $out, $err);
 
-        my $output = do { local $/ = undef; <$fh> };
-        close $fh;
-
-        return $output;
+        return $out;
     }
 
     method get_gpp_object (NonEmptySimpleStr $sha1) {
