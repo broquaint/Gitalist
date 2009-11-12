@@ -122,14 +122,14 @@ Bool indicating whether this Project is bare.
     method _build_description {
         my $description = "";
         eval {
-            $description = $self->{path}->file('description')->slurp;
+            $description = $self->path->file('description')->slurp;
             chomp $description;
         };
         return $description;
     }
 
     method _build_owner {
-        my ($gecos, $name) = (getpwuid $self->{path}->stat->uid)[6,0];
+        my ($gecos, $name) = (getpwuid $self->path->stat->uid)[6,0];
         $gecos =~ s/,+$//;
         return length($gecos) ? $gecos : $name;
     }
@@ -181,23 +181,23 @@ Return a hash of references.
 
 =cut
 
-    method references {
-	return $self->{references}
-		if $self->{references};
+    has references => ( isa => HashRef[Str], is => 'ro', lazy_build => 1 );
 
-	# 5dc01c595e6c6ec9ccda4f6f69c131c0dd945f8c refs/tags/v2.6.11
-	# c39ae07f393806ccf406ef966e9a15afc43cc36a refs/tags/v2.6.11^{}
-	my $cmdout = $self->run_cmd(qw(show-ref --dereference))
-		or return;
-        my @reflist = $cmdout ? split(/\n/, $cmdout) : ();
-	my %refs;
-	for(@reflist) {
-		push @{$refs{$1}}, $2
-			if m!^($SHA1RE)\srefs/(.*)$!;
-	}
+    method _build_references {
 
-	return $self->{references} = \%refs;
-}
+    	# 5dc01c595e6c6ec9ccda4f6f69c131c0dd945f8c refs/tags/v2.6.11
+    	# c39ae07f393806ccf406ef966e9a15afc43cc36a refs/tags/v2.6.11^{}
+    	my $cmdout = $self->run_cmd(qw(show-ref --dereference))
+	    	or return;
+            my @reflist = $cmdout ? split(/\n/, $cmdout) : ();
+	    my %refs;
+	    for(@reflist) {
+		    push @{$refs{$1}}, $2
+			    if m!^($SHA1RE)\srefs/(.*)$!;
+	    }
+
+	    return \%refs;
+    }
 
 =head2 head_hash
 
@@ -434,16 +434,13 @@ The keys for each item will be:
             =  $self->run_cmd(qw(log -g), @logargs)
                 =~ /(^commit.+?(?:(?=^commit)|(?=\z)))/msg;
 
-=pod
-  commit 02526fc15beddf2c64798a947fecdd8d11bf993d
-  Reflog: HEAD@{14} (The Git Server <git@git.dev.venda.com>)
-  Reflog message: push
-  Author: Foo Barsby <fbarsby@example.com>
-  Date:   Thu Sep 17 12:26:05 2009 +0100
-
-      Merge branch 'abc123'
-
-=cut
+#  commit 02526fc15beddf2c64798a947fecdd8d11bf993d
+#  Reflog: HEAD@{14} (The Git Server <git@git.dev.venda.com>)
+#  Reflog message: push
+#  Author: Foo Barsby <fbarsby@example.com>
+#  Date:   Thu Sep 17 12:26:05 2009 +0100
+#
+#      Merge branch 'abc123'
 
         return map {
             # XXX Stuff like this makes me want to switch to Git::PurePerl

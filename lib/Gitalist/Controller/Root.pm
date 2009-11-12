@@ -87,19 +87,28 @@ Provides the project listing.
 =cut
 
 sub index :Path :Args(0) {
-    my ( $self, $c ) = @_;
-    $c->detach($c->req->param('a')) if $c->req->param('a');
+  my ( $self, $c ) = @_;
 
-    my $list = $c->model()->projects;
-    unless(@$list) {
-        die "No projects found in ". $c->model->repo_dir;
-    }
+  $c->detach($c->req->param('a'))
+    if $c->req->param('a');
 
-    $c->stash(
-        searchtext => $c->req->param('searchtext') || '',
-        projects   => $list,
-        action     => 'index',
-    );
+  my @list = @{ $c->model()->projects };
+  die 'No projects found in '. $c->model->repo_dir
+    unless @list;
+
+  my $search = $c->req->param('s') || '';
+  if($search) {
+    @list = grep {
+         index($_->name, $search) > -1
+      or ( $_->description !~ /^Unnamed repository/ and index($_->description, $search) > -1 )
+    } @list
+  }
+
+  $c->stash(
+    search_text => $search,
+    projects    => \@list,
+    action      => 'index',
+  );
 }
 
 =head2 summary
@@ -113,17 +122,19 @@ sub summary : Local {
   my $project = $c->stash->{Project};
   $c->detach('error_404') unless $project;
   my $commit = $self->_get_commit($c);
+  my @heads  = $project->heads;
+  my $maxitems = Gitalist->config->{paging}{summary} || 10;
   $c->stash(
     commit    => $commit,
     info      => $project->info,
     log_lines => [$project->list_revs(
         sha1 => $commit->sha1,
-        count => Gitalist->config->{paging}{summary} || 10
+        count => $maxitems,
     )],
     refs      => $project->references,
-    heads     => [$project->heads],
+    heads     => [ @heads[0 .. ($#heads < $maxitems ? $#heads : $maxitems)] ],
     action    => 'summary',
-);
+  );
 }
 
 =head2 heads
