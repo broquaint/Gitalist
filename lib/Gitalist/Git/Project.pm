@@ -100,6 +100,9 @@ Bool indicating whether this Project is bare.
     }
 
     around BUILDARGS (ClassName $class: Dir $dir) {
+        # Allows us to be called as Project->new($dir)
+        # Last path component becomes $self->name
+        # Full path to git objects becomes $self->path
         my $name = $dir->dir_list(-1);
         $dir = $dir->subdir('.git') if (-f $dir->file('.git', 'HEAD'));
         confess("Can't find a git repository at " . $dir)
