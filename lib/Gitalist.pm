@@ -67,35 +67,65 @@ around uri_for => sub {
 
 =head1 NAME
 
-Gitalist - Catalyst based application
+Gitalist - Transitional project to convert gitweb.cgi to a Catalyst app
 
 =head1 SYNOPSIS
 
     script/gitalist_server.pl
 
+
+=head1 INSTALL
+
+As Gitalist follows the usual Perl module format the usual approach
+for installation should work e.g
+
+  perl Makefile.PL
+  make
+  make test
+  make install
+
+If you're running a git checkout of Gitalist then you'll additionally
+need the author modules. I<NB: As no distribution exists one will
+presently need the author modules>.
+
 =head1 DESCRIPTION
 
-[enter your description here]
+Gitalist is a web frontend for git repositories based on gitweb.cgi
+and backed by Catalyst. It doesn't yet have the full functionality of
+gitweb.cgi but it does have a few small additions at this stage.
+
+=head2 History
+
+This project started off as an attempt to port gitweb.cgi to a
+Catalyst app in a piecemeal fashion. As it turns out, thanks largely
+to Florian Ragwitz's earlier effort, it was easier to use gitweb.cgi
+as a template for building a new Catalyst application.
 
 =head1 SEE ALSO
 
-L<Gitalist::Controller::Root>, L<Catalyst>
+L<Gitalist::Controller::Root>
+
+L<Gitalist::Git::Project>
+
+L<Catalyst>
 
 =head1 AUTHORS AND COPYRIGHT
 
   Catalyst application:
-    (C) 2009 Venda Ltd and Dan Brook <dbrook@venda.com>
+    (C) 2009 Venda Ltd and Dan Brook <broq@cpan.org>
+    (C) 2009, Tom Doran <bobtfish@bobtfish.net>
+    (C) 2009, Zac Stevens <zts@cryptocracy.com>
 
   Original gitweb.cgi from which this was derived:
     (C) 2005-2006, Kay Sievers <kay.sievers@vrfy.org>
     (C) 2005, Christian Gierke
 
+  Model based on http://github.com/rafl/gitweb
+    (C) 2008, Florian Ragwitz
+
 =head1 LICENSE
 
-FIXME - Is this going to be GPLv2 as per gitweb? If so this is broken..
-
-This library is free software. You can redistribute it and/or modify
-it under the same terms as Perl itself.
+Licensed under GNU GPL v2
 
 =cut
 
