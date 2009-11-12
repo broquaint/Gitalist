@@ -28,6 +28,17 @@ class Gitalist::Git::Project with Gitalist::Git::HasUtils {
     use DateTime;
     use aliased 'Gitalist::Git::Object';
 
+    our $SHA1RE = qr/[0-9a-fA-F]{40}/;
+
+    around BUILDARGS (ClassName $class: Dir $dir) {
+        my $name = $dir->dir_list(-1);
+        $dir = $dir->subdir('.git') if (-f $dir->file('.git', 'HEAD'));
+        confess("Can't find a git repository at " . $dir)
+            unless ( -f $dir->file('HEAD') );
+        return $class->$orig(name => $name,
+                             path => $dir);
+    }
+
 =head1 ATTRIBUTES
 
 =head2 name
@@ -99,63 +110,33 @@ Bool indicating whether this Project is bare.
         $self->$_() for qw/last_change owner description/; # Ensure to build early.
     }
 
-    around BUILDARGS (ClassName $class: Dir $dir) {
-        my $name = $dir->dir_list(-1);
-        $dir = $dir->subdir('.git') if (-f $dir->file('.git', 'HEAD'));
-        confess("Can't find a git repository at " . $dir)
-            unless ( -f $dir->file('HEAD') );
-        return $class->$orig(name => $name,
-                             path => $dir);
+=head1 METHODS
+
+=head2 head_hash
+
+Return the sha1 for HEAD, or any specified head.
+
+=cut
+
+    method head_hash (Str $head?) {
+        my $output = $self->run_cmd(qw/rev-parse --verify/, $head || 'HEAD' );
+        confess("No such head: " . $head) unless defined $output;
+
+        my($sha1) = $output =~ /^($SHA1RE)$/;
+        return $sha1;
     }
 
-    method _build__util {
-        Gitalist::Git::Util->new(
-            project => $self,
-        );
-    }
-
-    our $SHA1RE = qr/[0-9a-fA-F]{40}/;
-
-    method _build_description {
-        my $description = "";
-        eval {
-            $description = $self->path->file('description')->slurp;
-            chomp $description;
-        };
-        return $description;
-    }
-
-    method _build_owner {
-        my ($gecos, $name) = (getpwuid $self->path->stat->uid)[6,0];
-        $gecos =~ s/,+$//;
-        return length($gecos) ? $gecos : $name;
-    }
-
-    method _build_last_change {
-        my $last_change;
-        my $output = $self->run_cmd(
-            qw{ for-each-ref --format=%(committer)
-                --sort=-committerdate --count=1 refs/heads
-          });
-        if (my ($epoch, $tz) = $output =~ /\s(\d+)\s+([+-]\d+)$/) {
-            my $dt = DateTime->from_epoch(epoch => $epoch);
-            $dt->set_time_zone($tz);
-            $last_change = $dt;
-        }
-        return $last_change;
-    }
 
 =head2 heads
 
-Return an array containing the list of heads.
+Returns a list of hashes containing the name and sha1 of all heads.
 
 =cut
 
     method heads {
-        my $cmdout = $self->run_cmd(qw/for-each-ref --sort=-committerdate /, '--format=%(objectname)%00%(refname)%00%(committer)', 'refs/heads');
-        my @output = $cmdout ? split(/\n/, $cmdout) : ();
+        my @revlines = $self->run_cmd_list(qw/for-each-ref --sort=-committerdate /, '--format=%(objectname)%00%(refname)%00%(committer)', 'refs/heads');
         my @ret;
-        for my $line (@output) {
+        for my $line (@revlines) {
             my ($rev, $head, $commiter) = split /\0/, $line, 3;
             $head =~ s!^refs/heads/!!;
 
@@ -174,40 +155,24 @@ Return an array containing the list of heads.
 
 =head2 references
 
-Return a hash of references.
+Returns a hash of references.
 
 =cut
 
     has references => ( isa => HashRef[ArrayRef[Str]], is => 'ro', lazy_build => 1 );
 
     method _build_references {
-
     	# 5dc01c595e6c6ec9ccda4f6f69c131c0dd945f8c refs/tags/v2.6.11
     	# c39ae07f393806ccf406ef966e9a15afc43cc36a refs/tags/v2.6.11^{}
-    	my $cmdout = $self->run_cmd(qw(show-ref --dereference))
+    	my @reflist = $self->run_cmd_list(qw(show-ref --dereference))
 	    	or return;
-            my @reflist = $cmdout ? split(/\n/, $cmdout) : ();
-	    my %refs;
+        my %refs;
 	    for(@reflist) {
 		    push @{$refs{$1}}, $2
 			    if m!^($SHA1RE)\srefs/(.*)$!;
 	    }
 
 	    return \%refs;
-    }
-
-=head2 head_hash
-
-Find the hash of a given head (defaults to HEAD).
-
-=cut
-
-    method head_hash (Str $head?) {
-        my $output = $self->run_cmd(qw/rev-parse --verify/, $head || 'HEAD' );
-        return unless defined $output;
-
-        my($sha1) = $output =~ /^($SHA1RE)$/;
-        return $sha1;
     }
 
 =head2 list_tree
@@ -272,10 +237,10 @@ The keys for each item will be:
     method hash_by_path ($base, $path?, $type?) {
         $path ||= '';
         $path =~ s{/+$}();
-
-        my $output = $self->run_cmd('ls-tree', $base, '--', $path)
+        # FIXME should this really just take the first result?
+        my @paths = $self->run_cmd('ls-tree', $base, '--', $path)
             or return;
-        my($line) = $output ? split(/\n/, $output) : ();
+        my $line = $paths[0];
 
         #'100644 blob 0fa3f3a66fb6a137f6ec2c19351ed4d807070ffa	panic.c'
         $line =~ m/^([0-9]+) (.+) ($SHA1RE)\t/;
@@ -397,11 +362,10 @@ The keys for each item will be:
 # /home/dbrook/apps/bin/git --git-dir=/home/dbrook/dev/app/.git diff-tree -r -M --no-commit-id --patch-with-raw --full-index 2e3454ca0749641b42f063730b0090e1 316cf158df3f6207afbae7270bcc5ba0 --
 
     method raw_diff (@args) {
-        my $cmdout = $self->run_cmd(
+        return $self->run_cmd_list(
             qw(diff-tree -r -M --no-commit-id --full-index),
             @args
         );
-        return $cmdout ? split(/\n/, $cmdout) : ();
     }
 
     method parse_diff_tree ($diff) {
@@ -489,6 +453,41 @@ be:
             last_change => $self->last_change,
         };
     };
+
+    method _build__util {
+        Gitalist::Git::Util->new(
+            project => $self,
+        );
+    }
+
+    method _build_description {
+        my $description = "";
+        eval {
+            $description = $self->path->file('description')->slurp;
+            chomp $description;
+        };
+        return $description;
+    }
+
+    method _build_owner {
+        my ($gecos, $name) = (getpwuid $self->path->stat->uid)[6,0];
+        $gecos =~ s/,+$//;
+        return length($gecos) ? $gecos : $name;
+    }
+
+    method _build_last_change {
+        my $last_change;
+        my $output = $self->run_cmd(
+            qw{ for-each-ref --format=%(committer)
+                --sort=-committerdate --count=1 refs/heads
+          });
+        if (my ($epoch, $tz) = $output =~ /\s(\d+)\s+([+-]\d+)$/) {
+            my $dt = DateTime->from_epoch(epoch => $epoch);
+            $dt->set_time_zone($tz);
+            $last_change = $dt;
+        }
+        return $last_change;
+    }
 
 =head1 SEE ALSO
 

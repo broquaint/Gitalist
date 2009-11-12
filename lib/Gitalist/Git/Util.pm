@@ -40,10 +40,15 @@ EOR
     method run_cmd (@args) {
         unshift @args, ( '--git-dir' => $self->gitdir )
             if $self->has_project;
-
+#        print STDERR 'RUNNING: ', $self->_git, qq[ @args], $/;
         run [$self->_git, @args], \my($in, $out, $err);
 
         return $out;
+    }
+
+    method run_cmd_list (@args) {
+        my $cmdout = $self->run_cmd(@args);
+        return $cmdout ? split(/\n/, $cmdout) : ();
     }
 
     method get_gpp_object (NonEmptySimpleStr $sha1) {
