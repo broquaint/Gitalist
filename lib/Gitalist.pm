@@ -24,30 +24,6 @@ __PACKAGE__->config(
     exit_at_end_of_request_if_updated => 0,
 );
 
-{
-    my $version;
-    my $get_version = sub {
-        my $gitdir = shift->path_to('.git');
-        my $version = qx{cat "$gitdir/`cut -d' ' -f2 .git/HEAD`"};
-        chomp $version;
-        return $version;
-    };
-
-    after setup_finalize => sub {
-        my $c = shift;
-        $version = $c->$get_version
-            if $c->config->{exit_at_end_of_request_if_updated};
-    };
-    after handle_request => sub {
-        my $c = shift;
-        if ($version) {
-            my $new = $c->$get_version;
-            exit 0 unless $new eq $version;
-        }
-    };
-}
-
-
 # Start the application
 __PACKAGE__->setup();
 
