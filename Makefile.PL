@@ -13,6 +13,10 @@ name 'Gitalist';
 all_from 'lib/Gitalist.pm';
 readme_from 'lib/Gitalist.pm';
 
+author 'Dan Brook <broq@cpan.org>';
+
+license 'gpl2';
+
 requires 'Catalyst::Runtime' => '5.80003';
 requires 'Catalyst::Plugin::ConfigLoader';
 requires 'Catalyst::Plugin::StackTrace';
