@@ -13,7 +13,11 @@ after BUILD => sub {
 has _util => ( isa => 'Gitalist::Git::Util',
                is => 'ro',
                lazy_build => 1,
-               handles => [ 'run_cmd', 'run_cmd_list', 'get_gpp_object' ],
+               handles => [ 'run_cmd',
+                            'run_cmd_list',
+                            'get_gpp_object',
+                            'gpp',
+                        ],
            );
 
 sub _build__util { confess(shift() . " cannot build _util") }

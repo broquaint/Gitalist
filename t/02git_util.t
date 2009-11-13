@@ -20,6 +20,6 @@ my $util = Gitalist::Git::Util->new(
 isa_ok($util, 'Gitalist::Git::Util');
 
 like( $util->_git, qr#/git$#, 'git binary found');
-isa_ok($util->_gpp, 'Git::PurePerl', 'gpp instance created');
+isa_ok($util->gpp, 'Git::PurePerl', 'gpp instance created');
 
 done_testing;
