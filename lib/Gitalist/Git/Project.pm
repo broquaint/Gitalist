@@ -344,12 +344,7 @@ FIXME Should this return objects?
     }
 
     method _build_description {
-        my $description = "";
-        eval {
-            $description = $self->path->file('description')->slurp;
-            chomp $description;
-        };
-        return $description;
+        return $self->gpp->description;
     }
 
     method _build_owner {
