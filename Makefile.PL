@@ -22,10 +22,11 @@ requires 'Catalyst::Plugin::ConfigLoader';
 requires 'Catalyst::Plugin::StackTrace';
 requires 'Catalyst::Plugin::Static::Simple';
 requires 'Catalyst::Action::RenderView';
+requires 'Catalyst::Component::InstancePerContext';
+requires 'Catalyst::View::TT';
 
 requires 'Template';
 requires 'Template::Provider::Encoding';
-requires 'Catalyst::View::TT';
 requires 'Template::Plugin::Cycle';
 
 requires 'Config::General';
