@@ -1,9 +1,11 @@
 <link rel="stylesheet" type="text/css" href="/static/css/syntax/[% language %].css"/>
 
 [% PROCESS 'nav/actions.tt2' object = head %]
+[% IF object.type == 'commit' %]
 <div class='commit-message'>
 [% head.comment.substr(0, 85) %] ...
 </div>
+[% END %]
 <div class='path'>
  <a href="[% c.uri_for("tree", {hb=head.sha1}) %]">[% project %]</a>
  [% # XXX The last part should link to blob_plain (or something) but doesn't ATM
