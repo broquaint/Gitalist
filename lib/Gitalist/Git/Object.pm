@@ -2,7 +2,7 @@ use MooseX::Declare;
 use Moose::Autobox;
 
 class Gitalist::Git::Object {
-    use MooseX::Types::Moose qw/Str Int Bool Maybe/;
+    use MooseX::Types::Moose qw/Str Int Bool Maybe ArrayRef/;
     use MooseX::Types::Common::String qw/NonEmptySimpleStr/;
     use File::Stat::ModeString qw/mode_to_string/;
     use List::MoreUtils qw/any zip/;
@@ -66,8 +66,31 @@ class Gitalist::Git::Object {
                   default => 0,
                   is => 'ro' );
 
+    has tree => ( isa => 'ArrayRef[Gitalist::Git::Object]',
+                  required => 0,
+                  is => 'ro',
+                  lazy_build => 1 );
+
     method BUILD { $self->$_() for qw/_gpp_obj type size modestr/ }
 
+    method _build_tree {
+        confess("Can't list_tree on a blob object.")
+            if $self->type eq 'blob';
+        my $output = $self->_run_cmd(qw/ls-tree -z/, $self->sha1);
+        return unless defined $output;
+
+        my @ret;
+        for my $line (split /\0/, $output) {
+            my ($mode, $type, $object, $file) = split /\s+/, $line, 4;
+            push @ret, Gitalist::Git::Object->new( mode => oct $mode,
+                                    type => $type,
+                                    sha1 => $object,
+                                    file => $file,
+                                    project => $self->project,
+                                  );
+        }
+        return \@ret;
+    }
 
     method diff ( Maybe[Bool] :$patch?,
                   Maybe[NonEmptySimpleStr] :$parent?,

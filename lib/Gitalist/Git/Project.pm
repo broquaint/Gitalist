@@ -151,21 +151,8 @@ Each item is a L<Gitalist::Git::Object>.
 =cut
     method list_tree (Str $sha1?) {
         $sha1 ||= $self->head_hash;
-
-        my $output = $self->run_cmd(qw/ls-tree -z/, $sha1);
-        return unless defined $output;
-
-        my @ret;
-        for my $line (split /\0/, $output) {
-            my ($mode, $type, $object, $file) = split /\s+/, $line, 4;
-            push @ret, Object->new( mode => oct $mode,
-                                    type => $type,
-                                    sha1 => $object,
-                                    file => $file,
-                                    project => $self,
-                                  );
-        }
-        return @ret;
+        my $object = $self->get_object($sha1);
+        return @{$object->tree};
     }
 
 =head2 get_object ($sha1)
