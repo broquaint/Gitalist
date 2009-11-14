@@ -23,9 +23,11 @@
     <a href="[% c.uri_for(theact, {h=item.sha1, hb=commit.sha1, f=(path ? path _ '/' _ item.file : item.file)}) %]">[% item.file %]</a>
    </td>
    <td class='action-list'>
-     <a href="[% c.uri_for(theact, {h=item.object, hb=commit.sha1, f=item.file}) %]">[% theact %]</a>
-     <a href="[% c.uri_for('history', {h=item.object}) %]">history</a>
-     <a href="[% c.uri_for('raw', {h=item.object}) %]">raw</a>
+     <a href="[% c.uri_for(theact, {h=item.sha1, hb=commit.sha1, f=item.file}) %]">[% theact %]</a>
+     <a href="[% c.uri_for('history', {h=item.sha1, hb=commit.sha1, f=item.file}) %]">history</a>
+     [% IF item.type == 'blob' %]
+     <a href="[% c.uri_for('raw', {hb=commit.sha1, f=item.file}) %]">raw</a>
+     [% END %]
    </td>
   </tr>
   [% END %]

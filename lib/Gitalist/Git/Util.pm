@@ -27,7 +27,7 @@ EOR
         return $git;
     }
 
-    has _gpp      => (
+    has gpp      => (
         isa => 'Git::PurePerl', is => 'ro', lazy => 1,
         default => sub {
             my $self = shift;
@@ -52,7 +52,7 @@ EOR
     }
 
     method get_gpp_object (NonEmptySimpleStr $sha1) {
-        return $self->_gpp->get_object($sha1) || undef;
+        return $self->gpp->get_object($sha1) || undef;
     }
 
 } # end class

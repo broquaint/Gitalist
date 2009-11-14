@@ -4,6 +4,8 @@
     <a href="[% c.uri_for('log', {h=object.sha1}) %]">log</a> •
     <a href="[% c.uri_for('commit', {h=object.sha1}) %]">commit</a> •
     <a href="[% c.uri_for('commitdiff', {h=object.sha1}) %]">commitdiff</a> •
+    [% IF object.type == 'commit' %]
     <a href="[% c.uri_for('tree', {h=object.tree_sha1, hb=object.sha1}) %]">tree</a>
+    [% END %]
     <div class='chroma-hash'>[% INCLUDE '_chroma_hash.tt2' sha1 = object.sha1 %]</div>
 </div>
