@@ -316,13 +316,12 @@ FIXME Should this return objects?
     }
 
     method _build_description {
+        my $description = "";
         eval {
-            return $self->gpp->description;
+            $description = $self->path->file('description')->slurp;
+            chomp $description;
         };
-        if ($@) {
-            return "Unnamed repository.";
-        }
-
+        return $description;
     }
 
     method _build_owner {
