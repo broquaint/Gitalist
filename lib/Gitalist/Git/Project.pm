@@ -316,7 +316,13 @@ FIXME Should this return objects?
     }
 
     method _build_description {
-        return $self->gpp->description;
+        eval {
+            return $self->gpp->description;
+        };
+        if ($@) {
+            return "Unnamed repository.";
+        }
+
     }
 
     method _build_owner {
