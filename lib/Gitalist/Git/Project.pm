@@ -211,13 +211,12 @@ Returns a list of revs for the given head ($sha1).
                        Int :$count?,
                        Int :$skip?,
                        HashRef :$search?,
-                       NonEmptySimpleStr :$file?
-                   ) {
+                       NonEmptySimpleStr :$file? ) {
         $sha1 = $self->head_hash($sha1)
             if !$sha1 || $sha1 !~ $SHA1RE;
 
 	my @search_opts;
-        if($search) {
+        if ($search) {
             $search->{type} = 'grep'
                 if $search->{type} eq 'commit';
             @search_opts = (
@@ -273,13 +272,13 @@ FIXME Should this return objects?
             =  $self->run_cmd(qw(log -g), @logargs)
                 =~ /(^commit.+?(?:(?=^commit)|(?=\z)))/msg;
 
-#  commit 02526fc15beddf2c64798a947fecdd8d11bf993d
-#  Reflog: HEAD@{14} (The Git Server <git@git.dev.venda.com>)
-#  Reflog message: push
-#  Author: Foo Barsby <fbarsby@example.com>
-#  Date:   Thu Sep 17 12:26:05 2009 +0100
-#
-#      Merge branch 'abc123'
+        #  commit 02526fc15beddf2c64798a947fecdd8d11bf993d
+        #  Reflog: HEAD@{14} (The Git Server <git@git.dev.venda.com>)
+        #  Reflog message: push
+        #  Author: Foo Barsby <fbarsby@example.com>
+        #  Date:   Thu Sep 17 12:26:05 2009 +0100
+        #
+        #      Merge branch 'abc123'
 
         return map {
             # XXX Stuff like this makes me want to switch to Git::PurePerl
@@ -364,14 +363,14 @@ FIXME Should this return objects?
     	# 5dc01c595e6c6ec9ccda4f6f69c131c0dd945f8c refs/tags/v2.6.11
     	# c39ae07f393806ccf406ef966e9a15afc43cc36a refs/tags/v2.6.11^{}
     	my @reflist = $self->run_cmd_list(qw(show-ref --dereference))
-	    	or return;
+            or return;
         my %refs;
-	    for(@reflist) {
-		    push @{$refs{$1}}, $2
-			    if m!^($SHA1RE)\srefs/(.*)$!;
-	    }
+        for (@reflist) {
+            push @{$refs{$1}}, $2
+                if m!^($SHA1RE)\srefs/(.*)$!;
+        }
 
-	    return \%refs;
+        return \%refs;
     }
 
     ## Private methods
