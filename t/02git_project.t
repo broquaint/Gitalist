@@ -16,7 +16,8 @@ my $gitdir = dir("$Bin/lib/repositories/repo1");
 
 my $proj = Gitalist::Git::Project->new($gitdir);
 isa_ok($proj, 'Gitalist::Git::Project');
-is($proj->path, $gitdir, 'repository path is set');
+is($proj->path, $gitdir, 'project path is set');
+isa_ok($proj->path, 'Path::Class::Dir', 'project path');
 is($proj->name, qw/repo1/, 'repository name is set');
 is($proj->description, qq/some test repository/, 'repository description loaded');
 isa_ok($proj->last_change, 'DateTime', 'last_change');
@@ -45,3 +46,12 @@ my $hbp_sha1 = $proj->hash_by_path('36c6c6708b8360d7023e8a1649c45bcf9b3bd818', '
 my $obj2 = $proj->get_object($hbp_sha1);
 is($obj2->type, 'blob', 'hash_by_path obj is a file');
 is($obj2->content, "foo\n", 'hash_by_path obj is a file');
+
+like($proj->head_hash('HEAD'), qr/^([0-9a-fA-F]{40})$/, 'head_hash');
+
+{
+    my @tree = $proj->list_tree('3bc0634310b9c62222bb0e724c11ffdfb297b4ac');
+    is(scalar @tree, 1, "tree array contains one entry.");
+    isa_ok(@tree[0], 'Gitalist::Git::Object', 'tree element 0');
+}
+

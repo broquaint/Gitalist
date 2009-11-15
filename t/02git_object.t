@@ -46,3 +46,29 @@ dies_ok {
 dies_ok {
     print $obj2->comment;
 } 'comment is an empty string';
+
+my $commit_obj = Gitalist::Git::Object->new(
+    project => $project,
+    sha1 => '3f7567c7bdf7e7ebf410926493b92d398333116e',
+);
+isa_ok($commit_obj, 'Gitalist::Git::Object', "commit object type correct");
+my ($tree, $patch) = $commit_obj->diff(
+    parent => undef,
+    file => undef,
+    patch => 1,
+);
+$patch = $patch->[0];
+is($patch->{head}, 'diff --git a/file1 b/file1', 'patch->{head} is correct');
+is($patch->{a}, 'a/file1', 'patch->{a} is correct');
+is($patch->{b}, 'b/file1', 'patch->{b} is correct');
+is($patch->{file}, 'file1', 'patch->{file} is correct');
+is($patch->{mode}, '100644', 'patch->{mode} is correct');
+is($patch->{src}, '257cc5642cb1a054f08cc83f2d943e56fd3ebe99', 'patch->{src} is correct');
+is($patch->{index}, 'index 257cc5642cb1a054f08cc83f2d943e56fd3ebe99..5716ca5987cbf97d6bb54920bea6adde242d87e6 100644', 'patch->{index} is correct');
+is($patch->{diff}, '--- a/file1
++++ b/file1
+@@ -1 +1 @@
+-foo
++bar
+', 'patch->{diff} is correct');
+is($patch->{dst}, '5716ca5987cbf97d6bb54920bea6adde242d87e6', 'patch->{dst} is correct');
