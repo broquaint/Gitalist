@@ -35,17 +35,14 @@ class Gitalist::Git::Object {
                       is => 'ro',
                       lazy_build => 1,
                       handles => [ 'parents',
-                                   'parent_sha1',
                                    'author',
-                                   'authored_time',
                                    'committer',
-                                   'committed_time',
                                ],
                   );
 
     # This feels wrong, but current templates assume
     # these attributes are present on every object.
-    foreach my $key (qw/tree_sha1 comment content/) {
+    foreach my $key (qw/content/) {
         has $key => ( isa => Str,
                       required => 1,
                       is => 'ro',

@@ -26,6 +26,7 @@ class Gitalist::Git::Project with Gitalist::Git::HasUtils {
     use MooseX::Types::Moose qw/Str Maybe Bool HashRef ArrayRef/;
     use List::MoreUtils qw/any zip/;
     use DateTime;
+    use Gitalist::Git::Object::Commit;
     use aliased 'Gitalist::Git::Object';
 
     our $SHA1RE = qr/[0-9a-fA-F]{40}/;
@@ -164,7 +165,13 @@ Return a L<Gitalist::Git::Object> for the given sha1.
         unless ( $self->_is_valid_rev($sha1) ) {
             $sha1 = $self->head_hash($sha1);
         }
-        return Object->new(
+        my $type = $self->run_cmd('cat-file', '-t', $sha1);
+        chomp($type);
+        my $class = 'Gitalist::Git::Object';
+        if ($type eq 'commit') {
+            $class .= '::' . ucfirst($type);
+        };
+        return $class->new(
             project => $self,
             sha1 => $sha1,
         );
