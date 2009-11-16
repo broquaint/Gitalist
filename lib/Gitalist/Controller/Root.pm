@@ -126,7 +126,6 @@ sub summary : Local {
   my $maxitems = Gitalist->config->{paging}{summary} || 10;
   $c->stash(
     commit    => $commit,
-#    info      => $project->info,
     log_lines => [$project->list_revs(
         sha1 => $commit->sha1,
         count => $maxitems,
@@ -180,7 +179,27 @@ sub blob : Local {
     action   => 'blob',
   );
 
-  $c->forward('View::SyntaxHighlight');
+  $c->forward('View::SyntaxHighlight')
+    unless $c->stash->{no_wrapper};
+}
+
+sub blob_plain : Local {
+  my($self, $c) = @_;
+
+  $c->stash(no_wrapper => 1);
+  $c->response->content_type('text/plain; charset=utf-8');
+
+  $c->forward('blob');
+}
+
+sub blobdiff_plain : Local {
+  my($self, $c) = @_;
+
+  $c->stash(no_wrapper => 1);
+  $c->response->content_type('text/plain; charset=utf-8');
+
+  $c->forward('blobdiff');
+
 }
 
 =head2 blobdiff
@@ -196,9 +215,9 @@ sub blobdiff : Local {
               || croak("No file specified!");
   my($tree, $patch) = $c->stash->{Project}->diff(
     commit => $commit,
-    parent => $c->req->param('hpb') || '',
-    file   => $filename,
     patch  => 1,
+    parent => $c->req->param('hpb') || undef,
+    file   => $filename,
   );
   $c->stash(
     commit    => $commit,
@@ -209,7 +228,8 @@ sub blobdiff : Local {
     action    => 'blobdiff',
   );
 
-  $c->forward('View::SyntaxHighlight');
+  $c->forward('View::SyntaxHighlight')
+    unless $c->stash->{no_wrapper};
 }
 
 =head2 commit
@@ -254,7 +274,17 @@ sub commitdiff : Local {
     action    => 'commitdiff',
   );
 
-  $c->forward('View::SyntaxHighlight');
+  $c->forward('View::SyntaxHighlight')
+    unless $c->stash->{no_wrapper};
+}
+
+sub commitdiff_plain : Local {
+  my($self, $c) = @_;
+
+  $c->stash(no_wrapper => 1);
+  $c->response->content_type('text/plain; charset=utf-8');
+
+  $c->forward('commitdiff');
 }
 
 =head2 shortlog
@@ -294,6 +324,11 @@ Calls shortlog internally. Perhaps that should be reversed ...
 sub log : Local {
     $_[0]->shortlog($_[1]);
     $_[1]->stash->{action} = 'log';
+}
+
+# For legacy support.
+sub history : Local {
+  $_[0]->shortlog(@_[1 .. $#_]);
 }
 
 =head2 tree
@@ -374,16 +409,6 @@ sub rss : Local {
     Carp::croak "Not implemented.";
 }
 
-sub blobdiff_plain : Local {
-    # FIXME - implement blobdiff_plain
-    Carp::croak "Not implemented.";
-}
-
-sub blob_plain : Local {
-    # FIXME - implement blobdiff_plain
-    Carp::croak "Not implemented.";
-}
-
 sub patch : Local {
     # FIXME - implement patches
     Carp::croak "Not implemented.";
@@ -396,11 +421,6 @@ sub patches : Local {
 
 sub snapshot : Local {
     # FIXME - implement snapshot
-    Carp::croak "Not implemented.";
-}
-
-sub commitdiff_plain : Local {
-    # FIXME - implement commitdiff_plain
     Carp::croak "Not implemented.";
 }
 

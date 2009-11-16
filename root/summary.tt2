@@ -1,11 +1,19 @@
 [% PROCESS 'nav/actions.tt2' object = head %]
 
 <div class='summary'>
-<dl>
-<dt>description</dt><dd>[% Project.description %]</dd>
-<dt>owner</dt><dd>[% Project.owner %]</dd>
-<dt>last change</dt><dd>[% Project.last_change %]</dd>
-</dl>
+<!-- <div id='stats'>
+  <dt>Number of commits in the last day</dt><dd>N</dd>
+  <dt>Most frequent commiter in the last week</dt><dd>Foo</dd>
+  <dt>Hottest file in the repo</dt><dd>Bar.baz</dd>
+  <dt>Current hue</dt><dd>either HEAD or some arbitrary munging</dd>
+ </div> -->
+
+ <dl>
+  <dt>description</dt><dd>[% Project.description %]</dd>
+  <dt>owner</dt><dd>[% Project.owner %]</dd>
+  <dt>last change</dt><dd>[% Project.last_change %]</dd>
+ </dl>
+
 </div>
 
 <h2><a href='[% c.uri_for("shortlog") %]'>shortlog</a></h2>

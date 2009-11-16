@@ -6,7 +6,7 @@
   INCLUDE '_refs.tt2' object = commit;
 %]
 </div>
-
+<!-- [% USE dumper; dumper.dump(commit.parents) %] -->
 <dl class='commit-info'>
  <dt>author</dt>
   <dd>[% commit.author.name | html %] &lt;[% commit.author.email %]&gt;<br/>
@@ -24,9 +24,9 @@
  <dt>parent</dt>
   <dd>[% parent.sha1  %]
     <span class='action-list'>
-	 <a href="[% c.uri_for("commit", {h=parent.sha1}) %]">commit</a>
-	 <a href="[% c.uri_for("commitdiff", {hp=parent.sha1, h=commit.sha1}) %]">diff</a>
-	</span>
+     <a href="[% c.uri_for("commit", {h=parent.sha1}) %]">commit</a>
+     <a href="[% c.uri_for("commitdiff", {hp=parent.sha1, h=commit.sha1}) %]">diff</a>
+    </span>
    </dd>
  [% END %]
 </dl>

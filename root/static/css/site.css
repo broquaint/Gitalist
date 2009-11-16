@@ -65,6 +65,7 @@ div.chroma-hash {
 img.logo {
   float: right;
   border-width: 0px;
+  margin-top: 4px;
 }
 
 /* footer */
@@ -189,6 +190,11 @@ pre.blob {
   float: right;
   font-size: 0.85em;
   font-style: italic;
+}
+
+/* /summary */
+#stats {
+  float: right;
 }
 
 /* /tree */

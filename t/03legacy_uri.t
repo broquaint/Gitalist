@@ -34,19 +34,17 @@ test('/', 'a=blob;f=file1;h=5716ca5987cbf97d6bb54920bea6adde242d87e6;hb=refs/hea
 test('/', 'a=blob;f=file1;hb=3bc0634310b9c62222bb0e724c11ffdfb297b4ac');
 test('/', 'a=blob;f=file1;hb=3f7567c7bdf7e7ebf410926493b92d398333116e');
 
-TODO: {
-    local $TODO = "Action: blob_plain is not yet implemented.";
-    test('/', 'a=blob_plain;f=dir1/file2;hb=36c6c6708b8360d7023e8a1649c45bcf9b3bd818');
-    test('/', 'a=blob_plain;f=dir1/file2;hb=HEAD');
-    test('/', 'a=blob_plain;f=dir1/file2;hb=master');
-    test('/', 'a=blob_plain;f=dir1/file2;hb=refs/heads/master');
-    test('/', 'a=blob_plain;f=file1;hb=36c6c6708b8360d7023e8a1649c45bcf9b3bd818');
-    test('/', 'a=blob_plain;f=file1;hb=3bc0634310b9c62222bb0e724c11ffdfb297b4ac');
-    test('/', 'a=blob_plain;f=file1;hb=3f7567c7bdf7e7ebf410926493b92d398333116e');
-    test('/', 'a=blob_plain;f=file1;hb=HEAD');
-    test('/', 'a=blob_plain;f=file1;hb=master');
-    test('/', 'a=blob_plain;f=file1;hb=refs/heads/master');
-}
+
+test('/', 'a=blob_plain;f=dir1/file2;hb=36c6c6708b8360d7023e8a1649c45bcf9b3bd818');
+test('/', 'a=blob_plain;f=dir1/file2;hb=HEAD');
+test('/', 'a=blob_plain;f=dir1/file2;hb=master');
+test('/', 'a=blob_plain;f=dir1/file2;hb=refs/heads/master');
+test('/', 'a=blob_plain;f=file1;hb=36c6c6708b8360d7023e8a1649c45bcf9b3bd818');
+test('/', 'a=blob_plain;f=file1;hb=3bc0634310b9c62222bb0e724c11ffdfb297b4ac');
+test('/', 'a=blob_plain;f=file1;hb=3f7567c7bdf7e7ebf410926493b92d398333116e');
+test('/', 'a=blob_plain;f=file1;hb=HEAD');
+test('/', 'a=blob_plain;f=file1;hb=master');
+test('/', 'a=blob_plain;f=file1;hb=refs/heads/master');
 
 test('/', 'a=blobdiff;f=file1;h=5716ca5987cbf97d6bb54920bea6adde242d87e6;hp=257cc5642cb1a054f08cc83f2d943e56fd3ebe99;hb=36c6c6708b8360d7023e8a1649c45bcf9b3bd818;hpb=3bc0634310b9c62222bb0e724c11ffdfb297b4ac');
 test('/', 'a=blobdiff;f=file1;h=5716ca5987cbf97d6bb54920bea6adde242d87e6;hp=257cc5642cb1a054f08cc83f2d943e56fd3ebe99;hb=3f7567c7bdf7e7ebf410926493b92d398333116e;hpb=3bc0634310b9c62222bb0e724c11ffdfb297b4ac');
@@ -54,13 +52,10 @@ test('/', 'a=blobdiff;f=file1;h=5716ca5987cbf97d6bb54920bea6adde242d87e6;hp=257c
 test('/', 'a=blobdiff;f=file1;h=5716ca5987cbf97d6bb54920bea6adde242d87e6;hp=257cc5642cb1a054f08cc83f2d943e56fd3ebe99;hb=master;hpb=3bc0634310b9c62222bb0e724c11ffdfb297b4ac');
 test('/', 'a=blobdiff;f=file1;h=5716ca5987cbf97d6bb54920bea6adde242d87e6;hp=257cc5642cb1a054f08cc83f2d943e56fd3ebe99;hb=refs/heads/master;hpb=3bc0634310b9c62222bb0e724c11ffdfb297b4ac');
 
-TODO: {
-    local $TODO = "Action: blobdiff_plain is not yet implemented.";
-    test('/', 'a=blobdiff_plain;f=file1;h=5716ca5987cbf97d6bb54920bea6adde242d87e6;hp=257cc5642cb1a054f08cc83f2d943e56fd3ebe99;hb=36c6c6708b8360d7023e8a1649c45bcf9b3bd818;hpb=3bc0634310b9c62222bb0e724c11ffdfb297b4ac');
-    test('/', 'a=blobdiff_plain;f=file1;h=5716ca5987cbf97d6bb54920bea6adde242d87e6;hp=257cc5642cb1a054f08cc83f2d943e56fd3ebe99;hb=3f7567c7bdf7e7ebf410926493b92d398333116e;hpb=3bc0634310b9c62222bb0e724c11ffdfb297b4ac');
-    test('/', 'a=blobdiff_plain;f=file1;h=5716ca5987cbf97d6bb54920bea6adde242d87e6;hp=257cc5642cb1a054f08cc83f2d943e56fd3ebe99;hb=HEAD;hpb=3bc0634310b9c62222bb0e724c11ffdfb297b4ac');
-    test('/', 'a=blobdiff_plain;f=file1;h=5716ca5987cbf97d6bb54920bea6adde242d87e6;hp=257cc5642cb1a054f08cc83f2d943e56fd3ebe99;hb=master;hpb=3bc0634310b9c62222bb0e724c11ffdfb297b4ac');
-}
+test('/', 'a=blobdiff_plain;f=file1;h=5716ca5987cbf97d6bb54920bea6adde242d87e6;hp=257cc5642cb1a054f08cc83f2d943e56fd3ebe99;hb=36c6c6708b8360d7023e8a1649c45bcf9b3bd818;hpb=3bc0634310b9c62222bb0e724c11ffdfb297b4ac');
+test('/', 'a=blobdiff_plain;f=file1;h=5716ca5987cbf97d6bb54920bea6adde242d87e6;hp=257cc5642cb1a054f08cc83f2d943e56fd3ebe99;hb=3f7567c7bdf7e7ebf410926493b92d398333116e;hpb=3bc0634310b9c62222bb0e724c11ffdfb297b4ac');
+test('/', 'a=blobdiff_plain;f=file1;h=5716ca5987cbf97d6bb54920bea6adde242d87e6;hp=257cc5642cb1a054f08cc83f2d943e56fd3ebe99;hb=HEAD;hpb=3bc0634310b9c62222bb0e724c11ffdfb297b4ac');
+test('/', 'a=blobdiff_plain;f=file1;h=5716ca5987cbf97d6bb54920bea6adde242d87e6;hp=257cc5642cb1a054f08cc83f2d943e56fd3ebe99;hb=master;hpb=3bc0634310b9c62222bb0e724c11ffdfb297b4ac');
 
 test('/', 'a=commit');
 test('/', 'a=commit;h=36c6c6708b8360d7023e8a1649c45bcf9b3bd818');
@@ -86,45 +81,40 @@ test('/', 'a=commitdiff;h=master;hp=3f7567c7bdf7e7ebf410926493b92d398333116e');
 test('/', 'a=commitdiff;h=refs/heads/master');
 test('/', 'a=commitdiff;h=refs/heads/master;hp=3f7567c7bdf7e7ebf410926493b92d398333116e');
 
-TODO: {
-    local $TODO = "Action: commitdiff_plain is not yet implemented.";
-    test('/', 'a=commitdiff_plain');
-    test('/', 'a=commitdiff_plain;h=36c6c6708b8360d7023e8a1649c45bcf9b3bd818');
-    test('/', 'a=commitdiff_plain;h=36c6c6708b8360d7023e8a1649c45bcf9b3bd818;hp=3f7567c7bdf7e7ebf410926493b92d398333116e');
-    test('/', 'a=commitdiff_plain;h=3bc0634310b9c62222bb0e724c11ffdfb297b4ac');
-    test('/', 'a=commitdiff_plain;h=3f7567c7bdf7e7ebf410926493b92d398333116e');
-    test('/', 'a=commitdiff_plain;h=3f7567c7bdf7e7ebf410926493b92d398333116e;hp=3bc0634310b9c62222bb0e724c11ffdfb297b4ac');
-    test('/', 'a=commitdiff_plain;h=HEAD');
-    test('/', 'a=commitdiff_plain;h=HEAD;hp=3f7567c7bdf7e7ebf410926493b92d398333116e');
-    test('/', 'a=commitdiff_plain;h=master');
-    test('/', 'a=commitdiff_plain;h=master;hp=3f7567c7bdf7e7ebf410926493b92d398333116e');
-    test('/', 'a=commitdiff_plain;h=refs/heads/master');
-    test('/', 'a=commitdiff_plain;h=refs/heads/master;hp=3f7567c7bdf7e7ebf410926493b92d398333116e');
-}
+test('/', 'a=commitdiff_plain');
+test('/', 'a=commitdiff_plain;h=36c6c6708b8360d7023e8a1649c45bcf9b3bd818');
+test('/', 'a=commitdiff_plain;h=36c6c6708b8360d7023e8a1649c45bcf9b3bd818;hp=3f7567c7bdf7e7ebf410926493b92d398333116e');
+test('/', 'a=commitdiff_plain;h=3bc0634310b9c62222bb0e724c11ffdfb297b4ac');
+test('/', 'a=commitdiff_plain;h=3f7567c7bdf7e7ebf410926493b92d398333116e');
+test('/', 'a=commitdiff_plain;h=3f7567c7bdf7e7ebf410926493b92d398333116e;hp=3bc0634310b9c62222bb0e724c11ffdfb297b4ac');
+test('/', 'a=commitdiff_plain;h=HEAD');
+test('/', 'a=commitdiff_plain;h=HEAD;hp=3f7567c7bdf7e7ebf410926493b92d398333116e');
+test('/', 'a=commitdiff_plain;h=master');
+test('/', 'a=commitdiff_plain;h=master;hp=3f7567c7bdf7e7ebf410926493b92d398333116e');
+test('/', 'a=commitdiff_plain;h=refs/heads/master');
+test('/', 'a=commitdiff_plain;h=refs/heads/master;hp=3f7567c7bdf7e7ebf410926493b92d398333116e');
 
-TODO: {
-    local $TODO = "Action: history is not yet implemented.";
-    test('/', 'a=history;f=dir1/file2;h=257cc5642cb1a054f08cc83f2d943e56fd3ebe99;hb=36c6c6708b8360d7023e8a1649c45bcf9b3bd818');
-    test('/', 'a=history;f=dir1/file2;h=257cc5642cb1a054f08cc83f2d943e56fd3ebe99;hb=HEAD');
-    test('/', 'a=history;f=dir1/file2;h=257cc5642cb1a054f08cc83f2d943e56fd3ebe99;hb=master');
-    test('/', 'a=history;f=dir1/file2;h=257cc5642cb1a054f08cc83f2d943e56fd3ebe99;hb=refs/heads/master');
-    test('/', 'a=history;f=dir1;h=729a7c3f6ba5453b42d16a43692205f67fb23bc1;hb=36c6c6708b8360d7023e8a1649c45bcf9b3bd818');
-    test('/', 'a=history;f=dir1;h=729a7c3f6ba5453b42d16a43692205f67fb23bc1;hb=HEAD');
-    test('/', 'a=history;f=dir1;h=729a7c3f6ba5453b42d16a43692205f67fb23bc1;hb=master');
-    test('/', 'a=history;f=dir1;h=729a7c3f6ba5453b42d16a43692205f67fb23bc1;hb=refs/heads/master');
-    test('/', 'a=history;f=dir1;hb=36c6c6708b8360d7023e8a1649c45bcf9b3bd818');
-    test('/', 'a=history;f=dir1;hb=HEAD');
-    test('/', 'a=history;f=dir1;hb=master');
-    test('/', 'a=history;f=dir1;hb=refs/heads/master');
-    test('/', 'a=history;f=file1;h=257cc5642cb1a054f08cc83f2d943e56fd3ebe99;hb=3bc0634310b9c62222bb0e724c11ffdfb297b4ac');
-    test('/', 'a=history;f=file1;h=5716ca5987cbf97d6bb54920bea6adde242d87e6;hb=36c6c6708b8360d7023e8a1649c45bcf9b3bd818');
-    test('/', 'a=history;f=file1;h=5716ca5987cbf97d6bb54920bea6adde242d87e6;hb=3f7567c7bdf7e7ebf410926493b92d398333116e');
-    test('/', 'a=history;f=file1;h=5716ca5987cbf97d6bb54920bea6adde242d87e6;hb=HEAD');
-    test('/', 'a=history;f=file1;h=5716ca5987cbf97d6bb54920bea6adde242d87e6;hb=master');
-    test('/', 'a=history;f=file1;h=5716ca5987cbf97d6bb54920bea6adde242d87e6;hb=refs/heads/master');
-    test('/', 'a=history;f=file1;hb=3f7567c7bdf7e7ebf410926493b92d398333116e');
-    test('/', 'a=history;h=refs/heads/master');
-}
+
+test('/', 'a=history;f=dir1/file2;h=257cc5642cb1a054f08cc83f2d943e56fd3ebe99;hb=36c6c6708b8360d7023e8a1649c45bcf9b3bd818');
+test('/', 'a=history;f=dir1/file2;h=257cc5642cb1a054f08cc83f2d943e56fd3ebe99;hb=HEAD');
+test('/', 'a=history;f=dir1/file2;h=257cc5642cb1a054f08cc83f2d943e56fd3ebe99;hb=master');
+test('/', 'a=history;f=dir1/file2;h=257cc5642cb1a054f08cc83f2d943e56fd3ebe99;hb=refs/heads/master');
+test('/', 'a=history;f=dir1;h=729a7c3f6ba5453b42d16a43692205f67fb23bc1;hb=36c6c6708b8360d7023e8a1649c45bcf9b3bd818');
+test('/', 'a=history;f=dir1;h=729a7c3f6ba5453b42d16a43692205f67fb23bc1;hb=HEAD');
+test('/', 'a=history;f=dir1;h=729a7c3f6ba5453b42d16a43692205f67fb23bc1;hb=master');
+test('/', 'a=history;f=dir1;h=729a7c3f6ba5453b42d16a43692205f67fb23bc1;hb=refs/heads/master');
+test('/', 'a=history;f=dir1;hb=36c6c6708b8360d7023e8a1649c45bcf9b3bd818');
+test('/', 'a=history;f=dir1;hb=HEAD');
+test('/', 'a=history;f=dir1;hb=master');
+test('/', 'a=history;f=dir1;hb=refs/heads/master');
+test('/', 'a=history;f=file1;h=257cc5642cb1a054f08cc83f2d943e56fd3ebe99;hb=3bc0634310b9c62222bb0e724c11ffdfb297b4ac');
+test('/', 'a=history;f=file1;h=5716ca5987cbf97d6bb54920bea6adde242d87e6;hb=36c6c6708b8360d7023e8a1649c45bcf9b3bd818');
+test('/', 'a=history;f=file1;h=5716ca5987cbf97d6bb54920bea6adde242d87e6;hb=3f7567c7bdf7e7ebf410926493b92d398333116e');
+test('/', 'a=history;f=file1;h=5716ca5987cbf97d6bb54920bea6adde242d87e6;hb=HEAD');
+test('/', 'a=history;f=file1;h=5716ca5987cbf97d6bb54920bea6adde242d87e6;hb=master');
+test('/', 'a=history;f=file1;h=5716ca5987cbf97d6bb54920bea6adde242d87e6;hb=refs/heads/master');
+test('/', 'a=history;f=file1;hb=3f7567c7bdf7e7ebf410926493b92d398333116e');
+test('/', 'a=history;h=refs/heads/master');
 
 test('/', 'a=log');
 test('/', 'a=log;h=36c6c6708b8360d7023e8a1649c45bcf9b3bd818');

@@ -1,33 +1,28 @@
-[%- # git_header_html
--%]
+[%- IF no_wrapper || template.name.match('\.(css|js|txt)'); content; ELSE; -%]
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <!-- git web interface version [% version %], (C) 2005-2006, Kay Sievers <kay.sievers\@vrfy.org>, Christian Gierke -->
   <!-- git core binaries version [% git_version %] -->
-  <meta charset="utf-8"/>
+  <meta charset="utf-8">
   <meta name="generator" content="gitweb/[% version %] git/[% git_version %][% mod_perl_version %]"/>
   <meta name="robots" content="index, nofollow"/>
   <title>[% title | html %] (Gitalist)</title>
   [% IF baseurl %]
-  <base href="[% baseurl %]" />
+  <base href="[% baseurl %]">
   [% END %]
   <link rel="stylesheet" href="[% c.uri_for('/static/css/blueprint/screen.css') %]" type="text/css" media="screen, projection">
   <link rel="stylesheet" href="[% c.uri_for('/static/css/blueprint/print.css') %]" type="text/css" media="print">
   <!--[if lt IE 8]>
     <link rel="stylesheet" href="[% c.uri_for('/static/css/blueprint/ie.css') %]" type="text/css" media="screen, projection">
   <![endif]-->  
-  <link rel="stylesheet" type="text/css" href="[% c.uri_for('/static/css/site.css') %]"/>
+  <link rel="stylesheet" type="text/css" href="[% c.uri_for('/static/css/site.css') %]">
  
   [% FOR link IN links %]
-            <link rel="[% link.rel %]"
-                  title="[% link.title %]"
-                  href="[% link.href %]"
-                  type="[% link.type %]"
-            />
+  <link rel="[% link.rel %]" title="[% link.title %]" href="[% link.href %]" type="[% link.type %]" >
   [% END %]
   [% IF favicon %]
-  <link rel="shortcut icon" href="[% favicon %]" type="image/png" />
+  <link rel="shortcut icon" href="[% favicon %]" type="image/png">
   [% END %]
 </head>
 
@@ -36,7 +31,9 @@
 [% site_header %]
 
 <div id="page-header">
-  <a title="[% logo_label | url %]" href="[% logo_url | url %]"><img src="[% logo_img %]" alt="git" class="logo"/></a>
+  <a title="[% logo_label | url %]" href="[% logo_url | url %]">
+   <img src="logo.png" alt="git" class="logo">
+  </a>
   <a href="[% home_link | url %]">[% home_link_str %]</a>
   [%- IF project %]
   / <a href="[% c.uri_for('summary') %]">[% project %]</a>
@@ -77,5 +74,4 @@
 
 </body>
 </html>
-[%- # / git_footer_html
--%]
+[%- END -%]
