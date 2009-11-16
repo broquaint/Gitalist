@@ -27,6 +27,7 @@ class Gitalist::Git::Project with Gitalist::Git::HasUtils {
     use List::MoreUtils qw/any zip/;
     use DateTime;
     use Gitalist::Git::Object::Commit;
+    use Gitalist::Git::Object::Blob;
     use aliased 'Gitalist::Git::Object';
 
     our $SHA1RE = qr/[0-9a-fA-F]{40}/;
@@ -168,12 +169,14 @@ Return a L<Gitalist::Git::Object> for the given sha1.
         my $type = $self->run_cmd('cat-file', '-t', $sha1);
         chomp($type);
         my $class = 'Gitalist::Git::Object';
-        if ($type eq 'commit') {
+        use Moose::Autobox;
+        if ($type eq ['commit', 'blob']->any) {
             $class .= '::' . ucfirst($type);
         };
         return $class->new(
             project => $self,
             sha1 => $sha1,
+            type => $type,
         );
     }
 

@@ -34,21 +34,9 @@ class Gitalist::Git::Object {
                       required => 1,
                       is => 'ro',
                       lazy_build => 1,
+                      handles => [ 'content',
+                               ],
                   );
-
-    # This feels wrong, but current templates assume
-    # these attributes are present on every object.
-    foreach my $key (qw/content/) {
-        has $key => ( isa => Str,
-                      required => 1,
-                      is => 'ro',
-                      lazy_build => 1,
-                  );
-        method "_build_$key" {
-            confess("Object can't " . $key) unless $self->_gpp_obj->can($key);
-            return $self->_gpp_obj->$key;
-        }
-    }
 
     # objects can't determine their mode or filename
     has file => ( isa => NonEmptySimpleStr,
