@@ -39,7 +39,7 @@ is(scalar $proj->list_tree, 2, 'expected number of entries in tree');
 isa_ok(($proj->list_tree)[1], 'Gitalist::Git::Object');
 
 # Return an ::Object from a sha1
-my $obj1 = $proj->get_object('5716ca5987cbf97d6bb54920bea6adde242d87e6');
+my $obj1 = $proj->get_object('729a7c3f6ba5453b42d16a43692205f67fb23bc1');
 isa_ok($obj1, 'Gitalist::Git::Object::Tree');
 
 my $hbp_sha1 = $proj->hash_by_path('36c6c6708b8360d7023e8a1649c45bcf9b3bd818', 'dir1/file2');
