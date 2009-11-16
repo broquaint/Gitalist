@@ -34,10 +34,6 @@ class Gitalist::Git::Object {
                       required => 1,
                       is => 'ro',
                       lazy_build => 1,
-                      handles => [ 'parents',
-                                   'author',
-                                   'committer',
-                               ],
                   );
 
     # This feels wrong, but current templates assume
