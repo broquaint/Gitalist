@@ -164,10 +164,7 @@ TODO: {
     test('/', 'a=patches;h=refs/heads/master');
 }
 
-TODO: {
-    local $TODO = "Action: search_help is not yet implemented.";
-    test('/', 'a=search_help');
-}
+test('/', 'a=search_help');
 
 test('/', 'a=shortlog');
 test('/', 'a=shortlog;h=36c6c6708b8360d7023e8a1649c45bcf9b3bd818');

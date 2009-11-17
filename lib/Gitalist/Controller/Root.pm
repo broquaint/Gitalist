@@ -360,8 +360,8 @@ sub search : Local {
 }
 
 sub search_help : Local {
-    # FIXME - implement search_help
-    Carp::croak "Not implemented.";
+    my ($self, $c) = @_;
+    $c->stash(template => 'search_help.tt2');
 }
 
 sub atom : Local {
