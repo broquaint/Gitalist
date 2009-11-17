@@ -21,11 +21,15 @@ class Gitalist::Git::Object {
                   required => 1,
                   is => 'ro' );
 
+    has type => ( isa => NonEmptySimpleStr,
+                  is => 'ro',
+                  required => 1 );
+
     has $_ => ( isa => NonEmptySimpleStr,
                 required => 1,
                 is => 'ro',
                 lazy_build => 1 )
-        for qw/type modestr size/;
+        for qw/modestr size/;
 
     has _gpp_obj => ( isa => 'Git::PurePerl::Object',
                       required => 1,
@@ -44,21 +48,19 @@ class Gitalist::Git::Object {
                   default => 0,
                   is => 'ro' );
 
-    method BUILD { $self->$_() for qw/_gpp_obj type size modestr/ }
+    method BUILD { $self->$_() for qw/_gpp_obj size modestr/ }
 
 ## Private methods
 
 ## Builders
-method _build__gpp_obj {
+    method _build__gpp_obj {
         return $self->_get_gpp_object($self->sha1)
     }
 
-    foreach my $key (qw/ type size /) {
-        method "_build_$key" {
-            my $v = $self->_cat_file_with_flag(substr($key, 0, 1));
-            chomp($v);
-            return $v;
-        }
+    method "_build_size" {
+        my $v = $self->_cat_file_with_flag('s');
+        chomp($v);
+        return $v;
     }
 
     method _build_modestr {

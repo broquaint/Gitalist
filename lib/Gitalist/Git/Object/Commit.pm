@@ -9,6 +9,7 @@ class Gitalist::Git::Object::Commit
         use List::MoreUtils qw/any zip/;
         our $SHA1RE = qr/[0-9a-fA-F]{40}/;
 
+        has '+type' => ( default => 'commit' );
         has '+_gpp_obj' => ( handles => [ 'comment',
                                           'tree_sha1',
                                           'committer',
