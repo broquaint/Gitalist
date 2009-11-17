@@ -4,6 +4,8 @@ use MooseX::Declare;
 class Gitalist::Git::Object::Commit
     extends Gitalist::Git::Object
     with Gitalist::Git::Object::HasTree {
+        use MooseX::Types::Moose qw/Str Int Bool Maybe ArrayRef/;
+        use MooseX::Types::Common::String qw/NonEmptySimpleStr/;
         use List::MoreUtils qw/any zip/;
         our $SHA1RE = qr/[0-9a-fA-F]{40}/;
 
@@ -23,9 +25,6 @@ class Gitalist::Git::Object::Commit
                        Maybe[NonEmptySimpleStr] :$parent?,
                        Maybe[NonEmptySimpleStr] :$file?
                    ) {
-#        method diff (:$patch?, :$parent?, :$file?) {
-            # Use parent if specifed, else take the parent from the commit
-            # if there is only one, otherwise it was a merge commit.
             $parent = $parent
                 ? $parent
                     : $self->parents <= 1
