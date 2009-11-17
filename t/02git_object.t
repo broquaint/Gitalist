@@ -11,16 +11,21 @@ my $project = Gitalist::Git::Project->new(
     dir("$Bin/lib/repositories/repo1"),
 );
 
-BEGIN { use_ok 'Gitalist::Git::Object' }
+BEGIN {
+    use_ok 'Gitalist::Git::Object::Tree';
+    use_ok 'Gitalist::Git::Object::Blob';
+    use_ok 'Gitalist::Git::Object::Commit';
+    use_ok 'Gitalist::Git::Object::Tag';
+    }
 
-my $object = Gitalist::Git::Object->new(
+my $object = Gitalist::Git::Object::Tree->new(
     project => $project,
     sha1 => '729a7c3f6ba5453b42d16a43692205f67fb23bc1',
     type => 'tree',
     file => 'dir1',
     mode => 16384,
 );
-isa_ok($object, 'Gitalist::Git::Object');
+isa_ok($object, 'Gitalist::Git::Object::Tree', 'tree object');
 is($object->sha1,'729a7c3f6ba5453b42d16a43692205f67fb23bc1', 'sha1 is correct');
 is($object->type, 'tree', 'type is correct');
 is($object->file, 'dir1', 'file is correct');
@@ -29,11 +34,11 @@ is($object->modestr, 'd---------', "modestr is correct" );
 is($object->size, 33, "size is correct");
 
 # Create object from sha1.
-my $obj2 = Gitalist::Git::Object->new(
+my $obj2 = Gitalist::Git::Object::Blob->new(
     project => $project,
     sha1 => '5716ca5987cbf97d6bb54920bea6adde242d87e6',
 );
-isa_ok($obj2, 'Gitalist::Git::Object');
+isa_ok($obj2, 'Gitalist::Git::Object::Blob', 'blob object');
 is($obj2->sha1,'5716ca5987cbf97d6bb54920bea6adde242d87e6', 'sha1 is correct');
 is($obj2->type, 'blob', 'type is correct');
 is($obj2->mode, 0, 'mode is correct');
@@ -47,11 +52,11 @@ dies_ok {
     print $obj2->comment;
 } 'comment is an empty string';
 
-my $commit_obj = Gitalist::Git::Object->new(
+my $commit_obj = Gitalist::Git::Object::Commit->new(
     project => $project,
     sha1 => '3f7567c7bdf7e7ebf410926493b92d398333116e',
 );
-isa_ok($commit_obj, 'Gitalist::Git::Object', "commit object type correct");
+isa_ok($commit_obj, 'Gitalist::Git::Object::Commit', "commit object");
 my ($tree, $patch) = $commit_obj->diff(
     parent => undef,
     file => undef,
