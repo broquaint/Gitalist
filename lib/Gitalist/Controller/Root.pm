@@ -382,11 +382,11 @@ sub search : Local {
     sha1   => $commit->sha1,
     count  => Gitalist->config->{paging}{log},
     ($c->req->param('f') ? (file => $c->req->param('f')) : ()),
-	search => {
-	  type   => $c->req->param('type'),
-	  text   => $c->req->param('text'),
-	  regexp => $c->req->param('regexp') || 0,
-    }
+    search => {
+      type   => $c->req->param('type'),
+      text   => $c->req->param('text'),
+      regexp => $c->req->param('regexp') || 0,
+    },
   );
 
   $c->stash(
@@ -424,9 +424,10 @@ sub atom : Local {
   }
 
   $c->stash(
-    feed => $feed->as_xml,
+    feed       => $feed->as_xml,
     no_wrapper => 1,
   );
+  $c->response->content_type('application/atom+xml')
 }
 
 sub search_help : Local {
