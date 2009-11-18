@@ -204,23 +204,22 @@ test('/', 'a=tree;hb=HEAD');
 test('/', 'a=tree;hb=master');
 test('/', 'a=tree;hb=refs/heads/master');
 
-TODO: {
-    local $TODO = "Action: atom is not yet implemented.";
-    test('/', 'a=atom');
-    test('/', 'a=atom;f=dir1');
-    test('/', 'a=atom;f=dir1/file2');
-    test('/', 'a=atom;f=dir1/file2;opt=--no-merges');
-    test('/', 'a=atom;f=dir1;h=refs/heads/master');
-    test('/', 'a=atom;f=dir1;h=refs/heads/master;opt=--no-merges');
-    test('/', 'a=atom;f=dir1;opt=--no-merges');
-    test('/', 'a=atom;f=file1');
-    test('/', 'a=atom;f=file1;h=refs/heads/master');
-    test('/', 'a=atom;f=file1;h=refs/heads/master;opt=--no-merges');
-    test('/', 'a=atom;f=file1;opt=--no-merges');
-    test('/', 'a=atom;h=refs/heads/master');
-    test('/', 'a=atom;h=refs/heads/master;opt=--no-merges');
-    test('/', 'a=atom;opt=--no-merges');
-}
+
+local $TODO = "Action: atom is not yet implemented.";
+test('/', 'a=atom');
+test('/', 'a=atom;f=dir1');
+test('/', 'a=atom;f=dir1/file2');
+test('/', 'a=atom;f=dir1/file2;opt=--no-merges');
+test('/', 'a=atom;f=dir1;h=refs/heads/master');
+test('/', 'a=atom;f=dir1;h=refs/heads/master;opt=--no-merges');
+test('/', 'a=atom;f=dir1;opt=--no-merges');
+test('/', 'a=atom;f=file1');
+test('/', 'a=atom;f=file1;h=refs/heads/master');
+test('/', 'a=atom;f=file1;h=refs/heads/master;opt=--no-merges');
+test('/', 'a=atom;f=file1;opt=--no-merges');
+test('/', 'a=atom;h=refs/heads/master');
+test('/', 'a=atom;h=refs/heads/master;opt=--no-merges');
+test('/', 'a=atom;opt=--no-merges');
 
 TODO: {
     local $TODO = "Action: rss is not yet implemented.";
