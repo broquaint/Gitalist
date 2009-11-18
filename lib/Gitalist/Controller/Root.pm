@@ -10,6 +10,11 @@ BEGIN { extends 'Catalyst::Controller' }
 #
 __PACKAGE__->config->{namespace} = '';
 
+use IO::Capture::Stdout;
+use XML::Atom::Feed;
+use XML::Atom::Entry;
+use Sys::Hostname ();
+
 =head1 NAME
 
 Gitalist::Controller::Root - Root Controller for Gitalist
@@ -25,8 +30,6 @@ Gitalist::Controller::Root - Root Controller for Gitalist
 =head2 index
 
 =cut
-
-use IO::Capture::Stdout;
 
 =head2 run_gitweb
 
@@ -394,13 +397,40 @@ sub search : Local {
   );
 }
 
-sub search_help : Local {
-    # FIXME - implement search_help
-    Carp::croak "Not implemented.";
+sub atom : Local {
+  my($self, $c) = @_;
+
+  my $feed = XML::Atom::Feed->new;
+
+  my $host = lc Sys::Hostname::hostname();
+  $feed->title($host . ' - ' . Gitalist->config->{name});
+  $feed->updated(~~DateTime->now);
+
+  my $project = $c->stash->{Project};
+  my %logargs = (
+      sha1   => $project->head_hash,
+      count  => Gitalist->config->{paging}{log} || 25,
+      ($c->req->param('f') ? (file => $c->req->param('f')) : ())
+  );
+
+  my $mk_title = $c->stash->{short_cmt};
+  for my $commit ($project->list_revs(%logargs)) {
+    my $entry = XML::Atom::Entry->new;
+    $entry->title( $mk_title->($commit->comment) );
+    $entry->id($c->uri_for('commit', {h=>$commit->sha1}));
+    # XXX Needs work ...
+    $entry->content($commit->comment);
+    $feed->add_entry($entry);
+  }
+
+  $c->stash(
+    feed => $feed->as_xml,
+    no_wrapper => 1,
+  );
 }
 
-sub atom : Local {
-    # FIXME - implement atom
+sub search_help : Local {
+    # FIXME - implement search_help
     Carp::croak "Not implemented.";
 }
 
