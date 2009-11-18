@@ -83,6 +83,9 @@ From: Florian Ragwitz <rafl@debian.org>
 Date: Tue, 6 Mar 2007 20:39:45 +0100
 Subject: [PATCH] bar
 
+---
+ file1 |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
 
 diff --git a/file1 b/file1
 index 257cc56..5716ca5 100644
@@ -91,4 +94,7 @@ index 257cc56..5716ca5 100644
 @@ -1 +1 @@
 -foo
 +bar
+-- 
+1.6.4.2
+
 ', 'commit_obj->patch is correct');
