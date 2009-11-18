@@ -1,0 +1,5 @@
+[%- FOREACH item IN diff -%]
+diff --git [% item.a _ ' ' _ item.b %]
+[% item.index %]
+[% blobs.${loop.index} %]
+[%- END -%]

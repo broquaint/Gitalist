@@ -10,6 +10,11 @@ BEGIN { extends 'Catalyst::Controller' }
 #
 __PACKAGE__->config->{namespace} = '';
 
+use IO::Capture::Stdout;
+use XML::Atom::Feed;
+use XML::Atom::Entry;
+use Sys::Hostname ();
+
 =head1 NAME
 
 Gitalist::Controller::Root - Root Controller for Gitalist
@@ -25,8 +30,6 @@ Gitalist::Controller::Root - Root Controller for Gitalist
 =head2 index
 
 =cut
-
-use IO::Capture::Stdout;
 
 =head2 run_gitweb
 
@@ -126,7 +129,6 @@ sub summary : Local {
   my $maxitems = Gitalist->config->{paging}{summary} || 10;
   $c->stash(
     commit    => $commit,
-#    info      => $project->info,
     log_lines => [$project->list_revs(
         sha1 => $commit->sha1,
         count => $maxitems,
@@ -180,7 +182,27 @@ sub blob : Local {
     action   => 'blob',
   );
 
-  $c->forward('View::SyntaxHighlight');
+  $c->forward('View::SyntaxHighlight')
+    unless $c->stash->{no_wrapper};
+}
+
+sub blob_plain : Local {
+  my($self, $c) = @_;
+
+  $c->stash(no_wrapper => 1);
+  $c->response->content_type('text/plain; charset=utf-8');
+
+  $c->forward('blob');
+}
+
+sub blobdiff_plain : Local {
+  my($self, $c) = @_;
+
+  $c->stash(no_wrapper => 1);
+  $c->response->content_type('text/plain; charset=utf-8');
+
+  $c->forward('blobdiff');
+
 }
 
 =head2 blobdiff
@@ -196,9 +218,9 @@ sub blobdiff : Local {
               || croak("No file specified!");
   my($tree, $patch) = $c->stash->{Project}->diff(
     commit => $commit,
-    parent => $c->req->param('hpb') || '',
-    file   => $filename,
     patch  => 1,
+    parent => $c->req->param('hpb') || undef,
+    file   => $filename,
   );
   $c->stash(
     commit    => $commit,
@@ -209,7 +231,8 @@ sub blobdiff : Local {
     action    => 'blobdiff',
   );
 
-  $c->forward('View::SyntaxHighlight');
+  $c->forward('View::SyntaxHighlight')
+    unless $c->stash->{no_wrapper};
 }
 
 =head2 commit
@@ -254,7 +277,17 @@ sub commitdiff : Local {
     action    => 'commitdiff',
   );
 
-  $c->forward('View::SyntaxHighlight');
+  $c->forward('View::SyntaxHighlight')
+    unless $c->stash->{no_wrapper};
+}
+
+sub commitdiff_plain : Local {
+  my($self, $c) = @_;
+
+  $c->stash(no_wrapper => 1);
+  $c->response->content_type('text/plain; charset=utf-8');
+
+  $c->forward('commitdiff');
 }
 
 =head2 shortlog
@@ -294,6 +327,11 @@ Calls shortlog internally. Perhaps that should be reversed ...
 sub log : Local {
     $_[0]->shortlog($_[1]);
     $_[1]->stash->{action} = 'log';
+}
+
+# For legacy support.
+sub history : Local {
+  $_[0]->shortlog(@_[1 .. $#_]);
 }
 
 =head2 tree
@@ -344,11 +382,11 @@ sub search : Local {
     sha1   => $commit->sha1,
     count  => Gitalist->config->{paging}{log},
     ($c->req->param('f') ? (file => $c->req->param('f')) : ()),
-	search => {
-	  type   => $c->req->param('type'),
-	  text   => $c->req->param('text'),
-	  regexp => $c->req->param('regexp') || 0,
-    }
+    search => {
+      type   => $c->req->param('type'),
+      text   => $c->req->param('text'),
+      regexp => $c->req->param('regexp') || 0,
+    },
   );
 
   $c->stash(
@@ -365,22 +403,40 @@ sub search_help : Local {
 }
 
 sub atom : Local {
-    # FIXME - implement atom
-    Carp::croak "Not implemented.";
+  my($self, $c) = @_;
+
+  my $feed = XML::Atom::Feed->new;
+
+  my $host = lc Sys::Hostname::hostname();
+  $feed->title($host . ' - ' . Gitalist->config->{name});
+  $feed->updated(~~DateTime->now);
+
+  my $project = $c->stash->{Project};
+  my %logargs = (
+      sha1   => $project->head_hash,
+      count  => Gitalist->config->{paging}{log} || 25,
+      ($c->req->param('f') ? (file => $c->req->param('f')) : ())
+  );
+
+  my $mk_title = $c->stash->{short_cmt};
+  for my $commit ($project->list_revs(%logargs)) {
+    my $entry = XML::Atom::Entry->new;
+    $entry->title( $mk_title->($commit->comment) );
+    $entry->id($c->uri_for('commit', {h=>$commit->sha1}));
+    # XXX Needs work ...
+    $entry->content($commit->comment);
+    $feed->add_entry($entry);
+  }
+
+  $c->stash(
+    feed       => $feed->as_xml,
+    no_wrapper => 1,
+  );
+  $c->response->content_type('application/atom+xml')
 }
 
 sub rss : Local {
     # FIXME - implement rss
-    Carp::croak "Not implemented.";
-}
-
-sub blobdiff_plain : Local {
-    # FIXME - implement blobdiff_plain
-    Carp::croak "Not implemented.";
-}
-
-sub blob_plain : Local {
-    # FIXME - implement blobdiff_plain
     Carp::croak "Not implemented.";
 }
 
@@ -402,11 +458,6 @@ sub patches : Local {
 
 sub snapshot : Local {
     # FIXME - implement snapshot
-    Carp::croak "Not implemented.";
-}
-
-sub commitdiff_plain : Local {
-    # FIXME - implement commitdiff_plain
     Carp::croak "Not implemented.";
 }
 

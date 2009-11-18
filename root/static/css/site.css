@@ -15,6 +15,13 @@ tfoot td {
   border-top: solid 1px #777;
 }
 
+.listing tbody tr:nth-child(even) {
+  background-color: #f7f7f7;
+}
+.listing tbody tr:hover {
+  background-color: #fefeaa;
+}
+
 span.chroma-hash {
   font-family: monospace;
   font-size:   1em;
@@ -32,6 +39,20 @@ div.chroma-hash {
   font-family: "Trebuchet MS", "Lucida Grande", serif;
 }
 
+.file-name, .file-mode {
+  font-family: monospace;
+}
+.action-list {
+  font-size: smaller;
+}
+
+.path {
+  border-bottom: solid 1px #ddd;
+  padding: 3px 0;
+  font-weight: bold;
+}
+
+
 /* header */
 #page-header {
   height: 25px;
@@ -44,6 +65,7 @@ div.chroma-hash {
 img.logo {
   float: right;
   border-width: 0px;
+  margin-top: 4px;
 }
 
 /* footer */
@@ -90,6 +112,7 @@ table.shortlog tbody td {
 /* /commit page */
 .commit-message {
   font-family: monospace;
+  font-size: 1.2em;
 }
 div.commit-message {
   margin-bottom: 10px;
@@ -104,19 +127,6 @@ pre.commit-message {
 }
 .commit-info dd {
   font-family: monospace;
-}
-
-.filename {
-  font-family: monospace;
-}
-.action-list {
-  font-size: smaller;
-}
-
-.path {
-  border-bottom: solid 1px #ddd;
-  padding: 3px 0;
-  font-weight: bold;
 }
 
 /* /heads */
@@ -152,6 +162,11 @@ pre.blob {
   border-bottom: solid 1px green;
 }
 
+/* /commitdiff */
+.diff-patch {
+  font-size: 0.8em;
+}
+
 /* /log */
 #log .entry {
   border: solid 1px grey;
@@ -160,7 +175,7 @@ pre.blob {
 }
 #log .meta {
   border-top: dotted 1px #ddd;
-  color: #755;
+  color: #311;
 }
 #log table.summary {
   width: 33%;
@@ -169,6 +184,7 @@ pre.blob {
 #log .message {
   font-family: monospace;
   font-size: 1.15em;
+  /* XXX Need to enforce find the CSS switch to force the chroma-hash below the message box */
 }
 #log .age {
   float: right;
@@ -176,10 +192,17 @@ pre.blob {
   font-style: italic;
 }
 
-/**
- * from gitweb.css
- * XXX These can be rejigged once gitweb.css has gone away.
- */
+/* /summary */
+#stats {
+  float: right;
+}
+
+/* /tree */
+table.tree {
+  width: 65%;
+}
+
+/* Formerly of gitweb.css */
 
 span.refs span {
   padding: 0px 4px;

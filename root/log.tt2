@@ -13,11 +13,11 @@
     </div>
     <div class="meta">
      <table class='summary' cellspacing='0' cellpadding='0'>
-      <tr><td>author</td><td>[% line.author.name | html %]</td></tr>
-      <tr><td>authored time</td><td>[% line.authored_time %]</td></tr>
+      <tr><td>author</td><td class='author'>[% line.author.name | html %]</td></tr>
+      <tr><td>authored time</td><td class='time'>[% line.authored_time %]</td></tr>
       [% IF line.author.name != line.committer.name %]
-      <tr><td>committer</td><td>[% line.committer.name | html %]</td></tr>
-      <tr><td>committered time</td><td>[% line.committed_time %]</td></tr>
+      <tr><td>committer</td><td class='author'>[% line.committer.name | html %]</td></tr>
+      <tr><td>committered time</td><td class='time'>[% line.committed_time %]</td></tr>
       [% END %]
      </table>
      <span class="time-since">[% time_since(line.authored_time) %]</span>
