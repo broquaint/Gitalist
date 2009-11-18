@@ -385,8 +385,14 @@ sub blob_plain : Local {
 }
 
 sub patch : Local {
-    # FIXME - implement patches
-    Carp::croak "Not implemented.";
+    my ($self, $c) = @_;
+    my $commit = $self->_get_object($c);
+    my $parent = $c->req->param('hp') || undef;
+    my $patch = $commit->patch( $parent );
+    $c->response->body($patch);
+    $c->response->content_type('text/plain');
+    $c->response->status(200);
+
 }
 
 sub patches : Local {

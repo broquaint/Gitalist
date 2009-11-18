@@ -22,7 +22,19 @@ class Gitalist::Git::Object::Commit
                                       ],
                          );
 
-         method diff ( Maybe[Bool] :$patch?,
+        method patch ( Maybe[NonEmptySimpleStr] $parent? ) {
+            my @args = qw/format-patch --encoding=utf8 --stdout -1/;
+            my $refspec = $self->sha1;
+            if (defined $parent) {
+                push @args, '-n';
+                $refspec = $parent . '..' . $self->sha1;
+            }
+            push @args, '--root', $refspec;
+            my $out = $self->_run_cmd( @args );
+            return $out;
+        }
+
+        method diff ( Maybe[Bool] :$patch?,
                        Maybe[NonEmptySimpleStr] :$parent?,
                        Maybe[NonEmptySimpleStr] :$file?
                    ) {

@@ -134,24 +134,21 @@ test('/', 'a=log;h=HEAD');
 test('/', 'a=log;h=master');
 test('/', 'a=log;h=refs/heads/master');
 
-TODO: {
-    local $TODO = "Action: patch is not yet implemented.";
-    test('/', 'a=patch');
-    test('/', 'a=patch;h=36c6c6708b8360d7023e8a1649c45bcf9b3bd818');
-    test('/', 'a=patch;h=36c6c6708b8360d7023e8a1649c45bcf9b3bd818;hp=3f7567c7bdf7e7ebf410926493b92d398333116e');
-    test('/', 'a=patch;h=3bc0634310b9c62222bb0e724c11ffdfb297b4ac');
-    test('/', 'a=patch;h=3f7567c7bdf7e7ebf410926493b92d398333116e');
-    test('/', 'a=patch;h=3f7567c7bdf7e7ebf410926493b92d398333116e;hp=3bc0634310b9c62222bb0e724c11ffdfb297b4ac');
-    test('/', 'a=patch;h=HEAD');
-    test('/', 'a=patch;h=HEAD;hp=3f7567c7bdf7e7ebf410926493b92d398333116e');
-    test('/', 'a=patch;h=master');
-    test('/', 'a=patch;h=master;hp=3f7567c7bdf7e7ebf410926493b92d398333116e');
-    test('/', 'a=patch;h=refs/heads/master');
-    test('/', 'a=patch;h=refs/heads/master;hp=3f7567c7bdf7e7ebf410926493b92d398333116e');
-    test('/', 'a=patch;hb=36c6c6708b8360d7023e8a1649c45bcf9b3bd818');
-    test('/', 'a=patch;hb=3bc0634310b9c62222bb0e724c11ffdfb297b4ac');
-    test('/', 'a=patch;hb=3f7567c7bdf7e7ebf410926493b92d398333116e');
-}
+test('/', 'a=patch');
+test('/', 'a=patch;h=36c6c6708b8360d7023e8a1649c45bcf9b3bd818');
+test('/', 'a=patch;h=36c6c6708b8360d7023e8a1649c45bcf9b3bd818;hp=3f7567c7bdf7e7ebf410926493b92d398333116e');
+test('/', 'a=patch;h=3bc0634310b9c62222bb0e724c11ffdfb297b4ac');
+test('/', 'a=patch;h=3f7567c7bdf7e7ebf410926493b92d398333116e');
+test('/', 'a=patch;h=3f7567c7bdf7e7ebf410926493b92d398333116e;hp=3bc0634310b9c62222bb0e724c11ffdfb297b4ac');
+test('/', 'a=patch;h=HEAD');
+test('/', 'a=patch;h=HEAD;hp=3f7567c7bdf7e7ebf410926493b92d398333116e');
+test('/', 'a=patch;h=master');
+test('/', 'a=patch;h=master;hp=3f7567c7bdf7e7ebf410926493b92d398333116e');
+test('/', 'a=patch;h=refs/heads/master');
+test('/', 'a=patch;h=refs/heads/master;hp=3f7567c7bdf7e7ebf410926493b92d398333116e');
+test('/', 'a=patch;hb=36c6c6708b8360d7023e8a1649c45bcf9b3bd818');
+test('/', 'a=patch;hb=3bc0634310b9c62222bb0e724c11ffdfb297b4ac');
+test('/', 'a=patch;hb=3f7567c7bdf7e7ebf410926493b92d398333116e');
 
 TODO: {
     local $TODO = "Action: patches is not yet implemented.";

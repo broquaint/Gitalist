@@ -77,3 +77,18 @@ is($patch->{diff}, '--- a/file1
 +bar
 ', 'patch->{diff} is correct');
 is($patch->{dst}, '5716ca5987cbf97d6bb54920bea6adde242d87e6', 'patch->{dst} is correct');
+
+is($commit_obj->patch, 'From 3f7567c7bdf7e7ebf410926493b92d398333116e Mon Sep 17 00:00:00 2001
+From: Florian Ragwitz <rafl@debian.org>
+Date: Tue, 6 Mar 2007 20:39:45 +0100
+Subject: [PATCH] bar
+
+
+diff --git a/file1 b/file1
+index 257cc56..5716ca5 100644
+--- a/file1
++++ b/file1
+@@ -1 +1 @@
+-foo
++bar
+', 'commit_obj->patch is correct');
