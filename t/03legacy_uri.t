@@ -150,16 +150,13 @@ test('/', 'a=patch;hb=36c6c6708b8360d7023e8a1649c45bcf9b3bd818');
 test('/', 'a=patch;hb=3bc0634310b9c62222bb0e724c11ffdfb297b4ac');
 test('/', 'a=patch;hb=3f7567c7bdf7e7ebf410926493b92d398333116e');
 
-TODO: {
-    local $TODO = "Action: patches is not yet implemented.";
-    test('/', 'a=patches');
-    test('/', 'a=patches;h=36c6c6708b8360d7023e8a1649c45bcf9b3bd818');
-    test('/', 'a=patches;h=3bc0634310b9c62222bb0e724c11ffdfb297b4ac');
-    test('/', 'a=patches;h=3f7567c7bdf7e7ebf410926493b92d398333116e');
-    test('/', 'a=patches;h=HEAD');
-    test('/', 'a=patches;h=master');
-    test('/', 'a=patches;h=refs/heads/master');
-}
+test('/', 'a=patches');
+test('/', 'a=patches;h=36c6c6708b8360d7023e8a1649c45bcf9b3bd818');
+test('/', 'a=patches;h=3bc0634310b9c62222bb0e724c11ffdfb297b4ac');
+test('/', 'a=patches;h=3f7567c7bdf7e7ebf410926493b92d398333116e');
+test('/', 'a=patches;h=HEAD');
+test('/', 'a=patches;h=master');
+test('/', 'a=patches;h=refs/heads/master');
 
 test('/', 'a=search_help');
 

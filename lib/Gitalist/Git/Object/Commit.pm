@@ -6,6 +6,7 @@ class Gitalist::Git::Object::Commit
     with Gitalist::Git::Object::HasTree {
         use MooseX::Types::Moose qw/Str Int Bool Maybe ArrayRef/;
         use MooseX::Types::Common::String qw/NonEmptySimpleStr/;
+        use Moose::Autobox;
         use List::MoreUtils qw/any zip/;
         our $SHA1RE = qr/[0-9a-fA-F]{40}/;
 
@@ -22,15 +23,29 @@ class Gitalist::Git::Object::Commit
                                       ],
                          );
 
-        method patch ( Maybe[NonEmptySimpleStr] $parent? ) {
-            my @args = qw/format-patch --encoding=utf8 --stdout -1/;
-            my $refspec = $self->sha1;
-            if (defined $parent) {
-                push @args, '-n';
-                $refspec = $parent . '..' . $self->sha1;
+        method patch ( Maybe[NonEmptySimpleStr] $parent?,
+                       Int $count?) {
+            $count ||= 1;
+            # Assemble the git command.
+            # common args:
+            my @cmd_args = qw/format-patch --encoding=utf8 --stdout/;
+            # single patch, or patch set?
+            if ($count > 1) {
+                push @cmd_args, "-$count", "-n";
+            } else {
+                push @cmd_args, "-1";
             }
-            push @args, '--root', $refspec;
-            my $out = $self->_run_cmd( @args );
+            # if a parent is specified: hp..h
+            # if not, but a merge commit: --cc h
+            # otherwise: --root h
+            if (defined $parent) {
+                push @cmd_args, "$parent.." . $self->sha1;
+            } else {
+                push @cmd_args, $self->parents->length > 1
+                    ? '--cc' : '--root';
+                push @cmd_args, $self->sha1;
+            }
+            my $out = $self->_run_cmd( @cmd_args );
             return $out;
         }
 
