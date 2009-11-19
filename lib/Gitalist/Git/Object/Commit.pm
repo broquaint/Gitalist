@@ -81,15 +81,22 @@ class Gitalist::Git::Object::Commit
         }
 
 method snapshot ( NonEmptySimpleStr $format ) {
-#    return unless (qw/tar zip/->any($format));
+    # TODO - only valid formats are 'tar' and 'zip'
+    my $formats = { tgz => 'tar', zip => 'zip' };
+    unless ($formats->exists($format)) {
+        die("No such format: $format");
+    }
+    $format = $formats->{$format};
     my $name = $self->project->name;
     $name =~ s,([^/])/*\.git$,$1,;
     my $filename = to_utf8($name);
     $filename .= "-$self->sha1.$format";
     $name =~ s/\047/\047\\\047\047/g;
 
-    my @cmd = ('archive', "--format=$format", "--prefix=$name", $self->sha1);
+
+    my @cmd = ('archive', "--format=$format", "--prefix=$name/", $self->sha1);
     return $self->_run_cmd_fh(@cmd);
+    # TODO - support compressed archives
 }
 
         ## Private methods

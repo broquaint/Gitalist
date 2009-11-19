@@ -458,7 +458,7 @@ sub patches : Local {
 
 sub snapshot : Local {
     my ($self, $c) = @_;
-    my $format = $c->req->param('snapshot_format') || 'tar';
+    my $format = $c->req->param('sf') || 'tgz';
     die unless $format;
     my $commit = $self->_get_object($c);
     $c->response->status(200);
