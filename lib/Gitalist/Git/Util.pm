@@ -46,6 +46,17 @@ EOR
         return $out;
     }
 
+    method run_cmd_fh (@args) {
+        unshift @args, ('--git-dir' => $self->gitdir)
+            if $self->has_project;
+        run [$self->_git, @args],
+            '<pipe', \*IN,
+            '>pipe', \*OUT,
+            '2>pipe', \*ERR
+                or die "cmd returned *?";
+        return \*OUT;
+    }
+
     method run_cmd_list (@args) {
         my $cmdout = $self->run_cmd(@args);
         return $cmdout ? split(/\n/, $cmdout) : ();

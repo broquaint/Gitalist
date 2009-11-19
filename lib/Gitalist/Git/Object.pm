@@ -13,6 +13,7 @@ class Gitalist::Git::Object {
                      weak_ref => 1,
                      handles => {
                          _run_cmd => 'run_cmd',
+                         _run_cmd_fh => 'run_cmd_fh',
                          _run_cmd_list => 'run_cmd_list',
                          _get_gpp_object => 'get_gpp_object',
                      },
