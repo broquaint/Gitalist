@@ -4,6 +4,7 @@ class Gitalist::Git::Util {
     use File::Which;
     use Git::PurePerl;
     use IPC::Run qw(run);
+    use Symbol qw(geniosym);
     use MooseX::Types::Common::String qw/NonEmptySimpleStr/;
 
     has project => (
@@ -47,14 +48,15 @@ EOR
     }
 
     method run_cmd_fh (@args) {
+        my ($out, $err) = (geniosym, geniosym);
         unshift @args, ('--git-dir' => $self->gitdir)
             if $self->has_project;
         run [$self->_git, @args],
-            '<pipe', \*IN,
-            '>pipe', \*OUT,
-            '2>pipe', \*ERR
+            undef,
+            '>pipe', $out,
+            '2>pipe', $err
                 or die "cmd returned *?";
-        return \*OUT;
+        return ($out, $err);
     }
 
     method run_cmd_list (@args) {
