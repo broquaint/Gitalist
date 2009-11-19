@@ -202,7 +202,6 @@ test('/', 'a=tree;hb=master');
 test('/', 'a=tree;hb=refs/heads/master');
 
 
-local $TODO = "Action: atom is not yet implemented.";
 test('/', 'a=atom');
 test('/', 'a=atom;f=dir1');
 test('/', 'a=atom;f=dir1/file2');
