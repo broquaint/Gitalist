@@ -23,8 +23,8 @@ class Gitalist::Git::Object::Commit
                                       ],
                          );
 
-        method patch ( Maybe[NonEmptySimpleStr] $parent?,
-                       Int $count?) {
+        method get_patch ( Maybe[NonEmptySimpleStr] $parent?,
+                           Int $count?) {
             $count ||= 1;
             # Assemble the git command.
             # common args:
@@ -35,9 +35,10 @@ class Gitalist::Git::Object::Commit
             } else {
                 push @cmd_args, "-1";
             }
-            # if a parent is specified: hp..h
-            # if not, but a merge commit: --cc h
-            # otherwise: --root h
+            # ref spec:
+            #  if a parent is specified: hp..h
+            #  if not, but a merge commit: --cc h
+            #  otherwise: --root h
             if (defined $parent) {
                 push @cmd_args, "$parent.." . $self->sha1;
             } else {

@@ -394,7 +394,7 @@ sub patches : Local {
     $count ||= Gitalist->config->{patches}{max};
     my $commit = $self->_get_object($c);
     my $parent = $c->req->param('hp') || undef;
-    my $patch = $commit->patch( $parent, $count );
+    my $patch = $commit->get_patch( $parent, $count );
     $c->response->body($patch);
     $c->response->content_type('text/plain');
     $c->response->status(200);
