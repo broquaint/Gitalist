@@ -205,7 +205,6 @@ test('/', 'a=tree;hb=master');
 test('/', 'a=tree;hb=refs/heads/master');
 
 
-local $TODO = "Action: atom is not yet implemented.";
 test('/', 'a=atom');
 test('/', 'a=atom;f=dir1');
 test('/', 'a=atom;f=dir1/file2');
@@ -221,23 +220,20 @@ test('/', 'a=atom;h=refs/heads/master');
 test('/', 'a=atom;h=refs/heads/master;opt=--no-merges');
 test('/', 'a=atom;opt=--no-merges');
 
-TODO: {
-    local $TODO = "Action: rss is not yet implemented.";
-    test('/', 'a=rss');
-    test('/', 'a=rss;f=dir1');
-    test('/', 'a=rss;f=dir1/file2');
-    test('/', 'a=rss;f=dir1/file2;opt=--no-merges');
-    test('/', 'a=rss;f=dir1;h=refs/heads/master');
-    test('/', 'a=rss;f=dir1;h=refs/heads/master;opt=--no-merges');
-    test('/', 'a=rss;f=dir1;opt=--no-merges');
-    test('/', 'a=rss;f=file1');
-    test('/', 'a=rss;f=file1;h=refs/heads/master');
-    test('/', 'a=rss;f=file1;h=refs/heads/master;opt=--no-merges');
-    test('/', 'a=rss;f=file1;opt=--no-merges');
-    test('/', 'a=rss;h=refs/heads/master');
-    test('/', 'a=rss;h=refs/heads/master;opt=--no-merges');
-    test('/', 'a=rss;opt=--no-merges');
-}
+test('/', 'a=rss');
+test('/', 'a=rss;f=dir1');
+test('/', 'a=rss;f=dir1/file2');
+test('/', 'a=rss;f=dir1/file2;opt=--no-merges');
+test('/', 'a=rss;f=dir1;h=refs/heads/master');
+test('/', 'a=rss;f=dir1;h=refs/heads/master;opt=--no-merges');
+test('/', 'a=rss;f=dir1;opt=--no-merges');
+test('/', 'a=rss;f=file1');
+test('/', 'a=rss;f=file1;h=refs/heads/master');
+test('/', 'a=rss;f=file1;h=refs/heads/master;opt=--no-merges');
+test('/', 'a=rss;f=file1;opt=--no-merges');
+test('/', 'a=rss;h=refs/heads/master');
+test('/', 'a=rss;h=refs/heads/master;opt=--no-merges');
+test('/', 'a=rss;opt=--no-merges');
 
 done_testing;
 

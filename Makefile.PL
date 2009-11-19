@@ -57,6 +57,7 @@ requires 'Sub::Exporter';
 requires 'Syntax::Highlight::Engine::Kate';
 requires 'Sys::Hostname';
 requires 'XML::Atom';
+requires 'XML::RSS';
 
 author_requires 'Test::NoTabs';
 author_requires 'Test::Pod' => '1.14';

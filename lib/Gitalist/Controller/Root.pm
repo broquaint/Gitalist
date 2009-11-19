@@ -11,9 +11,10 @@ BEGIN { extends 'Catalyst::Controller' }
 __PACKAGE__->config->{namespace} = '';
 
 use IO::Capture::Stdout;
+use Sys::Hostname ();
 use XML::Atom::Feed;
 use XML::Atom::Entry;
-use Sys::Hostname ();
+use XML::RSS;
 
 =head1 NAME
 
@@ -428,16 +429,44 @@ sub atom : Local {
     $feed->add_entry($entry);
   }
 
-  $c->stash(
-    feed       => $feed->as_xml,
-    no_wrapper => 1,
-  );
+  $c->response->body($feed->as_xml);
   $c->response->content_type('application/atom+xml')
+  $c->response->status(200);
 }
 
 sub rss : Local {
-    # FIXME - implement rss
-    Carp::croak "Not implemented.";
+  my ($self, $c) = @_;
+
+  my $project = $c->stash->{Project};
+
+  my $rss = XML::RSS->new(version => '2.0');
+  $rss->channel(
+    title          => lc(Sys::Hostname::hostname()) . ' - ' . Gitalist->config->{name},
+    link           => $c->uri_for('summary', {p=>$project->name}),
+    language       => 'en',
+    description    => $project->description,
+    pubDate        => DateTime->now,
+    lastBuildDate  => DateTime->now,
+  );
+
+  my %logargs = (
+      sha1   => $project->head_hash,
+      count  => Gitalist->config->{paging}{log} || 25,
+      ($c->req->param('f') ? (file => $c->req->param('f')) : ())
+  );
+  my $mk_title = $c->stash->{short_cmt};
+  for my $commit ($project->list_revs(%logargs)) {
+    # XXX Needs work ....
+    $rss->add_item(
+        title       => $mk_title->($commit->comment),
+        permaLink   => $c->uri_for(commit => {h=>$commit->sha1}),
+        description => $commit->comment,
+    );
+  }
+
+  $c->response->body($rss->as_string);
+  $c->response->content_type('application/rss+xml');
+  $c->response->status(200);
 }
 
 sub patch : Local {
@@ -448,7 +477,6 @@ sub patch : Local {
     $c->response->body($patch);
     $c->response->content_type('text/plain');
     $c->response->status(200);
-
 }
 
 sub patches : Local {
