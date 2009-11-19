@@ -34,6 +34,9 @@ is request('/summary?p=DoesNotExist')->code, 404,
   test('/patch');
   test('/patch', 'h=3f7567c7bdf7e7ebf410926493b92d398333116e');
   test('/patch', 'h=3f7567c7bdf7e7ebf410926493b92d398333116e;hp=3bc0634310b9c62222bb0e724c11ffdfb297b4ac');
+  test('/patches');
+  test('/patches', 'h=3f7567c7bdf7e7ebf410926493b92d398333116e');
+  test('/patches', 'h=3f7567c7bdf7e7ebf410926493b92d398333116e;hp=3bc0634310b9c62222bb0e724c11ffdfb297b4ac');
 }
 
 done_testing;

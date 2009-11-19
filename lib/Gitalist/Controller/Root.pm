@@ -471,17 +471,18 @@ sub rss : Local {
 
 sub patch : Local {
     my ($self, $c) = @_;
-    my $commit = $self->_get_object($c);
-    my $parent = $c->req->param('hp') || undef;
-    my $patch = $commit->patch( $parent );
-    $c->response->body($patch);
-    $c->response->content_type('text/plain');
-    $c->response->status(200);
+    $c->detach('patches', [1]);
 }
 
 sub patches : Local {
-    # FIXME - implement patches
-    Carp::croak "Not implemented.";
+    my ($self, $c, $count) = @_;
+    $count ||= Gitalist->config->{patches}{max};
+    my $commit = $self->_get_object($c);
+    my $parent = $c->req->param('hp') || undef;
+    my $patch = $commit->get_patch( $parent, $count );
+    $c->response->body($patch);
+    $c->response->content_type('text/plain');
+    $c->response->status(200);
 }
 
 sub snapshot : Local {
