@@ -238,6 +238,19 @@ Returns a list of revs for the given head ($sha1).
         return @revs;
     }
 
+=head2 snapshot($head?, $format)
+
+Generate an archived snapshot of the repository.
+Returns a filehandle to read from.
+
+=cut
+
+method snapshot (Gitalist::Git::Object :$commit,
+                 NonEmptySimpleStr :$format
+               ) {
+               return $commit->snapshot;
+           }
+
 =head2 diff($commit, $patch?, $parent?, $file?)
 
 Generate a diff from a given L<Gitalist::Git::Object>.

@@ -48,11 +48,12 @@ EOR
     }
 
     method run_cmd_fh (@args) {
-        my ($out, $err) = (geniosym, geniosym);
+        my ($in, $out, $err) = (geniosym, geniosym, geniosym);
         unshift @args, ('--git-dir' => $self->gitdir)
             if $self->has_project;
+#        print STDERR 'RUNNING: ', $self->_git, qq[ @args], $/;
         run [$self->_git, @args],
-            undef,
+            '<pipe', $in,
             '>pipe', $out,
             '2>pipe', $err
                 or die "cmd returned *?";

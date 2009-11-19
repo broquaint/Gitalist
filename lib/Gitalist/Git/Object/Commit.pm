@@ -8,6 +8,7 @@ class Gitalist::Git::Object::Commit
         use MooseX::Types::Common::String qw/NonEmptySimpleStr/;
         use Moose::Autobox;
         use List::MoreUtils qw/any zip/;
+        use Gitalist::Util qw(to_utf8);
         our $SHA1RE = qr/[0-9a-fA-F]{40}/;
 
         has '+type' => ( default => 'commit' );
@@ -78,6 +79,18 @@ class Gitalist::Git::Object::Commit
             # XXX And no I'm not happy about having diff return tree + patch.
             return \@difftree, [$self->_parse_diff(@out)];
         }
+
+method snapshot ( NonEmptySimpleStr $format ) {
+#    return unless (qw/tar zip/->any($format));
+    my $name = $self->project->name;
+    $name =~ s,([^/])/*\.git$,$1,;
+    my $filename = to_utf8($name);
+    $filename .= "-$self->sha1.$format";
+    $name =~ s/\047/\047\\\047\047/g;
+
+    my @cmd = ('archive', "--format=$format", "--prefix=$name", $self->sha1);
+    return $self->_run_cmd_fh(@cmd);
+}
 
         ## Private methods
         # gitweb uses the following sort of command for diffing merges:

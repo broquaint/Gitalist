@@ -457,8 +457,15 @@ sub patches : Local {
 }
 
 sub snapshot : Local {
-    # FIXME - implement snapshot
-    Carp::croak "Not implemented.";
+    my ($self, $c) = @_;
+    my $format = $c->req->param('snapshot_format') || 'tar';
+    die unless $format;
+    my $commit = $self->_get_object($c);
+    $c->response->status(200);
+    $c->response->headers->header( 'Content-Disposition' =>
+                                       'attachment; filename=export.tgz');
+
+    $c->response->body($commit->snapshot($format));
 }
 
 =head2 auto
