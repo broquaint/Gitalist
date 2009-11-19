@@ -23,31 +23,28 @@ class Gitalist::Git::Object::Commit
                                       ],
                          );
 
-        method get_patch ( Maybe[NonEmptySimpleStr] $parent?,
-                           Int $count?) {
-            $count ||= 1;
-            # Assemble the git command.
-            # common args:
-            my @cmd_args = qw/format-patch --encoding=utf8 --stdout/;
-            # single patch, or patch set?
-            if ($count > 1) {
-                push @cmd_args, "-$count", "-n";
+        method get_patch ( Maybe[NonEmptySimpleStr] $parent_hash?,
+                           Int $patch_count?) {
+            # assembling the git command to execute...
+            my @cmd = qw/format-patch --encoding=utf8 --stdout/;
+
+            # patch, or patch set?
+            push @cmd,
+                defined $patch_count
+                ? "-$patch_count -n" : "-1";
+
+            # refspec
+            if (defined $parent_hash) {
+                #  if a parent is specified: hp..h
+                push @cmd, "$parent_hash.." . $self->sha1;
             } else {
-                push @cmd_args, "-1";
-            }
-            # ref spec:
-            #  if a parent is specified: hp..h
-            #  if not, but a merge commit: --cc h
-            #  otherwise: --root h
-            if (defined $parent) {
-                push @cmd_args, "$parent.." . $self->sha1;
-            } else {
-                push @cmd_args, $self->parents->length > 1
+                #  if not, but a merge commit: --cc h
+                #  otherwise: --root h
+                push @cmd, $self->parents->length > 1
                     ? '--cc' : '--root';
-                push @cmd_args, $self->sha1;
+                push @cmd, $self->sha1;
             }
-            my $out = $self->_run_cmd( @cmd_args );
-            return $out;
+            return $self->_run_cmd( @cmd );
         }
 
         method diff ( Maybe[Bool] :$patch?,
