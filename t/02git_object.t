@@ -78,7 +78,7 @@ is($patch->{diff}, '--- a/file1
 ', 'patch->{diff} is correct');
 is($patch->{dst}, '5716ca5987cbf97d6bb54920bea6adde242d87e6', 'patch->{dst} is correct');
 
-is($commit_obj->get_patch, 'From 3f7567c7bdf7e7ebf410926493b92d398333116e Mon Sep 17 00:00:00 2001
+ok(index($commit_obj->get_patch, 'From 3f7567c7bdf7e7ebf410926493b92d398333116e Mon Sep 17 00:00:00 2001
 From: Florian Ragwitz <rafl@debian.org>
 Date: Tue, 6 Mar 2007 20:39:45 +0100
 Subject: [PATCH] bar
@@ -94,9 +94,6 @@ index 257cc56..5716ca5 100644
 @@ -1 +1 @@
 -foo
 +bar
--- 
-1.6.4.2
-
-', 'commit_obj->get_patch can return a patch');
+--') == 0, 'commit_obj->get_patch can return a patch');
 
 like($commit_obj->get_patch(undef, 3), qr!PATCH 2/2!, 'commit_obj->get_patch can return a patchset');

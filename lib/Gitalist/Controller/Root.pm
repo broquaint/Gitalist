@@ -430,7 +430,7 @@ sub atom : Local {
   }
 
   $c->response->body($feed->as_xml);
-  $c->response->content_type('application/atom+xml')
+  $c->response->content_type('application/atom+xml');
   $c->response->status(200);
 }
 

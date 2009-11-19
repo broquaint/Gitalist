@@ -56,6 +56,6 @@ like($proj->head_hash('HEAD'), qr/^([0-9a-fA-F]{40})$/, 'head_hash');
 {
     my @tree = $proj->list_tree('3bc0634310b9c62222bb0e724c11ffdfb297b4ac');
     is(scalar @tree, 1, "tree array contains one entry.");
-    isa_ok(@tree[0], 'Gitalist::Git::Object', 'tree element 0');
+    isa_ok($tree[0], 'Gitalist::Git::Object', 'tree element 0');
 }
 
