@@ -499,8 +499,22 @@ Populate the header and footer. Perhaps not the best location.
 sub auto : Private {
   my($self, $c) = @_;
 
-  # XXX Move these to a plugin!
+  my $project = $c->req->param('p');
+  if (defined $project) {
+    eval {
+      $c->stash(Project => $c->model('GitRepos')->project($project));
+    };
+    if ($@) {
+      $c->detach('error_404');
+    }
+  }
+
+  my $a_project = $c->stash->{Project} || $c->model()->projects->[0];
   $c->stash(
+    git_version => $a_project->run_cmd('--version'),
+    version     => $Gitalist::VERSION,
+
+    # XXX Move these to a plugin!
     time_since => sub {
       return 'never' unless $_[0];
       return age_string(time - $_[0]->epoch);
@@ -515,193 +529,6 @@ sub auto : Private {
         join(' ', grep { defined } (split / /, shift)[0..10]);
     },
   );
-
-  # Yes, this is hideous.
-  $self->header($c);
-  $self->footer($c);
-}
-
-# XXX This could probably be dropped altogether.
-use Gitalist::Util qw(to_utf8);
-# Formally git_header_html
-sub header {
-  my($self, $c) = @_;
-
-  my $title = $c->config->{sitename};
-
-  my $project   = $c->req->param('project')  || $c->req->param('p');
-  my $action    = $c->req->param('action')   || $c->req->param('a');
-  my $file_name = $c->req->param('filename') || $c->req->param('f');
-  if(defined $project) {
-    $title .= " - " . to_utf8($project);
-    if (defined $action) {
-      $title .= "/$action";
-      if (defined $file_name) {
-        $title .= " - " . $file_name;
-        if ($action eq "tree" && $file_name !~ m|/$|) {
-          $title .= "/";
-        }
-      }
-    }
-  }
-
-  $c->stash->{version}     = $Gitalist::VERSION;
-  # check git's version by running it on the first project in the list.
-  $c->stash->{title}       = $title;
-
-  $c->stash->{stylesheet} = $c->config->{stylesheet} || 'gitweb.css';
-
-  $c->stash->{project} = $project;
-  my @links;
-  if($project) {
-    my %href_params = $self->feed_info($c);
-    $href_params{'-title'} ||= 'log';
-
-    foreach my $format qw(RSS Atom) {
-      my $type = lc($format);
-      push @links, {
-        rel   => 'alternate',
-        title => "$project - $href_params{'-title'} - $format feed",
-
-        # XXX A bit hacky and could do with using gitweb::href() features
-        href  => "?a=$type;p=$project",
-        type  => "application/$type+xml"
-        }, {
-        rel   => 'alternate',
-
-        # XXX This duplication also feels a bit awkward
-        title => "$project - $href_params{'-title'} - $format feed (no merges)",
-        href  => "?a=$type;p=$project;opt=--no-merges",
-        type  => "application/$type+xml"
-        };
-    }
-  } else {
-    push @links, {
-      rel => "alternate",
-      title => $c->config->{sitename}." projects list",
-      href => '?a=project_index',
-      type => "text/plain; charset=utf-8"
-      }, {
-      rel => "alternate",
-      title => $c->config->{sitename}." projects feeds",
-      href => '?a=opml',
-      type => "text/plain; charset=utf-8"
-      };
-  }
-
-  $c->stash->{favicon} = $c->config->{favicon};
-
-  # </head><body>
-
-  $c->stash(
-    logo_url      => $c->config->{logo_url},
-    logo_label    => $c->config->{logo_label},
-    logo_img      => $c->config->{logo},
-    home_link     => $c->config->{home_link},
-    home_link_str => $c->config->{home_link_str},
-    );
-
-  if (defined $project) {
-      eval {
-          $c->stash(Project => $c->model('GitRepos')->project($project));
-      };
-      if ($@) {
-          $c->detach('error_404');
-      }
-      $c->stash(
-          search_text => ( $c->req->param('s') ||
-                               $c->req->param('searchtext') || ''),
-          search_hash => ( $c->req->param('hb') || $c->req->param('hashbase')
-                               || $c->req->param('h')  || $c->req->param('hash')
-                                   || 'HEAD' ),
-      );
-  }
-  my $a_project = $c->stash->{Project} || $c->model()->projects->[0];
-  $c->stash->{git_version} = $a_project->run_cmd('--version');
-}
-
-# Formally git_footer_html
-sub footer {
-  my($self, $c) = @_;
-
-  my $feed_class = 'rss_logo';
-
-  my @feeds;
-  my $project = $c->req->param('project')  || $c->req->param('p');
-  if(defined $project) {
-    (my $pstr = $project) =~ s[/?\.git$][];
-    my $descr = $c->stash->{project_description}
-            = $c->stash->{Project} ? $c->stash->{Project}->description : '';
-
-    my %href_params = $self->feed_info($c);
-    if (!%href_params) {
-      $feed_class .= ' generic';
-    }
-    $href_params{'-title'} ||= 'log';
-
-    @feeds = [
-      map +{
-        class => $feed_class,
-        title => "$href_params{'-title'} $_ feed",
-        href  => "/?p=$project;a=\L$_",
-        name  => lc $_,
-        }, qw(RSS Atom)
-      ];
-  } else {
-    @feeds = [
-      map {
-        class => $feed_class,
-          title => '',
-          href  => "/?a=$_->[0]",
-          name  => $_->[1],
-        }, [opml=>'OPML'],[project_index=>'TXT'],
-      ];
-  }
-}
-
-# XXX This feels wrong here, should probably be refactored.
-# returns hash to be passed to href to generate gitweb URL
-# in -title key it returns description of link
-sub feed_info {
-  my($self, $c) = @_;
-
-  my $format = shift || 'Atom';
-  my %res = (action => lc($format));
-
-  # feed links are possible only for project views
-  return unless $c->req->param('project');
-
-  # some views should link to OPML, or to generic project feed,
-  # or don't have specific feed yet (so they should use generic)
-  return if $c->req->param('action') =~ /^(?:tags|heads|forks|tag|search)$/x;
-
-  my $branch;
-  my $hash = $c->req->param('h')  || $c->req->param('hash');
-  my $hash_base = $c->req->param('hb') || $c->req->param('hashbase');
-
-  # branches refs uses 'refs/heads/' prefix (fullname) to differentiate
-  # from tag links; this also makes possible to detect branch links
-  if ((defined $hash_base && $hash_base =~ m!^refs/heads/(.*)$!) ||
-    (defined $hash      && $hash      =~ m!^refs/heads/(.*)$!)) {
-    $branch = $1;
-  }
-
-  # find log type for feed description (title)
-  my $type = 'log';
-  my $file_name = $c->req->param('f') || $c->req->param('filename');
-  if (defined $file_name) {
-    $type  = "history of $file_name";
-    $type .= "/" if $c->req->param('action') eq 'tree';
-    $type .= " on '$branch'" if (defined $branch);
-  } else {
-    $type = "log of $branch" if (defined $branch);
-  }
-
-  $res{-title} = $type;
-  $res{'hash'} = (defined $branch ? "refs/heads/$branch" : undef);
-  $res{'file_name'} = $file_name;
-
-  return %res;
 }
 
 =head2 end
@@ -728,35 +555,43 @@ sub error_404 :Private {
 }
 
 sub age_string {
-	my $age = shift;
-	my $age_str;
+  my $age = shift;
+  my $age_str;
 
-	if ($age > 60*60*24*365*2) {
-		$age_str = (int $age/60/60/24/365);
-		$age_str .= " years ago";
-	} elsif ($age > 60*60*24*(365/12)*2) {
-		$age_str = int $age/60/60/24/(365/12);
-		$age_str .= " months ago";
-	} elsif ($age > 60*60*24*7*2) {
-		$age_str = int $age/60/60/24/7;
-		$age_str .= " weeks ago";
-	} elsif ($age > 60*60*24*2) {
-		$age_str = int $age/60/60/24;
-		$age_str .= " days ago";
-	} elsif ($age > 60*60*2) {
-		$age_str = int $age/60/60;
-		$age_str .= " hours ago";
-	} elsif ($age > 60*2) {
-		$age_str = int $age/60;
-		$age_str .= " min ago";
-	} elsif ($age > 2) {
-		$age_str = int $age;
-		$age_str .= " sec ago";
-	} else {
-		$age_str .= " right now";
-	}
-	return $age_str;
+  if ( $age > 60 * 60 * 24 * 365 * 2 ) {
+    $age_str  = ( int $age / 60 / 60 / 24 / 365 );
+    $age_str .= " years ago";
+  }
+  elsif ( $age > 60 * 60 * 24 * ( 365 / 12 ) * 2 ) {
+    $age_str  = int $age / 60 / 60 / 24 / ( 365 / 12 );
+    $age_str .= " months ago";
+  }
+  elsif ( $age > 60 * 60 * 24 * 7 * 2 ) {
+    $age_str  = int $age / 60 / 60 / 24 / 7;
+    $age_str .= " weeks ago";
+  }
+  elsif ( $age > 60 * 60 * 24 * 2 ) {
+    $age_str  = int $age / 60 / 60 / 24;
+    $age_str .= " days ago";
+  }
+  elsif ( $age > 60 * 60 * 2 ) {
+    $age_str  = int $age / 60 / 60;
+    $age_str .= " hours ago";
+  }
+  elsif ( $age > 60 * 2 ) {
+    $age_str  = int $age / 60;
+    $age_str .= " min ago";
+  }
+  elsif ( $age > 2 ) {
+    $age_str  = int $age;
+    $age_str .= " sec ago";
+  }
+  else {
+    $age_str .= " right now";
+  }
+  return $age_str;
 }
+
 
 =head1 AUTHOR
 

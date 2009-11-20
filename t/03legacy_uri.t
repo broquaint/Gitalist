@@ -232,6 +232,19 @@ test('/', 'a=rss;h=refs/heads/master');
 test('/', 'a=rss;h=refs/heads/master;opt=--no-merges');
 test('/', 'a=rss;opt=--no-merges');
 
+TODO: {
+  local $TODO = 'The project_index action is yet to be implemented';
+  test('/', 'a=project_index');
+}
+TODO: {
+  local $TODO = 'The opml action is yet to be implemented';
+  test('/', 'a=opml');
+}
+TODO: {
+  local $TODO = 'The tags action is yet to be implemented';
+  test('/', 'a=tags');
+}
+
 done_testing;
 
 sub test_uri {

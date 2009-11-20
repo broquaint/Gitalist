@@ -232,3 +232,23 @@ span.refs span.head {
 span.refs a {
   text-decoration: none;
 }
+
+a.rss_logo {
+	float: right;
+	padding: 3px 0px;
+	width: 35px;
+	line-height: 10px;
+	border: 1px solid;
+	border-color: #fcc7a5 #7d3302 #3e1a01 #ff954e;
+	color: #ffffff;
+	background-color: #ff6600;
+	font-weight: bold;
+	font-family: sans-serif;
+	font-size: 70%;
+	text-align: center;
+	text-decoration: none;
+}
+
+a.rss_logo:hover {
+	background-color: #ee5500;
+}
