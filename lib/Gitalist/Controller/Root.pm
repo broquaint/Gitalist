@@ -460,12 +460,16 @@ sub snapshot : Local {
     my ($self, $c) = @_;
     my $format = $c->req->param('sf') || 'tgz';
     die unless $format;
-    my $commit = $self->_get_object($c);
+    my $sha1 = $c->req->param('h') || $self->_get_object($c)->sha1;
     $c->response->status(200);
     $c->response->headers->header( 'Content-Disposition' =>
                                        'attachment; filename=export.tgz');
-
-    $c->response->body($commit->snapshot($format));
+    $c->response->body(
+        $c->stash->{Project}->snapshot(
+            sha1 => $sha1,
+            format => $format
+        )
+    );
 }
 
 =head2 auto
