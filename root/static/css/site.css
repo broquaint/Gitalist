@@ -141,8 +141,24 @@ table.heads {
 }
 
 /* /blame */
-pre.blame-line {
+#blame pre, #blame tt {
   margin: 0;
+  font-size: 0.9em;
+}
+#blame .commit-info {
+}
+#blame .lineno {
+  text-align: right;
+  padding: 0 8px;
+}
+#blame a {
+  text-decoration: none;
+}
+#blame tr.alt {
+  background-color: #f7f7f7;
+}
+#blame tbody tr:hover {
+  background-color: #fefeaa;
 }
 
 /* /blob */

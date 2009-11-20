@@ -7,5 +7,12 @@
     [% IF object.type == 'commit' %] •
     <a href="[% c.uri_for('tree', {h=object.tree_sha1, hb=object.sha1}) %]">tree</a>
     [% END %]
+    [% IF filename %]
+    §
+    <a href="[% c.uri_for('blob', {h=object.sha1,f=filename}) %]">blob</a> •
+    <a href="[% c.uri_for('blame', {h=object.sha1,f=filename}) %]">blame</a> •
+    <a href="[% c.uri_for('shortlog', {h=object.sha1,f=filename}) %]">history</a> •
+    <a href="[% c.uri_for(action, {f=filename}) %]">HEAD</a>
+    [% END %]
     <div class='chroma-hash'>[% INCLUDE '_chroma_hash.tt2' sha1 = object.sha1 %]</div>
 </div>

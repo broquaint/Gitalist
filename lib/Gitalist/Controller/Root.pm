@@ -223,6 +223,7 @@ sub blobdiff : Local {
   $c->stash(
     commit    => $commit,
     diff      => $patch,
+    filename  => $filename,
     # XXX Hack hack hack, see View::SyntaxHighlight
     blobs     => [$patch->[0]->{diff}],
     language  => 'Diff',
@@ -296,12 +297,15 @@ Expose an abbreviated log of a given sha1.
 
 sub shortlog : Local {
   my ( $self, $c ) = @_;
-  my $project = $c->stash->{Project};
-  my $commit  = $self->_get_object($c);
+
+  my $project  = $c->stash->{Project};
+  my $commit   = $self->_get_object($c);
+  my $filename = $c->req->param('f') || '';
+
   my %logargs = (
       sha1   => $commit->sha1,
       count  => Gitalist->config->{paging}{log} || 25,
-      ($c->req->param('f') ? (file => $c->req->param('f')) : ())
+      ($filename ? (file => $filename) : ())
   );
 
   my $page = $c->req->param('pg') || 0;
@@ -312,8 +316,9 @@ sub shortlog : Local {
       commit    => $commit,
       log_lines => [$project->list_revs(%logargs)],
       refs      => $project->references,
-      action    => 'shortlog',
       page      => $page,
+      filename  => $filename,
+      action    => 'shortlog',
   );
 }
 

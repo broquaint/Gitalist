@@ -7,14 +7,32 @@
 
 <h3>BLOB PATH</h3>
 
-<div class='blame'>
+<div id='blame'>
 <table>
-[% FOR info IN blame %]
-<tr>
-  <td><a title="[% info.commit.author %] on [% info.commit.author_dt %]" href='[% c.uri_for('commit', {h=info.commit.sha1}) %]'>[% info.commit.sha1.substr(0,6) %]</a></td>
-  <td>[% info.meta.lineno %]</td>
-  <td><pre class='blame-line'>[% info.line | html %]</pre></td>
-</tr>
-[% END %]
+ <thead>
+  <tr>
+   <th>sha1</th>
+   <th>line</th>
+   <th>data</th>
+  </tr>
+ </thead>
+
+ <tfoot>
+  <tr>
+   <td>sha1</td>
+   <td>line</td>
+   <td>data</td>
+  </tr>
+ </tfoot>
+
+ <tbody>
+ [% FOR info IN blame %]
+ <tr class=''>
+   <td class='commit-info'><a title="[% info.commit.author %] on [% info.commit.author_dt %]" href='[% c.uri_for('commit', {h=info.commit.sha1}) %]'>[% INCLUDE '_chroma_hash.tt2' sha1 = info.commit.sha1.substr(0,7) -%]</a></td>
+   <td class='lineno'><tt>[% info.meta.lineno %]</tt></td>
+   <td><pre>[% info.line | html %]</pre></td>
+ </tr>
+ [% END %]
+ </tbody>
 </table>
 </div>
