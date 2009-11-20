@@ -27,7 +27,6 @@ class Gitalist::Git::Project with Gitalist::Git::HasUtils {
     use Moose::Autobox;
     use List::MoreUtils qw/any zip/;
     use DateTime;
-    use Gitalist::Util qw(to_utf8);
     use Gitalist::Git::Object::Blob;
     use Gitalist::Git::Object::Tree;
     use Gitalist::Git::Object::Commit;
@@ -259,10 +258,9 @@ method snapshot (NonEmptySimpleStr :$sha1,
     $format = $formats->{$format};
     my $name = $self->name;
     $name =~ s,([^/])/*\.git$,$1,;
-    my $filename = to_utf8($name);
+    my $filename = $name;
     $filename .= "-$sha1.$format";
     $name =~ s/\047/\047\\\047\047/g;
-
 
     my @cmd = ('archive', "--format=$format", "--prefix=$name/", $sha1);
     return ($filename, $self->run_cmd_fh(@cmd));
