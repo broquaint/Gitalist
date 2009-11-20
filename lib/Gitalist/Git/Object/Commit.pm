@@ -44,7 +44,7 @@ class Gitalist::Git::Object::Commit
                     ? '--cc' : '--root';
                 push @cmd, $self->sha1;
             }
-            return $self->_run_cmd( @cmd );
+            return $self->_run_cmd_fh( @cmd );
         }
 
         method diff ( Maybe[Bool] :$patch?,
