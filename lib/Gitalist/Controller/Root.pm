@@ -4,10 +4,6 @@ use namespace::autoclean;
 
 BEGIN { extends 'Catalyst::Controller' }
 
-#
-# Sets the actions in this controller to be registered with no prefix
-# so they function identically to actions created in MyApp.pm
-#
 __PACKAGE__->config->{namespace} = '';
 
 use IO::Capture::Stdout;
@@ -529,6 +525,23 @@ sub auto : Private {
         join(' ', grep { defined } (split / /, shift)[0..10]);
     },
   );
+}
+
+sub tags : Local {
+    # FIXME - implement snapshot
+    Carp::croak "Not implemented.";
+}
+sub project_index : Local {
+    # FIXME - implement snapshot
+    Carp::croak "Not implemented.";
+}
+sub opml : Local {
+    # FIXME - implement snapshot
+    Carp::croak "Not implemented.";
+}
+sub blame : Local {
+    # FIXME - implement snapshot
+    Carp::croak "Not implemented.";
 }
 
 =head2 end
