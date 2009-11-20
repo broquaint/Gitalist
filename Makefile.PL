@@ -49,7 +49,6 @@ requires 'File::Copy::Recursive';
 requires 'File::Stat::ModeString';
 requires 'File::Which';
 requires 'HTML::Entities';
-requires 'IO::Capture::Stdout';
 requires 'IPC::Run';
 requires 'List::MoreUtils';
 requires 'Path::Class' => '0.17';

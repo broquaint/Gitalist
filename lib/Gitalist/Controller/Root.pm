@@ -6,7 +6,6 @@ BEGIN { extends 'Catalyst::Controller' }
 
 __PACKAGE__->config->{namespace} = '';
 
-use IO::Capture::Stdout;
 use Sys::Hostname ();
 use XML::Atom::Feed;
 use XML::Atom::Entry;
@@ -23,40 +22,6 @@ Gitalist::Controller::Root - Root Controller for Gitalist
 =head1 METHODS
 
 =cut
-
-=head2 index
-
-=cut
-
-=head2 run_gitweb
-
-The C<gitweb> shim. It should now only be explicitly accessible by
-modifying the URL.
-
-=cut
-
-sub run_gitweb {
-  my ( $self, $c ) = @_;
-
-  # XXX A slippery slope to be sure.
-  if($c->req->param('a')) {
-    my $capture = IO::Capture::Stdout->new();
-    $capture->start();
-    eval {
-      my $action = gitweb::main($c);
-      $action->();
-    };
-    $capture->stop();
-
-    use Data::Dumper;
-    die Dumper($@)
-      if $@;
-
-    my $output = join '', $capture->read;
-    $c->stash->{gitweb_output} = $output;
-    $c->stash->{template} = 'gitweb.tt2';
-  }
-}
 
 sub _get_object {
   my($self, $c, $haveh) = @_;
