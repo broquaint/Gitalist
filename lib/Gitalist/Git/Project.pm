@@ -265,7 +265,7 @@ method snapshot (NonEmptySimpleStr :$sha1,
 
 
     my @cmd = ('archive', "--format=$format", "--prefix=$name/", $sha1);
-    return $self->run_cmd_fh(@cmd);
+    return ($filename, $self->run_cmd_fh(@cmd));
     # TODO - support compressed archives
 }
 
