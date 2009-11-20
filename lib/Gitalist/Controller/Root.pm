@@ -576,7 +576,7 @@ sub auto : Private {
     short_cmt => sub {
       my $cmt = shift;
       my($line) = split /\n/, $cmt;
-      $line =~ s/^(.{70,80}\b).*/$1 …/;
+      $line =~ s/^(.{70,80}\b).*/$1 \x{2026}/;
       return $line;
     },
     abridged_description => sub {
