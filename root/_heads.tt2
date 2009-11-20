@@ -1,4 +1,4 @@
-<table class='heads listing'>
+<table class='[% action %] listing'>
  <thead>
   <tr>
    <th>HEAD</th>

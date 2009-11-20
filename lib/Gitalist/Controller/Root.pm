@@ -117,6 +117,22 @@ sub heads : Local {
   );
 }
 
+=head2 tags
+
+The current list of tags in the repo.
+
+=cut
+
+sub tags : Local {
+  my ( $self, $c ) = @_;
+  my $project = $c->stash->{Project};
+  $c->stash(
+    commit => $self->_get_object($c),
+    tags   => $project->tags,
+    action => 'tags',
+  );
+}
+
 =head2 blob
 
 The blob action i.e the contents of a file.
@@ -334,6 +350,12 @@ sub reflog : Local {
   );
 }
 
+=head2 search
+
+The action for the search form.
+
+=cut
+
 sub search : Local {
   my($self, $c) = @_;
   $c->stash(current_action => 'GitRepos');
@@ -359,10 +381,22 @@ sub search : Local {
   );
 }
 
+=head2 search_help
+
+Provides some help for the search form.
+
+=cut
+
 sub search_help : Local {
     my ($self, $c) = @_;
     $c->stash(template => 'search_help.tt2');
 }
+
+=head2 atom
+
+Provides an atom feed for a given project.
+
+=cut
 
 sub atom : Local {
   my($self, $c) = @_;
@@ -394,6 +428,12 @@ sub atom : Local {
   $c->response->content_type('application/atom+xml');
   $c->response->status(200);
 }
+
+=head2 rss
+
+Provides an RSS feed for a given project.
+
+=cut
 
 sub rss : Local {
   my ($self, $c) = @_;
@@ -430,10 +470,22 @@ sub rss : Local {
   $c->response->status(200);
 }
 
+=head2 patch
+
+A raw patch for a given commit.
+
+=cut
+
 sub patch : Local {
     my ($self, $c) = @_;
     $c->detach('patches', [1]);
 }
+
+=head2 patches
+
+The patcheset for a given commit ???
+
+=cut
 
 sub patches : Local {
     my ($self, $c, $count) = @_;
@@ -445,6 +497,12 @@ sub patches : Local {
     $c->response->content_type('text/plain');
     $c->response->status(200);
 }
+
+=head2 snapshot
+
+Provides a snapshot of a given commit.
+
+=cut
 
 sub snapshot : Local {
     my ($self, $c) = @_;
@@ -502,10 +560,6 @@ sub auto : Private {
   );
 }
 
-sub tags : Local {
-    # FIXME - implement snapshot
-    Carp::croak "Not implemented.";
-}
 sub project_index : Local {
     # FIXME - implement snapshot
     Carp::croak "Not implemented.";

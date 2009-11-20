@@ -117,6 +117,14 @@ ArrayRef of hashes containing the name and sha1 of all heads.
     has heads => ( isa => ArrayRef[HashRef],
                    is => 'ro',
                    lazy_build => 1);
+=head2 tags
+
+ArrayRef of hashes containing the name and sha1 of all tags.
+
+=cut
+    has tags => ( isa => ArrayRef[HashRef],
+                   is => 'ro',
+                   lazy_build => 1);
 
 =head2 references
 
@@ -378,6 +386,32 @@ FIXME Should this return objects?
 
             #FIXME: That isn't the time I'm looking for..
             if (my ($epoch, $tz) = $line =~ /\s(\d+)\s+([+-]\d+)$/) {
+                my $dt = DateTime->from_epoch(epoch => $epoch);
+                $dt->set_time_zone($tz);
+                $ret[-1]->{last_change} = $dt;
+            }
+        }
+
+        return \@ret;
+    }
+
+    method _build_tags {
+        my @revlines = $self->run_cmd_list('for-each-ref',
+          '--sort=-creatordate',
+          '--format=%(objectname) %(objecttype) %(refname) %(*objectname) %(*objecttype) %(subject)%00%(creator)',
+	  'refs/tags'
+        );
+        my @ret;
+        for my $line (@revlines) {
+            my($refinfo, $creatorinfo) = split /\0/, $line;
+	    my($rev, $type, $name, $refid, $reftype, $title) = split(' ', $refinfo, 6);
+            my($creator, $epoch, $tz) = ($creatorinfo =~ /^(.*) ([0-9]+) (.*)$/);
+            $name =~ s!^refs/tags/!!;
+
+            push @ret, { sha1 => $rev, name => $name };
+
+            #FIXME: That isn't the time I'm looking for..
+            if($epoch and $tz) {
                 my $dt = DateTime->from_epoch(epoch => $epoch);
                 $dt->set_time_zone($tz);
                 $ret[-1]->{last_change} = $dt;
