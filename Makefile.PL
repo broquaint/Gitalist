@@ -49,12 +49,14 @@ requires 'File::Copy::Recursive';
 requires 'File::Stat::ModeString';
 requires 'File::Which';
 requires 'HTML::Entities';
-requires 'IO::Capture::Stdout';
 requires 'IPC::Run';
 requires 'List::MoreUtils';
 requires 'Path::Class' => '0.17';
 requires 'Sub::Exporter';
 requires 'Syntax::Highlight::Engine::Kate';
+requires 'Sys::Hostname';
+requires 'XML::Atom';
+requires 'XML::RSS';
 
 author_requires 'Test::NoTabs';
 author_requires 'Test::Pod' => '1.14';

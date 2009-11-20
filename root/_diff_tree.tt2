@@ -1,4 +1,4 @@
-<table class='diff-tree'>
+<table class='diff-tree listing'>
  <thead>
   <tr>
    <th>file</th>
@@ -16,7 +16,7 @@
  <tbody>
   [% FOREACH line IN diff_tree -%]
   <tr>
-   <td class='filename'>
+   <td class='file-name'>
     [% line.file %]
    </td>
    <td class='status'>

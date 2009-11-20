@@ -20,8 +20,6 @@ use File::Basename qw(basename);
 use FindBin;
 binmode STDOUT, ':utf8';
 
-use Gitalist::Util qw(to_utf8);
-
 BEGIN {
 	CGI->compile();
 }
@@ -1157,6 +1155,19 @@ sub project_in_list {
 	my $project = shift;
 	my @list = git_get_projects_list();
 	return @list && scalar(grep { $_->{'path'} eq $project } @list);
+}
+
+# decode sequences of octets in utf8 into Perl's internal form,
+# which is utf-8 with utf8 flag set if needed.  gitweb writes out
+# in utf-8 thanks to "binmode STDOUT, ':utf8'" at beginning
+sub to_utf8 {
+	my $str = shift;
+	if (utf8::valid($str)) {
+		utf8::decode($str);
+		return $str;
+	} else {
+		return decode($fallback_encoding, $str, Encode::FB_DEFAULT);
+	}
 }
 
 ## ----------------------------------------------------------------------

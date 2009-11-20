@@ -4,11 +4,12 @@ use namespace::autoclean;
 
 BEGIN { extends 'Catalyst::Controller' }
 
-#
-# Sets the actions in this controller to be registered with no prefix
-# so they function identically to actions created in MyApp.pm
-#
 __PACKAGE__->config->{namespace} = '';
+
+use Sys::Hostname ();
+use XML::Atom::Feed;
+use XML::Atom::Entry;
+use XML::RSS;
 
 =head1 NAME
 
@@ -21,42 +22,6 @@ Gitalist::Controller::Root - Root Controller for Gitalist
 =head1 METHODS
 
 =cut
-
-=head2 index
-
-=cut
-
-use IO::Capture::Stdout;
-
-=head2 run_gitweb
-
-The C<gitweb> shim. It should now only be explicitly accessible by
-modifying the URL.
-
-=cut
-
-sub run_gitweb {
-  my ( $self, $c ) = @_;
-
-  # XXX A slippery slope to be sure.
-  if($c->req->param('a')) {
-    my $capture = IO::Capture::Stdout->new();
-    $capture->start();
-    eval {
-      my $action = gitweb::main($c);
-      $action->();
-    };
-    $capture->stop();
-
-    use Data::Dumper;
-    die Dumper($@)
-      if $@;
-
-    my $output = join '', $capture->read;
-    $c->stash->{gitweb_output} = $output;
-    $c->stash->{template} = 'gitweb.tt2';
-  }
-}
 
 sub _get_object {
   my($self, $c, $haveh) = @_;
@@ -126,7 +91,6 @@ sub summary : Local {
   my $maxitems = Gitalist->config->{paging}{summary} || 10;
   $c->stash(
     commit    => $commit,
-#    info      => $project->info,
     log_lines => [$project->list_revs(
         sha1 => $commit->sha1,
         count => $maxitems,
@@ -151,6 +115,42 @@ sub heads : Local {
     heads  => $project->heads,
     action => 'heads',
   );
+}
+
+=head2 tags
+
+The current list of tags in the repo.
+
+=cut
+
+sub tags : Local {
+  my ( $self, $c ) = @_;
+  my $project = $c->stash->{Project};
+  $c->stash(
+    commit => $self->_get_object($c),
+    tags   => $project->tags,
+    action => 'tags',
+  );
+}
+
+sub blame : Local {
+  my($self, $c) = @_;
+
+  my $project = $c->stash->{Project};
+  my $h  = $c->req->param('h')
+       || $project->hash_by_path($c->req->param('hb'), $c->req->param('f'))
+       || die "No file or sha1 provided.";
+  my $hb = $c->req->param('hb')
+       || $project->head_hash
+       || die "Couldn't discern the corresponding head.";
+  my $filename = $c->req->param('f') || '';
+
+  $c->stash(
+    blame    => $project->get_object($hb)->blame($filename),
+    head     => $project->get_object($hb),
+    filename => $filename,
+  );
+  
 }
 
 =head2 blob
@@ -180,7 +180,27 @@ sub blob : Local {
     action   => 'blob',
   );
 
-  $c->forward('View::SyntaxHighlight');
+  $c->forward('View::SyntaxHighlight')
+    unless $c->stash->{no_wrapper};
+}
+
+sub blob_plain : Local {
+  my($self, $c) = @_;
+
+  $c->stash(no_wrapper => 1);
+  $c->response->content_type('text/plain; charset=utf-8');
+
+  $c->forward('blob');
+}
+
+sub blobdiff_plain : Local {
+  my($self, $c) = @_;
+
+  $c->stash(no_wrapper => 1);
+  $c->response->content_type('text/plain; charset=utf-8');
+
+  $c->forward('blobdiff');
+
 }
 
 =head2 blobdiff
@@ -196,20 +216,22 @@ sub blobdiff : Local {
               || croak("No file specified!");
   my($tree, $patch) = $c->stash->{Project}->diff(
     commit => $commit,
-    parent => $c->req->param('hpb') || '',
-    file   => $filename,
     patch  => 1,
+    parent => $c->req->param('hpb') || undef,
+    file   => $filename,
   );
   $c->stash(
     commit    => $commit,
     diff      => $patch,
+    filename  => $filename,
     # XXX Hack hack hack, see View::SyntaxHighlight
     blobs     => [$patch->[0]->{diff}],
     language  => 'Diff',
     action    => 'blobdiff',
   );
 
-  $c->forward('View::SyntaxHighlight');
+  $c->forward('View::SyntaxHighlight')
+    unless $c->stash->{no_wrapper};
 }
 
 =head2 commit
@@ -254,7 +276,17 @@ sub commitdiff : Local {
     action    => 'commitdiff',
   );
 
-  $c->forward('View::SyntaxHighlight');
+  $c->forward('View::SyntaxHighlight')
+    unless $c->stash->{no_wrapper};
+}
+
+sub commitdiff_plain : Local {
+  my($self, $c) = @_;
+
+  $c->stash(no_wrapper => 1);
+  $c->response->content_type('text/plain; charset=utf-8');
+
+  $c->forward('commitdiff');
 }
 
 =head2 shortlog
@@ -265,12 +297,15 @@ Expose an abbreviated log of a given sha1.
 
 sub shortlog : Local {
   my ( $self, $c ) = @_;
-  my $project = $c->stash->{Project};
-  my $commit  = $self->_get_object($c);
+
+  my $project  = $c->stash->{Project};
+  my $commit   = $self->_get_object($c);
+  my $filename = $c->req->param('f') || '';
+
   my %logargs = (
       sha1   => $commit->sha1,
       count  => Gitalist->config->{paging}{log} || 25,
-      ($c->req->param('f') ? (file => $c->req->param('f')) : ())
+      ($filename ? (file => $filename) : ())
   );
 
   my $page = $c->req->param('pg') || 0;
@@ -281,8 +316,9 @@ sub shortlog : Local {
       commit    => $commit,
       log_lines => [$project->list_revs(%logargs)],
       refs      => $project->references,
-      action    => 'shortlog',
       page      => $page,
+      filename  => $filename,
+      action    => 'shortlog',
   );
 }
 
@@ -294,6 +330,11 @@ Calls shortlog internally. Perhaps that should be reversed ...
 sub log : Local {
     $_[0]->shortlog($_[1]);
     $_[1]->stash->{action} = 'log';
+}
+
+# For legacy support.
+sub history : Local {
+  $_[0]->shortlog(@_[1 .. $#_]);
 }
 
 =head2 tree
@@ -334,6 +375,12 @@ sub reflog : Local {
   );
 }
 
+=head2 search
+
+The action for the search form.
+
+=cut
+
 sub search : Local {
   my($self, $c) = @_;
   $c->stash(current_action => 'GitRepos');
@@ -344,11 +391,11 @@ sub search : Local {
     sha1   => $commit->sha1,
     count  => Gitalist->config->{paging}{log},
     ($c->req->param('f') ? (file => $c->req->param('f')) : ()),
-	search => {
-	  type   => $c->req->param('type'),
-	  text   => $c->req->param('text'),
-	  regexp => $c->req->param('regexp') || 0,
-    }
+    search => {
+      type   => $c->req->param('type'),
+      text   => $c->req->param('text'),
+      regexp => $c->req->param('regexp') || 0,
+    },
   );
 
   $c->stash(
@@ -359,49 +406,142 @@ sub search : Local {
   );
 }
 
+=head2 search_help
+
+Provides some help for the search form.
+
+=cut
+
 sub search_help : Local {
     my ($self, $c) = @_;
     $c->stash(template => 'search_help.tt2');
 }
 
+=head2 atom
+
+Provides an atom feed for a given project.
+
+=cut
+
 sub atom : Local {
-    # FIXME - implement atom
-    Carp::croak "Not implemented.";
+  my($self, $c) = @_;
+
+  my $feed = XML::Atom::Feed->new;
+
+  my $host = lc Sys::Hostname::hostname();
+  $feed->title($host . ' - ' . Gitalist->config->{name});
+  $feed->updated(~~DateTime->now);
+
+  my $project = $c->stash->{Project};
+  my %logargs = (
+      sha1   => $project->head_hash,
+      count  => Gitalist->config->{paging}{log} || 25,
+      ($c->req->param('f') ? (file => $c->req->param('f')) : ())
+  );
+
+  my $mk_title = $c->stash->{short_cmt};
+  for my $commit ($project->list_revs(%logargs)) {
+    my $entry = XML::Atom::Entry->new;
+    $entry->title( $mk_title->($commit->comment) );
+    $entry->id($c->uri_for('commit', {h=>$commit->sha1}));
+    # XXX Needs work ...
+    $entry->content($commit->comment);
+    $feed->add_entry($entry);
+  }
+
+  $c->response->body($feed->as_xml);
+  $c->response->content_type('application/atom+xml');
+  $c->response->status(200);
 }
+
+=head2 rss
+
+Provides an RSS feed for a given project.
+
+=cut
 
 sub rss : Local {
-    # FIXME - implement rss
-    Carp::croak "Not implemented.";
+  my ($self, $c) = @_;
+
+  my $project = $c->stash->{Project};
+
+  my $rss = XML::RSS->new(version => '2.0');
+  $rss->channel(
+    title          => lc(Sys::Hostname::hostname()) . ' - ' . Gitalist->config->{name},
+    link           => $c->uri_for('summary', {p=>$project->name}),
+    language       => 'en',
+    description    => $project->description,
+    pubDate        => DateTime->now,
+    lastBuildDate  => DateTime->now,
+  );
+
+  my %logargs = (
+      sha1   => $project->head_hash,
+      count  => Gitalist->config->{paging}{log} || 25,
+      ($c->req->param('f') ? (file => $c->req->param('f')) : ())
+  );
+  my $mk_title = $c->stash->{short_cmt};
+  for my $commit ($project->list_revs(%logargs)) {
+    # XXX Needs work ....
+    $rss->add_item(
+        title       => $mk_title->($commit->comment),
+        permaLink   => $c->uri_for(commit => {h=>$commit->sha1}),
+        description => $commit->comment,
+    );
+  }
+
+  $c->response->body($rss->as_string);
+  $c->response->content_type('application/rss+xml');
+  $c->response->status(200);
 }
 
-sub blobdiff_plain : Local {
-    # FIXME - implement blobdiff_plain
-    Carp::croak "Not implemented.";
-}
+=head2 patch
 
-sub blob_plain : Local {
-    # FIXME - implement blobdiff_plain
-    Carp::croak "Not implemented.";
-}
+A raw patch for a given commit.
+
+=cut
 
 sub patch : Local {
-    # FIXME - implement patches
-    Carp::croak "Not implemented.";
+    my ($self, $c) = @_;
+    $c->detach('patches', [1]);
 }
+
+=head2 patches
+
+The patcheset for a given commit ???
+
+=cut
 
 sub patches : Local {
-    # FIXME - implement patches
-    Carp::croak "Not implemented.";
+    my ($self, $c, $count) = @_;
+    $count ||= Gitalist->config->{patches}{max};
+    my $commit = $self->_get_object($c);
+    my $parent = $c->req->param('hp') || undef;
+    my $patch = $commit->get_patch( $parent, $count );
+    $c->response->body($patch);
+    $c->response->content_type('text/plain');
+    $c->response->status(200);
 }
+
+=head2 snapshot
+
+Provides a snapshot of a given commit.
+
+=cut
 
 sub snapshot : Local {
-    # FIXME - implement snapshot
-    Carp::croak "Not implemented.";
-}
-
-sub commitdiff_plain : Local {
-    # FIXME - implement commitdiff_plain
-    Carp::croak "Not implemented.";
+    my ($self, $c) = @_;
+    my $format = $c->req->param('sf') || 'tgz';
+    die unless $format;
+    my $sha1 = $c->req->param('h') || $self->_get_object($c)->sha1;
+    my @snap = $c->stash->{Project}->snapshot(
+        sha1 => $sha1,
+        format => $format
+    );
+    $c->response->status(200);
+    $c->response->headers->header( 'Content-Disposition' =>
+                                       "attachment; filename=$snap[0]");
+    $c->response->body($snap[1]);
 }
 
 =head2 auto
@@ -413,8 +553,22 @@ Populate the header and footer. Perhaps not the best location.
 sub auto : Private {
   my($self, $c) = @_;
 
-  # XXX Move these to a plugin!
+  my $project = $c->req->param('p');
+  if (defined $project) {
+    eval {
+      $c->stash(Project => $c->model('GitRepos')->project($project));
+    };
+    if ($@) {
+      $c->detach('error_404');
+    }
+  }
+
+  my $a_project = $c->stash->{Project} || $c->model()->projects->[0];
   $c->stash(
+    git_version => $a_project->run_cmd('--version'),
+    version     => $Gitalist::VERSION,
+
+    # XXX Move these to a plugin!
     time_since => sub {
       return 'never' unless $_[0];
       return age_string(time - $_[0]->epoch);
@@ -429,193 +583,15 @@ sub auto : Private {
         join(' ', grep { defined } (split / /, shift)[0..10]);
     },
   );
-
-  # Yes, this is hideous.
-  $self->header($c);
-  $self->footer($c);
 }
 
-# XXX This could probably be dropped altogether.
-use Gitalist::Util qw(to_utf8);
-# Formally git_header_html
-sub header {
-  my($self, $c) = @_;
-
-  my $title = $c->config->{sitename};
-
-  my $project   = $c->req->param('project')  || $c->req->param('p');
-  my $action    = $c->req->param('action')   || $c->req->param('a');
-  my $file_name = $c->req->param('filename') || $c->req->param('f');
-  if(defined $project) {
-    $title .= " - " . to_utf8($project);
-    if (defined $action) {
-      $title .= "/$action";
-      if (defined $file_name) {
-        $title .= " - " . $file_name;
-        if ($action eq "tree" && $file_name !~ m|/$|) {
-          $title .= "/";
-        }
-      }
-    }
-  }
-
-  $c->stash->{version}     = $Gitalist::VERSION;
-  # check git's version by running it on the first project in the list.
-  $c->stash->{title}       = $title;
-
-  $c->stash->{stylesheet} = $c->config->{stylesheet} || 'gitweb.css';
-
-  $c->stash->{project} = $project;
-  my @links;
-  if($project) {
-    my %href_params = $self->feed_info($c);
-    $href_params{'-title'} ||= 'log';
-
-    foreach my $format qw(RSS Atom) {
-      my $type = lc($format);
-      push @links, {
-        rel   => 'alternate',
-        title => "$project - $href_params{'-title'} - $format feed",
-
-        # XXX A bit hacky and could do with using gitweb::href() features
-        href  => "?a=$type;p=$project",
-        type  => "application/$type+xml"
-        }, {
-        rel   => 'alternate',
-
-        # XXX This duplication also feels a bit awkward
-        title => "$project - $href_params{'-title'} - $format feed (no merges)",
-        href  => "?a=$type;p=$project;opt=--no-merges",
-        type  => "application/$type+xml"
-        };
-    }
-  } else {
-    push @links, {
-      rel => "alternate",
-      title => $c->config->{sitename}." projects list",
-      href => '?a=project_index',
-      type => "text/plain; charset=utf-8"
-      }, {
-      rel => "alternate",
-      title => $c->config->{sitename}." projects feeds",
-      href => '?a=opml',
-      type => "text/plain; charset=utf-8"
-      };
-  }
-
-  $c->stash->{favicon} = $c->config->{favicon};
-
-  # </head><body>
-
-  $c->stash(
-    logo_url      => $c->config->{logo_url},
-    logo_label    => $c->config->{logo_label},
-    logo_img      => $c->config->{logo},
-    home_link     => $c->config->{home_link},
-    home_link_str => $c->config->{home_link_str},
-    );
-
-  if (defined $project) {
-      eval {
-          $c->stash(Project => $c->model('GitRepos')->project($project));
-      };
-      if ($@) {
-          $c->detach('error_404');
-      }
-      $c->stash(
-          search_text => ( $c->req->param('s') ||
-                               $c->req->param('searchtext') || ''),
-          search_hash => ( $c->req->param('hb') || $c->req->param('hashbase')
-                               || $c->req->param('h')  || $c->req->param('hash')
-                                   || 'HEAD' ),
-      );
-  }
-  my $a_project = $c->stash->{Project} || $c->model()->projects->[0];
-  $c->stash->{git_version} = $a_project->run_cmd('--version');
+sub project_index : Local {
+    # FIXME - implement snapshot
+    Carp::croak "Not implemented.";
 }
-
-# Formally git_footer_html
-sub footer {
-  my($self, $c) = @_;
-
-  my $feed_class = 'rss_logo';
-
-  my @feeds;
-  my $project = $c->req->param('project')  || $c->req->param('p');
-  if(defined $project) {
-    (my $pstr = $project) =~ s[/?\.git$][];
-    my $descr = $c->stash->{project_description}
-            = $c->stash->{Project} ? $c->stash->{Project}->description : '';
-
-    my %href_params = $self->feed_info($c);
-    if (!%href_params) {
-      $feed_class .= ' generic';
-    }
-    $href_params{'-title'} ||= 'log';
-
-    @feeds = [
-      map +{
-        class => $feed_class,
-        title => "$href_params{'-title'} $_ feed",
-        href  => "/?p=$project;a=\L$_",
-        name  => lc $_,
-        }, qw(RSS Atom)
-      ];
-  } else {
-    @feeds = [
-      map {
-        class => $feed_class,
-          title => '',
-          href  => "/?a=$_->[0]",
-          name  => $_->[1],
-        }, [opml=>'OPML'],[project_index=>'TXT'],
-      ];
-  }
-}
-
-# XXX This feels wrong here, should probably be refactored.
-# returns hash to be passed to href to generate gitweb URL
-# in -title key it returns description of link
-sub feed_info {
-  my($self, $c) = @_;
-
-  my $format = shift || 'Atom';
-  my %res = (action => lc($format));
-
-  # feed links are possible only for project views
-  return unless $c->req->param('project');
-
-  # some views should link to OPML, or to generic project feed,
-  # or don't have specific feed yet (so they should use generic)
-  return if $c->req->param('action') =~ /^(?:tags|heads|forks|tag|search)$/x;
-
-  my $branch;
-  my $hash = $c->req->param('h')  || $c->req->param('hash');
-  my $hash_base = $c->req->param('hb') || $c->req->param('hashbase');
-
-  # branches refs uses 'refs/heads/' prefix (fullname) to differentiate
-  # from tag links; this also makes possible to detect branch links
-  if ((defined $hash_base && $hash_base =~ m!^refs/heads/(.*)$!) ||
-    (defined $hash      && $hash      =~ m!^refs/heads/(.*)$!)) {
-    $branch = $1;
-  }
-
-  # find log type for feed description (title)
-  my $type = 'log';
-  my $file_name = $c->req->param('f') || $c->req->param('filename');
-  if (defined $file_name) {
-    $type  = "history of $file_name";
-    $type .= "/" if $c->req->param('action') eq 'tree';
-    $type .= " on '$branch'" if (defined $branch);
-  } else {
-    $type = "log of $branch" if (defined $branch);
-  }
-
-  $res{-title} = $type;
-  $res{'hash'} = (defined $branch ? "refs/heads/$branch" : undef);
-  $res{'file_name'} = $file_name;
-
-  return %res;
+sub opml : Local {
+    # FIXME - implement snapshot
+    Carp::croak "Not implemented.";
 }
 
 =head2 end
@@ -642,35 +618,43 @@ sub error_404 :Private {
 }
 
 sub age_string {
-	my $age = shift;
-	my $age_str;
+  my $age = shift;
+  my $age_str;
 
-	if ($age > 60*60*24*365*2) {
-		$age_str = (int $age/60/60/24/365);
-		$age_str .= " years ago";
-	} elsif ($age > 60*60*24*(365/12)*2) {
-		$age_str = int $age/60/60/24/(365/12);
-		$age_str .= " months ago";
-	} elsif ($age > 60*60*24*7*2) {
-		$age_str = int $age/60/60/24/7;
-		$age_str .= " weeks ago";
-	} elsif ($age > 60*60*24*2) {
-		$age_str = int $age/60/60/24;
-		$age_str .= " days ago";
-	} elsif ($age > 60*60*2) {
-		$age_str = int $age/60/60;
-		$age_str .= " hours ago";
-	} elsif ($age > 60*2) {
-		$age_str = int $age/60;
-		$age_str .= " min ago";
-	} elsif ($age > 2) {
-		$age_str = int $age;
-		$age_str .= " sec ago";
-	} else {
-		$age_str .= " right now";
-	}
-	return $age_str;
+  if ( $age > 60 * 60 * 24 * 365 * 2 ) {
+    $age_str  = ( int $age / 60 / 60 / 24 / 365 );
+    $age_str .= " years ago";
+  }
+  elsif ( $age > 60 * 60 * 24 * ( 365 / 12 ) * 2 ) {
+    $age_str  = int $age / 60 / 60 / 24 / ( 365 / 12 );
+    $age_str .= " months ago";
+  }
+  elsif ( $age > 60 * 60 * 24 * 7 * 2 ) {
+    $age_str  = int $age / 60 / 60 / 24 / 7;
+    $age_str .= " weeks ago";
+  }
+  elsif ( $age > 60 * 60 * 24 * 2 ) {
+    $age_str  = int $age / 60 / 60 / 24;
+    $age_str .= " days ago";
+  }
+  elsif ( $age > 60 * 60 * 2 ) {
+    $age_str  = int $age / 60 / 60;
+    $age_str .= " hours ago";
+  }
+  elsif ( $age > 60 * 2 ) {
+    $age_str  = int $age / 60;
+    $age_str .= " min ago";
+  }
+  elsif ( $age > 2 ) {
+    $age_str  = int $age;
+    $age_str .= " sec ago";
+  }
+  else {
+    $age_str .= " right now";
+  }
+  return $age_str;
 }
+
 
 =head1 AUTHOR
 

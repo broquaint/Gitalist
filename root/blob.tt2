@@ -7,7 +7,7 @@
 </div>
 [% END %]
 <div class='path'>
- <a href="[% c.uri_for("tree", {hb=head.sha1}) %]">[% project %]</a>
+ <a href="[% c.uri_for("tree", {hb=head.sha1}) %]">[% Project.name %]</a>
  [% # XXX The last part should link to blob_plain (or something) but doesn't ATM
     FOREACH part IN filename.split('/') %]
  / <a href="[% c.uri_for("tree", {hb=head.sha1}) %]">[% part %]</a>

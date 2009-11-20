@@ -26,8 +26,8 @@ it under the same terms as Perl itself.
 =cut
 
 __PACKAGE__->config(
-	TEMPLATE_EXTENSION => '.tt2',
-	WRAPPER            => 'default.tt2',
+  TEMPLATE_EXTENSION => '.tt2',
+  WRAPPER            => 'default.tt2',
 );
 
 __PACKAGE__->meta->make_immutable(inline_constructor => 0);

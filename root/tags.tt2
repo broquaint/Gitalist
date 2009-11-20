@@ -4,4 +4,4 @@
 [% Project.name %]
 </div>
 
-[% INCLUDE '_heads.tt2' %]
+[% INCLUDE '_heads.tt2' heads = tags %]

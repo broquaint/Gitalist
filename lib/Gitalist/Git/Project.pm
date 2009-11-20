@@ -24,6 +24,7 @@ class Gitalist::Git::Project with Gitalist::Git::HasUtils {
     use MooseX::Types::Common::String qw/NonEmptySimpleStr/;
     use MooseX::Types::Path::Class qw/Dir/;
     use MooseX::Types::Moose qw/Str Maybe Bool HashRef ArrayRef/;
+    use Moose::Autobox;
     use List::MoreUtils qw/any zip/;
     use DateTime;
     use Gitalist::Git::Object::Blob;
@@ -114,6 +115,14 @@ ArrayRef of hashes containing the name and sha1 of all heads.
 
 =cut
     has heads => ( isa => ArrayRef[HashRef],
+                   is => 'ro',
+                   lazy_build => 1);
+=head2 tags
+
+ArrayRef of hashes containing the name and sha1 of all tags.
+
+=cut
+    has tags => ( isa => ArrayRef[HashRef],
                    is => 'ro',
                    lazy_build => 1);
 
@@ -238,6 +247,34 @@ Returns a list of revs for the given head ($sha1).
         return @revs;
     }
 
+=head2 snapshot($sha1, $format)
+
+Generate an archived snapshot of the repository.
+$sha1 should be a commit or tree.
+Returns a filehandle to read from.
+
+=cut
+
+method snapshot (NonEmptySimpleStr :$sha1,
+                 NonEmptySimpleStr :$format
+               ) {
+    # TODO - only valid formats are 'tar' and 'zip'
+    my $formats = { tgz => 'tar', zip => 'zip' };
+    unless ($formats->exists($format)) {
+        die("No such format: $format");
+    }
+    $format = $formats->{$format};
+    my $name = $self->name;
+    $name =~ s,([^/])/*\.git$,$1,;
+    my $filename = $name;
+    $filename .= "-$sha1.$format";
+    $name =~ s/\047/\047\\\047\047/g;
+
+    my @cmd = ('archive', "--format=$format", "--prefix=$name/", $sha1);
+    return ($filename, $self->run_cmd_fh(@cmd));
+    # TODO - support compressed archives
+}
+
 =head2 diff($commit, $patch?, $parent?, $file?)
 
 Generate a diff from a given L<Gitalist::Git::Object>.
@@ -349,6 +386,32 @@ FIXME Should this return objects?
 
             #FIXME: That isn't the time I'm looking for..
             if (my ($epoch, $tz) = $line =~ /\s(\d+)\s+([+-]\d+)$/) {
+                my $dt = DateTime->from_epoch(epoch => $epoch);
+                $dt->set_time_zone($tz);
+                $ret[-1]->{last_change} = $dt;
+            }
+        }
+
+        return \@ret;
+    }
+
+    method _build_tags {
+        my @revlines = $self->run_cmd_list('for-each-ref',
+          '--sort=-creatordate',
+          '--format=%(objectname) %(objecttype) %(refname) %(*objectname) %(*objecttype) %(subject)%00%(creator)',
+	  'refs/tags'
+        );
+        my @ret;
+        for my $line (@revlines) {
+            my($refinfo, $creatorinfo) = split /\0/, $line;
+	    my($rev, $type, $name, $refid, $reftype, $title) = split(' ', $refinfo, 6);
+            my($creator, $epoch, $tz) = ($creatorinfo =~ /^(.*) ([0-9]+) (.*)$/);
+            $name =~ s!^refs/tags/!!;
+
+            push @ret, { sha1 => $rev, name => $name };
+
+            #FIXME: That isn't the time I'm looking for..
+            if($epoch and $tz) {
                 my $dt = DateTime->from_epoch(epoch => $epoch);
                 $dt->set_time_zone($tz);
                 $ret[-1]->{last_change} = $dt;

@@ -1,0 +1,28 @@
+  [% IF Project %]
+  <!-- XXX Missing the no-merges links -->
+  <link
+    rel="alternate"
+    title="[% Project.name %] - [% title %] Atom feed"
+    href="[% c.uri_for('atom') %]"
+    type="application/atom+xml"
+  >
+  <link
+    rel="alternate"
+    title="[% Project.name %] - [% title %] RSS feed"
+    href="[% c.uri_for('rss') %]"
+    type="application/rss+xml"
+  >
+  [% ELSE %]
+  <link
+    rel="alternate"
+    title="[% c.config.sitename %] Git projects list"
+    href="[% c.uri_for('project_index') %]"
+    type="text/plain; charset=utf-8"
+  > 
+  <link
+    rel="alternate"
+    title="[% c.config.sitename %] Git projects feeds"
+    href="[% c.uri_for('opml') %]"
+    type="text/x-opml"
+  >
+  [% END %]

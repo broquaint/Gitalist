@@ -6,6 +6,7 @@ class Gitalist::Git::Object::Commit
     with Gitalist::Git::Object::HasTree {
         use MooseX::Types::Moose qw/Str Int Bool Maybe ArrayRef/;
         use MooseX::Types::Common::String qw/NonEmptySimpleStr/;
+        use Moose::Autobox;
         use List::MoreUtils qw/any zip/;
         our $SHA1RE = qr/[0-9a-fA-F]{40}/;
 
@@ -22,7 +23,31 @@ class Gitalist::Git::Object::Commit
                                       ],
                          );
 
-         method diff ( Maybe[Bool] :$patch?,
+        method get_patch ( Maybe[NonEmptySimpleStr] $parent_hash?,
+                           Int $patch_count?) {
+            # assembling the git command to execute...
+            my @cmd = qw/format-patch --encoding=utf8 --stdout/;
+
+            # patch, or patch set?
+            push @cmd,
+                defined $patch_count
+                ? "-$patch_count -n" : "-1";
+
+            # refspec
+            if (defined $parent_hash) {
+                #  if a parent is specified: hp..h
+                push @cmd, "$parent_hash.." . $self->sha1;
+            } else {
+                #  if not, but a merge commit: --cc h
+                #  otherwise: --root h
+                push @cmd, $self->parents->length > 1
+                    ? '--cc' : '--root';
+                push @cmd, $self->sha1;
+            }
+            return $self->_run_cmd_fh( @cmd );
+        }
+
+        method diff ( Maybe[Bool] :$patch?,
                        Maybe[NonEmptySimpleStr] :$parent?,
                        Maybe[NonEmptySimpleStr] :$file?
                    ) {
@@ -115,4 +140,47 @@ class Gitalist::Git::Object::Commit
             return @ret;
         }
 
+
+  # XXX A prime candidate for caching.
+  method blame ( NonEmptySimpleStr $filename ) {
+    my @blameout = $self->_run_cmd_list(
+      blame => '-p', $self->sha1, '--', $filename
+    );
+
+    my(%commitdata, @filedata);
+    while(defined(local $_ = shift @blameout)) {
+      my ($sha1, $orig_lineno, $lineno, $group_size) =
+        /^([0-9a-f]{40}) (\d+) (\d+)(?: (\d+))?$/;
+
+      $commitdata{$sha1} = {}
+        unless exists $commitdata{$sha1};
+
+      my $commit = $commitdata{$sha1};
+      my $line;
+      until(($line = shift @blameout) =~ s/^\t//) {
+        $commit->{$1} = $2
+         if $line =~ /^(\S+) (.*)/;
+      }
+
+      unless(exists $commit->{author_dt}) {
+        for my $t (qw/author committer/) {
+          my $dt = DateTime->from_epoch(epoch => $commit->{"$t-time"});
+          $dt->set_time_zone($commit->{"$t-tz"});
+          $commit->{"$t\_dt"} = $dt;
+        }
+      }
+
+      push @filedata, {
+        line => $line,
+        commit => { sha1 => $sha1, %$commit },
+        meta => {
+          orig_lineno => $orig_lineno,
+          lineno => $lineno,
+          ( $group_size ? (group_size => $group_size) : () ),
+        },
+      };
     }
+
+    return \@filedata;
+  }
+}
