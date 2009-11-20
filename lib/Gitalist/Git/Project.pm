@@ -24,8 +24,10 @@ class Gitalist::Git::Project with Gitalist::Git::HasUtils {
     use MooseX::Types::Common::String qw/NonEmptySimpleStr/;
     use MooseX::Types::Path::Class qw/Dir/;
     use MooseX::Types::Moose qw/Str Maybe Bool HashRef ArrayRef/;
+    use Moose::Autobox;
     use List::MoreUtils qw/any zip/;
     use DateTime;
+    use Gitalist::Util qw(to_utf8);
     use Gitalist::Git::Object::Blob;
     use Gitalist::Git::Object::Tree;
     use Gitalist::Git::Object::Commit;
@@ -238,18 +240,34 @@ Returns a list of revs for the given head ($sha1).
         return @revs;
     }
 
-=head2 snapshot($head?, $format)
+=head2 snapshot($sha1, $format)
 
 Generate an archived snapshot of the repository.
+$sha1 should be a commit or tree.
 Returns a filehandle to read from.
 
 =cut
 
-method snapshot (Gitalist::Git::Object :$commit,
+method snapshot (NonEmptySimpleStr :$sha1,
                  NonEmptySimpleStr :$format
                ) {
-               return $commit->snapshot;
-           }
+    # TODO - only valid formats are 'tar' and 'zip'
+    my $formats = { tgz => 'tar', zip => 'zip' };
+    unless ($formats->exists($format)) {
+        die("No such format: $format");
+    }
+    $format = $formats->{$format};
+    my $name = $self->name;
+    $name =~ s,([^/])/*\.git$,$1,;
+    my $filename = to_utf8($name);
+    $filename .= "-$sha1.$format";
+    $name =~ s/\047/\047\\\047\047/g;
+
+
+    my @cmd = ('archive', "--format=$format", "--prefix=$name/", $sha1);
+    return $self->run_cmd_fh(@cmd);
+    # TODO - support compressed archives
+}
 
 =head2 diff($commit, $patch?, $parent?, $file?)
 

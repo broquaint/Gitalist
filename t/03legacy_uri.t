@@ -158,19 +158,16 @@ test('/', 'a=shortlog;h=HEAD');
 test('/', 'a=shortlog;h=master');
 test('/', 'a=shortlog;h=refs/heads/master');
 
-TODO: {
-    local $TODO = "Action: snapshot is not yet implemented.";
-    test('/', 'a=snapshot;h=145dc3ef5d307be84cb9b325d70bd08aeed0eceb;sf=tgz');
-    test('/', 'a=snapshot;h=36c6c6708b8360d7023e8a1649c45bcf9b3bd818;sf=tgz');
-    test('/', 'a=snapshot;h=3bc0634310b9c62222bb0e724c11ffdfb297b4ac;sf=tgz');
-    test('/', 'a=snapshot;h=3f7567c7bdf7e7ebf410926493b92d398333116e;sf=tgz');
-    test('/', 'a=snapshot;h=729a7c3f6ba5453b42d16a43692205f67fb23bc1;sf=tgz');
-    test('/', 'a=snapshot;h=82b5fee28277349b6d46beff5fdf6a7152347ba0;sf=tgz');
-    test('/', 'a=snapshot;h=9062594aebb5df0de7fb92413f17a9eced196c22;sf=tgz');
-    test('/', 'a=snapshot;h=HEAD;sf=tgz');
-    test('/', 'a=snapshot;h=master;sf=tgz');
-    test('/', 'a=snapshot;h=refs/heads/master;sf=tgz');
-}
+test('/', 'a=snapshot;h=145dc3ef5d307be84cb9b325d70bd08aeed0eceb;sf=tgz');
+test('/', 'a=snapshot;h=36c6c6708b8360d7023e8a1649c45bcf9b3bd818;sf=tgz');
+test('/', 'a=snapshot;h=3bc0634310b9c62222bb0e724c11ffdfb297b4ac;sf=tgz');
+test('/', 'a=snapshot;h=3f7567c7bdf7e7ebf410926493b92d398333116e;sf=tgz');
+test('/', 'a=snapshot;h=729a7c3f6ba5453b42d16a43692205f67fb23bc1;sf=tgz');
+test('/', 'a=snapshot;h=82b5fee28277349b6d46beff5fdf6a7152347ba0;sf=tgz');
+test('/', 'a=snapshot;h=9062594aebb5df0de7fb92413f17a9eced196c22;sf=tgz');
+test('/', 'a=snapshot;h=HEAD;sf=tgz');
+test('/', 'a=snapshot;h=master;sf=tgz');
+test('/', 'a=snapshot;h=refs/heads/master;sf=tgz');
 
 test('/', 'a=tree');
 test('/', 'a=tree;f=dir1;h=729a7c3f6ba5453b42d16a43692205f67fb23bc1;hb=36c6c6708b8360d7023e8a1649c45bcf9b3bd818');
