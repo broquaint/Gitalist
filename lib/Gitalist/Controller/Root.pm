@@ -133,6 +133,28 @@ sub tags : Local {
   );
 }
 
+sub blame : Local {
+  my($self, $c) = @_;
+
+  my $project = $c->stash->{Project};
+  my $h  = $c->req->param('h')
+       || $project->hash_by_path($c->req->param('hb'), $c->req->param('f'))
+       || die "No file or sha1 provided.";
+  my $hb = $c->req->param('hb')
+       || $project->head_hash
+       || die "Couldn't discern the corresponding head.";
+  my $filename = $c->req->param('f') || '';
+
+  my($metadata, $filedata) = $project->get_object($hb)->blame($filename);
+  $c->stash(
+    metadata => $metadata,
+    filedata => $filedata,
+    head     => $project->get_object($hb),
+    filename => $filename,
+  );
+  
+}
+
 =head2 blob
 
 The blob action i.e the contents of a file.
@@ -565,10 +587,6 @@ sub project_index : Local {
     Carp::croak "Not implemented.";
 }
 sub opml : Local {
-    # FIXME - implement snapshot
-    Carp::croak "Not implemented.";
-}
-sub blame : Local {
     # FIXME - implement snapshot
     Carp::croak "Not implemented.";
 }

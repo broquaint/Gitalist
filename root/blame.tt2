@@ -1,0 +1,16 @@
+[% PROCESS 'nav/actions.tt2' object = head %]
+[% IF object.type == 'commit' %]
+<div class='commit-message'>
+[% head.comment.substr(0, 85) %] ...
+</div>
+[% END %]
+
+<h3>BLOB PATH</h3>
+
+<div class='blame'>
+<table>
+[% FOR info IN filedata %]
+<tr><td>[% info.sha1 %]</td><td><pre>[% info.line | html %]</pre></td></tr>
+[% END %]
+</table>
+</div>

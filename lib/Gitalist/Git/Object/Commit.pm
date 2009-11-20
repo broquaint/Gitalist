@@ -140,4 +140,37 @@ class Gitalist::Git::Object::Commit
             return @ret;
         }
 
+
+  method blame ( NonEmptySimpleStr $filename ) {
+    my @blameout = $self->_run_cmd_list(
+      blame => '-p', $self->sha1, '--', $filename
+    );
+
+    my(%metadata, @filedata);
+    while(defined(local $_ = shift @blameout)) {
+      my ($sha1, $orig_lineno, $lineno, $group_size) =
+	/^([0-9a-f]{40}) (\d+) (\d+)(?: (\d+))?$/;
+
+      my $meta = $metadata{$sha1} ||= {
+	orig_lineno => $orig_lineno,
+	lineno => $lineno,
+	group_size => $group_size,
+      };
+
+      my $line;
+      while(defined($line = shift @blameout)) {
+	last
+	  if $line =~ s/^\t//;
+	$meta->{$1} = $2
+	  if $line =~ /^(\S+) (.*)/;
+      }
+
+      $meta->{parent} = $self->_run_cmd('rev-parse', "$sha1^")
+        unless exists $meta->{parent};
+
+      push @filedata, { line => $line, sha1 => $sha1 };
     }
+
+    return \%metadata, \@filedata;
+  }
+}
