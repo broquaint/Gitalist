@@ -140,6 +140,11 @@ table.heads {
   width: 75%;
 }
 
+/* /blame */
+pre.blame-line {
+  margin: 0;
+}
+
 /* /blob */
 pre.blob {
   background-color: #333;

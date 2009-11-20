@@ -141,36 +141,46 @@ class Gitalist::Git::Object::Commit
         }
 
 
+  # XXX A prime candidate for caching.
   method blame ( NonEmptySimpleStr $filename ) {
     my @blameout = $self->_run_cmd_list(
       blame => '-p', $self->sha1, '--', $filename
     );
 
-    my(%metadata, @filedata);
+    my(%commitdata, @filedata);
     while(defined(local $_ = shift @blameout)) {
       my ($sha1, $orig_lineno, $lineno, $group_size) =
-	/^([0-9a-f]{40}) (\d+) (\d+)(?: (\d+))?$/;
+        /^([0-9a-f]{40}) (\d+) (\d+)(?: (\d+))?$/;
 
-      my $meta = $metadata{$sha1} ||= {
-	orig_lineno => $orig_lineno,
-	lineno => $lineno,
-	group_size => $group_size,
-      };
+      $commitdata{$sha1} = {}
+        unless exists $commitdata{$sha1};
 
+      my $commit = $commitdata{$sha1};
       my $line;
-      while(defined($line = shift @blameout)) {
-	last
-	  if $line =~ s/^\t//;
-	$meta->{$1} = $2
-	  if $line =~ /^(\S+) (.*)/;
+      until(($line = shift @blameout) =~ s/^\t//) {
+        $commit->{$1} = $2
+         if $line =~ /^(\S+) (.*)/;
       }
 
-      $meta->{parent} = $self->_run_cmd('rev-parse', "$sha1^")
-        unless exists $meta->{parent};
+      unless(exists $commit->{author_dt}) {
+        for my $t (qw/author committer/) {
+          my $dt = DateTime->from_epoch(epoch => $commit->{"$t-time"});
+          $dt->set_time_zone($commit->{"$t-tz"});
+          $commit->{"$t\_dt"} = $dt;
+        }
+      }
 
-      push @filedata, { line => $line, sha1 => $sha1 };
+      push @filedata, {
+        line => $line,
+        commit => { sha1 => $sha1, %$commit },
+        meta => {
+          orig_lineno => $orig_lineno,
+          lineno => $lineno,
+          ( $group_size ? (group_size => $group_size) : () ),
+        },
+      };
     }
 
-    return \%metadata, \@filedata;
+    return \@filedata;
   }
 }

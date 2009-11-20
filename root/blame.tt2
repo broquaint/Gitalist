@@ -9,8 +9,12 @@
 
 <div class='blame'>
 <table>
-[% FOR info IN filedata %]
-<tr><td>[% info.sha1 %]</td><td><pre>[% info.line | html %]</pre></td></tr>
+[% FOR info IN blame %]
+<tr>
+  <td><a title="[% info.commit.author %] on [% info.commit.author_dt %]" href='[% c.uri_for('commit', {h=info.commit.sha1}) %]'>[% info.commit.sha1.substr(0,6) %]</a></td>
+  <td>[% info.meta.lineno %]</td>
+  <td><pre class='blame-line'>[% info.line | html %]</pre></td>
+</tr>
 [% END %]
 </table>
 </div>

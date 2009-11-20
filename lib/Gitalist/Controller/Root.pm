@@ -145,10 +145,8 @@ sub blame : Local {
        || die "Couldn't discern the corresponding head.";
   my $filename = $c->req->param('f') || '';
 
-  my($metadata, $filedata) = $project->get_object($hb)->blame($filename);
   $c->stash(
-    metadata => $metadata,
-    filedata => $filedata,
+    blame    => $project->get_object($hb)->blame($filename),
     head     => $project->get_object($hb),
     filename => $filename,
   );
