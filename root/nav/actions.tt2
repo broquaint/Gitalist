@@ -1,17 +1,18 @@
 <div class='actions'>
-    <a href="[% c.uri_for('summary') %]">summary</a> •
-    <a href="[% c.uri_for('shortlog', {h=object.sha1}) %]">shortlog</a> •
-    <a href="[% c.uri_for('log', {h=object.sha1}) %]">log</a> •
-    <a href="[% c.uri_for('commit', {h=object.sha1}) %]">commit</a> •
+    <a href="[% c.uri_for('summary') %]">summary</a> &bull;
+    <a href="[% c.uri_for('shortlog', {h=object.sha1}) %]">shortlog</a> &bull;
+    <a href="[% c.uri_for('log', {h=object.sha1}) %]">log</a> &bull;
+    <a href="[% c.uri_for('commit', {h=object.sha1}) %]">commit</a> &bull;
     <a href="[% c.uri_for('commitdiff', {h=object.sha1}) %]">commitdiff</a>
-    [% IF object.type == 'commit' %] •
+    [% IF object.type == 'commit' %] &bull;
     <a href="[% c.uri_for('tree', {h=object.tree_sha1, hb=object.sha1}) %]">tree</a>
     [% END %]
     [% IF filename %]
-    §
-    <a href="[% c.uri_for('blob', {h=object.sha1,f=filename}) %]">blob</a> •
-    <a href="[% c.uri_for('blame', {h=object.sha1,f=filename}) %]">blame</a> •
-    <a href="[% c.uri_for('shortlog', {h=object.sha1,f=filename}) %]">history</a> •
+    &sect;
+    <a href="[% c.uri_for('blob', {h=object.sha1,f=filename}) %]">blob</a> &bull;
+    <a href="[% c.uri_for('blob_plain', {h=object.sha1,f=filename}) %]">raw</a> &bull;
+    <a href="[% c.uri_for('blame', {h=object.sha1,f=filename}) %]">blame</a> &bull;
+    <a href="[% c.uri_for('shortlog', {h=object.sha1,f=filename}) %]">history</a> &bull;
     <a href="[% c.uri_for(action, {f=filename}) %]">HEAD</a>
     [% END %]
     <div class='chroma-hash'>[% INCLUDE '_chroma_hash.tt2' sha1 = object.sha1 %]</div>

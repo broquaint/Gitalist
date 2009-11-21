@@ -76,6 +76,20 @@ sub index :Path :Args(0) {
   );
 }
 
+sub project_index : Local {
+  my ( $self, $c ) = @_;
+
+  my @list = @{ $c->model()->projects };
+  die 'No projects found in '. $c->model->repo_dir
+    unless @list;
+
+  $c->response->content_type('text/plain');
+  $c->response->body(
+    join "\n", map $_->name, @list
+  );
+  $c->response->status(200);
+}
+
 =head2 summary
 
 A summary of what's happening in the repo.
@@ -153,13 +167,7 @@ sub blame : Local {
   
 }
 
-=head2 blob
-
-The blob action i.e the contents of a file.
-
-=cut
-
-sub blob : Local {
+sub _blob_objs {
   my ( $self, $c ) = @_;
   my $project = $c->stash->{Project};
   my $h  = $c->req->param('h')
@@ -171,9 +179,27 @@ sub blob : Local {
 
   my $filename = $c->req->param('f') || '';
 
+  my $blob = $project->get_object($h);
+  $blob = $project->get_object(
+    $project->hash_by_path($h || $hb, $filename)
+  ) if $blob->type ne 'blob';
+
+  return $blob, $project->get_object($hb), $filename;
+}
+
+=head2 blob
+
+The blob action i.e the contents of a file.
+
+=cut
+
+sub blob : Local {
+  my ( $self, $c ) = @_;
+
+  my($blob, $head, $filename) = $self->_blob_objs($c);
   $c->stash(
-    blob     => $project->get_object($h)->content,
-    head     => $project->get_object($hb),
+    blob     => $blob->content,
+    head     => $head,
     filename => $filename,
     # XXX Hack hack hack, see View::SyntaxHighlight
     language => ($filename =~ /\.p[lm]$/ ? 'Perl' : ''),
@@ -184,14 +210,26 @@ sub blob : Local {
     unless $c->stash->{no_wrapper};
 }
 
+=head2 blob_plain
+
+The plain text version of blob, where file is rendered as is.
+
+=cut
+
 sub blob_plain : Local {
   my($self, $c) = @_;
 
-  $c->stash(no_wrapper => 1);
+  my($blob) = $self->_blob_objs($c);
   $c->response->content_type('text/plain; charset=utf-8');
-
-  $c->forward('blob');
+  $c->response->body($blob->content);
+  $c->response->status(200);
 }
+
+=head2 blobdiff_plain
+
+The plain text version of blobdiff.
+
+=cut
 
 sub blobdiff_plain : Local {
   my($self, $c) = @_;
@@ -200,7 +238,6 @@ sub blobdiff_plain : Local {
   $c->response->content_type('text/plain; charset=utf-8');
 
   $c->forward('blobdiff');
-
 }
 
 =head2 blobdiff
@@ -576,7 +613,7 @@ sub auto : Private {
     short_cmt => sub {
       my $cmt = shift;
       my($line) = split /\n/, $cmt;
-      $line =~ s/^(.{70,80}\b).*/$1 …/;
+      $line =~ s/^(.{70,80}\b).*/$1 \x{2026}/;
       return $line;
     },
     abridged_description => sub {
@@ -585,10 +622,6 @@ sub auto : Private {
   );
 }
 
-sub project_index : Local {
-    # FIXME - implement snapshot
-    Carp::croak "Not implemented.";
-}
 sub opml : Local {
     # FIXME - implement snapshot
     Carp::croak "Not implemented.";
