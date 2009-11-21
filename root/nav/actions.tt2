@@ -8,7 +8,7 @@
     <a href="[% c.uri_for('tree', {h=object.tree_sha1, hb=object.sha1}) %]">tree</a>
     [% END %]
     [% IF filename %]
-    §
+    &sect;
     <a href="[% c.uri_for('blob', {h=object.sha1,f=filename}) %]">blob</a> &bull;
     <a href="[% c.uri_for('blame', {h=object.sha1,f=filename}) %]">blame</a> &bull;
     <a href="[% c.uri_for('shortlog', {h=object.sha1,f=filename}) %]">history</a> &bull;

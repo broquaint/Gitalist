@@ -5,8 +5,8 @@
   <!-- git web interface version [% version %], (C) 2005-2006, Kay Sievers <kay.sievers\@vrfy.org>, Christian Gierke -->
   <!-- git core binaries version [% git_version %] -->
   <meta charset="utf-8">
-  <meta name="generator" content="gitweb/[% version %] git/[% git_version %][% mod_perl_version %]"/>
-  <meta name="robots" content="index, nofollow"/>
+  <meta name="generator" content="gitweb/[% version %] git/[% git_version %][% mod_perl_version %]">
+  <meta name="robots" content="index, nofollow">
   <title>[%-
     title = BLOCK;
       c.config.sitename;
@@ -35,7 +35,7 @@
   <a title="git homepage" href="http://git-scm.org">
    <img src="[% c.uri_for('/logo.png') %]" alt="git" class="logo">
   </a>
-  <a href="[% c.uri_for('/') %]">A Gitalist</a>
+  <a href="[% c.uri_for('/', {p=''}) %]">A Gitalist</a>
   [%- IF Project %]
   / <a href="[% c.uri_for('summary') %]">[% Project.name %]</a>
   [% IF action;  " / " _ action; END;

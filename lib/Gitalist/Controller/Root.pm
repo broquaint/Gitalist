@@ -76,6 +76,20 @@ sub index :Path :Args(0) {
   );
 }
 
+sub project_index : Local {
+  my ( $self, $c ) = @_;
+
+  my @list = @{ $c->model()->projects };
+  die 'No projects found in '. $c->model->repo_dir
+    unless @list;
+
+  $c->response->content_type('text/plain');
+  $c->response->body(
+    join "\n", map $_->name, @list
+  );
+  $c->response->status(200);
+}
+
 =head2 summary
 
 A summary of what's happening in the repo.
@@ -585,10 +599,6 @@ sub auto : Private {
   );
 }
 
-sub project_index : Local {
-    # FIXME - implement snapshot
-    Carp::croak "Not implemented.";
-}
 sub opml : Local {
     # FIXME - implement snapshot
     Carp::croak "Not implemented.";
