@@ -1,18 +1,12 @@
 <link rel="stylesheet" type="text/css" href="/static/css/syntax/[% language %].css"/>
 
 [% PROCESS 'nav/actions.tt2' object = head %]
-[% IF object.type == 'commit' %]
-<div class='commit-message'>
-[% head.comment.substr(0, 85) %] ...
-</div>
+ [% IF object.type == 'commit' %]
+ <div class='commit-message'>
+  [% short_cmt(head.comment) %]
+ </div>
 [% END %]
-<div class='path'>
- <a href="[% c.uri_for("tree", {hb=head.sha1}) %]">[% Project.name %]</a>
- [% # XXX The last part should link to blob_plain (or something) but doesn't ATM
-    FOREACH part IN filename.split('/') %]
- / <a href="[% c.uri_for("tree", {hb=head.sha1}) %]">[% part %]</a>
- [% END %]
-</div>
+[% INCLUDE 'nav/path.tt2' %]
 <div>
  <pre class='blob'>[% blob %]</pre>
 </div>

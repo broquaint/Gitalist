@@ -5,7 +5,7 @@
 </div>
 [% END %]
 
-<h3>BLOB PATH</h3>
+[% INCLUDE 'nav/path.tt2' %]
 
 <div id='blame'>
 <table>
