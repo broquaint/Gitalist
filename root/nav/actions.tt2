@@ -10,6 +10,7 @@
     [% IF filename %]
     &sect;
     <a href="[% c.uri_for('blob', {h=object.sha1,f=filename}) %]">blob</a> &bull;
+    <a href="[% c.uri_for('blob_plain', {h=object.sha1,f=filename}) %]">raw</a> &bull;
     <a href="[% c.uri_for('blame', {h=object.sha1,f=filename}) %]">blame</a> &bull;
     <a href="[% c.uri_for('shortlog', {h=object.sha1,f=filename}) %]">history</a> &bull;
     <a href="[% c.uri_for(action, {f=filename}) %]">HEAD</a>

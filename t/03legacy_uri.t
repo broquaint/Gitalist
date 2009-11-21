@@ -16,6 +16,7 @@ local *test = curry_test_uri('repo1');
 
 test('/', 'a=summary');
 test('/', 'a=heads');
+test('/', 'a=tags');
 
 test('/', 'a=blob;f=dir1/file2;h=257cc5642cb1a054f08cc83f2d943e56fd3ebe99;hb=36c6c6708b8360d7023e8a1649c45bcf9b3bd818');
 test('/', 'a=blob;f=dir1/file2;h=257cc5642cb1a054f08cc83f2d943e56fd3ebe99;hb=HEAD');
@@ -229,38 +230,22 @@ test('/', 'a=rss;h=refs/heads/master');
 test('/', 'a=rss;h=refs/heads/master;opt=--no-merges');
 test('/', 'a=rss;opt=--no-merges');
 
-TODO: {
-  local $TODO = 'The project_index action is yet to be implemented';
-  test('/', 'a=project_index');
-}
+test('/', 'a=project_index');
+
 TODO: {
   local $TODO = 'The opml action is yet to be implemented';
   test('/', 'a=opml');
 }
-TODO: {
-  local $TODO = 'The tags action is yet to be implemented';
-  test('/', 'a=tags');
-}
-TODO: {
-  local $TODO = 'The blame action is yet to be implemented';
 
-  test('/', 'a=blame;f=dir1/file2;h=257cc5642cb1a054f08cc83f2d943e56fd3ebe99;hb=36c6c6708b8360d7023e8a1649c45bcf9b3bd818');
-  test('/', 'a=blame;f=dir1/file2;h=257cc5642cb1a054f08cc83f2d943e56fd3ebe99;hb=HEAD');
-  test('/', 'a=blame;f=dir1/file2;h=257cc5642cb1a054f08cc83f2d943e56fd3ebe99;hb=master');
-  test('/', 'a=blame;f=dir1/file2;h=257cc5642cb1a054f08cc83f2d943e56fd3ebe99;hb=refs/heads/master');
-  test('/', 'a=blame;f=dir1/file2;hb=36c6c6708b8360d7023e8a1649c45bcf9b3bd818');
-  test('/', 'a=blame;f=file1;h=257cc5642cb1a054f08cc83f2d943e56fd3ebe99');
-  test('/', 'a=blame;f=file1;h=257cc5642cb1a054f08cc83f2d943e56fd3ebe99;hb=257cc5642cb1a054f08cc83f2d943e56fd3ebe99');
-  test('/', 'a=blame;f=file1;h=257cc5642cb1a054f08cc83f2d943e56fd3ebe99;hb=3bc0634310b9c62222bb0e724c11ffdfb297b4ac');
-  test('/', 'a=blame;f=file1;h=5716ca5987cbf97d6bb54920bea6adde242d87e6;hb=36c6c6708b8360d7023e8a1649c45bcf9b3bd818');
-  test('/', 'a=blame;f=file1;h=5716ca5987cbf97d6bb54920bea6adde242d87e6;hb=3f7567c7bdf7e7ebf410926493b92d398333116e');
-  test('/', 'a=blame;f=file1;h=5716ca5987cbf97d6bb54920bea6adde242d87e6;hb=5716ca5987cbf97d6bb54920bea6adde242d87e6');
-  test('/', 'a=blame;f=file1;h=5716ca5987cbf97d6bb54920bea6adde242d87e6;hb=HEAD');
-  test('/', 'a=blame;f=file1;h=5716ca5987cbf97d6bb54920bea6adde242d87e6;hb=master');
-  test('/', 'a=blame;f=file1;h=5716ca5987cbf97d6bb54920bea6adde242d87e6;hb=refs/heads/master');
-  test('/', 'a=blame;f=file1;hb=3bc0634310b9c62222bb0e724c11ffdfb297b4ac');
-  test('/', 'a=blame;f=file1;hb=3f7567c7bdf7e7ebf410926493b92d398333116e');
-}
+test('/', 'a=blame;f=dir1/file2;hb=36c6c6708b8360d7023e8a1649c45bcf9b3bd818');
+test('/', 'a=blame;f=file1;h=257cc5642cb1a054f08cc83f2d943e56fd3ebe99;hb=3bc0634310b9c62222bb0e724c11ffdfb297b4ac');
+test('/', 'a=blame;f=file1;h=5716ca5987cbf97d6bb54920bea6adde242d87e6;hb=36c6c6708b8360d7023e8a1649c45bcf9b3bd818');
+test('/', 'a=blame;f=file1;h=5716ca5987cbf97d6bb54920bea6adde242d87e6;hb=3f7567c7bdf7e7ebf410926493b92d398333116e');
+test('/', 'a=blame;f=file1;h=5716ca5987cbf97d6bb54920bea6adde242d87e6;hb=HEAD');
+test('/', 'a=blame;f=file1;h=5716ca5987cbf97d6bb54920bea6adde242d87e6;hb=master');
+test('/', 'a=blame;f=file1;h=5716ca5987cbf97d6bb54920bea6adde242d87e6;hb=refs/heads/master');
+test('/', 'a=blame;f=file1;hb=3bc0634310b9c62222bb0e724c11ffdfb297b4ac');
+test('/', 'a=blame;f=file1;hb=3f7567c7bdf7e7ebf410926493b92d398333116e');
 
 done_testing;
 
