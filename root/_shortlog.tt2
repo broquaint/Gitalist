@@ -26,7 +26,7 @@
    <td class='time-since' title='[% line.authored_time %]'>[% time_since(line.authored_time) %]</td>
    <td class='author'>[% line.author.name | html %]</td>
    <td>
-     [% short_cmt(line.comment) | html_entity %]
+     [% short_cmt(line.comment) | html %]
      [% INCLUDE '_refs.tt2' object = line %]
    </td>
    <td class='action-list'>

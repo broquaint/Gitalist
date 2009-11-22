@@ -8,8 +8,10 @@ extends 'Catalyst';
 
 use Catalyst qw/
                 ConfigLoader
+                Unicode::Encoding
                 Static::Simple
-                StackTrace/;
+                StackTrace
+/;
 
 our $VERSION = '0.01';
 

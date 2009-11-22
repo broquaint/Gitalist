@@ -1,3 +1,4 @@
+*.swp
 git-daemon-export-ok
 script/gitalist.cgi
 script/gitalist.fcgi
