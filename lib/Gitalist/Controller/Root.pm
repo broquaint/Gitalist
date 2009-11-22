@@ -39,10 +39,10 @@ sub _get_object {
           # XXX This could definitely use more context.
           || Carp::croak("Couldn't find a hash for the commit object!");
 
-  my $commit = $m->get_object($hash)
-    or Carp::croak("Couldn't find a commit object for '$hash' in '$pd'!");
+  my $obj = $m->get_object($hash)
+    or Carp::croak("Couldn't find a object for '$hash' in '$pd'!");
 
-  return $commit;
+  return $obj;
 }
 
 =head2 index
@@ -336,7 +336,7 @@ sub shortlog : Local {
   my ( $self, $c ) = @_;
 
   my $project  = $c->stash->{Project};
-  my $commit   = $self->_get_object($c);
+  my $commit   = $self->_get_object($c, $c->req->param('hb'));
   my $filename = $c->req->param('f') || '';
 
   my %logargs = (
@@ -371,7 +371,7 @@ sub log : Local {
 
 # For legacy support.
 sub history : Local {
-  $_[0]->shortlog(@_[1 .. $#_]);
+  $_[1]->forward('shortlog');
 }
 
 =head2 tree
@@ -384,7 +384,11 @@ sub tree : Local {
   my ( $self, $c ) = @_;
   my $project = $c->stash->{Project};
   my $commit  = $self->_get_object($c, $c->req->param('hb'));
-  my $tree    = $self->_get_object($c, $c->req->param('h') || $commit->tree_sha1);
+  my $filename = $c->req->param('f') || '';
+  my $tree    = $filename
+    ? $project->get_object($project->hash_by_path($commit->sha1, $filename))
+    : $project->get_object($commit->tree_sha1)
+  ;
   $c->stash(
       commit    => $commit,
       tree      => $tree,

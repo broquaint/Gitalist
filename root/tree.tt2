@@ -4,15 +4,10 @@
 [% short_cmt(commit.comment) | html %] ...
 </div>
 
-[% IF path -%]
-<div>
- <a href='[% c.uri_for("tree", {hb=commit.sha1}) %]'>[% Project.name %]</a>
- [% fullpath = ''-%]
- [% FOREACH part IN path.split('/') -%]
- / <a href='[% c.uri_for("tree", {h=tree.sha1, hb=commit.sha1, f=fullpath _ part}) %]'>[% part %]</a>
- [% fullpath = fullpath _ part _ '/'; %]
- [% END -%]
-</div>
-[% END -%]
+[%
+  IF path;
+    INCLUDE 'nav/path.tt2' filename = path, head = commit;
+  END;
 
-[% INCLUDE '_tree.tt2' %]
+  INCLUDE '_tree.tt2';
+%]
