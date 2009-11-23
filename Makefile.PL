@@ -17,7 +17,7 @@ author 'Dan Brook <broq@cpan.org>';
 
 license 'gpl2';
 
-requires 'Catalyst::Runtime' => '5.80003';
+requires 'Catalyst::Runtime' => '5.80014'; # We actually want trunk for FCGI fixes..
 requires 'Catalyst::Plugin::ConfigLoader';
 requires 'Catalyst::Plugin::StackTrace';
 requires 'Catalyst::Plugin::Static::Simple';
@@ -40,7 +40,7 @@ requires 'MooseX::Types::Path::Class';
 requires 'MooseX::Types';
 requires 'namespace::autoclean';
 
-requires 'Git::PurePerl'; # Note - need the git version in broquaint's fork
+requires 'Git::PurePerl' => '0.42'; # Note - need the 0.42_01 dev release
 
 requires 'aliased';
 requires 'CGI';
