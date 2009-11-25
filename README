@@ -1,5 +1,5 @@
 NAME
-    Gitalist - Transitional project to convert gitweb.cgi to a Catalyst app
+    Gitalist - A modern git web viewer
 
 SYNOPSIS
         script/gitalist_server.pl
@@ -14,13 +14,11 @@ INSTALL
       make install
 
     If you're running a git checkout of Gitalist then you'll additionally
-    need the author modules. *NB: As no distribution exists one will
-    presently need the author modules*.
+    need the author modules.
 
 DESCRIPTION
     Gitalist is a web frontend for git repositories based on gitweb.cgi and
-    backed by Catalyst. It doesn't yet have the full functionality of
-    gitweb.cgi but it does have a few small additions at this stage.
+    backed by Catalyst.
 
   History
     This project started off as an attempt to port gitweb.cgi to a Catalyst
