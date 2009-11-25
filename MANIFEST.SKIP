@@ -1,0 +1,12 @@
+^ISSUES$
+^Gitalist-.*
+^\.git
+blib/
+\.DS_Store$
+pm_to_blib$
+Makefile$
+MANIFEST\.skip$
+MANIFEST\.bak$
+Makefile\.old$
+\.shipit$
+

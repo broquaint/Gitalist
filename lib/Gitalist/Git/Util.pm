@@ -57,7 +57,7 @@ EOR
             '>pipe', $out,
             '2>pipe', $err
                 or die "cmd returned *?";
-        return ($out, $err);
+        return $out;
     }
 
     method run_cmd_list (@args) {
@@ -70,3 +70,16 @@ EOR
     }
 
 } # end class
+
+__END__
+
+=head1 AUTHORS
+
+See L<Gitalist> for authors.
+
+=head1 LICENSE
+
+See L<Gitalist> for the license.
+
+=cut
+

@@ -24,3 +24,15 @@ has _util => ( isa => 'Gitalist::Git::Util',
 sub _build__util { confess(shift() . " cannot build _util") }
 
 1;
+
+__END__
+
+=head1 AUTHORS
+
+See L<Gitalist> for authors.
+
+=head1 LICENSE
+
+See L<Gitalist> for the license.
+
+=cut

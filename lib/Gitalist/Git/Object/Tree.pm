@@ -9,3 +9,26 @@ class Gitalist::Git::Object::Tree
                                       ],
                          );
     }
+
+1;
+
+__END__
+
+
+=head1 NAME
+
+Gitalist::Git::Object::Tree
+
+=head1 DESCRIPTION
+
+Gitalist::Git::Object::Tree.
+
+=head1 AUTHORS
+
+See L<Gitalist> for authors.
+
+=head1 LICENSE
+
+See L<Gitalist> for the license.
+
+=cut

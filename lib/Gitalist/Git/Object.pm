@@ -74,3 +74,15 @@ class Gitalist::Git::Object {
     }
 
 } # end class
+
+
+
+=head1 AUTHORS
+
+See L<Gitalist> for authors.
+
+=head1 LICENSE
+
+See L<Gitalist> for the license.
+
+=cut

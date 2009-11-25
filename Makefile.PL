@@ -3,8 +3,7 @@
 use strict;
 use warnings;
 
-use inc::Module::Install;
-use Module::AutoInstall;
+use inc::Module::Install 0.91;
 use Module::Install::AuthorRequires;
 use Module::Install::AuthorTests;
 use Module::Install::ReadmeFromPod;
@@ -17,7 +16,8 @@ author 'Dan Brook <broq@cpan.org>';
 
 license 'gpl2';
 
-requires 'Catalyst::Runtime' => '5.80014'; # We actually want trunk for FCGI fixes..
+# Want trunk for FCGI to work correctly..
+requires 'Catalyst::Runtime' => '5.80014';
 requires 'Catalyst::Plugin::ConfigLoader';
 requires 'Catalyst::Plugin::StackTrace';
 requires 'Catalyst::Plugin::Static::Simple';
@@ -40,7 +40,7 @@ requires 'MooseX::Types::Path::Class';
 requires 'MooseX::Types';
 requires 'namespace::autoclean';
 
-requires 'Git::PurePerl' => '0.42'; # Note - need the 0.42_01 dev release
+requires 'Git::PurePerl' => '0.43';
 
 requires 'aliased';
 requires 'CGI';

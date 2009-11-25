@@ -23,3 +23,14 @@ sub build_per_context_instance {
 
 __PACKAGE__->meta->make_immutable;
 
+__END__
+
+=head1 AUTHORS
+
+See L<Gitalist> for authors.
+
+=head1 LICENSE
+
+See L<Gitalist> for the license.
+
+=cut
