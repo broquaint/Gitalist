@@ -1,3 +1,7 @@
+/*
+14d2f2ca3732551d1585e7590e60b82492f3
+^^ A rather nice chroma hash
+*/
 body {
   margin: 1em;
 }
@@ -159,6 +163,23 @@ table.heads {
 }
 #blame tbody tr:hover {
   background-color: #fefeaa;
+}
+/*#blame td { border: solid 1px black; }*/
+#blame td.lineno {
+  width: 2%;
+  background-color: #ddd;
+}
+#blame td.date {
+  width: 7%;
+}
+#blame td.author  {
+  width: 10%;
+}
+#blame td.commit-info {
+  width: 5%;
+}
+#blame .data {
+  padding-left: 5px;
 }
 
 /* /blob */

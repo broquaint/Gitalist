@@ -12,16 +12,20 @@
  <thead>
   <tr>
    <th>sha1</th>
-   <th>line</th>
-   <th>data</th>
+   <th>author</th>
+   <th>date</th>
+   <th></th>
+   <th class='data'>data</th>
   </tr>
  </thead>
 
  <tfoot>
   <tr>
    <td>sha1</td>
-   <td>line</td>
-   <td>data</td>
+   <td>author</td>
+   <td>date</td>
+   <td></td>
+   <td class='data'>data</td>
   </tr>
  </tfoot>
 
@@ -29,8 +33,10 @@
  [% FOR info IN blame %]
  <tr class=''>
    <td class='commit-info'><a title="[% info.commit.author %] on [% info.commit.author_dt %]" href='[% c.uri_for('commit', {h=info.commit.sha1}) %]'>[% INCLUDE '_chroma_hash.tt2' sha1 = info.commit.sha1.substr(0,7) -%]</a></td>
+   <td class='author'>[% info.commit.author %]</td>
+   <td class='date'>[% info.commit.author_dt.ymd %]</td>
    <td class='lineno'><tt>[% info.meta.lineno %]</tt></td>
-   <td><pre>[% info.line | html %]</pre></td>
+   <td class='data'><pre>[% info.line | html %]</pre></td>
  </tr>
  [% END %]
  </tbody>
