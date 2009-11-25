@@ -26,7 +26,7 @@ tfoot td {
   background-color: #fefeaa;
 }
 
-span.chroma-hash {
+.chroma-hash {
   font-family: monospace;
   font-size:   1em;
   font-style: normal;
@@ -167,7 +167,7 @@ table.heads {
 /*#blame td { border: solid 1px black; }*/
 #blame td.lineno {
   width: 2%;
-  background-color: #ddd;
+  background-color: #eee;
 }
 #blame td.date {
   width: 7%;
@@ -176,7 +176,7 @@ table.heads {
   width: 10%;
 }
 #blame td.commit-info {
-  width: 5%;
+  width: 4%;
 }
 #blame .data {
   padding-left: 5px;
