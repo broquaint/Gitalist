@@ -10,6 +10,7 @@ use Sys::Hostname ();
 use XML::Atom::Feed;
 use XML::Atom::Entry;
 use XML::RSS;
+use XML::OPML::SimpleGen;
 
 =head1 NAME
 
@@ -536,6 +537,29 @@ sub rss : Local {
   $c->response->status(200);
 }
 
+sub opml : Local {
+  my($self, $c) = @_;
+
+  my $opml = XML::OPML::SimpleGen->new();
+
+  $opml->head(title => lc(Sys::Hostname::hostname()) . ' - ' . Gitalist->config->{name});
+
+  my @list = @{ $c->model()->projects };
+  die 'No projects found in '. $c->model->repo_dir
+    unless @list;
+
+  for my $proj ( @list ) {
+    $opml->insert_outline(
+      text   => $proj->name. ' - '. $proj->description,
+      xmlUrl => $c->uri_for(rss => {p => $proj->name}),
+    );
+  }
+
+  $c->response->body($opml->as_string);
+  $c->response->content_type('application/rss');
+  $c->response->status(200);
+}
+
 =head2 patch
 
 A raw patch for a given commit.
@@ -624,11 +648,6 @@ sub auto : Private {
         join(' ', grep { defined } (split / /, shift)[0..10]);
     },
   );
-}
-
-sub opml : Local {
-    # FIXME - implement snapshot
-    Carp::croak "Not implemented.";
 }
 
 =head2 end
