@@ -15,15 +15,10 @@ use Catalyst qw/
 
 our $VERSION = '0.01';
 
-# Bring in the libified gitweb.cgi.
-use gitweb;
-
 __PACKAGE__->config(
     name => 'Gitalist',
     default_view => 'Default',
     default_model => 'GitRepos',
-    # Set to 1 to make your fcgi die the request after you push :)
-    exit_at_end_of_request_if_updated => 0,
 );
 
 # Start the application
