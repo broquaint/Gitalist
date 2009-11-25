@@ -57,7 +57,7 @@ EOR
             '>pipe', $out,
             '2>pipe', $err
                 or die "cmd returned *?";
-        return ($out, $err);
+        return $out;
     }
 
     method run_cmd_list (@args) {
