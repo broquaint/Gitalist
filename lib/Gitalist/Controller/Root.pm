@@ -715,6 +715,29 @@ __PACKAGE__->meta->make_immutable;
 
 __END__
 
+=head1 NAME
+
+Gitalist::Controller::Root - Root controller for the application
+
+=head1 DESCRIPTION
+
+This controller handles all of the root level paths for the application
+
+=head1 METHODS
+
+=head2 age_string
+
+=head2 blame
+
+=head2 commitdiff_plain
+
+=head2 error_404
+
+=head2 history
+
+=head2 opml
+
+=head2 project_index
 
 =head1 AUTHORS
 

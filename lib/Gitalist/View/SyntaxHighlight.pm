@@ -92,6 +92,12 @@ Gitalist::View::SyntaxHighlight - Responsible for syntax highlighting code
 
 Catalyst View for Syntax highlighting.
 
+=head1 METHODS
+
+=head2 process
+
+=head2 highlight
+
 =head1 AUTHORS
 
 See L<Gitalist> for authors.
