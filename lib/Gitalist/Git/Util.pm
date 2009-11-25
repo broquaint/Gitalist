@@ -70,3 +70,16 @@ EOR
     }
 
 } # end class
+
+__END__
+
+=head1 AUTHORS
+
+See L<Gitalist> for authors.
+
+=head1 LICENSE
+
+See L<Gitalist> for the license.
+
+=cut
+

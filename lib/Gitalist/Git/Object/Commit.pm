@@ -184,3 +184,26 @@ class Gitalist::Git::Object::Commit
     return \@filedata;
   }
 }
+
+
+1;
+
+__END__
+
+=head1 NAME
+
+Gitalist::Git::Object::Commit
+
+=head1 DESCRIPTION
+
+Gitalist::Git::Object::Commit.
+
+=head1 AUTHORS
+
+See L<Gitalist> for authors.
+
+=head1 LICENSE
+
+See L<Gitalist> for the license.
+
+=cut

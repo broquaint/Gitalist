@@ -711,16 +711,17 @@ sub age_string {
   return $age_str;
 }
 
+__PACKAGE__->meta->make_immutable;
 
-=head1 AUTHOR
+__END__
 
-Dan Brook
+
+=head1 AUTHORS
+
+See L<Gitalist> for authors.
 
 =head1 LICENSE
 
-This library is free software. You can redistribute it and/or modify
-it under the same terms as Perl itself.
+See L<Gitalist> for the license.
 
 =cut
-
-__PACKAGE__->meta->make_immutable;

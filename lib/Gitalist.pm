@@ -1,8 +1,8 @@
 package Gitalist;
 use Moose;
-use namespace::autoclean;
-
+BEGIN { require 5.008006; }
 use Catalyst::Runtime 5.80;
+use namespace::autoclean;
 
 extends 'Catalyst';
 
@@ -13,7 +13,8 @@ use Catalyst qw/
                 StackTrace
 /;
 
-our $VERSION = '0.01';
+our $VERSION = '0.000000_01';
+$VERSION = eval $VERSION;
 
 __PACKAGE__->config(
     name => 'Gitalist',
@@ -21,7 +22,6 @@ __PACKAGE__->config(
     default_model => 'GitRepos',
 );
 
-# Start the application
 __PACKAGE__->setup();
 
 around uri_for => sub {
@@ -38,14 +38,17 @@ around uri_for => sub {
   return $uri;
 };
 
+1;
+
+__END__
+
 =head1 NAME
 
-Gitalist - Transitional project to convert gitweb.cgi to a Catalyst app
+Gitalist - A modern git web viewer
 
 =head1 SYNOPSIS
 
     script/gitalist_server.pl
-
 
 =head1 INSTALL
 
@@ -58,14 +61,12 @@ for installation should work e.g
   make install
 
 If you're running a git checkout of Gitalist then you'll additionally
-need the author modules. I<NB: As no distribution exists one will
-presently need the author modules>.
+need the author modules.
 
 =head1 DESCRIPTION
 
 Gitalist is a web frontend for git repositories based on gitweb.cgi
-and backed by Catalyst. It doesn't yet have the full functionality of
-gitweb.cgi but it does have a few small additions at this stage.
+and backed by Catalyst.
 
 =head2 History
 
@@ -101,5 +102,3 @@ L<Catalyst>
 Licensed under GNU GPL v2
 
 =cut
-
-1;

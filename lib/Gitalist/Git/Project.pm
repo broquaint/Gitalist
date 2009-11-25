@@ -447,26 +447,20 @@ FIXME Should this return objects?
                     map  split(/\n/, $_, 6), split /\0/, $output;
     }
 
+} # end class
+
+__END__
+
 =head1 SEE ALSO
 
 L<Gitalist::Git::Util> L<Gitalist::Git::Object>
 
-=head1 AUTHORS AND COPYRIGHT
+=head1 AUTHORS
 
-  Catalyst application:
-    (C) 2009 Venda Ltd and Dan Brook <dbrook@venda.com>
-
-  Original gitweb.cgi from which this was derived:
-    (C) 2005-2006, Kay Sievers <kay.sievers@vrfy.org>
-    (C) 2005, Christian Gierke
+See L<Gitalist> for authors.
 
 =head1 LICENSE
 
-FIXME - Is this going to be GPLv2 as per gitweb? If so this is broken..
-
-This library is free software. You can redistribute it and/or modify
-it under the same terms as Perl itself.
+See L<Gitalist> for the license.
 
 =cut
-
-} # end class
