@@ -1,8 +1,7 @@
+<link rel="stylesheet" type="text/css" href="/static/css/syntax/[% language %].css"/>
 [% PROCESS 'nav/actions.tt2' object = head %]
 [% IF object.type == 'commit' %]
-<div class='commit-message'>
-[% head.comment.substr(0, 85) %] ...
-</div>
+<div class='commit-message'>[% short_cmt(head.comment) %]</div>
 [% END %]
 
 [% INCLUDE 'nav/path.tt2' %]
@@ -30,6 +29,7 @@
  </tfoot>
 
  <tbody>
+ [% blame_lines = blob.split("\n") %]
  [% FOR info IN blame %]
  <tr class=''>
    [%-
@@ -45,7 +45,7 @@
      <td class='commit-info'></td>
      [%- END -%]
    <td class='lineno' style='border-right: solid 3px #[% linecolour %]; border-left: solid 3px #[% linecolour %];'><tt>[% info.meta.lineno %]</tt></td>
-   <td class='data'><pre>[% info.line | html %]</pre></td>
+   <td class='data'><pre>[% blame_lines.${loop.index} %]</pre></td>
    [% lastsha1 = info.commit.sha1 %]
  </tr>
  [% END %]
