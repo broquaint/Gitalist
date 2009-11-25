@@ -232,10 +232,7 @@ test('/', 'a=rss;opt=--no-merges');
 
 test('/', 'a=project_index');
 
-TODO: {
-  local $TODO = 'The opml action is yet to be implemented';
-  test('/', 'a=opml');
-}
+test('/', 'a=opml');
 
 test('/', 'a=blame;f=dir1/file2;hb=36c6c6708b8360d7023e8a1649c45bcf9b3bd818');
 test('/', 'a=blame;f=file1;h=257cc5642cb1a054f08cc83f2d943e56fd3ebe99;hb=3bc0634310b9c62222bb0e724c11ffdfb297b4ac');

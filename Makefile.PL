@@ -58,6 +58,7 @@ requires 'Syntax::Highlight::Engine::Kate';
 requires 'Sys::Hostname';
 requires 'XML::Atom';
 requires 'XML::RSS';
+requires 'XML::OPML::SimpleGen';
 
 author_requires 'Test::NoTabs';
 author_requires 'Test::Pod' => '1.14';
