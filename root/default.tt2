@@ -2,7 +2,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- git web interface version [% version %], (C) 2005-2006, Kay Sievers <kay.sievers\@vrfy.org>, Christian Gierke -->
   <!-- git core binaries version [% git_version %] -->
   <meta charset="utf-8">
   <meta name="generator" content="gitweb/[% version %] git/[% git_version %][% mod_perl_version %]">
@@ -28,6 +27,8 @@
 </head>
 
 <body>
+
+<div id='the-container'>
 
 [% site_header %]
 
@@ -65,6 +66,8 @@
   [% Project.description | html %]
 [% END %]
 [% INCLUDE '_footer_feeds.tt2' %]
+</div>
+
 </div>
 
 </body>

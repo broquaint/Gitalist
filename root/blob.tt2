@@ -1,12 +1,14 @@
 <link rel="stylesheet" type="text/css" href="/static/css/syntax/[% language %].css"/>
-
 [% PROCESS 'nav/actions.tt2' object = head %]
- [% IF object.type == 'commit' %]
- <div class='commit-message'>
-  [% short_cmt(head.comment) %]
- </div>
-[% END %]
-[% INCLUDE 'nav/path.tt2' %]
-<div>
- <pre class='blob'>[% blob %]</pre>
+
+<div class='content'>
+  [% IF object.type == 'commit' %]
+   <div class='commit-message'>
+    [% short_cmt(head.comment) %]
+   </div>
+  [% END %]
+  [% INCLUDE 'nav/path.tt2' %]
+  <div>
+   <pre class='blob'>[% blob %]</pre>
+  </div>
 </div>

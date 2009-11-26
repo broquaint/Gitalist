@@ -1,7 +1,8 @@
 [% INCLUDE 'nav/actions.tt2' object = commit %]
+<div class='content'>
+  <div>
+  [% Project.name %]
+  </div>
 
-<div>
-[% Project.name %]
+  [% INCLUDE '_heads.tt2' heads = tags %]
 </div>
-
-[% INCLUDE '_heads.tt2' heads = tags %]

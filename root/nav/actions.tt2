@@ -1,4 +1,5 @@
 <div class='actions'>
+  <!-- This should probably be a real LIst -->
     <a href="[% c.uri_for('summary') %]">summary</a> &bull;
     <a href="[% c.uri_for('shortlog', {h=object.sha1}) %]">shortlog</a> &bull;
     <a href="[% c.uri_for('log', {h=object.sha1}) %]">log</a> &bull;

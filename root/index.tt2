@@ -1,52 +1,45 @@
-[% IF home_text_contents %]
-<div class="index_include">
-  [% home_text_contents %]
+<div class='content'>
+  <form method="get" action="/" enctype="application/x-www-form-urlencoded">
+   <p class="projsearch">Search:
+    <input type="text" name="s" value="[% search_text %]" />
+   </p>
+  </form>
+
+  <table class="project_list">
+    <thead>
+	<tr>
+	    <th>Project</th>
+	    <!-- XXX These do nothing presently -->
+	    <th><a class="header" href="/?o=descr">Description</a></th>
+	    <th><a class="header" href="/?o=owner">Owner</a></th>
+	    <th><a class="header" href="/?o=age">Last Change</a></th>
+	    <th></th>
+	</tr>
+    </thead>
+    <tfoot>
+	<tr>
+	    <td>Project</td>
+	    <!-- XXX These do nothing presently -->
+	    <td><a href="/?o=descr">Description</a></td>
+	    <td><a href="/?o=owner">Owner</a></td>
+	    <td><a href="/?o=age">Last Change</a></td>
+	    <td></td>
+	</tr>
+    </tfoot>
+
+    <tbody class='listing'>
+      [% FOR p IN projects %]
+	<tr>
+	    <td><a class="list" href="[% c.uri_for('/summary', {p=p.name}) %]">[% p.name %]</a></td>
+	    <td><a class="list" title="[% p.description %]" href="[% c.uri_for('/summary', {p=p.name} ) %]">[% abridged_description(p.description)  %]</a></td>
+	    <td>[% p.owner %]</td>
+	    <td class="time-since">[% time_since(p.last_change) %]</td>
+	    <td class="link"><a href="[% c.uri_for("summary", {p=p.name}) %]">summary</a>
+		| <a href="[% c.uri_for("shortlog", {p=p.name}) %]">shortlog</a>
+		| <a href="[% c.uri_for("log", {p=p.name}) %]">log</a>
+		| <a href="[% c.uri_for("tree", {p=p.name}) %]">tree</a></td>
+	</tr>
+      [% END %]
+    </tbody>
+  </table>
 </div>
-[% END %]
-
-<form method="get" action="/" enctype="application/x-www-form-urlencoded">
-<p class="projsearch">Search:
-<input type="text" name="s" value="[% search_text %]" />
-</p>
-</form>
-
-<table class="project_list">
-<thead>
-    <tr>
-        <th>Project</th>
-        <!-- XXX These do nothing presently -->
-        <th><a class="header" href="/?o=descr">Description</a></th>
-        <th><a class="header" href="/?o=owner">Owner</a></th>
-        <th><a class="header" href="/?o=age">Last Change</a></th>
-        <th></th>
-    </tr>
-</thead>
-<tfoot>
-    <tr>
-        <td>Project</td>
-        <!-- XXX These do nothing presently -->
-        <td><a href="/?o=descr">Description</a></td>
-        <td><a href="/?o=owner">Owner</a></td>
-        <td><a href="/?o=age">Last Change</a></td>
-        <td></td>
-    </tr>
-</tfoot>
-
-<tbody>
-  [%
-    USE Cycle('dark', 'light');
-    FOR p IN projects %]
-    <tr class="[% Cycle.next %]">
-        <td><a class="list" href="[% c.uri_for('/summary', {p=p.name}) %]">[% p.name %]</a></td>
-        <td><a class="list" title="[% p.description %]" href="[% c.uri_for('/summary', {p=p.name} ) %]">[% abridged_description(p.description)  %]</a></td>
-        <td>[% p.owner %]</td>
-        <td class="time-since">[% time_since(p.last_change) %]</td>
-        <td class="link"><a href="[% c.uri_for("summary", {p=p.name}) %]">summary</a>
-            | <a href="[% c.uri_for("shortlog", {p=p.name}) %]">shortlog</a>
-            | <a href="[% c.uri_for("log", {p=p.name}) %]">log</a>
-            | <a href="[% c.uri_for("tree", {p=p.name}) %]">tree</a></td>
-    </tr>
-  [% END %]
-</tbody>
-
-</table>

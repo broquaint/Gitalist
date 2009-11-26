@@ -1,7 +1,9 @@
 [% PROCESS 'nav/actions.tt2' object = commit %]
 
-<div class='commit-message'>
-[% short_cmt(commit.comment) | html %] ...
-</div>
+<div class='content'>
+  <div class='commit-message'>
+  [% short_cmt(commit.comment) | html %] ...
+  </div>
 
-[% INCLUDE '_diff.tt2' %]
+  [% INCLUDE '_diff.tt2' %]
+</div>
