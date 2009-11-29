@@ -1,0 +1,38 @@
+=head1 NAME
+
+Gitalist::Faq - Frequently asked questions about Gitalist
+
+=head1 QUESTIONS
+
+=head2 Is there a Gitalist demo site anywhere
+
+See L<http://goatse.co.uk/~bobtfish/Gitalist/script/gitalist.fcgi/>
+
+=head2 Is there anything that explains what the color bars under the SHA-1 hashes mean?
+
+They don't mean anything as such, they're just first 6 chars of the
+SHA-1 as a hex colour e.g the commit
+C<< f85cb28d32054b92e2a7094a83ebe528485dbf36 >> becomes C<< #f85cb2 >>
+hence that pink colour you see.  It was an idea borrowed from Chroma-Hash
+(L<http://mattt.github.com/Chroma-Hash/>).
+Also at the top right hand corner of pages is the first 36 chars of
+the SHA-1 of the current commit where the color underneath each 6 char
+chunk is the corresponding hex colour. I've found the colours to be a
+handy visual cue when dealing with SHA-1s.
+
+=cut
+
+=head1 SEE ALSO
+
+L<Gitalist>
+
+=head1 AUTHORS
+
+See L<Gitalist> for authors.
+
+=head1 LICENSE
+
+See L<Gitalist> for the license.
+
+=cut
+
