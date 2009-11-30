@@ -1,4 +1,4 @@
-[% PROCESS 'nav/actions.tt2' object = head %]
+[% PROCESS 'nav/actions.tt2' object = commit %]
 
 <div class='summary'>
 <!-- <div id='stats'>

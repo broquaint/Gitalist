@@ -25,7 +25,7 @@
    </td>
    <td class='action-list'>
      <a href="[% c.uri_for(theact, {h=item.sha1, hb=commit.sha1, f=fullpath}) %]">[% theact %]</a>
-     <a href="[% c.uri_for('shortlog', {h=item.sha1, hb=commit.sha1, f=fullpath}) %]">history</a>
+     <a href="[% c.uri_for('history', {h=item.sha1, hb=commit.sha1, f=fullpath}) %]">history</a>
      [% IF item.type == 'blob' %]
      <a href="[% c.uri_for('raw', {hb=commit.sha1, f=fullpath}) %]">raw</a>
      [% END %]

@@ -6,6 +6,7 @@ BEGIN { extends 'Catalyst::Controller' }
 
 __PACKAGE__->config->{namespace} = '';
 
+use Moose::Autobox;
 use Sys::Hostname ();
 use XML::Atom::Feed;
 use XML::Atom::Entry;
@@ -372,7 +373,18 @@ sub log : Local {
 
 # For legacy support.
 sub history : Local {
-  $_[1]->forward('shortlog');
+    my ( $self, $c ) = @_;
+    $self->shortlog($c);
+    my $project = $c->stash->{Project};
+    my $file = $project->get_object(
+        $project->hash_by_path(
+            $project->head_hash,
+            $c->stash->{filename}
+        )
+    );
+     $c->stash( action => 'history',
+               filetype => $file->type,
+           );
 }
 
 =head2 tree
