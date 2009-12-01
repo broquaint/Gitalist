@@ -16,8 +16,7 @@ author 'Dan Brook <broq@cpan.org>';
 
 license 'gpl2';
 
-# Want trunk for FCGI to work correctly..
-requires 'Catalyst::Runtime' => '5.80014';
+requires 'Catalyst::Runtime' => '5.8001402';
 requires 'Catalyst::Plugin::ConfigLoader';
 requires 'Catalyst::Plugin::StackTrace';
 requires 'Catalyst::Plugin::Static::Simple';

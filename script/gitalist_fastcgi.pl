@@ -1,39 +1,7 @@
 #!/usr/bin/env perl
 
-BEGIN { $ENV{CATALYST_ENGINE} ||= 'FastCGI' }
-
-use strict;
-use warnings;
-use Getopt::Long;
-use Pod::Usage;
-use FindBin;
-use lib "$FindBin::Bin/../lib";
-use Gitalist;
-
-my $help = 0;
-my ( $listen, $nproc, $pidfile, $manager, $detach, $keep_stderr );
-
-GetOptions(
-    'help|?'      => \$help,
-    'listen|l=s'  => \$listen,
-    'nproc|n=i'   => \$nproc,
-    'pidfile|p=s' => \$pidfile,
-    'manager|M=s' => \$manager,
-    'daemon|d'    => \$detach,
-    'keeperr|e'   => \$keep_stderr,
-);
-
-pod2usage(1) if $help;
-
-Gitalist->run(
-    $listen,
-    {   nproc   => $nproc,
-        pidfile => $pidfile,
-        manager => $manager,
-        detach  => $detach,
-        keep_stderr => $keep_stderr,
-    }
-);
+use Catalyst::ScriptRunner;
+Catalyst::ScriptRunner->run('Gitalist','FastCGI');
 
 1;
 
