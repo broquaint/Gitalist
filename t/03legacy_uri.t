@@ -7,7 +7,7 @@ use FindBin qw/$Bin/;
 BEGIN {
     $ENV{GITALIST_CONFIG} = $Bin;
     $ENV{GITALIST_REPO_DIR} = undef;
-    use_ok 'Catalyst::Test', 'Gitalist'
+    use_ok 'Catalyst::Test', 'Gitalist';
 }
 
 ok( request('/')->is_success, 'Request should succeed' );
