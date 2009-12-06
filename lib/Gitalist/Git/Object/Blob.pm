@@ -13,9 +13,20 @@ __END__
 
 Gitalist::Git::Object::Blob
 
+=head1 SYNOPSIS
+
+    my $blob = Project->get_object($blob_sha1);
+
 =head1 DESCRIPTION
 
-Gitalist::Git::Object::Blob.
+Represents a blob object in a git repository.
+Subclass of C<Gitalist::Git::Object>.
+
+
+=head1 ATTRIBUTES
+
+
+=head1 METHODS
 
 =head1 AUTHORS
 

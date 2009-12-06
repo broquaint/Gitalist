@@ -40,9 +40,22 @@ __END__
 
 Gitalist::Git::Object::HasTree
 
+=head1 SYNOPSIS
+
+    my $tree = Project->get_object($tree_sha1);
+
 =head1 DESCRIPTION
 
-Gitalist::Git::Object::HasTree.
+Role for objects which have a tree - C<Commit> and C<Tree> objects.
+
+
+=head1 ATTRIBUTES
+
+=head2 tree
+
+
+=head1 METHODS
+
 
 =head1 AUTHORS
 

@@ -16,15 +16,33 @@ class Gitalist::Git::Object::Tag extends Gitalist::Git::Object {
 
 __END__
 
-__END__
-
 =head1 NAME
 
 Gitalist::Git::Object::Tag
 
+=head1 SYNOPSIS
+
+    my $tag = Project->get_object($tag_sha1);
+
 =head1 DESCRIPTION
 
-Gitalist::Git::Object::Tag.
+Represents a tag object in a git repository.
+Subclass of C<Gitalist::Git::Object>.
+
+
+=head1 ATTRIBUTES
+
+=head2 tag
+
+=head2 tagger
+
+=head2 tagged_time
+
+=head2 object
+
+
+=head1 METHODS
+
 
 =head1 AUTHORS
 
