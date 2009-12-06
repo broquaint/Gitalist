@@ -1,3 +1,4 @@
+^gitalist_local.conf$
 ^ISSUES$
 ^Gitalist-.*
 ^\.git

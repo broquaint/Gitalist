@@ -1,5 +1,8 @@
 This file documents the revision history for Perl extension Gitalist.
 
+   - Change so that no default repos path is in the config when installed from
+     CPAN (when checked out of git, behavior of browsing AppDir/../ is
+     maintained).
    - Do not allow directory traversal via the p param.
 
 0.000001
