@@ -350,111 +350,89 @@ Gitalist::Git::Project - Model of a git repository
 This class models a git repository, referred to in Gitalist
 as a "Project".
 
-=cut
+
 =head1 ATTRIBUTES
 
 =head2 name
 
-The name of the Project.  By default, this is derived from the path to the git repository.
+The name of the Project.  If unspecified, this will be derived from the path to the git repository.
 
-=cut
 =head2 path
 
-L<Path::Class:Dir> for the location of the git repository.
+L<Path::Class:Dir> for the filesystem path to the git repository.
 
-=cut
 =head2 description
 
-String containing .git/description
+The contents of .git/description.
 
-=cut
 =head2 owner
 
-Owner of the files on disk.
+Owner of the files on the filesystem.
 
-=cut
 =head2 last_change
 
-L<DateTime> for the time of the last update.
-undef if the repository has never been used.
+The L<DateTime> of the last modification of the repository.  This will be C<undef> if the repository has never been used.
 
-=cut
 =head2 is_bare
 
-Bool indicating whether this Project is bare.
+True if this is a bare git repository.
 
-=cut
 =head2 heads
-
-ArrayRef of hashes containing the name and sha1 of all heads.
-
-=cut
 
 =head2 tags
 
-ArrayRef of hashes containing the name and sha1 of all tags.
-
-=cut
+An array of the name and sha1 of all heads/tags in the repository.
 
 =head2 references
 
 Hashref of ArrayRefs for each reference.
 
-=cut
+
 =head1 METHODS
 
 =head2 head_hash ($head?)
 
 Return the sha1 for HEAD, or any specified head.
 
-=cut
 =head2 list_tree ($sha1?)
 
 Return an array of contents for a given tree.
 The tree is specified by sha1, and defaults to HEAD.
 Each item is a L<Gitalist::Git::Object>.
 
-=cut
 =head2 get_object ($sha1)
 
 Return an appropriate subclass of L<Gitalist::Git::Object> for the given sha1.
 
-=cut
-=head2 hash_by_path($sha1, $path, $type?)
+=head2 hash_by_path ($sha1, $path, $type?)
 
 Returns the sha1 for a given path, optionally limited by type.
 
-=cut
-=head2 list_revs($sha1, $count?, $skip?, \%search?, $file?)
+=head2 list_revs ($sha1, $count?, $skip?, \%search?, $file?)
 
 Returns a list of revs for the given head ($sha1).
 
-=cut
-=head2 snapshot($sha1, $format)
+=head2 snapshot ($sha1, $format)
 
 Generate an archived snapshot of the repository.
 $sha1 should be a commit or tree.
 Returns a filehandle to read from.
 
-=cut
-=head2 diff($commit, $patch?, $parent?, $file?)
+=head2 diff ($commit, $patch?, $parent?, $file?)
 
 Generate a diff from a given L<Gitalist::Git::Object>.
 
-=cut
-
-=head2 reflog(@lorgargs)
+=head2 reflog (@lorgargs)
 
 Return a list of hashes representing each reflog entry.
 
 FIXME Should this return objects?
 
-=cut
-
 
 =head1 SEE ALSO
 
 L<Gitalist::Git::Util> L<Gitalist::Git::Object>
+
 
 =head1 AUTHORS
 
