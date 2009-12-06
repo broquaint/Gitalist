@@ -340,7 +340,7 @@ FIXME Should this return objects?
     }
 
     ## BUILDERS
-    method _build__util {
+    method _build_util {
         Gitalist::Git::Util->new(
             project => $self,
         );

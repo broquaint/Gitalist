@@ -6,13 +6,13 @@ use namespace::autoclean;
 sub BUILD {}
 after BUILD => sub {
     my $self = shift;
-    # Force value build. A little convoluted as we don't have an accessor :)
-    $self->_util;
+    $self->meta->get_attribute('_util')->get_read_method_ref->($self); # Force value build.
 };
 
 has _util => ( isa => 'Gitalist::Git::Util',
-               is => 'ro',
-               lazy_build => 1,
+               lazy => 1,
+               is => 'bare',
+               builder => '_build_util',
                handles => [ 'run_cmd',
                             'run_cmd_fh',
                             'run_cmd_list',
@@ -21,7 +21,7 @@ has _util => ( isa => 'Gitalist::Git::Util',
                         ],
            );
 
-sub _build__util { confess(shift() . " cannot build _util") }
+sub _build_util { confess(shift() . " cannot build _util") }
 
 1;
 
