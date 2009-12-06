@@ -1,24 +1,5 @@
 use MooseX::Declare;
 
-=head1 NAME
-
-Gitalist::Git::Project - Model of a git repository
-
-=head1 SYNOPSIS
-
-    my $gitrepo = dir('/repo/base/Gitalist');
-    my $project = Gitalist::Git::Project->new($gitrepo);
-     $project->name;        # 'Gitalist'
-     $project->path;        # '/repo/base/Gitalist/.git'
-     $project->description; # 'Unnamed repository.'
-
-=head1 DESCRIPTION
-
-This class models a git repository, referred to in Gitalist
-as a "Project".
-
-=cut
-
 class Gitalist::Git::Project with Gitalist::Git::HasUtils {
     # FIXME, use Types::Path::Class and coerce
     use MooseX::Types::Common::String qw/NonEmptySimpleStr/;
@@ -46,60 +27,27 @@ class Gitalist::Git::Project with Gitalist::Git::HasUtils {
                              path => $dir);
     }
 
-=head1 ATTRIBUTES
-
-=head2 name
-
-The name of the Project.  By default, this is derived from the path to the git repository.
-
-=cut
     has name => ( isa => NonEmptySimpleStr,
                   is => 'ro', required => 1 );
 
-=head2 path
-
-L<Path::Class:Dir> for the location of the git repository.
-
-=cut
     has path => ( isa => Dir,
                   is => 'ro', required => 1);
 
-=head2 description
-
-String containing .git/description
-
-=cut
     has description => ( isa => Str,
                          is => 'ro',
                          lazy_build => 1,
                      );
 
-=head2 owner
-
-Owner of the files on disk.
-
-=cut
     has owner => ( isa => NonEmptySimpleStr,
                    is => 'ro',
                    lazy_build => 1,
                );
 
-=head2 last_change
-
-L<DateTime> for the time of the last update.
-undef if the repository has never been used.
-
-=cut
     has last_change => ( isa => Maybe['DateTime'],
                          is => 'ro',
                          lazy_build => 1,
                      );
 
-=head2 is_bare
-
-Bool indicating whether this Project is bare.
-
-=cut
     has is_bare => ( isa => Bool,
                      is => 'ro',
                      lazy => 1,
@@ -108,29 +56,12 @@ Bool indicating whether this Project is bare.
                              ? 1 : 0
                          },
                      );
-
-=head2 heads
-
-ArrayRef of hashes containing the name and sha1 of all heads.
-
-=cut
     has heads => ( isa => ArrayRef[HashRef],
                    is => 'ro',
                    lazy_build => 1);
-=head2 tags
-
-ArrayRef of hashes containing the name and sha1 of all tags.
-
-=cut
     has tags => ( isa => ArrayRef[HashRef],
                    is => 'ro',
                    lazy_build => 1);
-
-=head2 references
-
-Hashref of ArrayRefs for each reference.
-
-=cut
     has references => ( isa => HashRef[ArrayRef[Str]],
                         is => 'ro',
                         lazy_build => 1 );
@@ -139,13 +70,7 @@ Hashref of ArrayRefs for each reference.
         $self->$_() for qw/last_change owner description/; # Ensure to build early.
     }
 
-=head1 METHODS
-
-=head2 head_hash ($head?)
-
-Return the sha1 for HEAD, or any specified head.
-
-=cut
+    ## Public methods
     method head_hash (Str $head?) {
         my $output = $self->run_cmd(qw/rev-parse --verify/, $head || 'HEAD' );
         confess("No such head: " . $head) unless defined $output;
@@ -154,24 +79,12 @@ Return the sha1 for HEAD, or any specified head.
         return $sha1;
     }
 
-=head2 list_tree ($sha1?)
-
-Return an array of contents for a given tree.
-The tree is specified by sha1, and defaults to HEAD.
-Each item is a L<Gitalist::Git::Object>.
-
-=cut
     method list_tree (Str $sha1?) {
         $sha1 ||= $self->head_hash;
         my $object = $self->get_object($sha1);
         return @{$object->tree};
     }
 
-=head2 get_object ($sha1)
-
-Return an appropriate subclass of L<Gitalist::Git::Object> for the given sha1.
-
-=cut
     method get_object (NonEmptySimpleStr $sha1) {
         unless ( $self->_is_valid_rev($sha1) ) {
             $sha1 = $self->head_hash($sha1);
@@ -186,11 +99,6 @@ Return an appropriate subclass of L<Gitalist::Git::Object> for the given sha1.
         );
     }
 
-=head2 hash_by_path($sha1, $path, $type?)
-
-Returns the sha1 for a given path, optionally limited by type.
-
-=cut
     method hash_by_path ($base, $path = '', $type?) {
         $path =~ s{/+$}();
         # FIXME should this really just take the first result?
@@ -205,11 +113,6 @@ Returns the sha1 for a given path, optionally limited by type.
                 : $3;
     }
 
-=head2 list_revs($sha1, $count?, $skip?, \%search?, $file?)
-
-Returns a list of revs for the given head ($sha1).
-
-=cut
     method list_revs ( NonEmptySimpleStr :$sha1!,
                        Int :$count?,
                        Int :$skip?,
@@ -247,39 +150,25 @@ Returns a list of revs for the given head ($sha1).
         return @revs;
     }
 
-=head2 snapshot($sha1, $format)
-
-Generate an archived snapshot of the repository.
-$sha1 should be a commit or tree.
-Returns a filehandle to read from.
-
-=cut
-
-method snapshot (NonEmptySimpleStr :$sha1,
+    method snapshot (NonEmptySimpleStr :$sha1,
                  NonEmptySimpleStr :$format
                ) {
-    # TODO - only valid formats are 'tar' and 'zip'
-    my $formats = { tgz => 'tar', zip => 'zip' };
-    unless ($formats->exists($format)) {
-        die("No such format: $format");
+        # TODO - only valid formats are 'tar' and 'zip'
+        my $formats = { tgz => 'tar', zip => 'zip' };
+        unless ($formats->exists($format)) {
+            die("No such format: $format");
+        }
+        $format = $formats->{$format};
+        my $name = $self->name;
+        $name =~ s,([^/])/*\.git$,$1,;
+        my $filename = $name;
+        $filename .= "-$sha1.$format";
+        $name =~ s/\047/\047\\\047\047/g;
+
+        my @cmd = ('archive', "--format=$format", "--prefix=$name/", $sha1);
+        return ($filename, $self->run_cmd_fh(@cmd));
+        # TODO - support compressed archives
     }
-    $format = $formats->{$format};
-    my $name = $self->name;
-    $name =~ s,([^/])/*\.git$,$1,;
-    my $filename = $name;
-    $filename .= "-$sha1.$format";
-    $name =~ s/\047/\047\\\047\047/g;
-
-    my @cmd = ('archive', "--format=$format", "--prefix=$name/", $sha1);
-    return ($filename, $self->run_cmd_fh(@cmd));
-    # TODO - support compressed archives
-}
-
-=head2 diff($commit, $patch?, $parent?, $file?)
-
-Generate a diff from a given L<Gitalist::Git::Object>.
-
-=cut
 
     method diff ( Gitalist::Git::Object :$commit!,
                   Bool :$patch?,
@@ -291,13 +180,6 @@ Generate a diff from a given L<Gitalist::Git::Object>.
                                     file => $file);
     }
 
-=head2 reflog(@lorgargs)
-
-Return a list of hashes representing each reflog entry.
-
-FIXME Should this return objects?
-
-=cut
     method reflog (@logargs) {
         my @entries
             =  $self->run_cmd(qw(log -g), @logargs)
@@ -450,6 +332,125 @@ FIXME Should this return objects?
 } # end class
 
 __END__
+
+=head1 NAME
+
+Gitalist::Git::Project - Model of a git repository
+
+=head1 SYNOPSIS
+
+    my $gitrepo = dir('/repo/base/Gitalist');
+    my $project = Gitalist::Git::Project->new($gitrepo);
+     $project->name;        # 'Gitalist'
+     $project->path;        # '/repo/base/Gitalist/.git'
+     $project->description; # 'Unnamed repository.'
+
+=head1 DESCRIPTION
+
+This class models a git repository, referred to in Gitalist
+as a "Project".
+
+=cut
+=head1 ATTRIBUTES
+
+=head2 name
+
+The name of the Project.  By default, this is derived from the path to the git repository.
+
+=cut
+=head2 path
+
+L<Path::Class:Dir> for the location of the git repository.
+
+=cut
+=head2 description
+
+String containing .git/description
+
+=cut
+=head2 owner
+
+Owner of the files on disk.
+
+=cut
+=head2 last_change
+
+L<DateTime> for the time of the last update.
+undef if the repository has never been used.
+
+=cut
+=head2 is_bare
+
+Bool indicating whether this Project is bare.
+
+=cut
+=head2 heads
+
+ArrayRef of hashes containing the name and sha1 of all heads.
+
+=cut
+
+=head2 tags
+
+ArrayRef of hashes containing the name and sha1 of all tags.
+
+=cut
+
+=head2 references
+
+Hashref of ArrayRefs for each reference.
+
+=cut
+=head1 METHODS
+
+=head2 head_hash ($head?)
+
+Return the sha1 for HEAD, or any specified head.
+
+=cut
+=head2 list_tree ($sha1?)
+
+Return an array of contents for a given tree.
+The tree is specified by sha1, and defaults to HEAD.
+Each item is a L<Gitalist::Git::Object>.
+
+=cut
+=head2 get_object ($sha1)
+
+Return an appropriate subclass of L<Gitalist::Git::Object> for the given sha1.
+
+=cut
+=head2 hash_by_path($sha1, $path, $type?)
+
+Returns the sha1 for a given path, optionally limited by type.
+
+=cut
+=head2 list_revs($sha1, $count?, $skip?, \%search?, $file?)
+
+Returns a list of revs for the given head ($sha1).
+
+=cut
+=head2 snapshot($sha1, $format)
+
+Generate an archived snapshot of the repository.
+$sha1 should be a commit or tree.
+Returns a filehandle to read from.
+
+=cut
+=head2 diff($commit, $patch?, $parent?, $file?)
+
+Generate a diff from a given L<Gitalist::Git::Object>.
+
+=cut
+
+=head2 reflog(@lorgargs)
+
+Return a list of hashes representing each reflog entry.
+
+FIXME Should this return objects?
+
+=cut
+
 
 =head1 SEE ALSO
 
