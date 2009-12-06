@@ -1,5 +1,6 @@
 This file documents the revision history for Perl extension Gitalist.
 
+   - Add documentation about how to configure a Gitalist instance.
    - Fix so that invalid repository directory will be detected at application
      startup and a helpful error message will be displayed.
    - Add --repos_dir command line parameter to all of the scripts which can

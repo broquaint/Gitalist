@@ -48,20 +48,25 @@ Gitalist - A modern git web viewer
 
 =head1 SYNOPSIS
 
-    script/gitalist_server.pl
+    script/gitalist_server.pl --repo_dir /home/me/code/git
 
 =head1 INSTALL
 
 As Gitalist follows the usual Perl module format the usual approach
-for installation should work e.g
+for installation should work e.g.
 
   perl Makefile.PL
   make
   make test
   make install
 
-If you're running a git checkout of Gitalist then you'll additionally
-need the author modules.
+or
+
+  cpan -i Gitalist
+
+You can also check gitalist out from git and run it, in this case you'll additionally
+need the author modules, but no configuration will be needed as it will default to looking
+for repositories the directory above the checkout.
 
 =head1 DESCRIPTION
 
@@ -74,6 +79,25 @@ This project started off as an attempt to port gitweb.cgi to a
 Catalyst app in a piecemeal fashion. As it turns out, thanks largely
 to Florian Ragwitz's earlier effort, it was easier to use gitweb.cgi
 as a template for building a new Catalyst application.
+
+=head1 CONFIGURATION
+
+Gitalist can be supplied with a config file by setting the C<< GITALIST_CONFIG >>
+environment variable to point to a configuration file.
+
+A default configuration is installed along with gitalist, which is complete except
+for a repository directory. You can get a copy of this configuration by running:
+
+  cp `perl -Ilib -MGitalist -e'print Gitalist->path_to("gitalist.conf")'` gitalist.conf
+
+adding a repos_dir path and then setting C<< GITALIST_CONFIG >>.
+
+Alternatively, if you only want to set a repository directory and are otherwise happy with
+the default configuration, then you can set the C<< GITALIST_REPOS_DIR >> environment
+variable, or pass the C<< --repos_dir >> flag to any of the scripts.
+
+The C<< GITALIST_REPOS_DIR >> environment variable will override the repository directory set
+in configuration, and will itself be overridden by he C<< --repos_dir >> flag.
 
 =head1 SEE ALSO
 
