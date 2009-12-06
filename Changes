@@ -1,5 +1,7 @@
 This file documents the revision history for Perl extension Gitalist.
 
+   - Do not allow directory traversal via the p param.
+
 0.000001
    - No changes since last dev release.
 
