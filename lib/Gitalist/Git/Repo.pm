@@ -66,7 +66,8 @@ name.
 =cut
 
     method project (NonEmptySimpleStr $project) {
-        my $path = $self->repo_dir->subdir($project);
+        my $path = $self->repo_dir->subdir($project)->resolve;
+        die "Directory traversal prohibited" unless $self->repo_dir->contains($path);
         die "Not a valid Project" unless $self->_is_git_repo($path);
         return Project->new( $self->repo_dir->subdir($project) );
     }

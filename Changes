@@ -1,4 +1,10 @@
 This file documents the revision history for Perl extension Gitalist.
 
+0.000001
+   - No changes since last dev release.
+
+0.000000_02  UNRELEASED
+   - Fixed history action, other minor cleanups.
+
 0.000000_01  UNRELEASED
    - Initial release to CPAN

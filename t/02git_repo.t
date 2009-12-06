@@ -39,5 +39,9 @@ dies_ok {
     my $project = $repo->project();
 } 'throws exception for no project';
 
+dies_ok {
+    my $project = $repo->project('../../../');
+} 'throws exception for directory traversal';
+
 my $project = $repo->project('repo1');
 isa_ok($project, 'Gitalist::Git::Project');
