@@ -16,8 +16,12 @@ for my $p (qw/ repo1 nodescription /) {
     ok( request($path)->is_success, "$path should succeed");
 }
 
-is request('/summary?p=DoesNotExist')->code, 404,
-    '/summary?p=DoesNotExist 404s';
+my $response = request('/summary?p=DoesNotExist');
+is $response->code, 404, 'invalid project 404s';
+like $response->content, qr/Page not found/, 'invalid project handled correctly';
+
+is request('/summary?p=../../../')->code, 404, 'directory traversal failed';
+
 {
   # URI tests for repo1
   local *test = curry_test_uri('repo1');
