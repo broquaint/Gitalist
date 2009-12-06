@@ -3,6 +3,7 @@ use Moose;
 use namespace::autoclean;
 
 extends 'Catalyst::Script::FastCGI';
+with 'Gitalist::ScriptRole';
 
 # Only exists so that this horrible hack can happen..
 # This should be in FCGI.pm, see:

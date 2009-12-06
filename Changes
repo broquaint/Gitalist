@@ -1,5 +1,12 @@
 This file documents the revision history for Perl extension Gitalist.
 
+   - Fix so that invalid repository directory will be detected at application
+     startup and a helpful error message will be displayed.
+   - Add --repos_dir command line parameter to all of the scripts which can
+     be used to force the repository directory, overriding config and
+     environment.
+   - Add GITALIST_REPOS_DIR environment variable which will determine the
+     repository path (overriding normal config) if set.
    - Change so that no default repos path is in the config when installed from
      CPAN (when checked out of git, behavior of browsing AppDir/../ is
      maintained).
