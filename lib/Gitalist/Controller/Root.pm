@@ -636,7 +636,7 @@ sub auto : Private {
       $c->stash(Project => $c->model('GitRepos')->project($project));
     };
     if ($@) {
-      $c->detach('error_404');
+      $c->detach('/error_404');
     }
   }
 
@@ -679,10 +679,7 @@ sub end : ActionClass('RenderView') {
 sub error_404 :Private {
     my ($self, $c) = @_;
     $c->response->status(404);
-    $c->stash(
-        title => 'Page not found',
-        content => 'Page not found',
-    );
+    $c->response->body('Page not found');
 }
 
 sub age_string {
