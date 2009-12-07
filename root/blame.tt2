@@ -1,5 +1,5 @@
 [% PROCESS 'nav/actions.tt2' object = head %]
-<link rel="stylesheet" type="text/css" href="/static/css/syntax/[% language %].css"/>
+[% INCLUDE inc/syntax_highlight_css.tt2 %]
 
 <div class='content'>
 
