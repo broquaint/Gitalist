@@ -1,6 +1,6 @@
 [% PROCESS 'nav/actions.tt2' object = commit %]
 
-<div class='summary'>
+<div class='summary content'>
 <!-- <div id='stats'>
   <dt>Number of commits in the last day</dt><dd>N</dd>
   <dt>Most frequent commiter in the last week</dt><dd>Foo</dd>
@@ -14,10 +14,9 @@
   <dt>last change</dt><dd>[% Project.last_change %]</dd>
  </dl>
 
+  <h2><a href='[% c.uri_for("shortlog") %]'>shortlog</a></h2>
+  [% INCLUDE '_shortlog.tt2' %]
+
+  <h2><a href='[% c.uri_for("heads") %]'>branches</a></h2>
+  [% INCLUDE '_heads.tt2' %]
 </div>
-
-<h2><a href='[% c.uri_for("shortlog") %]'>shortlog</a></h2>
-[% INCLUDE '_shortlog.tt2' %]
-
-<h2><a href='[% c.uri_for("heads") %]'>branches</a></h2>
-[% INCLUDE '_heads.tt2' %]

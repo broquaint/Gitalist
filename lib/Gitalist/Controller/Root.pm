@@ -161,12 +161,19 @@ sub blame : Local {
        || die "Couldn't discern the corresponding head.";
   my $filename = $c->req->param('f') || '';
 
+  my $blame = $project->get_object($hb)->blame($filename);
   $c->stash(
-    blame    => $project->get_object($hb)->blame($filename),
+    blame    => $blame,
     head     => $project->get_object($hb),
     filename => $filename,
+
+    # XXX Hack hack hack, see View::SyntaxHighlight
+    language => ($filename =~ /\.p[lm]$/i ? 'Perl' : ''),
+    blob     => join("\n", map $_->{line}, @$blame),
   );
-  
+
+  $c->forward('View::SyntaxHighlight')
+    unless $c->stash->{no_wrapper};
 }
 
 sub _blob_objs {
@@ -204,7 +211,7 @@ sub blob : Local {
     head     => $head,
     filename => $filename,
     # XXX Hack hack hack, see View::SyntaxHighlight
-    language => ($filename =~ /\.p[lm]$/ ? 'Perl' : ''),
+    language => ($filename =~ /\.p[lm]$/i ? 'Perl' : ''),
     action   => 'blob',
   );
 

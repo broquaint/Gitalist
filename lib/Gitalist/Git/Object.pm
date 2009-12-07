@@ -4,7 +4,6 @@ use Moose::Autobox;
 class Gitalist::Git::Object {
     use MooseX::Types::Moose qw/Str Int Bool Maybe ArrayRef/;
     use MooseX::Types::Common::String qw/NonEmptySimpleStr/;
-    use File::Stat::ModeString qw/mode_to_string/;
 
     # project and sha1 are required initargs
     has project => ( isa => 'Gitalist::Git::Project',
@@ -64,13 +63,46 @@ class Gitalist::Git::Object {
         return $v;
     }
 
-    method _build_modestr {
-        my $modestr = mode_to_string($self->mode);
-        return $modestr;
-    }
-
     method _cat_file_with_flag ($flag) {
         $self->_run_cmd('cat-file', '-' . $flag, $self->{sha1})
+    }
+
+    method _build_modestr {
+        return _mode_str($self->mode);
+    }
+
+    # via gitweb.pm circa line 1305
+    use Fcntl ':mode';
+    use constant {
+	S_IFINVALID => 0030000,
+	S_IFGITLINK => 0160000,
+    };
+
+    # submodule/subproject, a commit object reference
+    sub S_ISGITLINK($) {
+        return (($_[0] & S_IFMT) == S_IFGITLINK)
+    }
+
+    # convert file mode in octal to symbolic file mode string
+    sub _mode_str {
+        my $mode = shift;
+
+        if (S_ISGITLINK($mode)) {
+            return 'm---------';
+        } elsif (S_ISDIR($mode & S_IFMT)) {
+            return 'drwxr-xr-x';
+        } elsif (S_ISLNK($mode)) {
+            return 'lrwxrwxrwx';
+        } elsif (S_ISREG($mode)) {
+            # git cares only about the executable bit
+            if ($mode & S_IXUSR) {
+                return '-rwxr-xr-x';
+            } else {
+                return '-rw-r--r--';
+            }
+        } else {
+            return '----------';
+        }
     }
 
 } # end class

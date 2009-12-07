@@ -46,7 +46,6 @@ requires 'CGI';
 requires 'DateTime';
 requires 'DateTime::Format::Mail';
 requires 'File::Copy::Recursive';
-requires 'File::Stat::ModeString';
 requires 'File::Which';
 requires 'HTML::Entities';
 requires 'IPC::Run';

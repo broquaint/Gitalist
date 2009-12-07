@@ -1,8 +1,10 @@
 [% PROCESS 'nav/actions.tt2' object = head %]
+<link rel="stylesheet" type="text/css" href="/static/css/syntax/[% language %].css"/>
+
+<div class='content'>
+
 [% IF object.type == 'commit' %]
-<div class='commit-message'>
-[% head.comment.substr(0, 85) %] ...
-</div>
+<div class='commit-message'>[% short_cmt(head.comment) %]</div>
 [% END %]
 
 [% INCLUDE 'nav/path.tt2' %]
@@ -11,28 +13,47 @@
 <table>
  <thead>
   <tr>
+   <th>author</th>
+   <th>date</th>
    <th>sha1</th>
-   <th>line</th>
-   <th>data</th>
+   <th></th>
+   <th class='data'>data</th>
   </tr>
  </thead>
 
  <tfoot>
   <tr>
+   <td>author</td>
+   <td>date</td>
    <td>sha1</td>
-   <td>line</td>
-   <td>data</td>
+   <td></td>
+   <td class='data'>data</td>
   </tr>
  </tfoot>
 
  <tbody>
+ [% blame_lines = blob.split("\n") %]
  [% FOR info IN blame %]
  <tr class=''>
-   <td class='commit-info'><a title="[% info.commit.author %] on [% info.commit.author_dt %]" href='[% c.uri_for('commit', {h=info.commit.sha1}) %]'>[% INCLUDE '_chroma_hash.tt2' sha1 = info.commit.sha1.substr(0,7) -%]</a></td>
-   <td class='lineno'><tt>[% info.meta.lineno %]</tt></td>
-   <td><pre>[% info.line | html %]</pre></td>
+   [%-
+     linecolour = info.commit.sha1.substr(0,6);
+     IF info.commit.sha1 != lastsha1;
+       styleinfo = " style='border-top: solid 3px #" _ linecolour _ ";'"; -%]
+   <td nowrap class='author'[% styleinfo %]>[% info.commit.author %]</td>
+   <td nowrap class='date'[% styleinfo %]>[% info.commit.author_dt.ymd %]</td>
+   <td nowrap class='commit-info chroma-hash'[% styleinfo %]><a title="[% info.commit.author %] on [% info.commit.author_dt %]" href='[% c.uri_for('commit', {h=info.commit.sha1}) %]'>[% linecolour %]</td>
+     [%- ELSE -%]
+     <td nowrap class='author'></td>
+     <td nowrap class='date'></td>
+     <td nowrap class='commit-info'></td>
+     [%- END -%]
+   <td nowrap class='lineno' style='border-right: solid 3px #[% linecolour %]; border-left: solid 3px #[% linecolour %];'><tt>[% info.meta.lineno %]</tt></td>
+   <td nowrap class='data'><pre>[% blame_lines.${loop.index} %]</pre></td>
+   [% lastsha1 = info.commit.sha1 %]
  </tr>
  [% END %]
  </tbody>
 </table>
+</div>
+
 </div>
