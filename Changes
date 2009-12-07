@@ -1,5 +1,11 @@
 This file documents the revision history for Perl extension Gitalist.
 
+    - Start streamlining and generally rejiging the layout.
+    - Hacked in syntax highlighting to the blame view.
+    - Further tweaks to the blame view, making it more informative.
+    - Dropped the dependency on File::Stat::ModeString
+    - Move all POD below the code, for ::Repo and ::Project.
+
 0.000002 2009-12-06
    - Add documentation about how to configure a Gitalist instance.
    - Fix so that invalid repository directory will be detected at application
