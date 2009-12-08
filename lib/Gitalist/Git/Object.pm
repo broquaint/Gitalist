@@ -107,6 +107,25 @@ class Gitalist::Git::Object {
 
 } # end class
 
+__END__
+
+=head1 NAME
+
+Gitalist::Git::Object - Model of a git object.
+
+=head1 SYNOPSIS
+
+    my $object = Project->get_object($sha1);
+
+=head1 DESCRIPTION
+
+Abstract base class for git objects.
+
+
+=head1 ATTRIBUTES
+
+
+=head1 METHODS
 
 
 =head1 AUTHORS

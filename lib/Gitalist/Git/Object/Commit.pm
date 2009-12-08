@@ -194,9 +194,44 @@ __END__
 
 Gitalist::Git::Object::Commit
 
+=head1 SYNOPSIS
+
+    my $commit = Project->get_object($commit_sha1);
+
 =head1 DESCRIPTION
 
-Gitalist::Git::Object::Commit.
+Represents a commit object in a git repository.
+Subclass of C<Gitalist::Git::Object>.
+
+
+=head1 ATTRIBUTES
+
+=head2 committer
+
+=head2 committed_time
+
+=head2 author
+
+=head2 authored_time
+
+=head2 comment
+
+=head2 tree_sha1
+
+=head2 parents
+
+=head2 parent_sha1
+
+=head2 parent_sha1s
+
+
+=head1 METHODS
+
+=head2 get_patch
+
+=head2 diff
+
+=head2 blame
 
 =head1 AUTHORS
 
