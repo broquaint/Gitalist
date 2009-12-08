@@ -64,8 +64,8 @@ author_requires 'Test::Pod::Coverage' => '1.04';
 
 test_requires 'Test::More' => '0.88';
 
-resources bugtracker => 'http://github.com/broquaint/Gitalist/issues';
-resources repository => 'git://github.com/broquaint/Gitalist.git';
+resources bugtracker => 'http://rt.cpan.org/Public/Dist/Display.html?Name=Gitalist';
+resources repository => 'git://git.shadowcat.co.uk/catagits/Gitalist.git';
 
 catalyst;
 
