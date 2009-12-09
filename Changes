@@ -1,5 +1,10 @@
 This file documents the revision history for Perl extension Gitalist.
 
+0.000003 2009-12-09
+    - Officially switch repository to Shadowcat
+    - Officially switch bug tracker to rt.cpan.org
+    - Move all POD below the code, for ::Repo and ::Project.
+
 0.000002 2009-12-06
    - Add documentation about how to configure a Gitalist instance.
    - Fix so that invalid repository directory will be detected at application
