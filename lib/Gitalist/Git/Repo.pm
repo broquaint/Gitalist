@@ -74,36 +74,31 @@ This class models a Gitalist Repo, which is a collection of
 Projects (git repositories).  It is used for creating Project
 objects to work with.
 
-=cut
 
 =head1 ATTRIBUTES
 
-=head2 repo_dir
+=head2 repo_dir (C<Path::Class::Dir>)
 
-L<Path::Class::Dir> for the root of the Repo.
-
-=cut
+The filesystem root of the Repo.
 
 =head2 projects
 
-An array of L<Gitalist::Git::Project> for each valid git repo
-found in repo_dir.
+An array of all Repos found in C<repo_dir>.
 
-=cut
 
 
 =head1 METHODS
 
-=head2 project (NonEmptySimpleStr $project)
+=head2 project (Str $project)
 
 Returns a L<Gitalist::Git::Project> for the specified project
 name.
 
-=cut
 
 =head1 SEE ALSO
 
 L<Gitalist::Git::Project>
+
 
 =head1 AUTHORS
 
