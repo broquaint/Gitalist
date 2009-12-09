@@ -1,4 +1,6 @@
 #!/usr/bin/env perl
+use FindBin;
+BEGIN { do "$FindBin::Bin/script/env" or die $@ }
 
 use strict;
 use warnings;

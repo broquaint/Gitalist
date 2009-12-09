@@ -1,0 +1,77 @@
+#!/usr/bin/env perl
+# vim: set filetype=perl:
+
+# env is a perl script similar in concept to /usr/bin/env
+
+# If you have a local-lib5 directory then this script will set it up for
+# you as it executes.
+
+# If used like /usr/bin/env then it will run other commands based on
+# your current path settings (with a local::lib environment if present)
+#
+#  e.g. script/env bash
+#
+# NOTE: This environment _IS NOT_ self contained
+
+# If included inside another perl script, then it will be a no-op if
+# a local::lib environment is not present, but if one is, it will be
+# used as a --self-contained environment, expected to contain all non-core
+# dependencies for your perl
+#
+#  e.g.
+#       use FindBin;
+#       BEGIN { do "$FindBin::Bin/env" or die $@ }
+
+# The local::lib behavior can be explicitly enabled or disabled by setting
+# the CATALYST_LOCAL_LIB enviromnent variable to true or false.
+
+use strict;
+use warnings;
+use Carp;
+use lib;
+use FindBin;
+
+my $basedir;
+if (-r "$FindBin::Bin/Makefile.PL") {
+    $basedir = $FindBin::Bin;
+}
+elsif (-r "$FindBin::Bin/../Makefile.PL") {
+    $basedir = "$FindBin::Bin/..";
+}
+
+$basedir ||= '';
+my $target = "$basedir/local-lib5";
+
+my $on = -d $target;
+$on = ! ! $ENV{CATALYST_LOCAL_LIB}
+    if (exists $ENV{CATALYST_LOCAL_LIB} and defined $ENV{CATALYST_LOCAL_LIB});
+
+Carp::confess("Could not find local-lib5 from '$FindBin::Bin'")
+    if ($on && ! length $basedir);
+
+if ( $on ) {
+    # So we can find local::lib when fully self contained
+    lib->import("$target/lib/perl5");
+
+    # . for CPAN + app dir
+    my @include = ('.', "$basedir/lib");
+
+    $ENV{PERL5LIB} = join ':', @include;
+
+    # Sorry kane ;)
+    $ENV{PERL_AUTOINSTALL_PREFER_CPAN}=1;
+
+    $ENV{PERL_MM_OPT} .= " INSTALLMAN1DIR=none INSTALLMAN3DIR=none";
+
+    require local::lib;
+    local::lib->import( '--self-contained', $target );
+}
+
+unless ( caller ) {
+    if ( @ARGV ) {
+        exec @ARGV;
+    }
+}
+
+1;
+

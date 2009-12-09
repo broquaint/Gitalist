@@ -1,4 +1,6 @@
 #!/usr/bin/env perl
+use FindBin;
+BEGIN { do "$FindBin::Bin/env" or die $@ }
 
 BEGIN {
     $ENV{CATALYST_SCRIPT_GEN} = 40;
