@@ -40,13 +40,7 @@ sub _get_object {
   return $obj;
 }
 
-=head2 index
-
-Provides the project listing.
-
-=cut
-
-sub index :Path :Args(0) {
+sub index : Chained('base') PathPart('') Args(0) {
   my ( $self, $c ) = @_;
 
   $c->detach($c->req->param('a'))
@@ -71,7 +65,8 @@ sub index :Path :Args(0) {
   );
 }
 
-sub project_index : Local {
+# FIXME - WTF is this for?
+sub project_index : Chained('base') Args(0) {
   my ( $self, $c ) = @_;
 
   my @list = @{ $c->model()->projects };
@@ -91,7 +86,7 @@ A summary of what's happening in the repo.
 
 =cut
 
-sub summary : Local {
+sub summary : Chained('base') Args(0) {
   my ( $self, $c ) = @_;
   my $project = $c->stash->{Project};
   $c->detach('error_404') unless $project;
@@ -116,7 +111,7 @@ The current list of heads (aka branches) in the repo.
 
 =cut
 
-sub heads : Local {
+sub heads : Chained('base') Args(0) {
   my ( $self, $c ) = @_;
   my $project = $c->stash->{Project};
   $c->stash(
@@ -132,7 +127,7 @@ The current list of tags in the repo.
 
 =cut
 
-sub tags : Local {
+sub tags : Chained('base') Args(0) {
   my ( $self, $c ) = @_;
   my $project = $c->stash->{Project};
   $c->stash(
@@ -142,7 +137,7 @@ sub tags : Local {
   );
 }
 
-sub blame : Local {
+sub blame : Chained('base') Args(0) {
   my($self, $c) = @_;
 
   my $project = $c->stash->{Project};
@@ -195,7 +190,7 @@ The blob action i.e the contents of a file.
 
 =cut
 
-sub blob : Local {
+sub blob : Chained('base') Args(0) {
   my ( $self, $c ) = @_;
 
   my($blob, $head, $filename) = $self->_blob_objs($c);
@@ -218,7 +213,7 @@ The plain text version of blob, where file is rendered as is.
 
 =cut
 
-sub blob_plain : Local {
+sub blob_plain : Chained('base') Args(0) {
   my($self, $c) = @_;
 
   my($blob) = $self->_blob_objs($c);
@@ -233,7 +228,7 @@ The plain text version of blobdiff.
 
 =cut
 
-sub blobdiff_plain : Local {
+sub blobdiff_plain : Chained('base') Args(0) {
   my($self, $c) = @_;
 
   $c->stash(no_wrapper => 1);
@@ -248,7 +243,7 @@ Exposes a given diff of a blob.
 
 =cut
 
-sub blobdiff : Local {
+sub blobdiff : Chained('base') Args(0) {
   my ( $self, $c ) = @_;
   my $commit = $self->_get_object($c, $c->req->param('hb'));
   my $filename = $c->req->param('f')
@@ -279,7 +274,7 @@ Exposes a given commit.
 
 =cut
 
-sub commit : Local {
+sub commit : Chained('base') Args(0) {
   my ( $self, $c ) = @_;
   my $project = $c->stash->{Project};
   my $commit = $self->_get_object($c);
@@ -297,7 +292,7 @@ Exposes a given diff of a commit.
 
 =cut
 
-sub commitdiff : Local {
+sub commitdiff : Chained('base') Args(0) {
   my ( $self, $c ) = @_;
   my $commit = $self->_get_object($c);
   my($tree, $patch) = $c->stash->{Project}->diff(
@@ -319,7 +314,7 @@ sub commitdiff : Local {
     unless $c->stash->{no_wrapper};
 }
 
-sub commitdiff_plain : Local {
+sub commitdiff_plain : Chained('base') Args(0) {
   my($self, $c) = @_;
 
   $c->stash(no_wrapper => 1);
@@ -334,7 +329,7 @@ Expose an abbreviated log of a given sha1.
 
 =cut
 
-sub shortlog : Local {
+sub shortlog : Chained('base') Args(0) {
   my ( $self, $c ) = @_;
 
   my $project  = $c->stash->{Project};
@@ -366,13 +361,14 @@ sub shortlog : Local {
 Calls shortlog internally. Perhaps that should be reversed ...
 
 =cut
-sub log : Local {
+
+sub log : Chained('base') Args(0) {
     $_[0]->shortlog($_[1]);
     $_[1]->stash->{action} = 'log';
 }
 
 # For legacy support.
-sub history : Local {
+sub history : Chained('base') Args(0) {
     my ( $self, $c ) = @_;
     $self->shortlog($c);
     my $project = $c->stash->{Project};
@@ -393,7 +389,7 @@ The tree of a given commit.
 
 =cut
 
-sub tree : Local {
+sub tree : Chained('base') Args(0) {
   my ( $self, $c ) = @_;
   my $project = $c->stash->{Project};
   my $commit  = $self->_get_object($c, $c->req->param('hb'));
@@ -417,7 +413,7 @@ Expose the local reflog. This may go away.
 
 =cut
 
-sub reflog : Local {
+sub reflog : Chained('base') Args(0) {
   my ( $self, $c ) = @_;
   my @log = $c->stash->{Project}->reflog(
       '--since=yesterday'
@@ -435,7 +431,7 @@ The action for the search form.
 
 =cut
 
-sub search : Local {
+sub search : Chained('base') Args(0) {
   my($self, $c) = @_;
   $c->stash(current_action => 'GitRepos');
   my $project = $c->stash->{Project};
@@ -466,7 +462,7 @@ Provides some help for the search form.
 
 =cut
 
-sub search_help : Local {
+sub search_help : Chained('base') Args(0) {
     my ($self, $c) = @_;
     $c->stash(template => 'search_help.tt2');
 }
@@ -477,7 +473,7 @@ Provides an atom feed for a given project.
 
 =cut
 
-sub atom : Local {
+sub atom : Chained('base') Args(0) {
   my($self, $c) = @_;
 
   my $feed = XML::Atom::Feed->new;
@@ -514,7 +510,7 @@ Provides an RSS feed for a given project.
 
 =cut
 
-sub rss : Local {
+sub rss : Chained('base') Args(0) {
   my ($self, $c) = @_;
 
   my $project = $c->stash->{Project};
@@ -549,7 +545,7 @@ sub rss : Local {
   $c->response->status(200);
 }
 
-sub opml : Local {
+sub opml : Chained('base') Args(0) {
   my($self, $c) = @_;
 
   my $opml = XML::OPML::SimpleGen->new();
@@ -578,7 +574,7 @@ A raw patch for a given commit.
 
 =cut
 
-sub patch : Local {
+sub patch : Chained('base') Args(0) {
     my ($self, $c) = @_;
     $c->detach('patches', [1]);
 }
@@ -589,7 +585,7 @@ The patcheset for a given commit ???
 
 =cut
 
-sub patches : Local {
+sub patches : Chained('base') Args(0) {
     my ($self, $c, $count) = @_;
     $count ||= Gitalist->config->{patches}{max};
     my $commit = $self->_get_object($c);
@@ -606,7 +602,7 @@ Provides a snapshot of a given commit.
 
 =cut
 
-sub snapshot : Local {
+sub snapshot : Chained('base') Args(0) {
     my ($self, $c) = @_;
     my $format = $c->req->param('sf') || 'tgz';
     die unless $format;
@@ -621,13 +617,8 @@ sub snapshot : Local {
     $c->response->body($snap[1]);
 }
 
-=head2 auto
 
-Populate the header and footer. Perhaps not the best location.
-
-=cut
-
-sub auto : Private {
+sub base : Chained('/root') PathPart('') CaptureArgs(0) {
   my($self, $c) = @_;
 
   my $project = $c->req->param('p');
@@ -662,12 +653,6 @@ sub auto : Private {
   );
 }
 
-=head2 end
-
-Attempt to render a view, if needed.
-
-=cut
-
 sub end : ActionClass('RenderView') {
     my ($self, $c) = @_;
     # Give project views the current HEAD.
@@ -696,7 +681,21 @@ This controller handles all of the root level paths for the application
 
 =head1 METHODS
 
-=head2 age_string
+=head2 root
+
+Root of chained actions
+
+=head2 base
+
+Populate the header and footer. Perhaps not the best location.
+
+=head2 index
+
+Provides the project listing.
+
+=head2 end
+
+Attempt to render a view, if needed.
 
 =head2 blame
 
