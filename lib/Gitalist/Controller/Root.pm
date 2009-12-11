@@ -1,11 +1,6 @@
 package Gitalist::Controller::Root;
+
 use Moose;
-use namespace::autoclean;
-
-BEGIN { extends 'Catalyst::Controller' }
-
-__PACKAGE__->config->{namespace} = '';
-
 use Moose::Autobox;
 use Sys::Hostname ();
 use XML::Atom::Feed;
@@ -13,17 +8,15 @@ use XML::Atom::Entry;
 use XML::RSS;
 use XML::OPML::SimpleGen;
 
-=head1 NAME
+use Gitalist::Utils qw/ age_string /;
 
-Gitalist::Controller::Root - Root Controller for Gitalist
+use namespace::autoclean;
 
-=head1 DESCRIPTION
+BEGIN { extends 'Catalyst::Controller' }
 
-[enter your description here]
+__PACKAGE__->config->{namespace} = '';
 
-=head1 METHODS
-
-=cut
+sub root : Chained('/') PathPart('') CaptureArgs(0) {}
 
 sub _get_object {
   my($self, $c, $haveh) = @_;
@@ -683,48 +676,10 @@ sub end : ActionClass('RenderView') {
     }
 }
 
-sub error_404 :Private {
+sub error_404 : Action {
     my ($self, $c) = @_;
     $c->response->status(404);
     $c->response->body('Page not found');
-}
-
-sub age_string {
-  my $age = shift;
-  my $age_str;
-
-  if ( $age > 60 * 60 * 24 * 365 * 2 ) {
-    $age_str  = ( int $age / 60 / 60 / 24 / 365 );
-    $age_str .= " years ago";
-  }
-  elsif ( $age > 60 * 60 * 24 * ( 365 / 12 ) * 2 ) {
-    $age_str  = int $age / 60 / 60 / 24 / ( 365 / 12 );
-    $age_str .= " months ago";
-  }
-  elsif ( $age > 60 * 60 * 24 * 7 * 2 ) {
-    $age_str  = int $age / 60 / 60 / 24 / 7;
-    $age_str .= " weeks ago";
-  }
-  elsif ( $age > 60 * 60 * 24 * 2 ) {
-    $age_str  = int $age / 60 / 60 / 24;
-    $age_str .= " days ago";
-  }
-  elsif ( $age > 60 * 60 * 2 ) {
-    $age_str  = int $age / 60 / 60;
-    $age_str .= " hours ago";
-  }
-  elsif ( $age > 60 * 2 ) {
-    $age_str  = int $age / 60;
-    $age_str .= " min ago";
-  }
-  elsif ( $age > 2 ) {
-    $age_str  = int $age;
-    $age_str .= " sec ago";
-  }
-  else {
-    $age_str .= " right now";
-  }
-  return $age_str;
 }
 
 __PACKAGE__->meta->make_immutable;
