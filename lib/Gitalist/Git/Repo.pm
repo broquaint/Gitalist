@@ -20,14 +20,20 @@ class Gitalist::Git::Repo {
         lazy_build => 1,
     );
 
+    method BUILD {
+        # Make sure repo_dir is an absolute path so that
+        # ->contains() works correctly.
+        $self->repo_dir->resolve;
+    }
+
     ## Public methods
-    method project (NonEmptySimpleStr $project) {
-        my $path = $self->repo_dir->subdir($project)->resolve;
-        $self->repo_dir->resolve; # FIXME - This needs to be called, or if repo_dir contains .., it'll explode below!
-                                  #         This is a Path::Class::Dir bug, right?
-        die "Directory traversal prohibited" unless $self->repo_dir->contains($path);
-        die "Not a valid Project" unless $self->_is_git_repo($path);
-        return Project->new( $self->repo_dir->subdir($project) );
+    method get_project (NonEmptySimpleStr $name) {
+        my $path = $self->repo_dir->subdir($name)->resolve;
+        die "Directory traversal prohibited"
+            unless $self->repo_dir->contains($path);
+        die "Not a valid Project"
+            unless $self->_is_git_repo($path);
+        return Project->new( $path );
     }
 
     ## Builders
@@ -42,7 +48,7 @@ class Gitalist::Git::Repo {
             next unless -d $obj;
             next unless $self->_is_git_repo($obj);
 
-            push @ret, $self->project($file);
+            push @ret, $self->get_project($file);
         }
 
         return [sort { $a->name cmp $b->name } @ret];
@@ -66,7 +72,7 @@ Gitalist::Git::Repo - Model of a repository directory
     my $repo = Gitalist::Git::Repo->new( repo_dir => $Dir );
     my $project_list = $repo->projects;
     my $first_project = @$project_list[0];
-    my $named_project = $repo->project('Gitalist');
+    my $named_project = $repo->get_project('Gitalist');
 
 =head1 DESCRIPTION
 
@@ -89,7 +95,7 @@ An array of all Repos found in C<repo_dir>.
 
 =head1 METHODS
 
-=head2 project (Str $project)
+=head2 get_project (Str $name)
 
 Returns a L<Gitalist::Git::Project> for the specified project
 name.

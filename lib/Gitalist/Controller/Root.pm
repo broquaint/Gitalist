@@ -624,7 +624,7 @@ sub base : Chained('/root') PathPart('') CaptureArgs(0) {
   my $project = $c->req->param('p');
   if (defined $project) {
     eval {
-      $c->stash(Project => $c->model('GitRepos')->project($project));
+      $c->stash(Project => $c->model('GitRepos')->get_project($project));
     };
     if ($@) {
       $c->detach('/error_404');
