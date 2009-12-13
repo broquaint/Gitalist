@@ -68,7 +68,7 @@ Gitalist::Git::Repo - Model of a repository directory
 
     my $repo = Gitalist::Git::Repo->new( repo_dir => $Dir );
     my $project_list = $repo->projects;
-    my $first_project = @$project_list[0];
+    my $first_project = $project_list->[0];
     my $named_project = $repo->get_project('Gitalist');
 
 =head1 DESCRIPTION
@@ -82,11 +82,11 @@ objects to work with.
 
 =head2 repo_dir (C<Path::Class::Dir>)
 
-The filesystem root of the Repo.
+The filesystem root of the C<Repo>.
 
 =head2 projects
 
-An array of all Repos found in C<repo_dir>.
+An array of all L<Gitalist::Git::Project>s found in C<repo_dir>.
 
 
 
@@ -94,8 +94,10 @@ An array of all Repos found in C<repo_dir>.
 
 =head2 get_project (Str $name)
 
-Returns a L<Gitalist::Git::Project> for the specified project
-name.
+Returns a L<Gitalist::Git::Project> for the given name.
+If C<$name> is not a valid git repository under C<$repo_dir>, an exception
+will be thrown.
+
 
 
 =head1 SEE ALSO
