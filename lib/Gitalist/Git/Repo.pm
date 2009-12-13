@@ -38,18 +38,15 @@ class Gitalist::Git::Repo {
 
     ## Builders
     method _build_projects {
-        my $base = $self->repo_dir;
-        my $dh = $base->open || die "Could not open $base";
+        my $dh = $self->repo_dir->open || die "Could not open repo_dir";
         my @ret;
-        while (my $file = $dh->read) {
-            next if $file =~ /^.{1,2}$/;
-
-            my $obj = $base->subdir($file);
-            next unless -d $obj;
-            next unless $self->_is_git_repo($obj);
-
-            push @ret, $self->get_project($file);
-        }
+        while (my $dir_entry = $dh->read) {
+            # try to get a project for each entry in repo_dir
+             eval {
+                 my $p = $self->get_project($dir_entry);
+                 push @ret, $p;
+            };
+         }
 
         return [sort { $a->name cmp $b->name } @ret];
     }
