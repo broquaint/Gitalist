@@ -27,21 +27,30 @@ my $repoEmpty = Path::Class::Dir->new('t/lib/repositories/empty.git');
 ok( ! $repo->_is_git_repo( $repoEmpty ), 'is_git_repo is false for empty dir' );
 
 my $project_list = $repo->projects;
-isa_ok(@$project_list[0], 'Gitalist::Git::Project');
 ok(scalar @{$project_list} == 3, 'list_projects returns an array with the correct number of members' );
+isa_ok($project_list->[0], 'Gitalist::Git::Project');
 is($project_list->[0]->{name}, 'bare.git', 'list_projects has correct name for "bare.git" repo' );
 
 dies_ok {
-    my $project = $repo->project('NoSuchProject');
+    my $project = $repo->get_project('NoSuchProject');
 } 'throws exception for invalid project';
 
 dies_ok {
-    my $project = $repo->project();
+    my $project = $repo->get_project();
 } 'throws exception for no project';
 
 dies_ok {
-    my $project = $repo->project('../../../');
+    my $project = $repo->get_project('../../../');
 } 'throws exception for directory traversal';
 
-my $project = $repo->project('repo1');
+my $project = $repo->get_project('repo1');
 isa_ok($project, 'Gitalist::Git::Project');
+
+
+# check for bug where get_project blew up if repo_dir
+# was a relative path
+lives_ok {
+    my $repo2_dir = "$Bin/lib/../lib/repositories";
+    my $repo2 = Gitalist::Git::Repo->new( repo_dir => $repo2_dir );
+    my $repo2_proj = $repo2->get_project('repo1');
+} 'relative repo_dir properly handled';

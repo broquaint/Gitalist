@@ -5,6 +5,7 @@ class Gitalist::Git::Project with Gitalist::Git::HasUtils {
     use MooseX::Types::Common::String qw/NonEmptySimpleStr/;
     use MooseX::Types::Path::Class qw/Dir/;
     use MooseX::Types::Moose qw/Str Maybe Bool HashRef ArrayRef/;
+    use Gitalist::Git::Types qw/SHA1/;
     use Moose::Autobox;
     use List::MoreUtils qw/any zip/;
     use DateTime;
@@ -79,14 +80,14 @@ class Gitalist::Git::Project with Gitalist::Git::HasUtils {
         return $sha1;
     }
 
-    method list_tree (Str $sha1?) {
+    method list_tree (SHA1 $sha1?) {
         $sha1 ||= $self->head_hash;
         my $object = $self->get_object($sha1);
         return @{$object->tree};
     }
 
     method get_object (NonEmptySimpleStr $sha1) {
-        unless ( $self->_is_valid_rev($sha1) ) {
+        unless (is_SHA1($sha1)) {
             $sha1 = $self->head_hash($sha1);
         }
         my $type = $self->run_cmd('cat-file', '-t', $sha1);
@@ -318,14 +319,10 @@ class Gitalist::Git::Project with Gitalist::Git::HasUtils {
     }
 
     ## Private methods
-    method _is_valid_rev (Str $rev) {
-        return ($rev =~ /^($SHA1RE)$/);
-    }
-
     method _parse_rev_list ($output) {
         return
             map  $self->get_gpp_object($_),
-                grep $self->_is_valid_rev($_),
+                grep is_SHA1($_),
                     map  split(/\n/, $_, 6), split /\0/, $output;
     }
 
