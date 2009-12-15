@@ -3,7 +3,7 @@ use Gitalist::Git::Util;
 
 role Gitalist::Git::HasUtils {
 
-    mehod BUILD { }
+    method BUILD { }
     after BUILD {
         $self->meta->get_attribute('_util')->get_read_method_ref->($self); # Force value build.
     }
