@@ -6,6 +6,7 @@ use Gitalist::Git::CollectionOfProjects::FromListOfDirectories;
 use MooseX::Types::Moose qw/Maybe ArrayRef/;
 use MooseX::Types::Common::String qw/NonEmptySimpleStr/;
 use Moose::Util::TypeConstraints;
+use Moose::Autobox;
 use namespace::autoclean;
 
 extends 'Catalyst::Model';
@@ -16,6 +17,14 @@ my $repo_dir_t = subtype NonEmptySimpleStr,
     where { -d $_ },
     message { 'Cannot find repository dir: "' . $_ . '", please set up gitalist.conf, or set GITALIST_REPO_DIR environment or pass the --repo_dir parameter when starting the application' };
 
+my $arrayof_repos_dir_t = subtype ArrayRef[$repo_dir_t],
+    where { 1 },
+    message { 'Cannot find repository directories listed in config - these are invalid directories: ' . join(', ', $_->flatten) };
+
+coerce $arrayof_repos_dir_t,
+    from NonEmptySimpleStr,
+    via { [ $_ ] };
+
 has config_repo_dir => (
     isa => NonEmptySimpleStr,
     is => 'ro',
@@ -24,19 +33,20 @@ has config_repo_dir => (
 );
 
 has repo_dir => (
-    isa => Maybe[$repo_dir_t],
+    isa => $repo_dir_t,
     is => 'ro',
     lazy_build => 1
 );
 
 has repos => (
-    isa => ArrayRef[$repo_dir_t],
+    isa => $arrayof_repos_dir_t,
     is => 'ro',
     default => sub { [] },
     traits => ['Array'],
     handles => {
         _repos_count => 'count',
     },
+    coerce => 1,
 );
 
 sub _build_repo_dir {
