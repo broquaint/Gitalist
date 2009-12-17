@@ -9,6 +9,8 @@ class Gitalist::Git::Project with Gitalist::Git::HasUtils {
     use Moose::Autobox;
     use List::MoreUtils qw/any zip/;
     use DateTime;
+    use Encode qw/decode/;
+    use I18N::Langinfo qw/langinfo CODESET/;
     use Gitalist::Git::Object::Blob;
     use Gitalist::Git::Object::Tree;
     use Gitalist::Git::Object::Commit;
@@ -239,7 +241,7 @@ class Gitalist::Git::Project with Gitalist::Git::HasUtils {
     }
 
     method _build_owner {
-        my ($gecos, $name) = (getpwuid $self->path->stat->uid)[6,0];
+        my ($gecos, $name) = map { decode(langinfo(CODESET), $_) } (getpwuid $self->path->stat->uid)[6,0];
         $gecos =~ s/,+$//;
         return length($gecos) ? $gecos : $name;
     }
