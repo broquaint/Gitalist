@@ -7,6 +7,7 @@ use inc::Module::Install 0.91;
 use Module::Install::AuthorRequires;
 use Module::Install::AuthorTests;
 use Module::Install::ReadmeFromPod;
+use Module::Install::ProvidesClass;
 
 name 'Gitalist';
 all_from 'lib/Gitalist.pm';
@@ -70,6 +71,7 @@ resources repository => 'git://git.shadowcat.co.uk/catagits/Gitalist.git';
 
 catalyst;
 
+auto_provides_class;
 author_tests 't/author';
 install_script glob('script/*.pl');
 auto_install;
