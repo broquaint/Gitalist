@@ -6,11 +6,11 @@ use Test::Exception;
 
 use Data::Dumper;
 
-BEGIN { use_ok 'Gitalist::Git::Repo' }
+BEGIN { use_ok 'Gitalist::Git::CollectionOfProjects::FromDirectory' }
 
 my $repo_dir = "$Bin/lib/repositories";
-my $repo = Gitalist::Git::Repo->new( repo_dir => $repo_dir );
-isa_ok($repo, 'Gitalist::Git::Repo');
+my $repo = Gitalist::Git::CollectionOfProjects::FromDirectory->new( repo_dir => $repo_dir );
+isa_ok($repo, 'Gitalist::Git::CollectionOfProjects::FromDirectory');
 
 is($repo->repo_dir, $repo_dir, "repo->repo_dir is correct" );
 
@@ -51,6 +51,6 @@ isa_ok($project, 'Gitalist::Git::Project');
 # was a relative path
 lives_ok {
     my $repo2_dir = "$Bin/lib/../lib/repositories";
-    my $repo2 = Gitalist::Git::Repo->new( repo_dir => $repo2_dir );
+    my $repo2 = Gitalist::Git::CollectionOfProjects::FromDirectory->new( repo_dir => $repo2_dir );
     my $repo2_proj = $repo2->get_project('repo1');
 } 'relative repo_dir properly handled';

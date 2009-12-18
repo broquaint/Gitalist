@@ -1,7 +1,7 @@
 package Gitalist::Model::GitRepos;
 
 use Moose;
-use Gitalist::Git::Repo;
+use Gitalist::Git::CollectionOfProjects::FromDirectory;
 use Gitalist::Git::CollectionOfProjects::FromListOfDirectories;
 use MooseX::Types::Moose qw/Maybe ArrayRef/;
 use MooseX::Types::Common::String qw/NonEmptySimpleStr/;
@@ -71,7 +71,7 @@ sub build_per_context_instance {
         Gitalist::Git::CollectionOfProjects::FromListOfDirectories->new(repos => $self->repos);
     }
     else {
-        Gitalist::Git::Repo->new(repo_dir => $self->repo_dir);
+        Gitalist::Git::CollectionOfProjects::FromDirectory->new(repo_dir => $self->repo_dir);
     }
 }
 
