@@ -1,10 +1,9 @@
 use MooseX::Declare;
 
-class Gitalist::Git::Repo {
+class Gitalist::Git::CollectionOfProjects::FromDirectory
+    with Gitalist::Git::CollectionOfProjects {
     use MooseX::Types::Common::String qw/NonEmptySimpleStr/;
     use MooseX::Types::Path::Class qw/Dir/;
-    use MooseX::Types::Moose qw/ArrayRef/;
-    use aliased 'Gitalist::Git::Project';
 
     has repo_dir => (
         isa => Dir,
@@ -13,27 +12,17 @@ class Gitalist::Git::Repo {
         coerce => 1,
     );
 
-    has projects => (
-        is => 'ro',
-        isa => ArrayRef['Gitalist::Git::Project'],
-        required => 1,
-        lazy_build => 1,
-    );
-
     method BUILD {
         # Make sure repo_dir is an absolute path so that
         # ->contains() works correctly.
         $self->repo_dir->resolve;
     }
 
-    ## Public methods
-    method get_project (NonEmptySimpleStr $name) {
+    method _get_path_for_project_name (NonEmptySimpleStr $name) {
         my $path = $self->repo_dir->subdir($name)->resolve;
         die "Directory traversal prohibited"
             unless $self->repo_dir->contains($path);
-        die "Not a valid Project"
-            unless $self->_is_git_repo($path);
-        return Project->new( $path );
+        return $path;
     }
 
     ## Builders
@@ -47,14 +36,7 @@ class Gitalist::Git::Repo {
                  push @ret, $p;
             };
          }
-
-        return [sort { $a->name cmp $b->name } @ret];
-    }
-
-    ## Private methods
-    # Determine whether a given directory is a git repo.
-    method _is_git_repo ($dir) {
-        return -f $dir->file('HEAD') || -f $dir->file('.git', 'HEAD');
+        return \@ret;
     }
 }                               # end class
 
@@ -62,11 +44,11 @@ __END__
 
 =head1 NAME
 
-Gitalist::Git::Repo - Model of a repository directory
+Gitalist::Git::CollectionOfProjects::FromDirectory - Model of a repository directory
 
 =head1 SYNOPSIS
 
-    my $repo = Gitalist::Git::Repo->new( repo_dir => $Dir );
+    my $repo = Gitalist::Git::CollectionOfProjects::FromDirectory->new( repo_dir => $Dir );
     my $project_list = $repo->projects;
     my $first_project = $project_list->[0];
     my $named_project = $repo->get_project('Gitalist');
