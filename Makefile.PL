@@ -63,6 +63,7 @@ author_requires 'Test::Pod' => '1.14';
 author_requires 'Test::Pod::Coverage' => '1.04';
 
 test_requires 'Test::More' => '0.88';
+test_requires 'Test::utf8' => '0.02';
 
 resources bugtracker => 'http://rt.cpan.org/Public/Dist/Display.html?Name=Gitalist';
 resources repository => 'git://git.shadowcat.co.uk/catagits/Gitalist.git';

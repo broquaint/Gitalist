@@ -74,8 +74,8 @@ class Gitalist::Git::Object {
     # via gitweb.pm circa line 1305
     use Fcntl ':mode';
     use constant {
-	S_IFINVALID => 0030000,
-	S_IFGITLINK => 0160000,
+        S_IFINVALID => 0030000,
+        S_IFGITLINK => 0160000,
     };
 
     # submodule/subproject, a commit object reference
