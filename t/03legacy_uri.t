@@ -6,7 +6,9 @@ use FindBin qw/$Bin/;
 
 BEGIN {
     $ENV{GITALIST_CONFIG} = $Bin;
+    no warnings;
     $ENV{GITALIST_REPO_DIR} = undef;
+    use warnings;
     use_ok 'Catalyst::Test', 'Gitalist';
 }
 
