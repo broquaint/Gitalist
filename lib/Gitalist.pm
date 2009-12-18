@@ -80,24 +80,97 @@ Catalyst app in a piecemeal fashion. As it turns out, thanks largely
 to Florian Ragwitz's earlier effort, it was easier to use gitweb.cgi
 as a template for building a new Catalyst application.
 
-=head1 CONFIGURATION
+=head1 GETTING GITALIST
+
+You can install Gitalist from CPAN in the usual way:
+
+    cpan -i Gitalist
+
+Alternatively, you can get Gitalist using git.
+
+The canonical repository for the master branch is:
+
+    it://git.shadowcat.co.uk/catagits/Gitalist.git
+
+Gitalist is also mirrored to github, and a number of people have active forks
+with branches and/or new features in the master branch.
+
+=head1 INITIAL CONFIGURATION
+
+Gitalist is configured using L<Catalyst::Plugin::Configloader>. The supplied sample
+configuration is in L<Config::General> format, however it is possible to configure
+Gitalist using other config file formats (such as YAML) if you prefer.
+
+=head2 WHEN CHECKING GITALIST OUT OF GIT
+
+Gitalist from git includes a minimal C<gitalist_local.conf>, which sets the repository
+directory to one directory higher than the Gitalist repository.
+
+This means that if you check Gitalist out next to your other git checkouts, then starting
+the demo server needs no parameters at all:
+
+    Gitalist [master]$ ./script/gitalist_server.pl
+    You can connect to your server at http://localhost:3000
+
+=head2 FOR CPAN INSTALLS
 
 Gitalist can be supplied with a config file by setting the C<< GITALIST_CONFIG >>
 environment variable to point to a configuration file.
 
-A default configuration is installed along with gitalist, which is complete except
-for a repository directory. You can get a copy of this configuration by running:
+If you install Gitalist from CPAN, a default configuration is installed along with gitalist,
+which is complete except for a repository directory. You can get a copy of this configuration
+by running:
 
   cp `perl -Ilib -MGitalist -e'print Gitalist->path_to("gitalist.conf")'` gitalist.conf
 
-adding a repos_dir path and then setting C<< GITALIST_CONFIG >>.
+You can then edit this confg, adding a repos_dir path and customising other settings as desired.
+
+You can then start the Gitalist demo server by setting C<< GITALIST_CONFIG >>. For example:
+
+    GITALIST_CONFIG=/usr/local/etc/gitalist.conf gitalist_server.pl
 
 Alternatively, if you only want to set a repository directory and are otherwise happy with
 the default configuration, then you can set the C<< GITALIST_REPOS_DIR >> environment
 variable, or pass the C<< --repos_dir >> flag to any of the scripts.
 
+    GITALIST_REPOS_DIR=/home/myuser/code/git gitalist_server.pl
+    gitalist_server.pl --repos_dir home/myuser/code/git
+
 The C<< GITALIST_REPOS_DIR >> environment variable will override the repository directory set
 in configuration, and will itself be overridden by he C<< --repos_dir >> flag.
+
+=head1 RUNNING
+
+Once you have followed the instructions above to install and configure Gitalist, you may want
+to run it in a more production facing environment than using the single threaded developement
+server.
+
+The recommended deployment method for Gitalist is FastCGI, although Gitalist can also be run
+under mod_perl or as pure perl with L<Catalyst::Engine::PreFork>.
+
+Assuming that you have installed Gitalist's dependencies into a L<local::lib>, and you
+are running from a git checkout, adding a trivial FCGI script as C<script/gitalist.fcgi>
+(this file is specifically in C<.gitignore> so you can have your own copy):
+
+    #!/bin/sh
+    export PERL5LIB=/home/t0m/public_html/Gitalist/lib:/home/t0m/perl5/lib/perl5:$PERL5LIB
+    exec /home/t0m/public_html/Gitalist/script/gitalist_fastcgi.pl
+
+This example can be seen live here:
+
+    http://goatse.co.uk/~bobtfish/Gitalist/script/gitalist.fcgi/
+
+=head1 CONTRIBUTING
+
+Patches are welcome, please feel free to fork on github and send pull requests, send patches
+from git format-patch to the bug tracker, or host your own copy of gitalist somewhere and
+ask us to pull from it.
+
+=head1 SUPPORT
+
+Gitalist has an active irc community in C<#gitalist> on irc.perl.org, please feel free to stop
+by and ask questions, report bugs or installation issues or generally for a chat about where
+we plan to go with the project.
 
 =head1 SEE ALSO
 
