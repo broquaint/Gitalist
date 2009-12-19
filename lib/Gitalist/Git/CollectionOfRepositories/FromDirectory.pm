@@ -32,7 +32,7 @@ class Gitalist::Git::CollectionOfRepositories::FromDirectory
         while (my $dir_entry = $dh->read) {
             # try to get a project for each entry in repo_dir
              eval {
-                 my $p = $self->get_project($dir_entry);
+                 my $p = $self->get_repository($dir_entry);
                  push @ret, $p;
             };
          }
@@ -51,7 +51,7 @@ Gitalist::Git::CollectionOfRepositories::FromDirectory - Model of a repository d
     my $repo = Gitalist::Git::CollectionOfRepositories::FromDirectory->new( repo_dir => $Dir );
     my $project_list = $repo->projects;
     my $first_project = $project_list->[0];
-    my $named_project = $repo->get_project('Gitalist');
+    my $named_project = $repo->get_repository('Gitalist');
 
 =head1 DESCRIPTION
 
@@ -71,7 +71,7 @@ An array of all L<Gitalist::Git::Repository>s found in C<repo_dir>.
 
 =head1 METHODS
 
-=head2 get_project (Str $name)
+=head2 get_repository (Str $name)
 
 Returns a L<Gitalist::Git::Repository> for the given name.
 If C<$name> is not a valid git repository under C<$repo_dir>, an exception

@@ -27,7 +27,7 @@ class Gitalist::Git::CollectionOfRepositories::FromListOfDirectories with Gitali
 
     ## Builders
     method _build_projects {
-        [ map { $self->get_project($_) } $self->repos->flatten ];
+        [ map { $self->get_repository($_) } $self->repos->flatten ];
     }
 }                               # end class
 

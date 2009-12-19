@@ -32,25 +32,25 @@ isa_ok($project_list->[0], 'Gitalist::Git::Repository');
 is($project_list->[0]->{name}, 'bare.git', 'list_projects has correct name for "bare.git" repo' );
 
 dies_ok {
-    my $project = $repo->get_project('NoSuchRepository');
+    my $project = $repo->get_repository('NoSuchRepository');
 } 'throws exception for invalid project';
 
 dies_ok {
-    my $project = $repo->get_project();
+    my $project = $repo->get_repository();
 } 'throws exception for no project';
 
 dies_ok {
-    my $project = $repo->get_project('../../../');
+    my $project = $repo->get_repository('../../../');
 } 'throws exception for directory traversal';
 
-my $project = $repo->get_project('repo1');
+my $project = $repo->get_repository('repo1');
 isa_ok($project, 'Gitalist::Git::Repository');
 
 
-# check for bug where get_project blew up if repo_dir
+# check for bug where get_repository blew up if repo_dir
 # was a relative path
 lives_ok {
     my $repo2_dir = "$Bin/lib/../lib/repositories";
     my $repo2 = Gitalist::Git::CollectionOfRepositories::FromDirectory->new( repo_dir => $repo2_dir );
-    my $repo2_proj = $repo2->get_project('repo1');
+    my $repo2_proj = $repo2->get_repository('repo1');
 } 'relative repo_dir properly handled';

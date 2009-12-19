@@ -12,7 +12,7 @@ role Gitalist::Git::CollectionOfRepositories {
         required => 1,
         lazy_build => 1,
     );
-    method get_project (NonEmptySimpleStr $name) {
+    method get_repository (NonEmptySimpleStr $name) {
         my $path = $self->_get_path_for_project_name($name);
         die "Not a valid git repository."
             unless $self->_is_git_repo($path);
