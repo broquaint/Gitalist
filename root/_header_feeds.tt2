@@ -15,13 +15,13 @@
   [% ELSE %]
   <link
     rel="alternate"
-    title="[% c.config.sitename %] Git projects list"
-    href="[% c.uri_for('project_index') %]"
+    title="[% c.config.sitename %] Git repositories list"
+    href="[% c.uri_for('repository_index') %]"
     type="text/plain; charset=utf-8"
   > 
   <link
     rel="alternate"
-    title="[% c.config.sitename %] Git projects feeds"
+    title="[% c.config.sitename %] Git repositories feeds"
     href="[% c.uri_for('opml') %]"
     type="text/x-opml"
   >

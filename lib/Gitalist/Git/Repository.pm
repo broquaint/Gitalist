@@ -96,7 +96,7 @@ class Gitalist::Git::Repository with Gitalist::Git::HasUtils {
         chomp($type);
         my $class = 'Gitalist::Git::Object::' . ucfirst($type);
         $class->new(
-            project => $self,
+            repository => $self,
             sha1 => $sha1,
             type => $type,
         );
@@ -227,7 +227,7 @@ class Gitalist::Git::Repository with Gitalist::Git::HasUtils {
     ## BUILDERS
     method _build_util {
         Gitalist::Git::Util->new(
-            project => $self,
+            repository => $self,
         );
     }
 
@@ -339,10 +339,10 @@ Gitalist::Git::Repository - Model of a git repository
 =head1 SYNOPSIS
 
     my $gitrepo = dir('/repo/base/Gitalist');
-    my $project = Gitalist::Git::Repository->new($gitrepo);
-     $project->name;        # 'Gitalist'
-     $project->path;        # '/repo/base/Gitalist/.git'
-     $project->description; # 'Unnamed repository.'
+    my $repository = Gitalist::Git::Repository->new($gitrepo);
+     $repository->name;        # 'Gitalist'
+     $repository->path;        # '/repo/base/Gitalist/.git'
+     $repository->description; # 'Unnamed repository.'
 
 =head1 DESCRIPTION
 

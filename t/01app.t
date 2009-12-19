@@ -18,8 +18,8 @@ for my $p (qw/ repo1 nodescription /) {
 }
 
 my $response = request('/summary?p=DoesNotExist');
-is $response->code, 404, 'invalid project 404s';
-like $response->content, qr/Page not found/, 'invalid project handled correctly';
+is $response->code, 404, 'invalid repository 404s';
+like $response->content, qr/Page not found/, 'invalid repository handled correctly';
 
 is request('/summary?p=../../../')->code, 404, 'directory traversal failed';
 

@@ -17,7 +17,7 @@ class Gitalist::Git::CollectionOfRepositories::FromListOfDirectories with Gitali
         lazy_build => 1,
         traits => ['Hash'],
         handles => {
-            _get_path_for_project_name => 'get',
+            _get_path_for_repository_name => 'get',
         },
     );
 
@@ -26,7 +26,7 @@ class Gitalist::Git::CollectionOfRepositories::FromListOfDirectories with Gitali
     }
 
     ## Builders
-    method _build_projects {
+    method _build_repositories {
         [ map { $self->get_repository($_) } $self->repos->flatten ];
     }
 }                               # end class

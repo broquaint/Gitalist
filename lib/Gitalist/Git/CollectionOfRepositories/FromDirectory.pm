@@ -18,7 +18,7 @@ class Gitalist::Git::CollectionOfRepositories::FromDirectory
         $self->repo_dir->resolve;
     }
 
-    method _get_path_for_project_name (NonEmptySimpleStr $name) {
+    method _get_path_for_repository_name (NonEmptySimpleStr $name) {
         my $path = $self->repo_dir->subdir($name)->resolve;
         die "Directory traversal prohibited"
             unless $self->repo_dir->contains($path);
@@ -26,11 +26,11 @@ class Gitalist::Git::CollectionOfRepositories::FromDirectory
     }
 
     ## Builders
-    method _build_projects {
+    method _build_repositories {
         my $dh = $self->repo_dir->open || die "Could not open repo_dir";
         my @ret;
         while (my $dir_entry = $dh->read) {
-            # try to get a project for each entry in repo_dir
+            # try to get a repository for each entry in repo_dir
              eval {
                  my $p = $self->get_repository($dir_entry);
                  push @ret, $p;
@@ -49,9 +49,9 @@ Gitalist::Git::CollectionOfRepositories::FromDirectory - Model of a repository d
 =head1 SYNOPSIS
 
     my $repo = Gitalist::Git::CollectionOfRepositories::FromDirectory->new( repo_dir => $Dir );
-    my $project_list = $repo->projects;
-    my $first_project = $project_list->[0];
-    my $named_project = $repo->get_repository('Gitalist');
+    my $repository_list = $repo->repositories;
+    my $first_repository = $repository_list->[0];
+    my $named_repository = $repo->get_repository('Gitalist');
 
 =head1 DESCRIPTION
 
@@ -63,7 +63,7 @@ This class provides a list of Repositories found in the given directory.
 
 The filesystem root of the C<Repo>.
 
-=head2 projects
+=head2 repositories
 
 An array of all L<Gitalist::Git::Repository>s found in C<repo_dir>.
 

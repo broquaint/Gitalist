@@ -21,7 +21,7 @@ role Gitalist::Git::Object::HasTree {
                                     type => $type,
                                     sha1 => $object,
                                     file => $file,
-                                    project => $self->project,
+                                    repository => $self->repository,
                                   );
         }
         return \@ret;

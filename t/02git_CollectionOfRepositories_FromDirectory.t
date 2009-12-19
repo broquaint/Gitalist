@@ -26,25 +26,25 @@ my $repoWorking = Path::Class::Dir->new('t/lib/repositories/working');
 my $repoEmpty = Path::Class::Dir->new('t/lib/repositories/empty.git');
 ok( ! $repo->_is_git_repo( $repoEmpty ), 'is_git_repo is false for empty dir' );
 
-my $project_list = $repo->projects;
-ok(scalar @{$project_list} == 3, 'list_projects returns an array with the correct number of members' );
-isa_ok($project_list->[0], 'Gitalist::Git::Repository');
-is($project_list->[0]->{name}, 'bare.git', 'list_projects has correct name for "bare.git" repo' );
+my $repository_list = $repo->repositories;
+ok(scalar @{$repository_list} == 3, '->repositories is an array with the correct number of members' );
+isa_ok($repository_list->[0], 'Gitalist::Git::Repository');
+is($repository_list->[0]->{name}, 'bare.git', '->repositories has correct name for "bare.git" repo' );
 
 dies_ok {
-    my $project = $repo->get_repository('NoSuchRepository');
-} 'throws exception for invalid project';
+    my $repository = $repo->get_repository('NoSuchRepository');
+} 'throws exception for invalid repository';
 
 dies_ok {
-    my $project = $repo->get_repository();
-} 'throws exception for no project';
+    my $repository = $repo->get_repository();
+} 'throws exception for no repository';
 
 dies_ok {
-    my $project = $repo->get_repository('../../../');
+    my $repository = $repo->get_repository('../../../');
 } 'throws exception for directory traversal';
 
-my $project = $repo->get_repository('repo1');
-isa_ok($project, 'Gitalist::Git::Repository');
+my $repository = $repo->get_repository('repo1');
+isa_ok($repository, 'Gitalist::Git::Repository');
 
 
 # check for bug where get_repository blew up if repo_dir

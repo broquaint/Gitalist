@@ -7,7 +7,7 @@ use Data::Dumper;
 
 use Path::Class;
 use Gitalist::Git::Repository;
-my $project = Gitalist::Git::Repository->new(
+my $repository = Gitalist::Git::Repository->new(
     dir("$Bin/lib/repositories/repo1"),
 );
 
@@ -19,7 +19,7 @@ BEGIN {
     }
 
 my $object = Gitalist::Git::Object::Tree->new(
-    project => $project,
+    repository => $repository,
     sha1 => '729a7c3f6ba5453b42d16a43692205f67fb23bc1',
     type => 'tree',
     file => 'dir1',
@@ -35,7 +35,7 @@ is($object->size, 33, "size is correct");
 
 # Create object from sha1.
 my $obj2 = Gitalist::Git::Object::Blob->new(
-    project => $project,
+    repository => $repository,
     sha1 => '5716ca5987cbf97d6bb54920bea6adde242d87e6',
 );
 isa_ok($obj2, 'Gitalist::Git::Object::Blob', 'blob object');
@@ -53,7 +53,7 @@ dies_ok {
 } 'comment is an empty string';
 
 my $commit_obj = Gitalist::Git::Object::Commit->new(
-    project => $project,
+    repository => $repository,
     sha1 => '3f7567c7bdf7e7ebf410926493b92d398333116e',
 );
 isa_ok($commit_obj, 'Gitalist::Git::Object::Commit', "commit object");

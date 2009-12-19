@@ -61,7 +61,7 @@ sub _build_repo_dir {
 after BUILD => sub {
     my $self = shift;
     # Explode loudly at app startup time if there is no list of
-    # projects or repos dir, rather than on first hit
+    # repositories or repos dir, rather than on first hit
     $self->_repos_count || $self->repo_dir;
 };
 

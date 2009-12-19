@@ -282,18 +282,18 @@ table.diff_tree span.file_status.copied {
 }
 
 /* noage: "No commits" */
-table.project_list td.noage {
+table.repository_list td.noage {
 	color: #808080;
 	font-style: italic;
 }
 
 /* age2: 60*60*24*2 <= age */
-table.project_list td.age2, table.blame td.age2 {
+table.repository_list td.age2, table.blame td.age2 {
 	font-style: italic;
 }
 
 /* age1: 60*60*2 <= age < 60*60*24*2 */
-table.project_list td.age1 {
+table.repository_list td.age1 {
 	color: #009900;
 	font-style: italic;
 }
@@ -304,7 +304,7 @@ table.blame td.age1 {
 }
 
 /* age0: age < 60*60*2 */
-table.project_list td.age0 {
+table.repository_list td.age0 {
 	color: #009900;
 	font-style: italic;
 	font-weight: bold;

@@ -7,12 +7,12 @@ class Gitalist::Git::Util {
     use Symbol qw(geniosym);
     use MooseX::Types::Common::String qw/NonEmptySimpleStr/;
 
-    has project => (
+    has repository => (
         isa => 'Gitalist::Git::Repository',
         handles => { gitdir => 'path' },
         is => 'bare', # No accessor
         weak_ref => 1, # Weak, you have to hold onto me.
-        predicate => 'has_project',
+        predicate => 'has_repository',
     );
     has _git      => ( isa => NonEmptySimpleStr, is => 'ro', lazy_build => 1 );
     sub _build__git {
@@ -32,15 +32,15 @@ EOR
         isa => 'Git::PurePerl', is => 'ro', lazy => 1,
         default => sub {
             my $self = shift;
-            confess("Cannot get gpp without project")
-                unless $self->has_project;
+            confess("Cannot get gpp without repository")
+                unless $self->has_repository;
             Git::PurePerl->new(gitdir => $self->gitdir);
         },
     );
 
     method run_cmd (@args) {
         unshift @args, ( '--git-dir' => $self->gitdir )
-            if $self->has_project;
+            if $self->has_repository;
 #        print STDERR 'RUNNING: ', $self->_git, qq[ @args], $/;
         run [$self->_git, @args], \my($in, $out, $err);
 
@@ -50,7 +50,7 @@ EOR
     method run_cmd_fh (@args) {
         my ($in, $out, $err) = (geniosym, geniosym, geniosym);
         unshift @args, ('--git-dir' => $self->gitdir)
-            if $self->has_project;
+            if $self->has_repository;
 #        print STDERR 'RUNNING: ', $self->_git, qq[ @args], $/;
         run [$self->_git, @args],
             '<pipe', $in,

@@ -6,14 +6,14 @@ role Gitalist::Git::CollectionOfRepositories {
     use Moose::Autobox;
     use aliased 'Gitalist::Git::Repository';
 
-    has projects => (
+    has repositories => (
         is => 'ro',
         isa => ArrayRef['Gitalist::Git::Repository'],
         required => 1,
         lazy_build => 1,
     );
     method get_repository (NonEmptySimpleStr $name) {
-        my $path = $self->_get_path_for_project_name($name);
+        my $path = $self->_get_path_for_repository_name($name);
         die "Not a valid git repository."
             unless $self->_is_git_repo($path);
         return Repository->new( $path );
@@ -23,11 +23,11 @@ role Gitalist::Git::CollectionOfRepositories {
         return -f $dir->file('HEAD') || -f $dir->file('.git', 'HEAD');
     }
     requires qw/
-        _build_projects
-        _get_path_for_project_name
+        _build_repositories
+        _get_path_for_repository_name
     /;
 
-    around _build_projects {
+    around _build_repositories {
         [sort { $a->name cmp $b->name } $self->$orig->flatten];
     }
 }

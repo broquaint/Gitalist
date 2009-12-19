@@ -5,7 +5,7 @@
    </p>
   </form>
 
-  <table class="project_list">
+  <table class="repository_list">
     <thead>
 	<tr>
 	    <th>Repository</th>
@@ -28,7 +28,7 @@
     </tfoot>
 
     <tbody class='listing'>
-      [% FOR p IN projects %]
+      [% FOR p IN repositories %]
 	<tr>
 	    <td><a class="list" href="[% c.uri_for('/summary', {p=p.name}) %]">[% p.name %]</a></td>
 	    <td><a class="list" title="[% p.description %]" href="[% c.uri_for('/summary', {p=p.name} ) %]">[% abridged_description(p.description)  %]</a></td>

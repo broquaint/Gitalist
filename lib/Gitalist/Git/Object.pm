@@ -5,8 +5,8 @@ class Gitalist::Git::Object {
     use MooseX::Types::Moose qw/Str Int Bool Maybe ArrayRef/;
     use MooseX::Types::Common::String qw/NonEmptySimpleStr/;
 
-    # project and sha1 are required initargs
-    has project => ( isa => 'Gitalist::Git::Repository',
+    # repository and sha1 are required initargs
+    has repository => ( isa => 'Gitalist::Git::Repository',
                      required => 1,
                      is => 'ro',
                      weak_ref => 1,
@@ -78,7 +78,7 @@ class Gitalist::Git::Object {
         S_IFGITLINK => 0160000,
     };
 
-    # submodule/subproject, a commit object reference
+    # submodule/subrepository, a commit object reference
     sub S_ISGITLINK($) {
         return (($_[0] & S_IFMT) == S_IFGITLINK)
     }
