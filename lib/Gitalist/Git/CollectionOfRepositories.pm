@@ -33,3 +33,63 @@ role Gitalist::Git::CollectionOfRepositories {
 }
 
 1;
+
+=head1 NAME
+
+Gitalist::Git::CollectionOfRepositories - Interface and partial implementation of a collection of git repositories
+
+=head1 SYNOPSIS
+
+    package My::Example::CollectionOfRepositories;
+    use Moose::Role;
+    use namespace::autoclean;
+
+    with 'Gitalist::Git::CollectionOfRepositories';
+
+    sub _build_repositories {
+        my $self = shift;
+        [ $self->get_repository('Gitalist') ];
+    }
+    sub _get_path_for_repository_name {
+        my ($self, $name) = @_;
+        '/var/example/' . $name . '.git';
+    }
+
+    my $collection = My::Example::CollectionOfRepositories->new
+    my $repository_list = $collection->repositories;
+    my $only_repository = $repository_list->[0];
+    my $named_repository = $repo->get_repository('Gitalist');
+
+=head1 DESCRIPTION
+
+This role provides an abstraction for a list of Repository directories.
+
+=head1 ATTRIBUTES
+
+=head2 repositories
+
+An array of all L<Gitalist::Git::Repository>s.
+
+=head1 METHODS
+
+=head2 get_repository (Str $name)
+
+Returns a L<Gitalist::Git::Repository> for the given name.
+If C<$name> is not a valid git repository an exception will be thrown.
+
+=head1 SEE ALSO
+
+L<Gitalist::Git::CollectionOfRepositories::FromListOfDirectories>,
+L<Gitalist::Git::CollectionOfRepositories::FromDirectory>,
+L<Gitalist::Git::Repository>.
+
+=head1 AUTHORS
+
+See L<Gitalist> for authors.
+
+=head1 LICENSE
+
+See L<Gitalist> for the license.
+
+=cut
+

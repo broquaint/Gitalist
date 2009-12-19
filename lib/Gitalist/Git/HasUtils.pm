@@ -29,6 +29,10 @@ role Gitalist::Git::HasUtils {
 
 __END__
 
+=head1 NAME
+
+Gitalist::Git::HasUtils - Role for classes with an instance of Gitalist::Git::Util
+
 =head1 AUTHORS
 
 See L<Gitalist> for authors.
