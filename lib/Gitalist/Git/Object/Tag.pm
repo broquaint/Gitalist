@@ -22,7 +22,7 @@ Gitalist::Git::Object::Tag
 
 =head1 SYNOPSIS
 
-    my $tag = Project->get_object($tag_sha1);
+    my $tag = Repository->get_object($tag_sha1);
 
 =head1 DESCRIPTION
 

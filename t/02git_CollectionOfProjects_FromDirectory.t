@@ -28,7 +28,7 @@ ok( ! $repo->_is_git_repo( $repoEmpty ), 'is_git_repo is false for empty dir' );
 
 my $project_list = $repo->projects;
 ok(scalar @{$project_list} == 3, 'list_projects returns an array with the correct number of members' );
-isa_ok($project_list->[0], 'Gitalist::Git::Project');
+isa_ok($project_list->[0], 'Gitalist::Git::Repository');
 is($project_list->[0]->{name}, 'bare.git', 'list_projects has correct name for "bare.git" repo' );
 
 dies_ok {
@@ -44,7 +44,7 @@ dies_ok {
 } 'throws exception for directory traversal';
 
 my $project = $repo->get_project('repo1');
-isa_ok($project, 'Gitalist::Git::Project');
+isa_ok($project, 'Gitalist::Git::Repository');
 
 
 # check for bug where get_project blew up if repo_dir

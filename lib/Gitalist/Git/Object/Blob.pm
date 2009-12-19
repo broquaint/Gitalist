@@ -15,7 +15,7 @@ Gitalist::Git::Object::Blob
 
 =head1 SYNOPSIS
 
-    my $blob = Project->get_object($blob_sha1);
+    my $blob = Repository->get_object($blob_sha1);
 
 =head1 DESCRIPTION
 

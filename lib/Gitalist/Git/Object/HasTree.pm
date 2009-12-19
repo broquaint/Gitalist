@@ -42,7 +42,7 @@ Gitalist::Git::Object::HasTree
 
 =head1 SYNOPSIS
 
-    my $tree = Project->get_object($tree_sha1);
+    my $tree = Repository->get_object($tree_sha1);
 
 =head1 DESCRIPTION
 

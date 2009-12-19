@@ -68,7 +68,7 @@ The filesystem root of the C<Repo>.
 
 =head2 projects
 
-An array of all L<Gitalist::Git::Project>s found in C<repo_dir>.
+An array of all L<Gitalist::Git::Repository>s found in C<repo_dir>.
 
 
 
@@ -76,7 +76,7 @@ An array of all L<Gitalist::Git::Project>s found in C<repo_dir>.
 
 =head2 get_project (Str $name)
 
-Returns a L<Gitalist::Git::Project> for the given name.
+Returns a L<Gitalist::Git::Repository> for the given name.
 If C<$name> is not a valid git repository under C<$repo_dir>, an exception
 will be thrown.
 
@@ -84,7 +84,7 @@ will be thrown.
 
 =head1 SEE ALSO
 
-L<Gitalist::Git::Project>
+L<Gitalist::Git::Repository>
 
 
 =head1 AUTHORS

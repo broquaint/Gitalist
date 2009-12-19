@@ -6,8 +6,8 @@ use Test::Exception;
 use Data::Dumper;
 
 use Path::Class;
-use Gitalist::Git::Project;
-my $project = Gitalist::Git::Project->new(
+use Gitalist::Git::Repository;
+my $project = Gitalist::Git::Repository->new(
     dir("$Bin/lib/repositories/repo1"),
 );
 

@@ -8,7 +8,7 @@ class Gitalist::Git::Util {
     use MooseX::Types::Common::String qw/NonEmptySimpleStr/;
 
     has project => (
-        isa => 'Gitalist::Git::Project',
+        isa => 'Gitalist::Git::Repository',
         handles => { gitdir => 'path' },
         is => 'bare', # No accessor
         weak_ref => 1, # Weak, you have to hold onto me.

@@ -1,6 +1,6 @@
 use MooseX::Declare;
 
-class Gitalist::Git::Project with Gitalist::Git::HasUtils {
+class Gitalist::Git::Repository with Gitalist::Git::HasUtils {
     # FIXME, use Types::Path::Class and coerce
     use MooseX::Types::Common::String qw/NonEmptySimpleStr/;
     use MooseX::Types::Path::Class qw/Dir/;
@@ -19,7 +19,7 @@ class Gitalist::Git::Project with Gitalist::Git::HasUtils {
     our $SHA1RE = qr/[0-9a-fA-F]{40}/;
 
     around BUILDARGS (ClassName $class: Dir $dir) {
-        # Allows us to be called as Project->new($dir)
+        # Allows us to be called as Repository->new($dir)
         # Last path component becomes $self->name
         # Full path to git objects becomes $self->path
         my $name = $dir->dir_list(-1);
@@ -334,12 +334,12 @@ __END__
 
 =head1 NAME
 
-Gitalist::Git::Project - Model of a git repository
+Gitalist::Git::Repository - Model of a git repository
 
 =head1 SYNOPSIS
 
     my $gitrepo = dir('/repo/base/Gitalist');
-    my $project = Gitalist::Git::Project->new($gitrepo);
+    my $project = Gitalist::Git::Repository->new($gitrepo);
      $project->name;        # 'Gitalist'
      $project->path;        # '/repo/base/Gitalist/.git'
      $project->description; # 'Unnamed repository.'

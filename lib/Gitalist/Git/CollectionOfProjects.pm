@@ -4,19 +4,19 @@ role Gitalist::Git::CollectionOfProjects {
     use MooseX::Types::Common::String qw/NonEmptySimpleStr/;
     use MooseX::Types::Moose qw/ArrayRef/;
     use Moose::Autobox;
-    use aliased 'Gitalist::Git::Project';
+    use aliased 'Gitalist::Git::Repository';
 
     has projects => (
         is => 'ro',
-        isa => ArrayRef['Gitalist::Git::Project'],
+        isa => ArrayRef['Gitalist::Git::Repository'],
         required => 1,
         lazy_build => 1,
     );
     method get_project (NonEmptySimpleStr $name) {
         my $path = $self->_get_path_for_project_name($name);
-        die "Not a valid Project"
+        die "Not a valid git repository."
             unless $self->_is_git_repo($path);
-        return Project->new( $path );
+        return Repository->new( $path );
     }
     # Determine whether a given directory is a git repo.
     method _is_git_repo ($dir) {

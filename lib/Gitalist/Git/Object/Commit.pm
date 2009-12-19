@@ -196,7 +196,7 @@ Gitalist::Git::Object::Commit
 
 =head1 SYNOPSIS
 
-    my $commit = Project->get_object($commit_sha1);
+    my $commit = Repository->get_object($commit_sha1);
 
 =head1 DESCRIPTION
 

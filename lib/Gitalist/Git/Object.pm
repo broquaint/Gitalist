@@ -6,7 +6,7 @@ class Gitalist::Git::Object {
     use MooseX::Types::Common::String qw/NonEmptySimpleStr/;
 
     # project and sha1 are required initargs
-    has project => ( isa => 'Gitalist::Git::Project',
+    has project => ( isa => 'Gitalist::Git::Repository',
                      required => 1,
                      is => 'ro',
                      weak_ref => 1,
@@ -115,7 +115,7 @@ Gitalist::Git::Object - Model of a git object.
 
 =head1 SYNOPSIS
 
-    my $object = Project->get_object($sha1);
+    my $object = Repository->get_object($sha1);
 
 =head1 DESCRIPTION
 

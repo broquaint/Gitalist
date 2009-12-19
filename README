@@ -129,7 +129,7 @@ SUPPORT
 SEE ALSO
     Gitalist::Controller::Root
 
-    Gitalist::Git::Project
+    Gitalist::Git::Repository
 
     Catalyst
 

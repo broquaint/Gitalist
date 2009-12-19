@@ -21,17 +21,17 @@ BEGIN {
     };
 }
 
-BEGIN { use_ok 'Gitalist::Git::Project' }
+BEGIN { use_ok 'Gitalist::Git::Repository' }
 
 dies_ok {
-    my $proj = Gitalist::Git::Project->new();
+    my $proj = Gitalist::Git::Repository->new();
 } 'New project with no args';
 
 use Path::Class;
 my $gitdir = dir("$Bin/lib/repositories/repo1");
 
-my $proj = Gitalist::Git::Project->new($gitdir);
-isa_ok($proj, 'Gitalist::Git::Project');
+my $proj = Gitalist::Git::Repository->new($gitdir);
+isa_ok($proj, 'Gitalist::Git::Repository');
 is($proj->path, $gitdir, 'project path is set');
 isa_ok($proj->path, 'Path::Class::Dir', 'project path');
 is($proj->name, qw/repo1/, 'repository name is set');

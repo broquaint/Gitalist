@@ -176,7 +176,7 @@ we plan to go with the project.
 
 L<Gitalist::Controller::Root>
 
-L<Gitalist::Git::Project>
+L<Gitalist::Git::Repository>
 
 L<Catalyst>
 
