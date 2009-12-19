@@ -30,7 +30,7 @@ is($object->sha1,'729a7c3f6ba5453b42d16a43692205f67fb23bc1', 'sha1 is correct');
 is($object->type, 'tree', 'type is correct');
 is($object->file, 'dir1', 'file is correct');
 is($object->mode, 16384, 'mode is correct');
-is($object->modestr, 'd---------', "modestr is correct" );
+is($object->modestr, 'drwxr-xr-x', "modestr is correct" );
 is($object->size, 33, "size is correct");
 
 # Create object from sha1.
@@ -42,7 +42,7 @@ isa_ok($obj2, 'Gitalist::Git::Object::Blob', 'blob object');
 is($obj2->sha1,'5716ca5987cbf97d6bb54920bea6adde242d87e6', 'sha1 is correct');
 is($obj2->type, 'blob', 'type is correct');
 is($obj2->mode, 0, 'mode is correct');
-is($obj2->modestr, '?---------', "modestr is correct" );
+is($obj2->modestr, '----------', "modestr is correct" );
 is($obj2->content, "bar\n", 'obj2 contents is correct');
 is($obj2->size, 4, "size is correct");
 dies_ok {
