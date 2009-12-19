@@ -7,7 +7,6 @@ use inc::Module::Install 0.91;
 use Module::Install::AuthorRequires;
 use Module::Install::AuthorTests;
 use Module::Install::ReadmeFromPod;
-use Module::Install::ProvidesClass;
 
 name 'Gitalist';
 all_from 'lib/Gitalist.pm';
@@ -71,8 +70,47 @@ resources repository => 'git://git.shadowcat.co.uk/catagits/Gitalist.git';
 
 catalyst;
 
-auto_provides_class;
 author_tests 't/author';
 install_script glob('script/*.pl');
 auto_install;
+
+# This is totally gross :)
+# However, it is also much more effective than Module::Install::ProvidesClass
+# which a) just does not work very well for us, b) totally won't install from
+# cpan right now..
+author_requires 'Module::Find';
+author_requires 'B::Hooks::OP::Check::StashChange';
+author_requires 'B::Compiling';
+if ($Module::Install::AUTHOR) {
+    require Module::Find;
+    require B::Hooks::OP::Check::StashChange;
+    require B::Compiling;
+    require FindBin;
+    require lib;
+
+    my $libdir = "$FindBin::Bin/lib";
+    lib->import($libdir);
+
+    my %packages;
+
+    our $id = B::Hooks::OP::Check::StashChange::register(sub {
+        my ($new, $old) = @_;
+        my $file = B::Compiling::PL_compiling()->file;
+        return unless $file =~ s/^$libdir/lib/;
+        $packages{$new} ||= $file
+            if $new =~ /^Gitalist/;
+    });
+
+    require Gitalist;
+    Module::Find::useall(qw/Gitalist/);
+    undef $id;
+
+    no strict 'refs';
+    provides($_ => {
+        file => $packages{$_},
+        ${$_.'::VERSION'} ? ( version => $_->VERSION() ) : ()
+    }) for keys %packages;
+}
+
 WriteAll;
+
