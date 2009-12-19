@@ -13,7 +13,7 @@ use Catalyst qw/
                 StackTrace
 /;
 
-our $VERSION = '0.000003';
+our $VERSION = '0.000004';
 $VERSION = eval $VERSION;
 
 __PACKAGE__->config(

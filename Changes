@@ -1,5 +1,6 @@
 This file documents the revision history for Perl extension Gitalist.
 
+0.000004 2009-12-19
     - Support being able to pass a list of repositories to view via
       configuration, rather than having a static directory.
     - Installation and configuration documentation has been enhanced.
