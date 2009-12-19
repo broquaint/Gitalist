@@ -1,6 +1,6 @@
 <div id="page-search">
   <form method="get" action="[% c.uri_for('search') %]" enctype="application/x-www-form-urlencoded">
-  <input name="p" type="hidden" value="[% Project.name %]">
+  <input name="p" type="hidden" value="[% Repository.name %]">
   <input name="a" type="hidden" value="search">
   <input name="h" type="hidden" value="[% commit.sha1 %]">
   <input name="f" type="hidden" value="[% c.req.param('f') %]">

@@ -2,7 +2,7 @@
 
 <div class='content'>
   <div>
-  [% Project.name %]
+  [% Repository.name %]
   </div>
 
   [% INCLUDE '_heads.tt2' %]

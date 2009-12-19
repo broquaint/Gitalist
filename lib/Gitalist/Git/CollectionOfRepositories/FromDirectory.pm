@@ -55,10 +55,7 @@ Gitalist::Git::CollectionOfRepositories::FromDirectory - Model of a repository d
 
 =head1 DESCRIPTION
 
-This class models a Gitalist Repo, which is a collection of
-Projects (git repositories).  It is used for creating Project
-objects to work with.
-
+This class provides a list of Repositories found in the given directory.
 
 =head1 ATTRIBUTES
 

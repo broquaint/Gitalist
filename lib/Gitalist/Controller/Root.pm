@@ -24,7 +24,7 @@ sub _get_object {
   my $h = $haveh || $c->req->param('h') || '';
   my $f = $c->req->param('f');
 
-  my $m = $c->stash->{Project};
+  my $m = $c->stash->{Repository};
   my $pd = $m->path;
 
   # Either use the provided h(ash) parameter, the f(ile) parameter or just use HEAD.
@@ -88,7 +88,7 @@ A summary of what's happening in the repo.
 
 sub summary : Chained('base') Args(0) {
   my ( $self, $c ) = @_;
-  my $project = $c->stash->{Project};
+  my $project = $c->stash->{Repository};
   $c->detach('error_404') unless $project;
   my $commit = $self->_get_object($c);
   my @heads  = @{$project->heads};
@@ -113,7 +113,7 @@ The current list of heads (aka branches) in the repo.
 
 sub heads : Chained('base') Args(0) {
   my ( $self, $c ) = @_;
-  my $project = $c->stash->{Project};
+  my $project = $c->stash->{Repository};
   $c->stash(
     commit => $self->_get_object($c),
     heads  => $project->heads,
@@ -129,7 +129,7 @@ The current list of tags in the repo.
 
 sub tags : Chained('base') Args(0) {
   my ( $self, $c ) = @_;
-  my $project = $c->stash->{Project};
+  my $project = $c->stash->{Repository};
   $c->stash(
     commit => $self->_get_object($c),
     tags   => $project->tags,
@@ -140,7 +140,7 @@ sub tags : Chained('base') Args(0) {
 sub blame : Chained('base') Args(0) {
   my($self, $c) = @_;
 
-  my $project = $c->stash->{Project};
+  my $project = $c->stash->{Repository};
   my $h  = $c->req->param('h')
        || $project->hash_by_path($c->req->param('hb'), $c->req->param('f'))
        || die "No file or sha1 provided.";
@@ -166,7 +166,7 @@ sub blame : Chained('base') Args(0) {
 
 sub _blob_objs {
   my ( $self, $c ) = @_;
-  my $project = $c->stash->{Project};
+  my $project = $c->stash->{Repository};
   my $h  = $c->req->param('h')
        || $project->hash_by_path($c->req->param('hb'), $c->req->param('f'))
        || die "No file or sha1 provided.";
@@ -248,7 +248,7 @@ sub blobdiff : Chained('base') Args(0) {
   my $commit = $self->_get_object($c, $c->req->param('hb'));
   my $filename = $c->req->param('f')
               || croak("No file specified!");
-  my($tree, $patch) = $c->stash->{Project}->diff(
+  my($tree, $patch) = $c->stash->{Repository}->diff(
     commit => $commit,
     patch  => 1,
     parent => $c->req->param('hpb') || undef,
@@ -276,7 +276,7 @@ Exposes a given commit.
 
 sub commit : Chained('base') Args(0) {
   my ( $self, $c ) = @_;
-  my $project = $c->stash->{Project};
+  my $project = $c->stash->{Repository};
   my $commit = $self->_get_object($c);
   $c->stash(
       commit      => $commit,
@@ -295,7 +295,7 @@ Exposes a given diff of a commit.
 sub commitdiff : Chained('base') Args(0) {
   my ( $self, $c ) = @_;
   my $commit = $self->_get_object($c);
-  my($tree, $patch) = $c->stash->{Project}->diff(
+  my($tree, $patch) = $c->stash->{Repository}->diff(
       commit => $commit,
       parent => $c->req->param('hp') || undef,
       patch  => 1,
@@ -332,7 +332,7 @@ Expose an abbreviated log of a given sha1.
 sub shortlog : Chained('base') Args(0) {
   my ( $self, $c ) = @_;
 
-  my $project  = $c->stash->{Project};
+  my $project  = $c->stash->{Repository};
   my $commit   = $self->_get_object($c, $c->req->param('hb'));
   my $filename = $c->req->param('f') || '';
 
@@ -371,7 +371,7 @@ sub log : Chained('base') Args(0) {
 sub history : Chained('base') Args(0) {
     my ( $self, $c ) = @_;
     $self->shortlog($c);
-    my $project = $c->stash->{Project};
+    my $project = $c->stash->{Repository};
     my $file = $project->get_object(
         $project->hash_by_path(
             $project->head_hash,
@@ -391,7 +391,7 @@ The tree of a given commit.
 
 sub tree : Chained('base') Args(0) {
   my ( $self, $c ) = @_;
-  my $project = $c->stash->{Project};
+  my $project = $c->stash->{Repository};
   my $commit  = $self->_get_object($c, $c->req->param('hb'));
   my $filename = $c->req->param('f') || '';
   my $tree    = $filename
@@ -415,7 +415,7 @@ Expose the local reflog. This may go away.
 
 sub reflog : Chained('base') Args(0) {
   my ( $self, $c ) = @_;
-  my @log = $c->stash->{Project}->reflog(
+  my @log = $c->stash->{Repository}->reflog(
       '--since=yesterday'
   );
 
@@ -434,7 +434,7 @@ The action for the search form.
 sub search : Chained('base') Args(0) {
   my($self, $c) = @_;
   $c->stash(current_action => 'GitRepos');
-  my $project = $c->stash->{Project};
+  my $project = $c->stash->{Repository};
   my $commit  = $self->_get_object($c);
   # Lifted from /shortlog.
   my %logargs = (
@@ -482,7 +482,7 @@ sub atom : Chained('base') Args(0) {
   $feed->title($host . ' - ' . Gitalist->config->{name});
   $feed->updated(~~DateTime->now);
 
-  my $project = $c->stash->{Project};
+  my $project = $c->stash->{Repository};
   my %logargs = (
       sha1   => $project->head_hash,
       count  => Gitalist->config->{paging}{log} || 25,
@@ -513,7 +513,7 @@ Provides an RSS feed for a given project.
 sub rss : Chained('base') Args(0) {
   my ($self, $c) = @_;
 
-  my $project = $c->stash->{Project};
+  my $project = $c->stash->{Repository};
 
   my $rss = XML::RSS->new(version => '2.0');
   $rss->channel(
@@ -607,7 +607,7 @@ sub snapshot : Chained('base') Args(0) {
     my $format = $c->req->param('sf') || 'tgz';
     die unless $format;
     my $sha1 = $c->req->param('h') || $self->_get_object($c)->sha1;
-    my @snap = $c->stash->{Project}->snapshot(
+    my @snap = $c->stash->{Repository}->snapshot(
         sha1 => $sha1,
         format => $format
     );
@@ -624,14 +624,14 @@ sub base : Chained('/root') PathPart('') CaptureArgs(0) {
   my $project = $c->req->param('p');
   if (defined $project) {
     eval {
-      $c->stash(Project => $c->model('GitRepos')->get_project($project));
+      $c->stash(Repository => $c->model('GitRepos')->get_project($project));
     };
     if ($@) {
       $c->detach('/error_404');
     }
   }
 
-  my $a_project = $c->stash->{Project} || $c->model()->projects->[0];
+  my $a_project = $c->stash->{Repository} || $c->model()->projects->[0];
   $c->stash(
     git_version => $a_project->run_cmd('--version'),
     version     => $Gitalist::VERSION,
@@ -656,8 +656,8 @@ sub base : Chained('/root') PathPart('') CaptureArgs(0) {
 sub end : ActionClass('RenderView') {
     my ($self, $c) = @_;
     # Give project views the current HEAD.
-    if ($c->stash->{Project}) {
-        $c->stash->{HEAD} = $c->stash->{Project}->head_hash;
+    if ($c->stash->{Repository}) {
+        $c->stash->{HEAD} = $c->stash->{Repository}->head_hash;
     }
 }
 

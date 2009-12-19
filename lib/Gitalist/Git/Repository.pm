@@ -347,14 +347,14 @@ Gitalist::Git::Repository - Model of a git repository
 =head1 DESCRIPTION
 
 This class models a git repository, referred to in Gitalist
-as a "Project".
+as a "Repository".
 
 
 =head1 ATTRIBUTES
 
 =head2 name
 
-The name of the Project.  If unspecified, this will be derived from the path to the git repository.
+The name of the Repository.  If unspecified, this will be derived from the path to the git repository.
 
 =head2 path
 

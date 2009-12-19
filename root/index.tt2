@@ -8,7 +8,7 @@
   <table class="project_list">
     <thead>
 	<tr>
-	    <th>Project</th>
+	    <th>Repository</th>
 	    <!-- XXX These do nothing presently -->
 	    <th><a class="header" href="/?o=descr">Description</a></th>
 	    <th><a class="header" href="/?o=owner">Owner</a></th>
@@ -18,7 +18,7 @@
     </thead>
     <tfoot>
 	<tr>
-	    <td>Project</td>
+	    <td>Repository</td>
 	    <!-- XXX These do nothing presently -->
 	    <td><a href="/?o=descr">Description</a></td>
 	    <td><a href="/?o=owner">Owner</a></td>

@@ -1,14 +1,14 @@
-  [% IF Project %]
+  [% IF Repository %]
   <!-- XXX Missing the no-merges links -->
   <link
     rel="alternate"
-    title="[% Project.name %] - [% title %] Atom feed"
+    title="[% Repository.name %] - [% title %] Atom feed"
     href="[% c.uri_for('atom') %]"
     type="application/atom+xml"
   >
   <link
     rel="alternate"
-    title="[% Project.name %] - [% title %] RSS feed"
+    title="[% Repository.name %] - [% title %] RSS feed"
     href="[% c.uri_for('rss') %]"
     type="application/rss+xml"
   >

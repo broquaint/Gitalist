@@ -9,7 +9,7 @@
   <title>[%-
     title = BLOCK;
       c.config.sitename;
-      IF Project; ' - ' _ Project.name | html; END;
+      IF Repository; ' - ' _ Repository.name | html; END;
       IF action;  ' / ' _ action; END;
       IF filename; ' - ' _ filename | html; END;
       IF action && action == 'tree'; '/'; END;
@@ -37,12 +37,12 @@
    <img src="[% c.uri_for('/logo.png') %]" alt="git" class="logo">
   </a>
   <a href="[% c.uri_for('/', {p=''}) %]">A Gitalist</a>
-  [%- IF Project %]
-  / <a href="[% c.uri_for('summary') %]">[% Project.name %]</a>
+  [%- IF Repository %]
+  / <a href="[% c.uri_for('summary') %]">[% Repository.name %]</a>
   [% IF action;  " / " _ action; END;
   END %]
 [%
-  IF Project;
+  IF Repository;
     INCLUDE 'nav/search.tt2';
   END;
 # / git_header_html
@@ -62,8 +62,8 @@
 </div>
 
 <div id="page-footer">
-[% IF Project %]
-  [% Project.description | html %]
+[% IF Repository %]
+  [% Repository.description | html %]
 [% END %]
 [% INCLUDE '_footer_feeds.tt2' %]
 </div>

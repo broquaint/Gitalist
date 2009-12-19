@@ -1,5 +1,5 @@
 <div class='path'>
- <a href="[% c.uri_for("tree", {hb=head.sha1}) %]">[% Project.name %]</a>
+ <a href="[% c.uri_for("tree", {hb=head.sha1}) %]">[% Repository.name %]</a>
  [% FOREACH part IN filename.split('/') %]
   [% path = loop.first ? part : path _ '/' _ part %]
   / <a href="[% c.uri_for(loop.last ? 'blob' : 'tree', {hb=head.sha1,f=path}) %]">[% part %]</a>

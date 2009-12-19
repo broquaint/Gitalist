@@ -9,9 +9,9 @@
  </div> -->
 
  <dl>
-  <dt>description</dt><dd>[% Project.description %]</dd>
-  <dt>owner</dt><dd>[% Project.owner %]</dd>
-  <dt>last change</dt><dd>[% Project.last_change %]</dd>
+  <dt>description</dt><dd>[% Repository.description %]</dd>
+  <dt>owner</dt><dd>[% Repository.owner %]</dd>
+  <dt>last change</dt><dd>[% Repository.last_change %]</dd>
  </dl>
 
   <h2><a href='[% c.uri_for("shortlog") %]'>shortlog</a></h2>

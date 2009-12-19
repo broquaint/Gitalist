@@ -1,7 +1,7 @@
 [% INCLUDE 'nav/actions.tt2' object = commit %]
 <div class='content'>
   <div>
-  [% Project.name %]
+  [% Repository.name %]
   </div>
 
   [% INCLUDE '_heads.tt2' heads = tags %]

@@ -26,7 +26,7 @@ __PACKAGE__->setup();
 
 around uri_for => sub {
   my ($orig, $c) = (shift, shift);
-  my $project_name = $c->stash->{'Project'} && $c->stash->{'Project'}->name;
+  my $project_name = $c->stash->{'Repository'} && $c->stash->{'Repository'}->name;
   my $hash = ref($_[-1]) eq 'HASH' ? pop @_ : {};
   my $params = Catalyst::Utils::merge_hashes(
     { p => $hash->{p} || $project_name },

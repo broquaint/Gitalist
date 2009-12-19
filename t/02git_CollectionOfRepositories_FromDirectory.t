@@ -32,7 +32,7 @@ isa_ok($project_list->[0], 'Gitalist::Git::Repository');
 is($project_list->[0]->{name}, 'bare.git', 'list_projects has correct name for "bare.git" repo' );
 
 dies_ok {
-    my $project = $repo->get_project('NoSuchProject');
+    my $project = $repo->get_project('NoSuchRepository');
 } 'throws exception for invalid project';
 
 dies_ok {

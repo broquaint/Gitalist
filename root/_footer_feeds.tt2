@@ -1,4 +1,4 @@
-  [% IF Project %]
+  [% IF Repository %]
     [%-
       has_branch = c.req.param('h').match('^(refs/heads/.*)') || c.req.param('hb').match('^(refs/heads/.*)');
       branch     = has_branch.0 || '';
