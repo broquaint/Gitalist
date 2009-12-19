@@ -3,7 +3,7 @@ use MooseX::Declare;
 class Gitalist::Git::Util {
     use File::Which;
     use Git::PurePerl;
-    use IPC::Run qw(run);
+    use IPC::Run qw(run start);
     use Symbol qw(geniosym);
     use MooseX::Types::Common::String qw/NonEmptySimpleStr/;
 
@@ -52,7 +52,7 @@ EOR
         unshift @args, ('--git-dir' => $self->gitdir)
             if $self->has_repository;
 #        print STDERR 'RUNNING: ', $self->_git, qq[ @args], $/;
-        run [$self->_git, @args],
+        start [$self->_git, @args],
             '<pipe', $in,
             '>pipe', $out,
             '2>pipe', $err
