@@ -44,7 +44,7 @@ __END__
 
 =head1 NAME
 
-Gitalist::Git::CollectionOfRepositories::FromDirectory - Model of a repository directory
+Gitalist::Git::CollectionOfRepositories::FromDirectory - Model of a directory containing git repositories
 
 =head1 SYNOPSIS
 
@@ -63,26 +63,9 @@ This class provides a list of Repositories found in the given directory.
 
 The filesystem root of the C<Repo>.
 
-=head2 repositories
-
-An array of all L<Gitalist::Git::Repository>s found in C<repo_dir>.
-
-
-
-=head1 METHODS
-
-=head2 get_repository (Str $name)
-
-Returns a L<Gitalist::Git::Repository> for the given name.
-If C<$name> is not a valid git repository under C<$repo_dir>, an exception
-will be thrown.
-
-
-
 =head1 SEE ALSO
 
-L<Gitalist::Git::Repository>
-
+L<Gitalist::Git::CollectionOfRepositories>, L<Gitalist::Git::Repository>
 
 =head1 AUTHORS
 

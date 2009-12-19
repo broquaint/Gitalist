@@ -73,6 +73,14 @@ EOR
 
 __END__
 
+=head1 NAME
+
+Gitalist::Git::Util - Class for utilities to run git or deal with Git::PurePerl
+
+=head1 SEE ALSO
+
+L<Git::PurePerl>.
+
 =head1 AUTHORS
 
 See L<Gitalist> for authors.
