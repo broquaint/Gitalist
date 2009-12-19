@@ -1,5 +1,16 @@
 This file documents the revision history for Perl extension Gitalist.
 
+    - Support being able to pass a list of repositories to view via
+      configuration, rather than having a static directory.
+    - Installation and configuration documentation has been enhanced.
+    - Project has been renamed Repository to correspond with normal git
+      terminology.
+    - Repos has been refactored into a CollectionOfRepositories role
+      and two differnet concrete implementations (the Catalyst model
+      chooses which type to build based on the config).
+    - Remove all tabs and fix no tabs test (Dagfinn Ilmari Mannsåker)
+    - Decode getpwuid values correctly (Dagfinn Ilmari Mannsåker)
+
 0.000003 2009-12-09
     - Officially switch repository to Shadowcat
     - Officially switch bug tracker to rt.cpan.org
