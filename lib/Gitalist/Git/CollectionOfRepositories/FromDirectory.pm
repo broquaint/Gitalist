@@ -1,7 +1,7 @@
 use MooseX::Declare;
 
-class Gitalist::Git::CollectionOfProjects::FromDirectory
-    with Gitalist::Git::CollectionOfProjects {
+class Gitalist::Git::CollectionOfRepositories::FromDirectory
+    with Gitalist::Git::CollectionOfRepositories {
     use MooseX::Types::Common::String qw/NonEmptySimpleStr/;
     use MooseX::Types::Path::Class qw/Dir/;
 
@@ -44,11 +44,11 @@ __END__
 
 =head1 NAME
 
-Gitalist::Git::CollectionOfProjects::FromDirectory - Model of a repository directory
+Gitalist::Git::CollectionOfRepositories::FromDirectory - Model of a repository directory
 
 =head1 SYNOPSIS
 
-    my $repo = Gitalist::Git::CollectionOfProjects::FromDirectory->new( repo_dir => $Dir );
+    my $repo = Gitalist::Git::CollectionOfRepositories::FromDirectory->new( repo_dir => $Dir );
     my $project_list = $repo->projects;
     my $first_project = $project_list->[0];
     my $named_project = $repo->get_project('Gitalist');

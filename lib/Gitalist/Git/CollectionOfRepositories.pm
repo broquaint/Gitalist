@@ -1,6 +1,6 @@
 use MooseX::Declare;
 
-role Gitalist::Git::CollectionOfProjects {
+role Gitalist::Git::CollectionOfRepositories {
     use MooseX::Types::Common::String qw/NonEmptySimpleStr/;
     use MooseX::Types::Moose qw/ArrayRef/;
     use Moose::Autobox;

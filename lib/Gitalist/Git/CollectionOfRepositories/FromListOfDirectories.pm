@@ -1,6 +1,6 @@
 use MooseX::Declare;
 
-class Gitalist::Git::CollectionOfProjects::FromListOfDirectories with Gitalist::Git::CollectionOfProjects {
+class Gitalist::Git::CollectionOfRepositories::FromListOfDirectories with Gitalist::Git::CollectionOfRepositories {
     use MooseX::Types::Common::String qw/NonEmptySimpleStr/;
     use MooseX::Types::Moose qw/ ArrayRef HashRef /;
     use File::Basename qw/basename/;

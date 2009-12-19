@@ -1,8 +1,8 @@
 package Gitalist::Model::GitRepos;
 
 use Moose;
-use Gitalist::Git::CollectionOfProjects::FromDirectory;
-use Gitalist::Git::CollectionOfProjects::FromListOfDirectories;
+use Gitalist::Git::CollectionOfRepositories::FromDirectory;
+use Gitalist::Git::CollectionOfRepositories::FromListOfDirectories;
 use MooseX::Types::Moose qw/Maybe ArrayRef/;
 use MooseX::Types::Common::String qw/NonEmptySimpleStr/;
 use Moose::Util::TypeConstraints;
@@ -68,10 +68,10 @@ after BUILD => sub {
 sub build_per_context_instance {
     my ($self, $app) = @_;
     if ($self->_repos_count) {
-        Gitalist::Git::CollectionOfProjects::FromListOfDirectories->new(repos => $self->repos);
+        Gitalist::Git::CollectionOfRepositories::FromListOfDirectories->new(repos => $self->repos);
     }
     else {
-        Gitalist::Git::CollectionOfProjects::FromDirectory->new(repo_dir => $self->repo_dir);
+        Gitalist::Git::CollectionOfRepositories::FromDirectory->new(repo_dir => $self->repo_dir);
     }
 }
 
