@@ -33,7 +33,7 @@ requires 'Config::General';
 
 requires 'Moose';
 requires 'Moose::Autobox';
-requires 'MooseX::Declare';
+requires 'MooseX::Declare' => '0.32';
 requires 'MooseX::Types::Common';
 requires 'MooseX::Types::Path::Class';
 requires 'MooseX::Types';
