@@ -3,7 +3,9 @@ use MooseX::Declare;
 class Gitalist::Git::CollectionOfRepositories::FromListOfDirectories with Gitalist::Git::CollectionOfRepositories {
     use MooseX::Types::Common::String qw/NonEmptySimpleStr/;
     use MooseX::Types::Moose qw/ ArrayRef HashRef /;
+    use MooseX::Types::Path::Class qw/Dir/;
     use File::Basename qw/basename/;
+    use Path::Class qw/dir/;
     use Moose::Autobox;
 
     has repos => (
@@ -12,7 +14,7 @@ class Gitalist::Git::CollectionOfRepositories::FromListOfDirectories with Gitali
         required => 1,
     );
     has _repos_by_name => (
-        isa => HashRef[NonEmptySimpleStr],
+        isa => HashRef[Dir],
         is => 'ro',
         lazy_build => 1,
         traits => ['Hash'],
@@ -22,12 +24,12 @@ class Gitalist::Git::CollectionOfRepositories::FromListOfDirectories with Gitali
     );
 
     method _build__repos_by_name {
-        { map { basename($_) => $_ } $self->repos->flatten };
+        +{ map { basename($_) => dir($_) } $self->repos->flatten };
     }
 
     ## Builders
     method _build_repositories {
-        [ map { $self->get_repository($_) } $self->repos->flatten ];
+        [ map { $self->get_repository(basename($_)) } $self->repos->flatten ];
     }
 }                               # end class
 
