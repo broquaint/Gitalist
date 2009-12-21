@@ -81,7 +81,7 @@ auto_install;
 author_requires 'Module::Find';
 author_requires 'B::Hooks::OP::Check::StashChange';
 author_requires 'B::Compiling';
-if ($Module::Install::AUTHOR) {
+if ($Module::Install::AUTHOR && $ENV{GITALIST_RELEASE_TESTING}) {
     require Module::Find;
     require B::Hooks::OP::Check::StashChange;
     require B::Compiling;
