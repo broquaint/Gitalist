@@ -4,9 +4,11 @@ use strict;
 use warnings;
 
 use inc::Module::Install 0.91;
-use Module::Install::AuthorRequires;
-use Module::Install::AuthorTests;
-use Module::Install::ReadmeFromPod;
+if ($ENV{GITALIST_RELEASE_TESTING}) {
+    require Module::Install::AuthorRequires;
+    require Module::Install::AuthorTests;
+    require Module::Install::ReadmeFromPod;
+}
 
 name 'Gitalist';
 all_from 'lib/Gitalist.pm';
@@ -58,10 +60,6 @@ requires 'XML::Atom';
 requires 'XML::RSS';
 requires 'XML::OPML::SimpleGen';
 
-author_requires 'Test::NoTabs';
-author_requires 'Test::Pod' => '1.14';
-author_requires 'Test::Pod::Coverage' => '1.04';
-
 test_requires 'Test::More' => '0.88';
 test_requires 'Test::utf8' => '0.02';
 
@@ -70,18 +68,24 @@ resources repository => 'git://git.shadowcat.co.uk/catagits/Gitalist.git';
 
 catalyst;
 
-author_tests 't/author';
+if ($ENV{GITALIST_RELEASE_TESTING}) {
+    author_tests 't/author';
+    author_requires 'Test::NoTabs';
+    author_requires 'Test::Pod' => '1.14';
+    author_requires 'Test::Pod::Coverage' => '1.04';
+}
+
 install_script glob('script/*.pl');
 auto_install;
 
-# This is totally gross :)
-# However, it is also much more effective than Module::Install::ProvidesClass
-# which a) just does not work very well for us, b) totally won't install from
-# cpan right now..
-author_requires 'Module::Find';
-author_requires 'B::Hooks::OP::Check::StashChange';
-author_requires 'B::Compiling';
 if ($Module::Install::AUTHOR && $ENV{GITALIST_RELEASE_TESTING}) {
+    # This is totally gross :)
+    # However, it is also much more effective than Module::Install::ProvidesClass
+    # which a) just does not work very well for us, b) totally won't install from
+    # cpan right now..
+    author_requires 'Module::Find';
+    author_requires 'B::Hooks::OP::Check::StashChange';
+    author_requires 'B::Compiling';
     require Module::Find;
     require B::Hooks::OP::Check::StashChange;
     require B::Compiling;
