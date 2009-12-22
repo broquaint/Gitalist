@@ -154,7 +154,7 @@ sub blame : Chained('base') Args(0) {
        || die "Couldn't discern the corresponding head.";
   my $filename = $c->req->param('f') || '';
 
-  my $blame = $repository->get_object($hb)->blame($filename);
+  my $blame = $repository->get_object($hb)->blame($filename, $h);
   $c->stash(
     blame    => $blame,
     head     => $repository->get_object($hb),
