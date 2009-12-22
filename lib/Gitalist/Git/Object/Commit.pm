@@ -5,7 +5,7 @@ class Gitalist::Git::Object::Commit
     extends Gitalist::Git::Object
     with Gitalist::Git::Object::HasTree {
         use MooseX::Types::Moose qw/Str Int Bool Maybe ArrayRef/;
-        use MooseX::Types::Common::String qw/NonEmptySimpleStr/;
+        use MooseX::Types::Common::String qw/NonEmptySimpleStr SimpleStr/;
         use Moose::Autobox;
         use List::MoreUtils qw/any zip/;
         our $SHA1RE = qr/[0-9a-fA-F]{40}/;
@@ -142,9 +142,9 @@ class Gitalist::Git::Object::Commit
 
 
   # XXX A prime candidate for caching.
-  method blame ( NonEmptySimpleStr $filename ) {
+  method blame ( NonEmptySimpleStr $filename, SimpleStr $sha1 ) {
     my @blameout = $self->_run_cmd_list(
-      blame => '-p', $self->sha1, '--', $filename
+      blame => '-p', $sha1 ? $sha1 : $self->sha1, '--', $filename
     );
 
     my(%commitdata, @filedata);

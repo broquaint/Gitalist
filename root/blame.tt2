@@ -47,7 +47,7 @@
      <td nowrap class='date'></td>
      <td nowrap class='commit-info'></td>
      [%- END -%]
-   <td nowrap class='lineno' style='border-right: solid 3px #[% linecolour %]; border-left: solid 3px #[% linecolour %];'><tt>[% info.meta.lineno %]</tt></td>
+   <td nowrap class='lineno' id='l[% info.meta.lineno %]' style='border-right: solid 3px #[% linecolour %]; border-left: solid 3px #[% linecolour %];'><tt><a href='[% c.uri_for('blame', {h=info.commit.sha1,f=filename}) %]#l[% info.meta.orig_lineno %]'>[% info.meta.lineno %]</a></tt></td>
    <td nowrap class='data'><pre>[% blame_lines.${loop.index} %]</pre></td>
    [% lastsha1 = info.commit.sha1 %]
  </tr>
