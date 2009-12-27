@@ -13,16 +13,40 @@ author 'Dan Brook <broq@cpan.org>';
 license 'gpl2';
 
 if ($ENV{GITALIST_RELEASE_TESTING}) {
+    # Nasty hack as Module::Install kindly re-loads all of these :/
     local $SIG{__WARN__} = sub { return if $_[0] =~ /redefined/; warn shift };
     require Module::Install::AuthorRequires;
     require Module::Install::AuthorTests;
-    require Module::Install::AutoProvidesFromCompilation;
 
     author_tests 't/author';
     author_requires 'Test::NoTabs';
     author_requires 'Test::Pod' => '1.14';
     author_requires 'Test::Pod::Coverage' => '1.04';
-    auto_provides_from_compilation();
+
+    require File::Find;
+    require FindBin;
+    require ExtUtils::MM_Unix;
+    # Fill in provides info so that indexing works right (in the face of MX::Declare)
+    # by just smashing filenames to package names and not trying to be smart..
+    File::Find::find(sub {
+        return unless $File::Find::name =~ /\.pm$/;
+        my $fn = $File::Find::name;
+        my $ver = ExtUtils::MM_Unix->parse_version($fn);
+
+        $fn =~ s/.+?lib/lib/;
+        my $pn = $fn;
+        $pn =~ s|^lib/||;
+        $pn =~ s|/|::|g;
+        $pn =~ s/\.pm$//;
+
+        provides(
+            $pn => {
+                file => $fn,
+                # Ewww
+                $ver ne 'undef' ? (version => $ver) : (),
+            },
+        );
+    }, $FindBin::Bin . "/lib");
 }
 
 requires 'Catalyst::Runtime' => '5.8001402';
