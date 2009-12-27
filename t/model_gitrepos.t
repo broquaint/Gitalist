@@ -3,9 +3,11 @@ use warnings;
 
 use Test::More;
 use Test::Exception;
+use FindBin;
 
 use Moose ();
 use Moose::Object;
+use Moose::Autobox;
 use Class::MOP::Class;
 use Catalyst::Request;
 use Catalyst::Response;
@@ -81,6 +83,20 @@ throws_ok { Gitalist::Model::GitRepos->COMPONENT($ctx_gen->(), { repos => [ temp
     local %ENV = %ENV;
     $ENV{GITALIST_REPO_DIR} = $td;
     lives_ok { Gitalist::Model::GitRepos->COMPONENT($ctx_gen->(), {}) } 'GITALIST_REPO_DIR env variable works';
+}
+
+{
+    my $i = test_with_config({ repo_dir => "$FindBin::Bin/lib/repositories"});
+    is scalar($i->repositories->flatten), 3, 'Found 3 repos';
+}
+
+{
+    my $i = test_with_config({ repos => [
+        "$FindBin::Bin/lib/repositories/bare.git",
+        "$FindBin::Bin/lib/repositories/repo1",
+        "$FindBin::Bin/lib/repositories/nodescription",
+    ]});
+    is scalar($i->repositories->flatten), 3, 'Found 3 repos';
 }
 
 sub test_with_config {
