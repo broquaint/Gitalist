@@ -97,8 +97,11 @@ index 257cc56..5716ca5 100644
 +bar
 --') == 0, 'commit_obj->get_patch can return a patch');
 
-like(do { local $/; my $fh = $commit_obj->get_patch(undef, 3); <$fh> },
-    qr!PATCH 2/2!, 'commit_obj->get_patch can return a patchset');
-
+# Note - 2 patches = 3 parts due to where we split.
+{
+    my @bits = split /Subject: \[PATC/, do { local $/; my $fh = $commit_obj->get_patch(undef, 3); <$fh> };
+    is(scalar(@bits), 3,
+        'commit_obj->get_patch can return a patchset');
+}
 done_testing;
 
