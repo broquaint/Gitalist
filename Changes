@@ -1,5 +1,6 @@
 This file documents the revision history for Perl extension Gitalist.
 
+0.000005 2010-01-09
     - Switch to IPC::Run::start for streamed mode, fixing RT#52658
       and the tests with FreeBSD.
     - Require new FCGI release in the FCGI script for upstream bug fixes.
