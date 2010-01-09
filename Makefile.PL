@@ -18,10 +18,10 @@ if ($ENV{GITALIST_RELEASE_TESTING}) {
     require Module::Install::AuthorRequires;
     require Module::Install::AuthorTests;
 
-    author_tests 't/author';
-    author_requires 'Test::NoTabs';
-    author_requires 'Test::Pod' => '1.14';
-    author_requires 'Test::Pod::Coverage' => '1.04';
+    author_tests('t/author');
+    author_requires('Test::NoTabs');
+    author_requires('Test::Pod' => '1.14');
+    author_requires('Test::Pod::Coverage' => '1.04');
 
     require File::Find;
     require FindBin;
