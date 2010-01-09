@@ -4,19 +4,50 @@ use strict;
 use warnings;
 
 use inc::Module::Install 0.91;
-if ($ENV{GITALIST_RELEASE_TESTING}) {
-    require Module::Install::AuthorRequires;
-    require Module::Install::AuthorTests;
-    require Module::Install::ReadmeFromPod;
-}
 
 name 'Gitalist';
 all_from 'lib/Gitalist.pm';
-readme_from 'lib/Gitalist.pm';
 
 author 'Dan Brook <broq@cpan.org>';
 
 license 'gpl2';
+
+if ($ENV{GITALIST_RELEASE_TESTING}) {
+    # Nasty hack as Module::Install kindly re-loads all of these :/
+    local $SIG{__WARN__} = sub { return if $_[0] =~ /redefined/; warn shift };
+    require Module::Install::AuthorRequires;
+    require Module::Install::AuthorTests;
+
+    author_tests 't/author';
+    author_requires 'Test::NoTabs';
+    author_requires 'Test::Pod' => '1.14';
+    author_requires 'Test::Pod::Coverage' => '1.04';
+
+    require File::Find;
+    require FindBin;
+    require ExtUtils::MM_Unix;
+    # Fill in provides info so that indexing works right (in the face of MX::Declare)
+    # by just smashing filenames to package names and not trying to be smart..
+    File::Find::find(sub {
+        return unless $File::Find::name =~ /\.pm$/;
+        my $fn = $File::Find::name;
+        my $ver = ExtUtils::MM_Unix->parse_version($fn);
+
+        $fn =~ s/.+?lib/lib/;
+        my $pn = $fn;
+        $pn =~ s|^lib/||;
+        $pn =~ s|/|::|g;
+        $pn =~ s/\.pm$//;
+
+        provides(
+            $pn => {
+                file => $fn,
+                # Ewww
+                $ver ne 'undef' ? (version => $ver) : (),
+            },
+        );
+    }, $FindBin::Bin . "/lib");
+}
 
 requires 'Catalyst::Runtime' => '5.8001402';
 requires 'Catalyst::Plugin::ConfigLoader';
@@ -68,52 +99,44 @@ resources repository => 'git://git.shadowcat.co.uk/catagits/Gitalist.git';
 
 catalyst;
 
-if ($ENV{GITALIST_RELEASE_TESTING}) {
-    author_tests 't/author';
-    author_requires 'Test::NoTabs';
-    author_requires 'Test::Pod' => '1.14';
-    author_requires 'Test::Pod::Coverage' => '1.04';
+if ($Module::Install::AUTHOR) {
+    system("pod2text lib/Gitalist.pm > README")
+        and die $!;
 }
 
 install_script glob('script/*.pl');
 auto_install;
 
-if ($Module::Install::AUTHOR && $ENV{GITALIST_RELEASE_TESTING}) {
-    # This is totally gross :)
-    # However, it is also much more effective than Module::Install::ProvidesClass
-    # which a) just does not work very well for us, b) totally won't install from
-    # cpan right now..
-    author_requires 'Module::Find';
-    author_requires 'B::Hooks::OP::Check::StashChange';
-    author_requires 'B::Compiling';
-    require Module::Find;
-    require B::Hooks::OP::Check::StashChange;
-    require B::Compiling;
-    require FindBin;
-    require lib;
+{   # Make sure you REALLY REALLY have to have the env variable set to run
+    # any of the dist actions.
+    package # PAUSE HIDE
+    MY;
 
-    my $libdir = "$FindBin::Bin/lib";
-    lib->import($libdir);
-
-    my %packages;
-
-    our $id = B::Hooks::OP::Check::StashChange::register(sub {
-        my ($new, $old) = @_;
-        my $file = B::Compiling::PL_compiling()->file;
-        return unless $file =~ s/^$libdir/lib/;
-        $packages{$new} ||= $file
-            if $new =~ /^Gitalist/;
-    });
-
-    require Gitalist;
-    Module::Find::useall(qw/Gitalist/);
-    undef $id;
-
-    no strict 'refs';
-    provides($_ => {
-        file => $packages{$_},
-        ${$_.'::VERSION'} ? ( version => $_->VERSION() ) : ()
-    }) for keys %packages;
+    sub dist_core { # MakeMaker is awesome fun to customise. And when I say
+        my ($self, @args) = @_; # fun I mean OH GOD MY EYES.
+        my $text = $self->SUPER::dist_core(@args);
+        my @lines = split /\n/, $text;
+        unless ($ENV{GITALIST_RELEASE_TESTING}) {
+            my ($printed, @out_lines);
+            foreach my $in (@lines) {
+                if ($in =~ /^\S/) {
+                    undef $printed;
+                    $in =~ s/:.*$/:/g;
+                    push @out_lines, $in;
+                }
+                elsif ($in =~ /^\s+$/) {
+                    push @out_lines, $in;
+                }
+                elsif (!$printed) {
+                    push @out_lines, "\techo Get stuffed mate - set GITALIST_RELEASE_TESTING if you really want to do this..";
+                    $printed = 1;
+                }
+                else {}
+            }
+            @lines = @out_lines;
+        }
+        return join "\n", @lines;
+    }
 }
 
 WriteAll;
