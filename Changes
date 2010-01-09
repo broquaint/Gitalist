@@ -2,6 +2,12 @@ This file documents the revision history for Perl extension Gitalist.
 
     - Switch to IPC::Run::start for streamed mode, fixing RT#52658
       and the tests with FreeBSD.
+    - Require new FCGI release in the FCGI script for upstream bug fixes.
+    - Fix tests with older versions of git.
+    - Allow the model to be configured with a list of repositories rather
+      then a directory containing repositories.
+    - Fix syntax highlighting CSS link
+    - Add per line link for previous version of a line in blame.
 
 0.000004 2009-12-19
     - Support being able to pass a list of repositories to view via
