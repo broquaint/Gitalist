@@ -37,6 +37,11 @@ isa_ok($proj->path, 'Path::Class::Dir', 'repository path');
 is($proj->name, qw/repo1/, 'repository name is set');
 is($proj->description, qq/some test repository/, 'repository description loaded');
 isa_ok($proj->last_change, 'DateTime', 'last_change');
+{
+    my $packed = $proj->pack;
+    use Data::Dumper;
+    warn Dumper $packed;
+}
 
 my %references = %{$proj->references};
 ok(keys %references >= 2, '->references hash has elements');
