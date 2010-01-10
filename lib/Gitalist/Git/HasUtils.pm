@@ -2,6 +2,7 @@ use MooseX::Declare;
 
 role Gitalist::Git::HasUtils {
     use Gitalist::Git::Util;
+    use MooseX::Storage::Meta::Attribute::Trait::DoNotSerialize;
 
     method BUILD {}
     after BUILD {
@@ -21,6 +22,7 @@ role Gitalist::Git::HasUtils {
             get_gpp_object
             gpp
         /],
+        traits => [qw/ DoNotSerialize /],
     );
     method _build_util { confess(shift() . " cannot build _util") }
 }
