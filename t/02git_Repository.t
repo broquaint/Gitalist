@@ -37,11 +37,15 @@ isa_ok($proj->path, 'Path::Class::Dir', 'repository path');
 is($proj->name, qw/repo1/, 'repository name is set');
 is($proj->description, qq/some test repository/, 'repository description loaded');
 isa_ok($proj->last_change, 'DateTime', 'last_change');
-{
-    my $packed = $proj->pack;
-    use Data::Dumper;
-    warn Dumper $packed;
-}
+
+is_deeply $proj->pack, {
+    '__CLASS__' => 'Gitalist::Git::Repository',
+    'is_bare' => 1,
+    'owner' => "T\x{e9}st",
+    'last_change' => '2009-11-12T19:00:34Z',
+    'name' => 'repo1',
+    'description' => 'some test repository'
+};
 
 is_deeply $proj->pack, {
     '__CLASS__' => 'Gitalist::Git::Repository',
