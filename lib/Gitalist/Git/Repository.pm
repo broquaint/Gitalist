@@ -35,7 +35,8 @@ class Gitalist::Git::Repository with Gitalist::Git::HasUtils {
                   is => 'ro', required => 1 );
 
     has path => ( isa => Dir,
-                  is => 'ro', required => 1);
+                  is => 'ro', required => 1,
+                  traits => [qw/ DoNotSerialize /] );
 
     has description => ( isa => Str,
                          is => 'ro',
