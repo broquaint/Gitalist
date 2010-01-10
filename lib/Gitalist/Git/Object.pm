@@ -1,7 +1,7 @@
 use MooseX::Declare;
 use Moose::Autobox;
 
-class Gitalist::Git::Object {
+class Gitalist::Git::Object with Gitalist::Serializeable {
     use MooseX::Types::Moose qw/Str Int Bool Maybe ArrayRef/;
     use MooseX::Types::Common::String qw/NonEmptySimpleStr/;
 

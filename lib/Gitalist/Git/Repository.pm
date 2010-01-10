@@ -15,6 +15,8 @@ class Gitalist::Git::Repository with Gitalist::Git::HasUtils {
     use Gitalist::Git::Object::Tree;
     use Gitalist::Git::Object::Commit;
     use Gitalist::Git::Object::Tag;
+    
+    with 'Gitalist::Serializeable';
 
     our $SHA1RE = qr/[0-9a-fA-F]{40}/;
 

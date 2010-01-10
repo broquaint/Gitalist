@@ -6,6 +6,8 @@ role Gitalist::Git::CollectionOfRepositories {
     use Moose::Autobox;
     use aliased 'Gitalist::Git::Repository';
 
+    with 'Gitalist::Serializeable';
+
     has repositories => (
         is => 'ro',
         isa => ArrayRef['Gitalist::Git::Repository'],
