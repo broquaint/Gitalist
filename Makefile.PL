@@ -74,6 +74,8 @@ requires 'MooseX::Declare' => '0.33';
 requires 'MooseX::Types::Common';
 requires 'MooseX::Types::Path::Class';
 requires 'MooseX::Types';
+requires 'MooseX::Storage';
+requires 'JSON::XS';
 requires 'namespace::autoclean';
 
 requires 'Git::PurePerl' => '0.46';
