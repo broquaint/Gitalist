@@ -63,7 +63,9 @@ class Gitalist::Git::Repository with Gitalist::Git::HasUtils {
                      );
     has heads => ( isa => ArrayRef[HashRef],
                    is => 'ro',
-                   lazy_build => 1);
+                   lazy_build => 1,
+                   traits => [qw/ DoNotSerialize /],
+                   );
     has tags => ( isa => ArrayRef[HashRef],
                    is => 'ro',
                    lazy_build => 1);
