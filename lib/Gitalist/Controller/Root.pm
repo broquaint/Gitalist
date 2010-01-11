@@ -76,6 +76,14 @@ sub error_404 : Action {
     $c->response->body('Page not found');
 }
 
+__PACKAGE__->config(
+    default => 'text/html',
+    map => {
+        'text/html'        => [qw/ View Default /],
+        'application/json' => [qw/ JSON /],
+    }
+);
+
 __PACKAGE__->meta->make_immutable;
 
 __END__
