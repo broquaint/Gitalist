@@ -31,15 +31,16 @@ sub process {
     my($self, $c) = @_;
 
     for($c->stash->{blobs} ? @{$c->stash->{blobs}} : $c->stash->{blob}) {
-        $_ = $self->highlight($c->stash->{language} => $_);
+        $_ = $self->render($c, $_, { language => $c->stash->{language} });
     }
 
     $c->forward('View::Default');
 }
 
-# XXX This takes for freakin' ever on big merges. A cache may be needed.
-sub highlight {
-    my($self, $lang, $blob) = @_;
+sub render {
+    my ($self, $c, $blob, $args) = @_;
+    
+    my $lang = $args->{language};
 
     my $ret;
     if($lang) {
