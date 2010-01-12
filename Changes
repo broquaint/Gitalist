@@ -1,5 +1,8 @@
 This file documents the revision history for Perl extension Gitalist.
 
+    - Bump required version of Git::PurePerl for Encoding fixes.
+    - Fix Makefile.PL to not need release deps when checking out of Git.
+
 0.000005 2010-01-09
     - Switch to IPC::Run::start for streamed mode, fixing RT#52658
       and the tests with FreeBSD.
