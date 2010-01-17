@@ -30,4 +30,6 @@ sub heads : Chained('find') Args(0) {}
 
 sub log : Chained('find') Args(0) {}
 
+sub tags : Chained('find') Args(0) {}
+
 1;

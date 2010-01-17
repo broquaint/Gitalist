@@ -53,60 +53,6 @@ sub index : Chained('base') PathPart('') Args(0) {
   );
 }
 
-=head2 summary
-
-A summary of what's happening in the repo.
-
-=cut
-
-sub summary : Chained('base') Args(0) {
-  my ( $self, $c ) = @_;
-  my $repository = $c->stash->{Repository};
-  $c->detach('error_404') unless $repository;
-  my $commit = $self->_get_object($c);
-  my @heads  = @{$repository->heads};
-  my $maxitems = Gitalist->config->{paging}{summary} || 10;
-  $c->stash(
-    commit    => $commit,
-    log_lines => [$repository->list_revs(
-        sha1 => $commit->sha1,
-        count => $maxitems,
-    )],
-    refs      => $repository->references,
-    heads     => [ @heads[0 .. ($#heads < $maxitems ? $#heads : $maxitems)] ],
-  );
-}
-
-=head2 heads
-
-The current list of heads (aka branches) in the repo.
-
-=cut
-
-sub heads : Chained('base') Args(0) {
-  my ( $self, $c ) = @_;
-  my $repository = $c->stash->{Repository};
-  $c->stash(
-    commit => $self->_get_object($c),
-    heads  => $repository->heads,
-  );
-}
-
-=head2 tags
-
-The current list of tags in the repo.
-
-=cut
-
-sub tags : Chained('base') Args(0) {
-  my ( $self, $c ) = @_;
-  my $repository = $c->stash->{Repository};
-  $c->stash(
-    commit => $self->_get_object($c),
-    tags   => $repository->tags,
-  );
-}
-
 sub blame : Chained('base') Args(0) {
   my($self, $c) = @_;
 
@@ -287,48 +233,6 @@ sub commitdiff_plain : Chained('base') Args(0) {
   $c->response->content_type('text/plain; charset=utf-8');
 
   $c->forward('commitdiff');
-}
-
-=head2 shortlog
-
-Expose an abbreviated log of a given sha1.
-
-=cut
-
-sub shortlog : Chained('base') Args(0) {
-  my ( $self, $c ) = @_;
-
-  my $repository  = $c->stash->{Repository};
-  my $commit   = $self->_get_object($c, $c->req->param('hb'));
-  my $filename = $c->req->param('f') || '';
-
-  my %logargs = (
-      sha1   => $commit->sha1,
-      count  => Gitalist->config->{paging}{log} || 25,
-      ($filename ? (file => $filename) : ())
-  );
-
-  my $page = $c->req->param('pg') || 0;
-  $logargs{skip} = $c->req->param('pg') * $logargs{count}
-    if $c->req->param('pg');
-
-  $c->stash(
-      commit    => $commit,
-      log_lines => [$repository->list_revs(%logargs)],
-      refs      => $repository->references,
-      page      => $page,
-      filename  => $filename,
-  );
-}
-
-=head2 log
-
-Calls shortlog internally. Perhaps that should be reversed ...
-
-=cut
-
-sub log : Chained('base') Args(0) {
-    $_[0]->shortlog($_[1]);
 }
 
 # For legacy support.
