@@ -21,6 +21,6 @@ sub diff : Chained('find') Args(0) {}
 
 sub tree : Chained('find') Args(0) {}
 
-sub commit : Chained('find') Args(0) {}
+sub commit : Chained('find') PathPart('') Args(0) {}
 
 1;

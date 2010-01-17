@@ -30,12 +30,13 @@
    <td class='author'>[% line.author.name | html %]</td>
    <td>
      [% short_cmt(line.comment) | html %]
-     [% INCLUDE '_refs.tt2' object = line %]
+	 [%# FIXME What did this crap used to do? Did it work ever? %]
+     [%# INCLUDE '_refs.tt2' object = line %]
    </td>
    <td class='action-list'>
-     <a href="[% c.uri_for("commit", {h=line.sha1}) %]">commit</a>
-     <a href="[% c.uri_for("commitdiff", {h=line.sha1}) %]">commitdiff</a>
-     <a href="[% c.uri_for("tree", {h=line.sha1, hb=line.sha1}) %]">tree</a>
+     <a href="[% c.uri_for_action("/commit/commit", [Repository.name, line.sha1]) %]">commit</a>
+     <a href="[% c.uri_for_action("/commit/diff", [Repository.name, line.sha1]) %]">commitdiff</a>
+     <a href="[% c.uri_for_action("/commit/tree", [Repository.name, line.sha1]) %]">tree</a>
    </td>
   </tr>
  [% END %]
