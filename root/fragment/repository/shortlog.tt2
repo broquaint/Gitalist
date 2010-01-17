@@ -1,25 +1,22 @@
+[% BLOCK shortlog_table_headfoot %]
+<tr>
+ <th>sha1</th>
+ <th>time</th>
+ <th>author</th>
+ <th>message</th>
+ <th>actions</th>
+</tr>
+[% END %]
 <div class='content'>
 [%
   INCLUDE 'inc/log_pager.tt2';
 %]<table class='shortlog listing'>
  <thead>
-  <tr>
-   <th>sha1</th>
-   <th>time</th>
-   <th>author</th>
-   <th>message</th>
-   <th>actions</th>
-  </tr>
+    [% PROCESS shortlog_table_headfoot %]
  </thead>
 
  <tfoot>
-  <tr>
-   <td>sha1</td>
-   <td>time</td>
-   <td>author</td>
-   <td>message</td>
-   <td>actions</td>
-  </tr>
+    [% PROCESS shortlog_table_headfoot %]
  </tfoot>
 
  <tbody>
@@ -30,7 +27,7 @@
    <td class='author'>[% line.author.name | html %]</td>
    <td>
      [% short_cmt(line.comment) | html %]
-	 [%# FIXME What did this crap used to do? Did it work ever? %]
+     [%# FIXME What did this crap used to do? Did it work ever? %]
      [%# INCLUDE '_refs.tt2' object = line %]
    </td>
    <td class='action-list'>
