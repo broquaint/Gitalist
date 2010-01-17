@@ -12,6 +12,8 @@ after 'base' => sub {
 
 sub find : Chained('base') PathPart('') CaptureArgs(1) {
     my ($self, $c, $repository) = @_;
+    # XXX FIXME - This should be in the repository fragment controller, and the repository
+    #             controller should just check has_repository
     try {
         $c->stash(Repository => $c->model()->get_repository($repository));
     }
