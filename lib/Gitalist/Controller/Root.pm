@@ -65,26 +65,6 @@ sub index : Chained('base') PathPart('') Args(0) {
   );
 }
 
-# FIXME - WTF is this for?
-sub repository_index : Chained('base') Args(0) {
-  my ( $self, $c ) = @_;
-
-  my @list = @{ $c->model()->repositories };
-  die 'No repositories found in '. $c->model->repo_dir
-    unless @list;
-
-  $c->response->content_type('text/plain');
-  $c->response->body(
-    join "\n", map $_->name, @list
-  );
-  $c->response->status(200);
-}
-# FIXME - maintain compatibility with previous URI
-sub project_index : Chained('base') Args(0) {
-    my ( $self, $c) = @_;
-    $c->detach('repository_index');
-}
-
 =head2 summary
 
 A summary of what's happening in the repo.
