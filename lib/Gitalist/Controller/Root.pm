@@ -438,7 +438,6 @@ The action for the search form.
 
 sub search : Chained('base') Args(0) {
   my($self, $c) = @_;
-  $c->stash(current_action => 'GitRepos');
   my $repository = $c->stash->{Repository};
   my $commit  = $self->_get_object($c);
   # Lifted from /shortlog.
@@ -629,7 +628,7 @@ sub base : Chained('/root') PathPart('') CaptureArgs(0) {
   my $repository = $c->req->param('p');
   if (defined $repository) {
     eval {
-      $c->stash(Repository => $c->model('GitRepos')->get_repository($repository));
+      $c->stash(Repository => $c->model()->get_repository($repository));
     };
     if ($@) {
       $c->detach('/error_404');

@@ -19,7 +19,7 @@ $VERSION = eval $VERSION;
 __PACKAGE__->config(
     name => 'Gitalist',
     default_view => 'Default',
-    default_model => 'GitRepos',
+    default_model => 'CollectionOfRepos',
 );
 
 __PACKAGE__->setup();

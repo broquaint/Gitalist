@@ -1,6 +1,11 @@
 This file documents the revision history for Perl extension Gitalist.
 
+    - BIG BREAKING CHANGE - Gitalist::Model::GitRepos has been renamed
+      Gitalist::Model::CollectionOfRepos. You need to fix your config and
+      if you have actually installed Gitalist - remove the old model file.
+
     - Bump required version of Git::PurePerl for Encoding fixes.
+
     - Fix Makefile.PL to not need release deps when checking out of Git.
 
 0.000005 2010-01-09

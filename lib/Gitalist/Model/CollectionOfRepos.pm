@@ -1,4 +1,4 @@
-package Gitalist::Model::GitRepos;
+package Gitalist::Model::CollectionOfRepos;
 
 use Moose;
 use Gitalist::Git::CollectionOfRepositories::FromDirectory;

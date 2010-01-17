@@ -12,9 +12,9 @@ use Class::MOP::Class;
 use Catalyst::Request;
 use Catalyst::Response;
 use Catalyst::Utils;
-use Gitalist::Model::GitRepos;
+use Gitalist::Model::CollectionOfRepos;
 use File::Temp qw/tempdir/;
- 
+
 my $mock_ctx_meta = Class::MOP::Class->create_anon_class( superclasses => ['Moose::Object'] );
 $mock_ctx_meta->add_attribute($_, accessor => $_, required => 1) for qw/request response/;
 $mock_ctx_meta->add_attribute('stash', accessor => 'stash', required => 1, default => sub { {} });
@@ -48,10 +48,10 @@ our $ctx_gen = sub {
 local %ENV = %ENV;
 delete $ENV{GITALIST_REPO_DIR};
 
-throws_ok { Gitalist::Model::GitRepos->COMPONENT($ctx_gen->(), {}) }
+throws_ok { Gitalist::Model::CollectionOfRepos->COMPONENT($ctx_gen->(), {}) }
     qr/Cannot find repository dir/, 'Blows up nicely with no repos dir';
 
-throws_ok { Gitalist::Model::GitRepos->COMPONENT($ctx_gen->(), { repo_dir => '/does/not/exist' }) }
+throws_ok { Gitalist::Model::CollectionOfRepos->COMPONENT($ctx_gen->(), { repo_dir => '/does/not/exist' }) }
     qr|Cannot find repository dir: "/does/not/exist"|, 'Blows up nicely with repos dir does not exist';
 
 {
@@ -64,25 +64,25 @@ throws_ok { Gitalist::Model::GitRepos->COMPONENT($ctx_gen->(), { repo_dir => '/d
 }
 
 # Note - we treat an empty list of repos as if it doesn't exist at all.
-throws_ok { Gitalist::Model::GitRepos->COMPONENT($ctx_gen->(), { repos => [] } ) }
+throws_ok { Gitalist::Model::CollectionOfRepos->COMPONENT($ctx_gen->(), { repos => [] } ) }
     qr/Cannot find repository dir/, 'Blows up nicely with no repos list';
 
-throws_ok { Gitalist::Model::GitRepos->COMPONENT($ctx_gen->(), { repos => [ '/does/not/exist' ] } ) }
+throws_ok { Gitalist::Model::CollectionOfRepos->COMPONENT($ctx_gen->(), { repos => [ '/does/not/exist' ] } ) }
     qr/Cannot find repository directories/, 'Blows up nicely with repos list - 1 unknown item (array)';
-throws_ok { Gitalist::Model::GitRepos->COMPONENT($ctx_gen->(), { repos => '/does/not/exist' } ) }
+throws_ok { Gitalist::Model::CollectionOfRepos->COMPONENT($ctx_gen->(), { repos => '/does/not/exist' } ) }
     qr/Cannot find repository directories/, 'Blows up nicely with repos list - 1 unknown item (scalar))';
 
-throws_ok { Gitalist::Model::GitRepos->COMPONENT($ctx_gen->(), { repos => [ '/does/not/exist', '/also/does/not/exist' ] } ) }
+throws_ok { Gitalist::Model::CollectionOfRepos->COMPONENT($ctx_gen->(), { repos => [ '/does/not/exist', '/also/does/not/exist' ] } ) }
     qr/Cannot find repository directories/, 'Blows up nicely with repos list - 2 unknown items';
 
-throws_ok { Gitalist::Model::GitRepos->COMPONENT($ctx_gen->(), { repos => [ tempdir( CLEANUP => 1), '/also/does/not/exist' ] } ) }
+throws_ok { Gitalist::Model::CollectionOfRepos->COMPONENT($ctx_gen->(), { repos => [ tempdir( CLEANUP => 1), '/also/does/not/exist' ] } ) }
     qr|Cannot find repository directories.*/also/does/not/exist|, 'Blows up nicely with repos list - 1 known, 1 unknown items';
 
 {
     my $td = tempdir( CLEANUP => 1 );
     local %ENV = %ENV;
     $ENV{GITALIST_REPO_DIR} = $td;
-    lives_ok { Gitalist::Model::GitRepos->COMPONENT($ctx_gen->(), {}) } 'GITALIST_REPO_DIR env variable works';
+    lives_ok { Gitalist::Model::CollectionOfRepos->COMPONENT($ctx_gen->(), {}) } 'GITALIST_REPO_DIR env variable works';
 }
 
 {
@@ -104,7 +104,7 @@ sub test_with_config {
     my $ctx = $ctx_gen->();
         
     my $m;
-    lives_ok { $m = Gitalist::Model::GitRepos->COMPONENT($ctx, $config) } $msg;
+    lives_ok { $m = Gitalist::Model::CollectionOfRepos->COMPONENT($ctx, $config) } $msg;
     ok $m, 'Has model';
     my $i = $m->ACCEPT_CONTEXT($ctx);
     ok $i, 'Has model instance from ACCEPT_CONTEXT';
