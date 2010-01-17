@@ -2,12 +2,11 @@
 
 <div class='content'>
   <div class='commit-message'>
-  [% # XXX Wah, stuff like this doesn't work because end() isn't called as we forward to View::SyntaxHighlight
-  short_cmt(commit.comment) | html %]
+  [% short_cmt(Commit.comment) | html %]
   </div>
 
   <div class='author'>
-    [% commit.author.name | html %] [[% commit.authored_time %]]
+    [% Commit.author.name | html %] [[% time_since(Commit.authored_time) %]]
   </div>
 
 

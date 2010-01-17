@@ -5,7 +5,7 @@ use namespace::autoclean;
 
 BEGIN { extends 'Catalyst::Controller' }
 
-sub base : Chained('/root') PathPart('fragment') CaptureArgs(0) {
+sub base : Chained('/base') PathPart('fragment') CaptureArgs(0) {
     my ($self, $c) = @_;
     $c->stash(no_wrapper => 1);
 }
