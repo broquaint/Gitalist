@@ -31,4 +31,10 @@ sub shortlog : Chained('find') Args(0) {
     $c->forward('/shortlog');
 }
 
+sub log : Chained('find') Args(0) {
+    my ($self, $c) = @_;
+    $c->stash(template => 'log.tt2');
+    $c->forward('/log');
+}
+
 __PACKAGE__->meta->make_immutable;
