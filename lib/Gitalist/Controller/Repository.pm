@@ -7,7 +7,10 @@ use namespace::autoclean;
 
 BEGIN { extends 'Catalyst::Controller' }
 
-sub base : Chained('/root') PathPart('') CaptureArgs(0) {}
+sub base : Chained('/root') PathPart('') CaptureArgs(0) {
+    my ($self, $c) = @_;
+    $c->stash(_do_not_mangle_uri_for => 1);
+}
 
 sub find : Chained('base') PathPart('') CaptureArgs(1) {
     my ($self, $c, $repository) = @_;
@@ -19,15 +22,11 @@ sub find : Chained('base') PathPart('') CaptureArgs(1) {
     };
 }
 
-sub summary : Chained('find') PathPart('') Args(0) {
-    my ($self, $c) = @_;
-    $c->stash(template => 'summary.tt2');
-    $c->forward('/summary');
-} 
+sub summary : Chained('find') PathPart('') Args(0) {}
 
 sub shortlog : Chained('find') Args(0) {
     my ($self, $c) = @_;
-    $c->stash(template => 'shortlog.tt2');
+    $c->stash(no_wrapper => 1);
     $c->forward('/shortlog');
 }
 

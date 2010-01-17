@@ -11,6 +11,7 @@ use Catalyst qw/
                 Unicode::Encoding
                 Static::Simple
                 StackTrace
+                SubRequest
 /;
 
 our $VERSION = '0.000005';
@@ -26,15 +27,21 @@ __PACKAGE__->setup();
 
 around uri_for => sub {
   my ($orig, $c) = (shift, shift);
-  my $repository_name = $c->stash->{'Repository'} && $c->stash->{'Repository'}->name;
   my $hash = ref($_[-1]) eq 'HASH' ? pop @_ : {};
-  my $params = Catalyst::Utils::merge_hashes(
-    { p => $hash->{p} || $repository_name },
-    $hash,
-  );
-  delete $params->{p} unless defined $params->{p} && length $params->{p};
-  (my $uri = $c->$orig(@_, $params))
-    =~ tr[&][;];
+  my $params;
+  if ($c->stash->{_do_not_mangle_uri_for}) {
+      $params = $hash;
+  }
+  else {
+      my $repository_name = $c->stash->{'Repository'} && $c->stash->{'Repository'}->name;
+      $params = Catalyst::Utils::merge_hashes(
+          { p => $hash->{p} || $repository_name },
+          $hash,
+       );
+       delete $params->{p} unless defined $params->{p} && length $params->{p};
+  }
+  my $uri = $c->$orig(@_, $params);
+  $$uri =~ tr[&][;];
   return $uri;
 };
 

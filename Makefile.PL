@@ -56,6 +56,7 @@ requires 'Catalyst::Plugin::Static::Simple';
 requires 'Catalyst::Plugin::Unicode::Encoding';
 requires 'Catalyst::Action::RenderView';
 requires 'Catalyst::Component::InstancePerContext';
+requires 'Catalyst::View::Component::SubInclude' => '0.07';
 requires 'Catalyst::View::TT';
 
 requires 'Template';
