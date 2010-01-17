@@ -46,22 +46,10 @@ sub index : Chained('base') PathPart('') Args(0) {
   $c->detach($c->req->param('a'))
     if $c->req->param('a');
 
-  my @list = @{ $c->model()->repositories };
-  die 'No repositories found in '. $c->model->repo_dir
-    unless @list;
-
   my $search = $c->req->param('s') || '';
-  if($search) {
-    @list = grep {
-         index($_->name, $search) > -1
-      or ( $_->description !~ /^Unnamed repository/ and index($_->description, $search) > -1 )
-    } @list
-  }
 
   $c->stash(
     search_text => $search,
-    repositories    => \@list,
-    action      => 'index',
   );
 }
 
@@ -86,7 +74,6 @@ sub summary : Chained('base') Args(0) {
     )],
     refs      => $repository->references,
     heads     => [ @heads[0 .. ($#heads < $maxitems ? $#heads : $maxitems)] ],
-    action    => 'summary',
   );
 }
 
@@ -102,7 +89,6 @@ sub heads : Chained('base') Args(0) {
   $c->stash(
     commit => $self->_get_object($c),
     heads  => $repository->heads,
-    action => 'heads',
   );
 }
 
@@ -118,7 +104,6 @@ sub tags : Chained('base') Args(0) {
   $c->stash(
     commit => $self->_get_object($c),
     tags   => $repository->tags,
-    action => 'tags',
   );
 }
 
@@ -185,7 +170,6 @@ sub blob : Chained('base') Args(0) {
     filename => $filename,
     # XXX Hack hack hack, see View::SyntaxHighlight
     language => ($filename =~ /\.p[lm]$/i ? 'Perl' : ''),
-    action   => 'blob',
   );
 
   $c->forward('View::SyntaxHighlight')
@@ -246,7 +230,6 @@ sub blobdiff : Chained('base') Args(0) {
     # XXX Hack hack hack, see View::SyntaxHighlight
     blobs     => [$patch->[0]->{diff}],
     language  => 'Diff',
-    action    => 'blobdiff',
   );
 
   $c->forward('View::SyntaxHighlight')
@@ -267,7 +250,6 @@ sub commit : Chained('base') Args(0) {
       commit      => $commit,
       diff_tree   => ($repository->diff(commit => $commit))[0],
       refs      => $repository->references,
-      action      => 'commit',
   );
 }
 
@@ -292,7 +274,6 @@ sub commitdiff : Chained('base') Args(0) {
     # XXX Hack hack hack, see View::SyntaxHighlight
     blobs     => [map $_->{diff}, @$patch],
     language  => 'Diff',
-    action    => 'commitdiff',
   );
 
   $c->forward('View::SyntaxHighlight')
@@ -337,7 +318,6 @@ sub shortlog : Chained('base') Args(0) {
       refs      => $repository->references,
       page      => $page,
       filename  => $filename,
-      action    => 'shortlog',
   );
 }
 
@@ -349,7 +329,6 @@ Calls shortlog internally. Perhaps that should be reversed ...
 
 sub log : Chained('base') Args(0) {
     $_[0]->shortlog($_[1]);
-    $_[1]->stash->{action} = 'log';
 }
 
 # For legacy support.
@@ -363,7 +342,7 @@ sub history : Chained('base') Args(0) {
             $c->stash->{filename}
         )
     );
-     $c->stash( action => 'history',
+     $c->stash(
                filetype => $file->type,
            );
 }
@@ -388,7 +367,6 @@ sub tree : Chained('base') Args(0) {
       tree      => $tree,
       tree_list => [$repository->list_tree($tree->sha1)],
       path      => $c->req->param('f') || '',
-      action    => 'tree',
   );
 }
 
@@ -406,7 +384,6 @@ sub reflog : Chained('base') Args(0) {
 
   $c->stash(
       log    => \@log,
-      action => 'reflog',
   );
 }
 
@@ -435,7 +412,6 @@ sub search : Chained('base') Args(0) {
   $c->stash(
       commit  => $commit,
       results => [$repository->list_revs(%logargs)],
-      action  => 'search',
 	  # This could be added - page      => $page,
   );
 }
@@ -605,19 +581,10 @@ sub snapshot : Chained('base') Args(0) {
 sub base : Chained('/root') PathPart('') CaptureArgs(0) {
   my($self, $c) = @_;
 
-  my $repository = $c->req->param('p');
-  if (defined $repository) {
-    eval {
-      $c->stash(Repository => $c->model()->get_repository($repository));
-    };
-    if ($@) {
-      $c->detach('/error_404');
-    }
-  }
-
-  my $a_repository = $c->stash->{Repository} || $c->model()->repositories->[0];
+  my $git_version = `git --version`;
+  chomp($git_version);
   $c->stash(
-    git_version => $a_repository->run_cmd('--version'),
+    git_version => $git_version,
     version     => $Gitalist::VERSION,
 
     # XXX Move these to a plugin!

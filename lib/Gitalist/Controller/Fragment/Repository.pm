@@ -5,10 +5,7 @@ use namespace::autoclean;
 BEGIN { extends 'Catalyst::Controller' }
 with 'Gitalist::URIStructure::Repository';
 
-sub base : Chained('/fragment/base') PathPart('') CaptureArgs(0) {
-    my ($self, $c) = @_;
-    $c->stash(no_wrapper => 1);
-}
+sub base : Chained('/fragment/base') PathPart('') CaptureArgs(0) {}
 
 after shortlog => sub {
     my ($self, $c) = @_;
