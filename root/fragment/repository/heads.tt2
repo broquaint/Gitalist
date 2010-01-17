@@ -1,19 +1,17 @@
-<table class='[% action %] listing'>
- <thead>
-  <tr>
+[% BLOCK repository_heads_headfoot %]
+<tr>
    <th>HEAD</th>
    <th>age</th>
    <th>branch</th>
    <th>actions</th>
-  </tr>
+</tr>
+[% END %]
+<table class='[% action %] listing'>
+ <thead>
+  [% PROCESS repository_heads_headfoot %]
  </thead>
  <tfoot>
-  <tr>
-   <td>HEAD</td>
-   <td>age</td>
-   <td>branch</td>
-   <td>actions</td>
-  </tr>
+  [% PROCESS repository_heads_headfoot %]
  </tfoot>
 
  <tbody>
