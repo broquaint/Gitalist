@@ -23,7 +23,7 @@ sub diff_fancy : Chained('diff') PathPart('') Args(0) {}
 
 sub diff_plain : Chained('diff') PathPart('plain') Args(0) {}
 
-sub tree : Chained('find') Args(0) {}
+sub tree : Chained('find') Args() {}
 
 sub commit : Chained('find') PathPart('') {}
 
