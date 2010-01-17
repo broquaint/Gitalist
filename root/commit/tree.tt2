@@ -1,0 +1,15 @@
+[% INCLUDE 'nav/actions.tt2' object = commit %]
+
+<div class='content'>
+  <div class='commit-message'>
+  [% short_cmt(commit.comment) | html %] ...
+  </div>
+
+  [%
+    IF path;
+      INCLUDE 'nav/path.tt2' filename = path, head = commit;
+    END;
+
+    subinclude('/fragment/commit/tree', c.req.captures);
+  %]
+</div>
