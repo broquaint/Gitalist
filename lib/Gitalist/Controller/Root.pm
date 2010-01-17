@@ -518,8 +518,6 @@ Attempt to render a view, if needed.
 
 =head2 blame
 
-=head2 commitdiff_plain
-
 =head2 error_404
 
 =head2 history
