@@ -199,42 +199,6 @@ sub commit : Chained('base') Args(0) {
   );
 }
 
-=head2 commitdiff
-
-Exposes a given diff of a commit.
-
-=cut
-
-sub commitdiff : Chained('base') Args(0) {
-  my ( $self, $c ) = @_;
-  my $commit = $self->_get_object($c);
-  my($tree, $patch) = $c->stash->{Repository}->diff(
-      commit => $commit,
-      parent => $c->req->param('hp') || undef,
-      patch  => 1,
-  );
-  $c->stash(
-    commit    => $commit,
-    diff_tree => $tree,
-    diff      => $patch,
-    # XXX Hack hack hack, see View::SyntaxHighlight
-    blobs     => [map $_->{diff}, @$patch],
-    language  => 'Diff',
-  );
-
-  $c->forward('View::SyntaxHighlight')
-    unless $c->stash->{no_wrapper};
-}
-
-sub commitdiff_plain : Chained('base') Args(0) {
-  my($self, $c) = @_;
-
-  $c->stash(no_wrapper => 1);
-  $c->response->content_type('text/plain; charset=utf-8');
-
-  $c->forward('commitdiff');
-}
-
 # For legacy support.
 sub history : Chained('base') Args(0) {
     my ( $self, $c ) = @_;

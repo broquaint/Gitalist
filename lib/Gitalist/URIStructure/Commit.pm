@@ -17,10 +17,14 @@ sub find : Chained('base') PathPart('') CaptureArgs(1) {
         or $c->detach('/error404', "Couldn't find a object for '$sha1part' in XXXX!");
 }
 
-sub diff : Chained('find') Args(0) {}
+sub diff : Chained('find') CaptureArgs(0) {}
+
+sub diff_fancy : Chained('diff') PathPart('') Args(0) {}
+
+sub diff_plain : Chained('diff') PathPart('plain') Args(0) {}
 
 sub tree : Chained('find') Args(0) {}
 
-sub commit : Chained('find') PathPart('') Args(0) {}
+sub commit : Chained('find') PathPart('') {}
 
 1;

@@ -10,5 +10,5 @@
   </div>
 
 
-  [% subinclude('/fragment/commit/diff', c.req.captures) %]
+  [% subinclude('/fragment/commit/diff_fancy', c.req.captures) %]
 </div>

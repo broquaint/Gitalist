@@ -22,9 +22,16 @@ after diff => sub {
       blobs     => [map $_->{diff}, @$patch],
       language  => 'Diff',
     );
+};
 
-    $c->forward('View::SyntaxHighlight')
-      unless $c->stash->{plain};
+after diff_fancy => sub {
+    my ($self, $c) = @_;
+    $c->forward('View::SyntaxHighlight');
+};
+
+after diff_plain => sub {
+    my ($self, $c) = @_;
+    $c->response->content_type('text/plain; charset=utf-8');
 };
 
 __PACKAGE__->meta->make_immutable;
