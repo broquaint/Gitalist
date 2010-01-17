@@ -19,7 +19,7 @@
  <tbody>
  [% FOREACH head IN heads %]
   <tr>
-   <td class='sha1' title='[% head.sha1 %]'>[% INCLUDE '_chroma_hash.tt2' sha1 = head.sha1.substr(0,7) %]</td>
+   <td class='sha1' title='[% head.sha1 %]'>[% INCLUDE 'inc/chroma_hash.tt2' sha1 = head.sha1.substr(0,7) %]</td>
    <td class='time-since' title='[% head.last_change %]'>[% time_since(head.last_change) %]</td>
    <td class='head[% head.sha1 == HEAD ? ' current' : '' %]'>[% head.name %]</td>
    <td class='action-list'>

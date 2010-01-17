@@ -9,7 +9,7 @@ use Template::Plugin::Cycle;
 
 __PACKAGE__->config(
   TEMPLATE_EXTENSION => '.tt2',
-  WRAPPER            => 'default.tt2',
+  WRAPPER            => 'wrapper.tt2',
   subinclude_plugin => 'SubRequest',
 );
 

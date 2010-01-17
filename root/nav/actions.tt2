@@ -16,5 +16,5 @@
     <a href="[% c.uri_for('shortlog', {h=object.sha1,f=filename}) %]">history</a> &bull;
     <a href="[% c.uri_for(action, {f=filename}) %]">HEAD</a>
     [% END %]
-    <div class='chroma-hash'>[% INCLUDE '_chroma_hash.tt2' sha1 = object.sha1 %]</div>
+    <div class='chroma-hash'>[% INCLUDE 'inc/chroma_hash.tt2' sha1 = object.sha1 %]</div>
 </div>
