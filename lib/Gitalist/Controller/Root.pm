@@ -182,23 +182,6 @@ sub blobdiff : Chained('base') Args(0) {
     unless $c->stash->{no_wrapper};
 }
 
-=head2 commit
-
-Exposes a given commit.
-
-=cut
-
-sub commit : Chained('base') Args(0) {
-  my ( $self, $c ) = @_;
-  my $repository = $c->stash->{Repository};
-  my $commit = $self->_get_object($c);
-  $c->stash(
-      commit      => $commit,
-      diff_tree   => ($repository->diff(commit => $commit))[0],
-      refs      => $repository->references,
-  );
-}
-
 # For legacy support.
 sub history : Chained('base') Args(0) {
     my ( $self, $c ) = @_;
@@ -213,29 +196,6 @@ sub history : Chained('base') Args(0) {
      $c->stash(
                filetype => $file->type,
            );
-}
-
-=head2 tree
-
-The tree of a given commit.
-
-=cut
-
-sub tree : Chained('base') Args(0) {
-  my ( $self, $c ) = @_;
-  my $repository = $c->stash->{Repository};
-  my $commit  = $self->_get_object($c, $c->req->param('hb'));
-  my $filename = $c->req->param('f') || '';
-  my $tree    = $filename
-    ? $repository->get_object($repository->hash_by_path($commit->sha1, $filename))
-    : $repository->get_object($commit->tree_sha1)
-  ;
-  $c->stash(
-      commit    => $commit,
-      tree      => $tree,
-      tree_list => [$repository->list_tree($tree->sha1)],
-      path      => $c->req->param('f') || '',
-  );
 }
 
 =head2 reflog
