@@ -5,5 +5,5 @@
   [% Repository.name %]
   </div>
 
-  [% INCLUDE '_heads.tt2' %]
+  [% INCLUDE 'repository/heads.tt2' %]
 </div>

@@ -18,5 +18,5 @@
   [% INCLUDE '_shortlog.tt2' %]
 
   <h2><a href='[% c.uri_for("heads") %]'>branches</a></h2>
-  [% INCLUDE '_heads.tt2' %]
+  [% INCLUDE 'repository/heads.tt2' %]
 </div>

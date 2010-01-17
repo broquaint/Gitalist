@@ -30,6 +30,14 @@ sub shortlog : Chained('find') Args(0) {
     $c->forward('/shortlog');
 }
 
+sub heads : Chained('find') Args(0) {
+    my ($self, $c) = @_;
+    $c->stash(
+        no_wrapper => 1,
+        heads => $c->stash->{Repository}->heads,
+    );
+}
+
 sub log : Chained('find') Args(0) {
     my ($self, $c) = @_;
     $c->stash(template => 'log.tt2');
