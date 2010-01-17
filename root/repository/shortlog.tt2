@@ -1,7 +1,2 @@
-<div class='content'>
-[%
-  INCLUDE '_log_pager.tt2';
-  INCLUDE '_shortlog.tt2';
-  INCLUDE '_log_pager.tt2';
-%]
-</div>
+[% INCLUDE 'nav/actions.tt2' object = commit %]
+[% subinclude('/fragment/repository/shortlog', c.req.captures) %]

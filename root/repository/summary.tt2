@@ -1,15 +1,11 @@
 [% PROCESS 'nav/actions.tt2' object = commit %]
 
 <div class='summary content'>
- <dl>
-  <dt>description</dt><dd>[% Repository.description %]</dd>
-  <dt>owner</dt><dd>[% Repository.owner %]</dd>
-  <dt>last change</dt><dd>[% Repository.last_change %]</dd>
- </dl>
+  [% subinclude('/fragment/repository/summary', c.req.captures) %]
 
   <h2><a href='[% c.uri_for(c.controller.action_for('shortlog'), c.req.captures) %]'>shortlog</a></h2>
-  [% subinclude('/repository/shortlog', c.req.captures) %]
+  [% subinclude('/fragment/repository/shortlog', c.req.captures) %]
 
   <h2><a href='[% c.uri_for(c.controller.action_for('heads'), c.req.captures) %]'>branches</a></h2>
-  [% subinclude('/repository/heads', c.req.captures) %]
+  [% subinclude('/fragment/repository/heads', c.req.captures) %]
 </div>

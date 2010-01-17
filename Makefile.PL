@@ -58,7 +58,7 @@ requires 'Catalyst::Action::RenderView';
 requires 'Catalyst::Component::InstancePerContext';
 requires 'Catalyst::View::Component::SubInclude' => '0.07';
 requires 'Catalyst::View::TT';
-
+requires 'Try::Tiny';
 requires 'Template';
 requires 'Template::Provider::Encoding';
 requires 'Template::Plugin::Cycle';
