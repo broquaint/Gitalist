@@ -5,11 +5,6 @@ use namespace::autoclean;
 
 requires 'base';
 
-after 'base' => sub {
-    my ($self, $c) = @_;
-    $c->stash(_do_not_mangle_uri_for => 1);
-};
-
 sub find : Chained('base') PathPart('') CaptureArgs(1) {
     my ($self, $c, $repos_name) = @_;
     # XXX FIXME - This should be in the repository fragment controller, and the repository
