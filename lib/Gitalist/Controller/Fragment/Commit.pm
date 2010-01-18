@@ -50,4 +50,25 @@ after tree => sub {
     );
 };
 
+after blame => sub {
+    my($self, $c, @fn) = @_;
+
+    my $repository = $c->stash->{Repository};
+    my $filename = join('/', @fn);
+
+                                                      # WTF?
+    my $blame = $c->stash->{Commit}->blame($filename, $c->stash->{Commit}->sha1);
+    $c->stash(
+        blame    => $blame,
+        filename => $filename,
+
+        # XXX Hack hack hack, see View::SyntaxHighlight
+        language => ($filename =~ /\.p[lm]$/i ? 'Perl' : ''),
+        blob     => join("\n", map $_->{line}, @$blame),
+    );
+
+    $c->forward('View::SyntaxHighlight')
+        unless $c->stash->{no_wrapper};
+};
+
 __PACKAGE__->meta->make_immutable;

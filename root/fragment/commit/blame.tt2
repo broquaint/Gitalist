@@ -1,38 +1,4 @@
-[% PROCESS 'nav/actions.tt2' object = head %]
-[% INCLUDE inc/syntax_highlight_css.tt2 %]
-
-<div class='content'>
-
-[% IF object.type == 'commit' %]
-<div class='commit-message'>[% short_cmt(head.comment) %]</div>
-[% END %]
-
-[% INCLUDE 'nav/path.tt2' %]
-
-<div id='blame'>
-<table>
- <thead>
-  <tr>
-   <th>author</th>
-   <th>date</th>
-   <th>sha1</th>
-   <th></th>
-   <th class='data'>data</th>
-  </tr>
- </thead>
-
- <tfoot>
-  <tr>
-   <td>author</td>
-   <td>date</td>
-   <td>sha1</td>
-   <td></td>
-   <td class='data'>data</td>
-  </tr>
- </tfoot>
-
- <tbody>
- [% blame_lines = blob.split("\n") %]
+[% blame_lines = blob.split("\n") %]
  [% FOR info IN blame %]
  <tr class=''>
    [%-
@@ -52,8 +18,3 @@
    [% lastsha1 = info.commit.sha1 %]
  </tr>
  [% END %]
- </tbody>
-</table>
-</div>
-
-</div>

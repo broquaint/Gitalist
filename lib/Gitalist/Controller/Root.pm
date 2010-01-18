@@ -53,33 +53,6 @@ sub index : Chained('base') PathPart('') Args(0) {
   );
 }
 
-sub blame : Chained('base') Args(0) {
-  my($self, $c) = @_;
-
-  my $repository = $c->stash->{Repository};
-  my $h  = $c->req->param('h')
-       || $repository->hash_by_path($c->req->param('hb'), $c->req->param('f'))
-       || die "No file or sha1 provided.";
-  my $hb = $c->req->param('hb')
-       || $repository->head_hash
-       || die "Couldn't discern the corresponding head.";
-  my $filename = $c->req->param('f') || '';
-
-  my $blame = $repository->get_object($hb)->blame($filename, $h);
-  $c->stash(
-    blame    => $blame,
-    head     => $repository->get_object($hb),
-    filename => $filename,
-
-    # XXX Hack hack hack, see View::SyntaxHighlight
-    language => ($filename =~ /\.p[lm]$/i ? 'Perl' : ''),
-    blob     => join("\n", map $_->{line}, @$blame),
-  );
-
-  $c->forward('View::SyntaxHighlight')
-    unless $c->stash->{no_wrapper};
-}
-
 sub _blob_objs {
   my ( $self, $c ) = @_;
   my $repository = $c->stash->{Repository};

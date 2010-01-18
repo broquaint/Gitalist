@@ -1,0 +1,37 @@
+[%- BLOCK blame_table_headfoot %]
+<tr>
+ <td>author</td>
+ <td>date</td>
+ <td>sha1</td>
+ <td></td>
+ <td class='data'>data</td>
+</tr>
+[% END -%]
+[% PROCESS 'nav/actions.tt2' object = head %]
+[%- INCLUDE inc/syntax_highlight_css.tt2 -%]
+
+<div class='content'>
+
+[% IF object.type == 'commit' %]
+<div class='commit-message'>[% short_cmt(head.comment) %]</div>
+[% END %]
+
+[% INCLUDE 'nav/path.tt2' %]
+
+<div id='blame'>
+<table>
+ <thead>
+  [% PROCESS blame_table_headfoot %]
+ </thead>
+
+ <tfoot>
+   [% PROCESS blame_table_headfoot %]
+ </tfoot>
+
+ <tbody>
+ [% subinclude('/fragment/commit/blame', c.req.captures, c.req.arguments.to_path ) %]
+ </tbody>
+</table>
+</div>
+
+</div>
