@@ -10,9 +10,7 @@ BEGIN {
     use_ok 'Catalyst::Test', 'Gitalist';
 }
 
-ok( request('/')->is_success, 'Request should succeed' );
-
-for my $p (qw/ repo1 nodescription bare.git opml /) {
+for my $p ('', qw/ repo1 nodescription bare.git opml /) {
     my $path = '/' . $p;
     ok( request($path)->is_success, "$path should succeed");
 }

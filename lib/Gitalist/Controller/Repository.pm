@@ -105,7 +105,7 @@ sub rss : Chained('find') Args(0) {
   my $rss = XML::RSS->new(version => '2.0');
   $rss->channel(
     title          => lc(Sys::Hostname::hostname()) . ' - ' . Gitalist->config->{name},
-    link           => $c->uri_for('summary', {p=>$repository->name}),
+    link           => $c->uri_for_action('/repository/summary', [$repository->name]),
     language       => 'en',
     description    => $repository->description,
     pubDate        => DateTime->now,
