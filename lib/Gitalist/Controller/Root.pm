@@ -15,104 +15,14 @@ __PACKAGE__->config->{namespace} = '';
 
 sub root : Chained('/') PathPart('') CaptureArgs(0) {}
 
-sub _get_object {
-  my($self, $c, $haveh) = @_;
-
-  my $h = $haveh || $c->req->param('h') || '';
-  my $f = $c->req->param('f');
-
-  my $m = $c->stash->{Repository};
-  my $pd = $m->path;
-
-  # Either use the provided h(ash) parameter, the f(ile) parameter or just use HEAD.
-  my $hash = ($h =~ /[^a-f0-9]/ ? $m->head_hash($h) : $h)
-          || ($f && $m->hash_by_path($f))
-          || $m->head_hash
-          # XXX This could definitely use more context.
-          || Carp::croak("Couldn't find a hash for the commit object!");
-
-  my $obj = $m->get_object($hash)
-    or Carp::croak("Couldn't find a object for '$hash' in '$pd'!");
-
-  return $obj;
-}
-
 sub index : Chained('base') PathPart('') Args(0) {
   my ( $self, $c ) = @_;
-
-  $c->detach($c->req->param('a'))
-    if $c->req->param('a');
 
   my $search = $c->req->param('s') || '';
 
   $c->stash(
     search_text => $search,
   );
-}
-
-sub _blob_objs {
-  my ( $self, $c ) = @_;
-  my $repository = $c->stash->{Repository};
-  my $h  = $c->req->param('h')
-       || $repository->hash_by_path($c->req->param('hb'), $c->req->param('f'))
-       || die "No file or sha1 provided.";
-  my $hb = $c->req->param('hb')
-       || $repository->head_hash
-       || die "Couldn't discern the corresponding head.";
-
-  my $filename = $c->req->param('f') || '';
-
-  my $blob = $repository->get_object($h);
-  $blob = $repository->get_object(
-    $repository->hash_by_path($h || $hb, $filename)
-  ) if $blob->type ne 'blob';
-
-  return $blob, $repository->get_object($hb), $filename;
-}
-
-=head2 blobdiff_plain
-
-The plain text version of blobdiff.
-
-=cut
-
-sub blobdiff_plain : Chained('base') Args(0) {
-  my($self, $c) = @_;
-
-  $c->stash(no_wrapper => 1);
-  $c->response->content_type('text/plain; charset=utf-8');
-
-  $c->forward('blobdiff');
-}
-
-=head2 blobdiff
-
-Exposes a given diff of a blob.
-
-=cut
-
-sub blobdiff : Chained('base') Args(0) {
-  my ( $self, $c ) = @_;
-  my $commit = $self->_get_object($c, $c->req->param('hb'));
-  my $filename = $c->req->param('f')
-              || croak("No file specified!");
-  my($tree, $patch) = $c->stash->{Repository}->diff(
-    commit => $commit,
-    patch  => 1,
-    parent => $c->req->param('hpb') || undef,
-    file   => $filename,
-  );
-  $c->stash(
-    commit    => $commit,
-    diff      => $patch,
-    filename  => $filename,
-    # XXX Hack hack hack, see View::SyntaxHighlight
-    blobs     => [$patch->[0]->{diff}],
-    language  => 'Diff',
-  );
-
-  $c->forward('View::SyntaxHighlight')
-    unless $c->stash->{no_wrapper};
 }
 
 =head2 search_help
