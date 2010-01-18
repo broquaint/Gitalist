@@ -1,20 +1,21 @@
 <div class='actions'>
   <!-- This should probably be a real LIst -->
-    <a href="[% c.uri_for('summary') %]">summary</a> &bull;
-    <a href="[% c.uri_for('shortlog', {h=object.sha1}) %]">shortlog</a> &bull;
-    <a href="[% c.uri_for('log', {h=object.sha1}) %]">log</a> &bull;
-    <a href="[% c.uri_for('commit', {h=object.sha1}) %]">commit</a> &bull;
-    <a href="[% c.uri_for('commitdiff', {h=object.sha1}) %]">commitdiff</a>
-    [% IF object.type == 'commit' %] &bull;
-    <a href="[% c.uri_for('tree', {h=object.tree_sha1, hb=object.sha1}) %]">tree</a>
+    <a href="[% c.uri_for_action('/repository/summary', [c.req.captures.0]) %]">summary</a> &bull;
+    <a href="[% c.uri_for_action('/repository/shortlog', [c.req.captures.0]) %]">shortlog</a> &bull;
+    <a href="[% c.uri_for_action('/repository/log', [c.req.captures.0]) %]">log</a> &bull;
+    [% IF Commit %]
+        <a href="[% c.uri_for_action('/commit/commit', [c.req.captures.0, Commit.sha1]) %]">commit</a> &bull;
+        <a href="[% c.uri_for_action('/commit/diff_fancy', [c.req.captures.0, Commit.sha1]) %]">commitdiff</a> &bull;
+        <a href="[% c.uri_for_action('/commit/tree', [c.req.captures.0, Commit.sha1]) %]">tree</a>
     [% END %]
+    [% IF filename && Commit %]&bull;[% END %]
     [% IF filename %]
     &sect;
     <a href="[% c.uri_for('blob', {h=object.sha1,f=filename}) %]">blob</a> &bull;
     <a href="[% c.uri_for('blob_plain', {h=object.sha1,f=filename}) %]">raw</a> &bull;
     <a href="[% c.uri_for('blame', {h=object.sha1,f=filename}) %]">blame</a> &bull;
     <a href="[% c.uri_for('shortlog', {h=object.sha1,f=filename}) %]">history</a> &bull;
-    <a href="[% c.uri_for(action, {f=filename}) %]">HEAD</a>
+    <a href="[% c.uri_for(c.controller.action_for('commit'), [c.req.captures.0, Repository.head_hash]) %]">HEAD</a>
     [% END %]
     <div class='chroma-hash'>[% INCLUDE 'inc/chroma_hash.tt2' sha1 = object.sha1 %]</div>
 </div>
