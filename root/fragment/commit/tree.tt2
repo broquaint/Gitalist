@@ -28,11 +28,11 @@
    <td class='action-list'>
      <a href="[% blob_or_tree_link %]">[% theact %]</a>
 	  [% IF item.type == 'blob' %]
-	  <a href="[% c.uri_for(c.controller.action_for('blame'), c.req.captures, c.req.args.to_path(item.file)) %]">blame</a>
+	  <a href="[% c.uri_for_action('/commit/blame', c.req.captures, c.req.args.to_path(item.file)) %]">blame</a>
 	  [% END %]
-     <a href="[% c.uri_for(c.controller.action_for('history'), c.req.captures, c.req.args.to_path(item.file)) %]">history</a>
+     <a href="[% c.uri_for_action('/commit/history', c.req.captures, c.req.args.to_path(item.file)) %]">history</a>
      [% IF item.type == 'blob' %]
-     <a href="[% c.uri_for(c.controller.action_for('raw'), c.req.captures, c.req.args.to_path(item.file)) %]">raw</a>
+     <a href="[% c.uri_for_action('/commit/raw', c.req.captures, c.req.args.to_path(item.file)) %]">raw</a>
      [% END %]
    </td>
   </tr>
