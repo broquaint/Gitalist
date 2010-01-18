@@ -23,7 +23,7 @@
     <link rel="stylesheet" href="[% c.uri_for('/static/css/blueprint/ie.css') %]" type="text/css" media="screen, projection">
   <![endif]-->  
   <link rel="stylesheet" type="text/css" href="[% c.uri_for('/static/css/site.css') %]">
-  <link rel="shortcut icon" href="[% c.uri_for('git-favicon.png') %]" type="image/png">
+  <link rel="shortcut icon" href="[% c.uri_for('/static/git-favicon.png') %]" type="image/png">
 </head>
 
 <body>
