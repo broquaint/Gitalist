@@ -11,6 +11,51 @@ with 'Gitalist::URIStructure::Repository';
 
 sub base : Chained('/base') PathPart('') CaptureArgs(0) {}
 
+=head2 search
+
+The action for the search form.
+
+=cut
+
+sub search : Chained('base') Args(0) {
+  my($self, $c) = @_;
+  my $repository = $c->stash->{Repository};
+  # Lifted from /shortlog.
+  my %logargs = (
+#    sha1   => $commit->sha1,
+#    count  => Gitalist->config->{paging}{log},
+#    ($c->req->param('f') ? (file => $c->req->param('f')) : ()),
+    search => {
+      type   => $c->req->param('type'),
+      text   => $c->req->param('text'),
+      regexp => $c->req->param('regexp') || 0,
+    },
+  );
+
+  $c->stash(
+#      commit  => $commit,
+      results => [$repository->list_revs(%logargs)],
+	  # This could be added - page      => $page,
+  );
+}
+
+=head2 reflog
+
+Expose the local reflog. This may go away.
+
+=cut
+
+sub reflog : Chained('base') Args(0) {
+  my ( $self, $c ) = @_;
+  my @log = $c->stash->{Repository}->reflog(
+      '--since=yesterday'
+  );
+
+  $c->stash(
+      log    => \@log,
+  );
+}
+
 =head2 atom
 
 Provides an atom feed for a given repository.

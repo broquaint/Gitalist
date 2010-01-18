@@ -131,52 +131,6 @@ sub history : Chained('base') Args(0) {
            );
 }
 
-=head2 reflog
-
-Expose the local reflog. This may go away.
-
-=cut
-
-sub reflog : Chained('base') Args(0) {
-  my ( $self, $c ) = @_;
-  my @log = $c->stash->{Repository}->reflog(
-      '--since=yesterday'
-  );
-
-  $c->stash(
-      log    => \@log,
-  );
-}
-
-=head2 search
-
-The action for the search form.
-
-=cut
-
-sub search : Chained('base') Args(0) {
-  my($self, $c) = @_;
-  my $repository = $c->stash->{Repository};
-  my $commit  = $self->_get_object($c);
-  # Lifted from /shortlog.
-  my %logargs = (
-    sha1   => $commit->sha1,
-    count  => Gitalist->config->{paging}{log},
-    ($c->req->param('f') ? (file => $c->req->param('f')) : ()),
-    search => {
-      type   => $c->req->param('type'),
-      text   => $c->req->param('text'),
-      regexp => $c->req->param('regexp') || 0,
-    },
-  );
-
-  $c->stash(
-      commit  => $commit,
-      results => [$repository->list_revs(%logargs)],
-	  # This could be added - page      => $page,
-  );
-}
-
 =head2 search_help
 
 Provides some help for the search form.
@@ -206,34 +160,6 @@ sub opml : Chained('base') Args(0) {
   $c->response->body($opml->as_string);
   $c->response->content_type('application/rss');
   $c->response->status(200);
-}
-
-=head2 patch
-
-A raw patch for a given commit.
-
-=cut
-
-sub patch : Chained('base') Args(0) {
-    my ($self, $c) = @_;
-    $c->detach('patches', [1]);
-}
-
-=head2 patches
-
-The patcheset for a given commit ???
-
-=cut
-
-sub patches : Chained('base') Args(0) {
-    my ($self, $c, $count) = @_;
-    $count ||= Gitalist->config->{patches}{max};
-    my $commit = $self->_get_object($c);
-    my $parent = $c->req->param('hp') || undef;
-    my $patch = $commit->get_patch( $parent, $count );
-    $c->response->body($patch);
-    $c->response->content_type('text/plain');
-    $c->response->status(200);
 }
 
 sub base : Chained('/root') PathPart('') CaptureArgs(0) {
