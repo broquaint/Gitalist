@@ -20,7 +20,7 @@ sub opml : Chained('/base') Args(0) {
     for my $repos ( $c->model()->repositories->flatten ) {
         $opml->insert_outline(
             text   => $repos->name. ' - '. $repos->description,
-            xmlUrl => $c->uri_for_action('/repository/rss', [$repos->name]),
+            xmlUrl => $c->uri_for_action('/repository/rss', [$repos->name])->as_string,
         );
     }
 

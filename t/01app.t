@@ -12,16 +12,17 @@ BEGIN {
 
 ok( request('/')->is_success, 'Request should succeed' );
 
-for my $p (qw/ repo1 nodescription /) {
-    my $path = '/summary?p=' . $p;
+for my $p (qw/ repo1 nodescription bare.git opml /) {
+    my $path = '/' . $p;
     ok( request($path)->is_success, "$path should succeed");
 }
 
-my $response = request('/summary?p=DoesNotExist');
+my $response = request('/DoesNotExist');
 is $response->code, 404, 'invalid repository 404s';
 like $response->content, qr/Page not found/, 'invalid repository handled correctly';
 
-is request('/summary?p=../../../')->code, 404, 'directory traversal failed';
+is request('/../../../')->code, 404, 'directory traversal failed';
+is request('/..%2F..%2F../')->code, 404, 'directory traversal failed';
 
 {
   # URI tests for repo1
