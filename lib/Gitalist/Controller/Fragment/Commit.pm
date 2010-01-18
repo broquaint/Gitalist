@@ -55,7 +55,6 @@ after blame => sub {
 
     my $repository = $c->stash->{Repository};
     my $filename = join('/', @fn);
-
                                                       # WTF?
     my $blame = $c->stash->{Commit}->blame($filename, $c->stash->{Commit}->sha1);
     $c->stash(
@@ -65,6 +64,32 @@ after blame => sub {
         # XXX Hack hack hack, see View::SyntaxHighlight
         language => ($filename =~ /\.p[lm]$/i ? 'Perl' : ''),
         blob     => join("\n", map $_->{line}, @$blame),
+    );
+
+    $c->forward('View::SyntaxHighlight')
+        unless $c->stash->{no_wrapper};
+};
+
+=head2 blob
+
+The blob action i.e the contents of a file.
+
+=cut
+
+after blob => sub {
+    my ( $self, $c, @fn ) = @_;
+
+    my $filename = join('/', @fn);
+    my $repository = $c->stash->{Repository};
+    my $h  =
+          $repository->hash_by_path($c->stash->{Commit}->sha1, $filename)
+          || die "No file or sha1 provided.";
+     my $blob = $repository->get_object($h);
+    $c->stash(
+        blob     => $blob->content,
+        filename => $filename,
+        # XXX Hack hack hack, see View::SyntaxHighlight
+        language => ($filename =~ /\.p[lm]$/i ? 'Perl' : ''),
     );
 
     $c->forward('View::SyntaxHighlight')

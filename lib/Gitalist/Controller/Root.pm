@@ -73,27 +73,7 @@ sub _blob_objs {
   return $blob, $repository->get_object($hb), $filename;
 }
 
-=head2 blob
 
-The blob action i.e the contents of a file.
-
-=cut
-
-sub blob : Chained('base') Args(0) {
-  my ( $self, $c ) = @_;
-
-  my($blob, $head, $filename) = $self->_blob_objs($c);
-  $c->stash(
-    blob     => $blob->content,
-    head     => $head,
-    filename => $filename,
-    # XXX Hack hack hack, see View::SyntaxHighlight
-    language => ($filename =~ /\.p[lm]$/i ? 'Perl' : ''),
-  );
-
-  $c->forward('View::SyntaxHighlight')
-    unless $c->stash->{no_wrapper};
-}
 
 =head2 blob_plain
 
