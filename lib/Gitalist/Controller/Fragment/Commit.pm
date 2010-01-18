@@ -74,14 +74,7 @@ The blob action i.e the contents of a file.
 
 after blob => sub {
     my ( $self, $c ) = @_;
-
-    my $repository = $c->stash->{Repository};
-    my $h  =
-          $repository->hash_by_path($c->stash->{Commit}->sha1, $c->stash->{filename})
-          || die "No file or sha1 provided.";
-     my $blob = $repository->get_object($h);
     $c->stash(
-        blob     => $blob->content,
         # XXX Hack hack hack, see View::SyntaxHighlight
         language => ($c->stash->{filename} =~ /\.p[lm]$/i ? 'Perl' : ''),
     );

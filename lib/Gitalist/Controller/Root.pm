@@ -2,10 +2,7 @@ package Gitalist::Controller::Root;
 
 use Moose;
 use Moose::Autobox;
-use Sys::Hostname ();
-use XML::Atom::Feed;
-use XML::Atom::Entry;
-use XML::RSS;
+use Sys::Hostname qw/hostname/;
 use XML::OPML::SimpleGen;
 
 use Gitalist::Utils qw/ age_string /;
@@ -71,23 +68,6 @@ sub _blob_objs {
   ) if $blob->type ne 'blob';
 
   return $blob, $repository->get_object($hb), $filename;
-}
-
-
-
-=head2 blob_plain
-
-The plain text version of blob, where file is rendered as is.
-
-=cut
-
-sub blob_plain : Chained('base') Args(0) {
-  my($self, $c) = @_;
-
-  my($blob) = $self->_blob_objs($c);
-  $c->response->content_type('text/plain; charset=utf-8');
-  $c->response->body($blob->content);
-  $c->response->status(200);
 }
 
 =head2 blobdiff_plain
@@ -203,95 +183,14 @@ Provides some help for the search form.
 
 =cut
 
-sub search_help : Chained('base') Args(0) {
-    my ($self, $c) = @_;
-    $c->stash(template => 'search_help.tt2');
-}
-
-=head2 atom
-
-Provides an atom feed for a given repository.
-
-=cut
-
-sub atom : Chained('base') Args(0) {
-  my($self, $c) = @_;
-
-  my $feed = XML::Atom::Feed->new;
-
-  my $host = lc Sys::Hostname::hostname();
-  $feed->title($host . ' - ' . Gitalist->config->{name});
-  $feed->updated(~~DateTime->now);
-
-  my $repository = $c->stash->{Repository};
-  my %logargs = (
-      sha1   => $repository->head_hash,
-      count  => Gitalist->config->{paging}{log} || 25,
-      ($c->req->param('f') ? (file => $c->req->param('f')) : ())
-  );
-
-  my $mk_title = $c->stash->{short_cmt};
-  for my $commit ($repository->list_revs(%logargs)) {
-    my $entry = XML::Atom::Entry->new;
-    $entry->title( $mk_title->($commit->comment) );
-    $entry->id($c->uri_for('commit', {h=>$commit->sha1}));
-    # XXX Needs work ...
-    $entry->content($commit->comment);
-    $feed->add_entry($entry);
-  }
-
-  $c->response->body($feed->as_xml);
-  $c->response->content_type('application/atom+xml');
-  $c->response->status(200);
-}
-
-=head2 rss
-
-Provides an RSS feed for a given repository.
-
-=cut
-
-sub rss : Chained('base') Args(0) {
-  my ($self, $c) = @_;
-
-  my $repository = $c->stash->{Repository};
-
-  my $rss = XML::RSS->new(version => '2.0');
-  $rss->channel(
-    title          => lc(Sys::Hostname::hostname()) . ' - ' . Gitalist->config->{name},
-    link           => $c->uri_for('summary', {p=>$repository->name}),
-    language       => 'en',
-    description    => $repository->description,
-    pubDate        => DateTime->now,
-    lastBuildDate  => DateTime->now,
-  );
-
-  my %logargs = (
-      sha1   => $repository->head_hash,
-      count  => Gitalist->config->{paging}{log} || 25,
-      ($c->req->param('f') ? (file => $c->req->param('f')) : ())
-  );
-  my $mk_title = $c->stash->{short_cmt};
-  for my $commit ($repository->list_revs(%logargs)) {
-    # XXX Needs work ....
-    $rss->add_item(
-        title       => $mk_title->($commit->comment),
-        permaLink   => $c->uri_for(commit => {h=>$commit->sha1}),
-        description => $commit->comment,
-    );
-  }
-
-  $c->response->body($rss->as_string);
-  $c->response->content_type('application/rss+xml');
-  $c->response->status(200);
-}
+sub search_help : Chained('base') Args(0) {}
 
 sub opml : Chained('base') Args(0) {
   my($self, $c) = @_;
 
   my $opml = XML::OPML::SimpleGen->new();
 
-  $opml->head(title => lc(Sys::Hostname::hostname()) . ' - ' . Gitalist->config->{name});
+  $opml->head(title => lc(hostname()) . ' - ' . Gitalist->config->{name});
 
   my @list = @{ $c->model()->repositories };
   die 'No repositories found in '. $c->model->repo_dir
@@ -336,28 +235,6 @@ sub patches : Chained('base') Args(0) {
     $c->response->content_type('text/plain');
     $c->response->status(200);
 }
-
-=head2 snapshot
-
-Provides a snapshot of a given commit.
-
-=cut
-
-sub snapshot : Chained('base') Args(0) {
-    my ($self, $c) = @_;
-    my $format = $c->req->param('sf') || 'tgz';
-    die unless $format;
-    my $sha1 = $c->req->param('h') || $self->_get_object($c)->sha1;
-    my @snap = $c->stash->{Repository}->snapshot(
-        sha1 => $sha1,
-        format => $format
-    );
-    $c->response->status(200);
-    $c->response->headers->header( 'Content-Disposition' =>
-                                       "attachment; filename=$snap[0]");
-    $c->response->body($snap[1]);
-}
-
 
 sub base : Chained('/root') PathPart('') CaptureArgs(0) {
   my($self, $c) = @_;

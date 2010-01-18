@@ -28,9 +28,15 @@ sub commit : Chained('find') PathPart('') Args(0) {}
 
 sub tree : Chained('find') Does('FilenameArgs') Args() {}
 
-sub blob_plain : Chained('find') Does('FilenameArgs') Args() {}
+sub find_blob : Chained('find') PathPart('') CaptureArgs(0) {
+    my ($self, $c) = @_;
+    # FIXME - Eugh!
+    my $h  = $c->stash->{Repository}->hash_by_path($c->stash->{Commit}->sha1, $c->stash->{filename})
+           || die "No file or sha1 provided.";
+    $c->stash(blob => $c->stash->{Repository}->get_object($h)->content);
+}
 
-sub blob : Chained('find') Does('FilenameArgs') Args() {}
+sub blob : Chained('find_blob') Does('FilenameArgs') Args() {}
 
 sub blame : Chained('find') Does('FilenameArgs') Args() {}
 
