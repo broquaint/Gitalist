@@ -1,7 +1,5 @@
 [% INCLUDE 'nav/actions.tt2' object = commit %]
 <div class='content'>
-  [%# INCLUDE '_log_pager.tt2' %]
-
   [%# XXX Nabbed the HTML below from gitweb's log action. %]
   [% FOREACH result IN results %]
   <div class="header">
@@ -30,6 +28,4 @@
    %]
   </div>
   [% END %]
-
-  [%# INCLUDE '_log_pager.tt2' %]
 </div>
