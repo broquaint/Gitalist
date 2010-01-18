@@ -41,7 +41,7 @@ around uri_for => sub {
        delete $params->{p} unless defined $params->{p} && length $params->{p};
   }
   my $uri = $c->$orig(@_, $params);
-  $$uri =~ tr[&][;];
+  $$uri =~ tr[&][;] if defined $uri;
   return $uri;
 };
 
