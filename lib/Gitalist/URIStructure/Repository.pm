@@ -11,11 +11,15 @@ after 'base' => sub {
 };
 
 sub find : Chained('base') PathPart('') CaptureArgs(1) {
-    my ($self, $c, $repository) = @_;
+    my ($self, $c, $repos_name) = @_;
     # XXX FIXME - This should be in the repository fragment controller, and the repository
     #             controller should just check has_repository
     try {
-        $c->stash(Repository => $c->model()->get_repository($repository));
+        my $repos = $c->model()->get_repository($repos_name);
+        $c->stash(
+            Repository => $repos,
+            HEAD => $repos->head_hash,
+        );
     }
     catch {
         $c->detach('/error_404');

@@ -2,8 +2,6 @@ package Gitalist::Controller::Root;
 
 use Moose;
 use Moose::Autobox;
-use Sys::Hostname qw/hostname/;
-use XML::OPML::SimpleGen;
 
 use Gitalist::Utils qw/ age_string /;
 
@@ -11,49 +9,13 @@ use namespace::autoclean;
 
 BEGIN { extends 'Gitalist::Controller' }
 
-__PACKAGE__->config->{namespace} = '';
+__PACKAGE__->config(namespace => '');
 
 sub root : Chained('/') PathPart('') CaptureArgs(0) {}
 
 sub index : Chained('base') PathPart('') Args(0) {
-  my ( $self, $c ) = @_;
-
-  my $search = $c->req->param('s') || '';
-
-  $c->stash(
-    search_text => $search,
-  );
-}
-
-=head2 search_help
-
-Provides some help for the search form.
-
-=cut
-
-sub search_help : Chained('base') Args(0) {}
-
-sub opml : Chained('base') Args(0) {
-  my($self, $c) = @_;
-
-  my $opml = XML::OPML::SimpleGen->new();
-
-  $opml->head(title => lc(hostname()) . ' - ' . Gitalist->config->{name});
-
-  my @list = @{ $c->model()->repositories };
-  die 'No repositories found in '. $c->model->repo_dir
-    unless @list;
-
-  for my $proj ( @list ) {
-    $opml->insert_outline(
-      text   => $proj->name. ' - '. $proj->description,
-      xmlUrl => $c->uri_for(rss => {p => $proj->name}),
-    );
-  }
-
-  $c->response->body($opml->as_string);
-  $c->response->content_type('application/rss');
-  $c->response->status(200);
+    my ( $self, $c ) = @_;
+    $c->stash( search_text => $c->req->param('s') || '' ) # FIXME - XSS?
 }
 
 sub base : Chained('/root') PathPart('') CaptureArgs(0) {
@@ -65,7 +27,6 @@ sub base : Chained('/root') PathPart('') CaptureArgs(0) {
     git_version => $git_version,
     version     => $Gitalist::VERSION,
 
-    # XXX Move these to a plugin!
     time_since => sub {
       return 'never' unless $_[0];
       return age_string(time - $_[0]->epoch);
@@ -82,13 +43,15 @@ sub base : Chained('/root') PathPart('') CaptureArgs(0) {
   );
 }
 
-sub end : ActionClass('RenderView') {
-    my ($self, $c) = @_;
-    # Give repository views the current HEAD.
-    if ($c->stash->{Repository}) {
-        $c->stash->{HEAD} = $c->stash->{Repository}->head_hash;
-    }
-}
+=head2 search_help
+
+Provides some help for the search form.
+
+=cut
+
+sub search_help : Chained('base') Args(0) {}
+
+sub end : ActionClass('RenderView') {}
 
 sub error_404 : Action {
     my ($self, $c) = @_;
@@ -126,15 +89,7 @@ Provides the repository listing.
 
 Attempt to render a view, if needed.
 
-=head2 blame
-
 =head2 error_404
-
-=head2 history
-
-=head2 opml
-
-=head2 repository_index
 
 =head1 AUTHORS
 
