@@ -10,7 +10,7 @@ use namespace::autoclean;
 
 BEGIN { extends 'Gitalist::Controller' }
 
-sub opml : Chained('base') Args(0) {
+sub opml : Chained('/base') Args(0) {
     my ($self, $c) = @_;
 
     my $opml = XML::OPML::SimpleGen->new();
