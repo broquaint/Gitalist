@@ -115,22 +115,6 @@ sub blobdiff : Chained('base') Args(0) {
     unless $c->stash->{no_wrapper};
 }
 
-# For legacy support.
-sub history : Chained('base') Args(0) {
-    my ( $self, $c ) = @_;
-    $self->shortlog($c);
-    my $repository = $c->stash->{Repository};
-    my $file = $repository->get_object(
-        $repository->hash_by_path(
-            $repository->head_hash,
-            $c->stash->{filename}
-        )
-    );
-     $c->stash(
-               filetype => $file->type,
-           );
-}
-
 =head2 search_help
 
 Provides some help for the search form.

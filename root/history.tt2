@@ -1,7 +1,0 @@
-[% INCLUDE 'nav/actions.tt2' object = commit %]
-
-[%
-  INCLUDE '_log_pager.tt2';
-  INCLUDE '_history.tt2';
-  INCLUDE '_log_pager.tt2';
-%]
