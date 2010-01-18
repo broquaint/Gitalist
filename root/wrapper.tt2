@@ -21,7 +21,7 @@
   <link rel="stylesheet" href="[% c.uri_for('/static/css/blueprint/print.css') %]" type="text/css" media="print">
   <!--[if lt IE 8]>
     <link rel="stylesheet" href="[% c.uri_for('/static/css/blueprint/ie.css') %]" type="text/css" media="screen, projection">
-  <![endif]-->  
+  <![endif]-->
   <link rel="stylesheet" type="text/css" href="[% c.uri_for('/static/css/site.css') %]">
   <link rel="shortcut icon" href="[% c.uri_for('/static/git-favicon.png') %]" type="image/png">
 </head>

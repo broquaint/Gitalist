@@ -18,7 +18,7 @@
     title="[% c.config.sitename %] Git repositories list"
     href="[% c.uri_for('repository_index') %]"
     type="text/plain; charset=utf-8"
-  > 
+  >
   <link
     rel="alternate"
     title="[% c.config.sitename %] Git repositories feeds"
