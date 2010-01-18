@@ -3,7 +3,7 @@ package Gitalist::Controller::Fragment;
 use Moose;
 use namespace::autoclean;
 
-BEGIN { extends 'Catalyst::Controller' }
+BEGIN { extends 'Gitalist::Controller' }
 
 sub base : Chained('/base') PathPart('fragment') CaptureArgs(0) {
     my ($self, $c) = @_;

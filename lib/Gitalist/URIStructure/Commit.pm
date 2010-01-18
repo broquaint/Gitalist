@@ -1,5 +1,6 @@
 package Gitalist::URIStructure::Commit;
 use MooseX::MethodAttributes::Role;
+use Moose::Autobox;
 use namespace::autoclean;
 
 requires 'base';
@@ -23,16 +24,20 @@ sub diff_fancy : Chained('diff') PathPart('') Args(0) {}
 
 sub diff_plain : Chained('diff') PathPart('plain') Args(0) {}
 
-sub tree : Chained('find') Args() {}
+sub commit : Chained('find') PathPart('') Args(0) {}
 
-sub commit : Chained('find') PathPart('') {}
+sub tree : Chained('find') Does('FilenameArgs') Args() {}
 
-sub blob : Chained('find') Args() {}
+sub blob_plain : Chained('find') Does('FilenameArgs') Args() {}
 
-sub blame : Chained('find') Args() {}
+sub blob : Chained('find') Does('FilenameArgs') Args() {}
 
-sub history : Chained('find') Args() {}
+sub blame : Chained('find') Does('FilenameArgs') Args() {}
 
-sub raw : Chained('find') Args() {}
+sub history : Chained('find') Does('FilenameArgs') Args() {}
+
+sub raw : Chained('find') Does('FilenameArgs') Args() {}
+
+sub shortlog : Chained('find') Does('FilenameArgs') Args() {}
 
 1;

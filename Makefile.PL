@@ -57,6 +57,7 @@ requires 'Catalyst::Plugin::Unicode::Encoding';
 requires 'Catalyst::Plugin::SubRequest';
 requires 'Catalyst::Action::RenderView';
 requires 'Catalyst::Component::InstancePerContext';
+requires 'Catalyst::Controller::ActionRole';
 requires 'Catalyst::View::Component::SubInclude' => '0.07';
 requires 'Catalyst::View::TT';
 requires 'Try::Tiny';

@@ -2,7 +2,7 @@ package Gitalist::Controller::Fragment::Repository;
 use Moose;
 use namespace::autoclean;
 
-BEGIN { extends 'Catalyst::Controller' }
+BEGIN { extends 'Gitalist::Controller' }
 with 'Gitalist::URIStructure::Repository';
 
 sub base : Chained('/fragment/base') PathPart('') CaptureArgs(0) {}

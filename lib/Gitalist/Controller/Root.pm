@@ -12,7 +12,7 @@ use Gitalist::Utils qw/ age_string /;
 
 use namespace::autoclean;
 
-BEGIN { extends 'Catalyst::Controller' }
+BEGIN { extends 'Gitalist::Controller' }
 
 __PACKAGE__->config->{namespace} = '';
 

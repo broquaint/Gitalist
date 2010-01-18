@@ -3,7 +3,7 @@ package Gitalist::Controller::Commit;
 use Moose;
 use namespace::autoclean;
 
-BEGIN { extends 'Catalyst::Controller' }
+BEGIN { extends 'Gitalist::Controller' }
 with 'Gitalist::URIStructure::Commit';
 
 sub base : Chained('/repository/find') PathPart('') CaptureArgs(0) {}
