@@ -27,4 +27,12 @@ sub tree : Chained('find') Args() {}
 
 sub commit : Chained('find') PathPart('') {}
 
+sub blob : Chained('find') Args() {}
+
+sub blame : Chained('find') Args() {}
+
+sub history : Chained('find') Args() {}
+
+sub raw : Chained('find') Args() {}
+
 1;

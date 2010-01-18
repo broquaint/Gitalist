@@ -1,5 +1,6 @@
 package Gitalist::View::Default;
 use Moose;
+use Moose::Autobox;
 use namespace::autoclean;
 
 extends 'Catalyst::View::TT';
@@ -12,6 +13,13 @@ __PACKAGE__->config(
   WRAPPER            => 'wrapper.tt2',
   subinclude_plugin => 'SubRequest',
 );
+
+use Template::Stash;
+
+# define list method to flatten arrayrefs
+$Template::Stash::LIST_OPS->{ to_path } = sub {
+    return join('%2F', shift->flatten, @_);
+};
 
 __PACKAGE__->meta->make_immutable(inline_constructor => 0);
 

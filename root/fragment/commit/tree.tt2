@@ -1,36 +1,38 @@
-<table class='tree listing'>
- <thead>
+[% BLOCK tree_table_headfoot %]
   <tr>
    <th>mode</th>
    <th>file</th>
    <th>actions</th>
   </tr>
+[% END %]
+<table class='tree listing'>
+ <thead>
+    [% PROCESS tree_table_headfoot %]
  </thead>
  <tfoot>
-  <tr>
-   <td>mode</td>
-   <td>file</td>
-   <td>actions</td>
-  </tr>
+    [% PROCESS tree_table_headfoot %]
  </tfoot>
 
  <tbody>
   [% FOREACH item IN tree_list %]
   <tr>
    <td class='file-mode'>[% item.modestr %]</td>
-   [% theact = item.type == 'tree' ? 'tree' : 'blob' -%]
-   [% fullpath = path ? path _ '/' _ item.file : item.file %]
+   [%-
+        action_type = item.type == 'tree' ? 'tree' : 'blob';
+        action_for_link = item.type == 'tree' ? c.action : c.controller.action_for('blob');
+        blob_or_tree_link = c.uri_for(action_for_link, c.req.captures, c.req.args.to_path(item.file))
+   -%]
    <td class='file-name'>
-    <a href="[% c.uri_for(theact, {h=item.sha1, hb=commit.sha1, f=fullpath}) %]">[% item.file %]</a>
+    <a href="[% blob_or_tree_link %]">[% item.file %]</a>
    </td>
    <td class='action-list'>
-     <a href="[% c.uri_for(theact, {h=item.sha1, hb=commit.sha1, f=fullpath}) %]">[% theact %]</a>
+     <a href="[% blob_or_tree_link %]">[% theact %]</a>
 	  [% IF item.type == 'blob' %]
-	  <a href="[% c.uri_for('blame', {h=commit.sha1, hb=commit.sha1, f=fullpath}) %]">blame</a>
+	  <a href="[% c.uri_for(c.controller.action_for('blame'), c.req.captures, c.req.args.to_path(item.file)) %]">blame</a>
 	  [% END %]
-     <a href="[% c.uri_for('history', {h=item.sha1, hb=commit.sha1, f=fullpath}) %]">history</a>
+     <a href="[% c.uri_for(c.controller.action_for('history'), c.req.captures, c.req.args.to_path(item.file)) %]">history</a>
      [% IF item.type == 'blob' %]
-     <a href="[% c.uri_for('raw', {hb=commit.sha1, f=fullpath}) %]">raw</a>
+     <a href="[% c.uri_for(c.controller.action_for('raw'), c.req.captures, c.req.args.to_path(item.file)) %]">raw</a>
      [% END %]
    </td>
   </tr>
