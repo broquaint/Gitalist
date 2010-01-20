@@ -7,12 +7,12 @@
   <!-- [% USE dumper; dumper.dump(commit.parents) %] -->
   <dl class='commit-info'>
    <dt>author</dt>
-    <dd>[% Commit.author.name | html %] &lt;[% Commit.author.email %]&gt;<br/>
-	[% Commit.authored_time %]</dd>
-   <dt>committer</dt>
-    <dd>[% Commit.committer.name %] &lt;[% Commit.committer.email %]&gt;<br/>
-	[% Commit.committed_time %]</dd>
-   <dt>commit</dt>
+    <dd><img style="float: left; padding-right: 10px" src="[% uri_for_gravatar(Commit.committer.email, 40) %]">[% Commit.author.name | html %] &lt;[% Commit.author.email %]&gt;<br/>
+	[% time_since(Commit.authored_time) %]</dd>
+   <dt style="clear: left">committer</dt>
+    <dd><img style="float: left; padding-right: 10px" src="[% uri_for_gravatar(Commit.committer.email, 40) %]">[% Commit.committer.name %] &lt;[% Commit.committer.email %]&gt;<br/>
+	[% time_since(Commit.committed_time) %]</dd>
+   <dt style="clear: left">commit</dt>
     <dd>[% Commit.sha1 %]</dd>
    <dt>tree</dt>
     <dd>[% Commit.tree_sha1 %]

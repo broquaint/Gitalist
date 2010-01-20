@@ -5,8 +5,8 @@
   [% short_cmt(Commit.comment) | html %]
   </div>
 
-  <div class='author'>
-    [% Commit.author.name | html %] [[% time_since(Commit.authored_time) %]]
+  <div style="padding-bottom: 20px" class='author'>
+    <img style="float: left; padding-right: 10px" src="[% uri_for_gravatar(Commit.committer.email, 40) %]">[% Commit.author.name | html %] <br />[% time_since(Commit.authored_time) %]
   </div>
 
 

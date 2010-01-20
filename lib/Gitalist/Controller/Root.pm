@@ -2,7 +2,7 @@ package Gitalist::Controller::Root;
 
 use Moose;
 use Moose::Autobox;
-
+use Digest::MD5 qw(md5_hex);
 use Gitalist::Utils qw/ age_string /;
 
 use namespace::autoclean;
@@ -39,6 +39,13 @@ sub base : Chained('/root') PathPart('') CaptureArgs(0) {
     },
     abridged_description => sub {
         join(' ', grep { defined } (split / /, shift)[0..10]);
+    },
+    uri_for_gravatar => sub { # FIXME - Cache these?
+        my $email = shift;
+        my $size = shift;
+        my $uri = 'http://www.gravatar.com/avatar/' . md5_hex($email);
+        $uri .= "?s=$size" if $size;
+        return $uri;
     },
   );
 }
