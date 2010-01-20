@@ -28,7 +28,7 @@ sub commit : Chained('find') PathPart('') Args(0) {}
 
 sub tree : Chained('find') Does('FilenameArgs') Args() {}
 
-sub find_blob : Chained('find') PathPart('') CaptureArgs(0) {
+sub find_blob : Action {
     my ($self, $c) = @_;
     # FIXME - Eugh!
     my $h  = $c->stash->{Repository}->hash_by_path($c->stash->{Commit}->sha1, $c->stash->{filename})
@@ -36,13 +36,14 @@ sub find_blob : Chained('find') PathPart('') CaptureArgs(0) {
     $c->stash(blob => $c->stash->{Repository}->get_object($h)->content);
 }
 
-sub blob : Chained('find_blob') Does('FilenameArgs') Args() {}
+sub blob : Chained('find') Does('FilenameArgs') Args() {
+    my ($self, $c) = @_;
+    $c->forward('find_blob');
+}
 
 sub blame : Chained('find') Does('FilenameArgs') Args() {}
 
 sub history : Chained('find') Does('FilenameArgs') Args() {}
-
-sub raw : Chained('find') Does('FilenameArgs') Args() {}
 
 sub shortlog : Chained('find') Does('FilenameArgs') Args() {}
 

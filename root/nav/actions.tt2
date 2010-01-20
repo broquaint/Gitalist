@@ -12,7 +12,7 @@
     [% IF filename %]
     &sect;
     <a href="[% c.uri_for_action('/commit/blob', [c.req.captures.0, Commit.sha1], filename) %]">blob</a> &bull;
-    <a href="[% c.uri_for_action('/commit/blob_plain', [c.req.captures.0, Commit.sha1], filename) %]">raw</a> &bull;
+    <a href="[% c.uri_for_action('/commit/raw', [c.req.captures.0, Commit.sha1], filename) %]">raw</a> &bull;
     <a href="[% c.uri_for_action('/commit/blame', [c.req.captures.0, Commit.sha1], filename)  %]">blame</a> &bull;
     <a href="[% c.uri_for_action('/commit/shortlog', [c.req.captures.0, Commit.sha1], filename)  %]">history</a> &bull;
     <a href="[% c.uri_for(c.controller.action_for('commit'), [c.req.captures.0, Repository.head_hash]) %]">HEAD</a>

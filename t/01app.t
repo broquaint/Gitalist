@@ -33,13 +33,14 @@ like $response->content, qr/Page not found/, 'invalid repository handled correct
   test('36c6c6708b8360d7023e8a1649c45bcf9b3bd818/patch');
   test('36c6c6708b8360d7023e8a1649c45bcf9b3bd818/patches/1');
   test('36c6c6708b8360d7023e8a1649c45bcf9b3bd818/patches/2');
-  
+  test('36c6c6708b8360d7023e8a1649c45bcf9b3bd818/history/dir1');
+  test('36c6c6708b8360d7023e8a1649c45bcf9b3bd818/blame/file1');
+  test('36c6c6708b8360d7023e8a1649c45bcf9b3bd818/raw/file1');
+  test('36c6c6708b8360d7023e8a1649c45bcf9b3bd818/blob/file1');
+
   TODO: {
       local $TODO = "FIXME";
       test('search', 'type=commit&text=added');
-
-
-      test('blob', 'f=dir1/file2;hb=36c6c6708b8360d7023e8a1649c45bcf9b3bd818');
 
       # FIXME - What's the difference here?
       #test('patch', 'h=3f7567c7bdf7e7ebf410926493b92d398333116e');

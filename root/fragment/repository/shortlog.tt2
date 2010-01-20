@@ -32,7 +32,7 @@
    </td>
    <td class='action-list'>
      <a href="[% c.uri_for_action("/commit/commit", [Repository.name, line.sha1]) %]">commit</a>
-     <a href="[% c.uri_for_action("/commit/diff", [Repository.name, line.sha1]) %]">commitdiff</a>
+     <a href="[% c.uri_for_action("/commit/diff_fancy", [Repository.name, line.sha1]) %]">commitdiff</a>
      <a href="[% c.uri_for_action("/commit/tree", [Repository.name, line.sha1]) %]">tree</a>
    </td>
   </tr>

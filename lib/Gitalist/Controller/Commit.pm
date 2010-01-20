@@ -8,8 +8,9 @@ with 'Gitalist::URIStructure::Commit';
 
 sub base : Chained('/repository/find') PathPart('') CaptureArgs(0) {}
 
-sub blob_plain : Chained('find_blob') Does('FilenameArgs') Args() {
+sub raw : Chained('find') Does('FilenameArgs') Args() {
     my ($self, $c) = @_;
+    $c->forward('find_blob');
 
     $c->response->content_type('text/plain; charset=utf-8');
     $c->response->body(delete $c->stash->{blob});

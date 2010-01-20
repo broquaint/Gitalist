@@ -19,8 +19,8 @@
    <td class='file-mode'>[% item.modestr %]</td>
    [%-
         action_type = item.type == 'tree' ? 'tree' : 'blob';
-        action_for_link = item.type == 'tree' ? c.action : c.controller.action_for('blob');
-        blob_or_tree_link = c.uri_for(action_for_link, c.req.captures, c.req.args.to_path(item.file))
+        action_for_link = item.type == 'tree' ? '/commit/tree' : '/commit/blob';
+        blob_or_tree_link = c.uri_for_action(action_for_link, c.req.captures, c.req.args.to_path(item.file))
    -%]
    <td class='file-name'>
     <a href="[% blob_or_tree_link %]">[% item.file %]</a>
@@ -28,6 +28,7 @@
    <td class='action-list'>
      <a href="[% blob_or_tree_link %]">[% theact %]</a>
 	  [% IF item.type == 'blob' %]
+	  <a href="[% c.uri_for_action('/commit/blob', c.req.captures, c.req.args.to_path(item.file)) %]">blob</a>
 	  <a href="[% c.uri_for_action('/commit/blame', c.req.captures, c.req.args.to_path(item.file)) %]">blame</a>
 	  [% END %]
      <a href="[% c.uri_for_action('/commit/history', c.req.captures, c.req.args.to_path(item.file)) %]">history</a>

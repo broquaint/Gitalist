@@ -32,9 +32,9 @@
     %]
    </td>
    <td class='action-list'>
-     [% IF !line.is_new %]<a href="[% c.uri_for("blobdiff", {hp=commit.parent_sha1, h=commit.sha1, f=line.file}) %]">diff</a>[% END %]
-     <a href="[% c.uri_for("blob", {h=line.sha1, hb=commit.sha1, f=line.file}) %]">blob</a>
-     [% IF !line.is_new %]<a href="[% c.uri_for("shortlog", {hb=commit.sha1, f=line.file}) %]">history</a>[% END %]
+     [% IF !line.is_new %]<a href="[% c.uri_for_action("/commit/diff", [Repository.name, Commit.sha1], line.file.to_path) %]">diff</a>[% END %]
+     <a href="[% c.uri_for_action("/commit/blob", [Repository.name, Commit.sha1], line.file.to_path) %]">blob</a>
+     [% IF !line.is_new %]<a href="[% c.uri_for("/commit/shortlog", [Repository.name, Commit.sha1], line.file.to_path) %]">history</a>[% END %]
    </td>
   </tr>
   [% END %]
