@@ -25,6 +25,13 @@ __PACKAGE__->config(
 
 __PACKAGE__->setup();
 
+after prepare_path => sub {
+    my ($ctx) = @_;
+    if ($ctx->req->param('a')) {
+        $ctx->request->uri->path('/legacy' . $ctx->request->uri->path);
+    }
+};
+
 around uri_for => sub {
   my ($orig, $c) = (shift, shift);
   my $uri = $c->$orig(@_);
