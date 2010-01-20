@@ -17,7 +17,7 @@ The action for the search form.
 
 =cut
 
-sub search : Chained('base') Args(0) {
+sub search : Chained('find') Args(0) {
   my($self, $c) = @_;
   my $repository = $c->stash->{Repository};
   # Lifted from /shortlog.
@@ -45,7 +45,7 @@ Expose the local reflog. This may go away.
 
 =cut
 
-sub reflog : Chained('base') Args(0) {
+sub reflog : Chained('find') Args(0) {
   my ( $self, $c ) = @_;
   my @log = $c->stash->{Repository}->reflog(
       '--since=yesterday'
