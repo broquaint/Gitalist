@@ -33,7 +33,7 @@
 
   [%
     # In the case of merge commits there will be no diff tree.
-    IF diff_tree.size > 0;
+    IF diff_tree && diff_tree.size > 0;
       INCLUDE '_diff_tree.tt2';
     END;
   %]
