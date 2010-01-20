@@ -68,7 +68,8 @@ class Gitalist::Git::Object {
     }
 
     method _build_modestr {
-        return _mode_str($self->mode);
+	# XXX The POSIX constants make win32 sad :(
+        return eval { _mode_str($self->mode) } || '?rwxrwxrwx';
     }
 
     # via gitweb.pm circa line 1305
