@@ -10,7 +10,16 @@ class Gitalist::Git::Repository with Gitalist::Git::HasUtils {
     use List::MoreUtils qw/any zip/;
     use DateTime;
     use Encode qw/decode/;
-#    use I18N::Langinfo qw/langinfo CODESET/;
+
+    use if $^O ne 'MSWin32', 'I18N::Langinfo', => qw/langinfo CODESET/;
+    BEGIN {
+        no strict 'subs';
+        *__owner = defined &langinfo
+            ? sub { map { decode(langinfo(CODESET), $_) } (getpwuid $_[0]->path->stat->uid)[6,0] }
+            : sub { return qw/OwnEr GroUp/ }
+        ;
+    }
+
     use Gitalist::Git::Object::Blob;
     use Gitalist::Git::Object::Tree;
     use Gitalist::Git::Object::Commit;
@@ -241,13 +250,7 @@ class Gitalist::Git::Repository with Gitalist::Git::HasUtils {
     }
 
     method _build_owner {
-	# XXX No I18N::Langinfo & getpwuid make win32 sad :(
-        # my ($gecos, $name) = map { decode(langinfo(CODESET), $_) } (getpwuid $self->path->stat->uid)[6,0];
-	my ($gecos, $name) = do {
-	    local $@;
-	    my($g,$n) = eval { (getpwuid $self->path->stat->uid)[6,0] };
-	    !$@ ? ($g,$n) : qw(OwenEr GroUp);
-	};
+        my ($gecos, $name) = $self->__owner;
         $gecos =~ s/,+$//;
         return length($gecos) ? $gecos : $name;
     }
