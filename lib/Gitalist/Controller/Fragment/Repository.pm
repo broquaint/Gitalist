@@ -7,7 +7,7 @@ with 'Gitalist::URIStructure::Repository';
 
 sub base : Chained('/fragment/base') PathPart('') CaptureArgs(0) {}
 
-after shortlog => sub {
+after log => sub {
     my ($self, $c) = @_;
     my $repository  = $c->stash->{Repository};
 #    my $commit   =  $self->_get_object($c, $c->req->param('hb'));

@@ -23,12 +23,14 @@ sub find : Chained('base') PathPart('') CaptureArgs(1) {
 
 sub summary : Chained('find') PathPart('') Args(0) {}
 
-sub shortlog : Chained('find') Args(0) {}
-
 sub heads : Chained('find') Args(0) {}
 
-sub log : Chained('find') Args(0) {}
-
 sub tags : Chained('find') Args(0) {}
+
+sub log : Chained('find') PathPart('') CaptureArgs(0) {}
+
+sub shortlog : Chained('log') Args(0) {}
+
+sub longlog : Chained('log') PathPart('log') Args(0) {}
 
 1;

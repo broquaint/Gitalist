@@ -2,7 +2,7 @@
 <div class='content'>
   [% INCLUDE '_log_pager.tt2';
 
-  subinclude('/fragment/repository/log', c.req.captures);
+  subinclude('/fragment/repository/longlog', c.req.captures);
 
   INCLUDE '_log_pager.tt2'; %]
 </div>
