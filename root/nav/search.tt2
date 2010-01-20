@@ -1,9 +1,5 @@
 <div id="page-search">
-  <form method="get" action="[% c.uri_for('search') %]" enctype="application/x-www-form-urlencoded">
-  <input name="p" type="hidden" value="[% Repository.name %]">
-  <input name="a" type="hidden" value="search">
-  <input name="h" type="hidden" value="[% commit.sha1 %]">
-  <input name="f" type="hidden" value="[% c.req.param('f') %]">
+  <form method="get" action="[% c.uri_for_action('/repository/search', [Repository.name]) %]" enctype="application/x-www-form-urlencoded">
   <select name="type">
       <option value="commit">commit</option>
       <option value="author">author</option>
@@ -12,7 +8,7 @@
       <option value="grep">grep</option>
       <option value="pickaxe">pickaxe</option>
       -->
-  </select><sup><a href="[% c.uri_for('search_help') %]">?</a></sup> search:
+  </select><sup><a href="[% c.uri_for_action('/search_help') %]">?</a></sup> search:
   <input type="text" name="text" value="[% c.req.param('s') %]">
   <span title="Extended regular expression"><label><input type="checkbox" name="regexp" value="1">re</label></span>
   </form>

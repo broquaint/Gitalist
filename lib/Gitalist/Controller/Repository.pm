@@ -22,7 +22,7 @@ sub search : Chained('find') Args(0) {
   my $repository = $c->stash->{Repository};
   # Lifted from /shortlog.
   my %logargs = (
-#    sha1   => $commit->sha1,
+    sha1   => $repository->head_hash,
 #    count  => Gitalist->config->{paging}{log},
 #    ($c->req->param('f') ? (file => $c->req->param('f')) : ()),
     search => {
