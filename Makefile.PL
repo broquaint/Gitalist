@@ -54,7 +54,7 @@ requires 'Catalyst::Plugin::ConfigLoader';
 requires 'Catalyst::Plugin::StackTrace';
 requires 'Catalyst::Plugin::Static::Simple';
 requires 'Catalyst::Plugin::Unicode::Encoding';
-requires 'Catalyst::Plugin::SubRequest';
+requires 'Catalyst::Plugin::SubRequest' => '0.15';
 requires 'Catalyst::Action::RenderView';
 requires 'Catalyst::Component::InstancePerContext';
 requires 'Catalyst::Controller::ActionRole';
