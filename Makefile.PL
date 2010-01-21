@@ -107,6 +107,14 @@ if ($Module::Install::AUTHOR) {
         and die $!;
 }
 
+if ($ENV{GITALIST_RELEASE_TESTING}) {
+    author_tests 't/author';
+    author_requires 'Test::NoTabs';
+    author_requires 'Test::Pod' => '1.14';
+    author_requires 'Test::Pod::Coverage' => '1.04';
+    author_requires 'Test::WWW::Mechanize::Catalyst' => '0.51';
+}
+
 install_script glob('script/*.pl');
 auto_install;
 

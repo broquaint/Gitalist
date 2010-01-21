@@ -3,6 +3,7 @@ use strict;
 use warnings;
 use Test::More;
 use FindBin qw/$Bin/;
+use lib "$Bin/lib";
 
 BEGIN {
     $ENV{GITALIST_CONFIG} = $Bin;
@@ -11,6 +12,7 @@ BEGIN {
     use warnings;
     use_ok 'Catalyst::Test', 'Gitalist';
 }
+use TestGitalist;
 
 ok( request('/')->is_success, 'Request should succeed' );
 
@@ -249,18 +251,3 @@ test('/', 'a=blame;f=file1;hb=3f7567c7bdf7e7ebf410926493b92d398333116e');
 
 done_testing;
 
-sub test_uri {
-    my ($p, $uri, $qs) = @_;
-    $qs ||= '';
-    my $request = "$uri?p=repo1;$qs";
-    my $response = request($request);
-    ok($response->is_success, "ok $request");
-}
-
-sub curry_test_uri {
-    my $p = shift;
-    sub {
-        my ($uri, $qs) = @_;
-        test_uri($p, $uri, $qs);
-    };
-};

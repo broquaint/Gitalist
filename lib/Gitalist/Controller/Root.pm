@@ -34,7 +34,7 @@ sub base : Chained('/root') PathPart('') CaptureArgs(0) {
     short_cmt => sub {
       my $cmt = shift;
       my($line) = split /\n/, $cmt;
-      $line =~ s/^(.{70,80}\b).*/$1 \x{2026}/;
+      $line =~ s/^(.{70,80}\b).*/$1 \x{2026}/ if defined $line;
       return $line;
     },
     abridged_description => sub {

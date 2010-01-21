@@ -1,9 +1,9 @@
 MOO[%
   # In the case of merge commits there will be no diff tree.
-  IF diff_tree.size > 0;
+  IF (diff_tree.size||0) > 0;
     INCLUDE '_diff_tree.tt2';
   END;
-  IF diff.size > 0;
+  IF (diff.size||0) > 0;
     INCLUDE '_diff.tt2';
   ELSE
   %]

@@ -3,12 +3,14 @@ use strict;
 use warnings;
 use Test::More;
 use FindBin qw/$Bin/;
+use lib "$Bin/lib";
 
 BEGIN {
     $ENV{GITALIST_CONFIG} = $Bin;
     $ENV{GITALIST_REPO_DIR} = '';
     use_ok 'Catalyst::Test', 'Gitalist';
 }
+use TestGitalist;
 
 for my $p ('', qw/ repo1 nodescription bare.git opml /) {
     my $path = '/' . $p;
@@ -51,22 +53,3 @@ like $response->content, qr/Page not found/, 'invalid repository handled correct
 }
 
 done_testing;
-
-sub test_uri {
-    my ($uri, $qs) = @_;
-    $qs ||= '';
-    my $request = "/$uri"; 
-    $request .= "?$qs" if defined $qs;
-    my $response = request($request);
-    ok($response->is_success, "ok $uri - $qs");
-    return $response;
-}
-
-sub curry_test_uri {
-    my $prefix = shift;
-    my $to_curry = shift || \&test_uri;
-    sub {
-        my $uri = shift;
-        $to_curry->("$prefix/$uri", @_);
-    };
-}

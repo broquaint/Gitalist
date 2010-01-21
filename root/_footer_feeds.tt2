@@ -17,16 +17,16 @@
     <a
       class="rss_logo"
       title="[% feed_title %]"
-      href="[% c.uri_for('rss', feed_args) %]">RSS</a>
+      href="[% c.uri_for_action('/repository/rss', [Repository.name]) %]">RSS</a>
     <a
       class="rss_logo"
       title="[% feed_title %]"
-      href="[% c.uri_for('atom', feed_args) %]">Atom</a>
+      href="[% c.uri_for_action('/repository/atom', [Repository.name]) %]">Atom</a>
   [% ELSE %]
     <a
       class="rss_logo"
-      href="[% c.uri_for('opml') %]">OPML</a>
+      href="[% c.uri_for_action('/opml/opml') %]">OPML</a>
     <a
       class="rss_logo"
-      href="[% c.uri_for('repository_index') %]">TXT</a>
+      href="[% c.uri_for('/repository_index') %]">TXT</a>
   [% END %]
