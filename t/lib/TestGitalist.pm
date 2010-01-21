@@ -19,17 +19,38 @@ BEGIN {
     constant->import('MECH', $mech );
 }
 
+# Rechecking the same link multiple times is slow and lame!
+# Nicked this from WWW::Mechanize and memoized it...
+my %seen_links;
+sub Test::WWW::Mechanize::Catalyst::page_links_ok {
+    my $self = shift;
+    my $desc = shift;
+
+    $desc = 'All links ok' unless defined $desc;
+
+    my @links = $self->followable_links();
+    my @urls = Test::WWW::Mechanize::_format_links(\@links);
+
+    my @failures = $self->_check_links_status( [ grep { ! $seen_links{$_}++ } @urls ] );
+    my $ok = (@failures==0);
+
+    ok( $ok, $desc );
+    diag( $_ ) for @failures;
+
+    return $ok;
+}
+
+
 sub test_uri {
     my ($uri, $qs) = @_;
-    $qs ||= '';
     my $request = "/$uri"; 
     $request .= "?$qs" if defined $qs;
     my $response = request($request);
-    ok($response->is_success, "ok $uri - $qs");
+    ok($response->is_success, "ok $request");
     if (MECH) {
         my $res = MECH()->get($request);
-        ok $res->is_success, "ok mech $uri - $qs (" . $res->code . ')';
-        MECH()->page_links_ok()
+        ok $res->is_success, "ok mech $request (" . $res->code . ')';
+        MECH()->page_links_ok("All links ok from $request")
             if $res->content_type =~ m|text/html|;
     }
     return $response;

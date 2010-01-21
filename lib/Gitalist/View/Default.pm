@@ -18,7 +18,9 @@ use Template::Stash;
 
 # define list method to flatten arrayrefs
 $Template::Stash::LIST_OPS->{ to_path } = sub {
-    return join('%2F', shift->flatten, @_);
+    my $path = join('%2F', shift->flatten, @_);
+    $path =~ s{/}{%2F}g;
+    return $path;
 };
 
 __PACKAGE__->meta->make_immutable(inline_constructor => 0);

@@ -1,4 +1,4 @@
-MOO[%
+[%
   # In the case of merge commits there will be no diff tree.
   IF (diff_tree.size||0) > 0;
     INCLUDE '_diff_tree.tt2';
@@ -9,7 +9,7 @@ MOO[%
   %]
   <div class='no-difference'>
   [%
-    IF commit.parents > 1;
+    IF commit && commit.parents > 1;
       'Trivial merge';
     ELSE;
       'No differences found';
