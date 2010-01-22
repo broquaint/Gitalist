@@ -8,13 +8,19 @@ use Test::More;
 our @EXPORT = qw/
     test_uri
     curry_test_uri
+    MECH
 /;
 
 use constant ();
 BEGIN {
     my $mech = eval {
         require Test::WWW::Mechanize::Catalyst;
-        Test::WWW::Mechanize::Catalyst->new(catalyst_app => 'Gitalist')
+        require WWW::Mechanize::TreeBuilder;
+        my $mech = Test::WWW::Mechanize::Catalyst->new(catalyst_app => 'Gitalist');
+        WWW::Mechanize::TreeBuilder->meta->apply($mech, {
+           tree_class => 'HTML::TreeBuilder::XPath',
+        } );
+        return $mech;
     };
     constant->import('MECH', $mech );
 }

@@ -113,6 +113,8 @@ if ($ENV{GITALIST_RELEASE_TESTING}) {
     author_requires 'Test::Pod' => '1.14';
     author_requires 'Test::Pod::Coverage' => '1.04';
     author_requires 'Test::WWW::Mechanize::Catalyst' => '0.51';
+    author_requires 'HTML::TreeBuilder::XPath';
+    author_requires 'WWW::Mechanize::TreeBuilder';
 }
 
 install_script glob('script/*.pl');
