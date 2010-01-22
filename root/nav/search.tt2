@@ -1,3 +1,4 @@
+[% IF Repository %]
 <div id="page-search">
   <form method="get" action="[% c.uri_for_action('/repository/search', [Repository.name]) %]" enctype="application/x-www-form-urlencoded">
   <select name="type">
@@ -13,3 +14,4 @@
   <span title="Extended regular expression"><label><input type="checkbox" name="regexp" value="1">re</label></span>
   </form>
 </div>
+[% END %]

@@ -50,6 +50,8 @@ sub base : Chained('/root') PathPart('') CaptureArgs(0) {
   );
 }
 
+sub search : Chained('base') Args(0) {}
+
 =head2 search_help
 
 Provides some help for the search form.
