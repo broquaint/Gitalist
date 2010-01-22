@@ -29,7 +29,6 @@ like $response->content, qr/Page not found/, 'invalid repository handled correct
   test('');
   test('shortlog');
   test('log');
-  test('reflog');
   test('heads');
   test('tags');
   test('36c6c6708b8360d7023e8a1649c45bcf9b3bd818');
@@ -37,10 +36,9 @@ like $response->content, qr/Page not found/, 'invalid repository handled correct
   test('36c6c6708b8360d7023e8a1649c45bcf9b3bd818/tree/dir1');
   test('36c6c6708b8360d7023e8a1649c45bcf9b3bd818/diff');
   test('36c6c6708b8360d7023e8a1649c45bcf9b3bd818/diff/plain');
-  test('36c6c6708b8360d7023e8a1649c45bcf9b3bd818/shortlog/dir1');
+  #test('36c6c6708b8360d7023e8a1649c45bcf9b3bd818/shortlog/dir1');
   test('36c6c6708b8360d7023e8a1649c45bcf9b3bd818/history/dir1');
   test('36c6c6708b8360d7023e8a1649c45bcf9b3bd818/blame/file1');
-  test('36c6c6708b8360d7023e8a1649c45bcf9b3bd818/raw/file1');
   test('36c6c6708b8360d7023e8a1649c45bcf9b3bd818/blob/file1');
 }
 
