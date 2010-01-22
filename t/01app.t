@@ -12,7 +12,10 @@ BEGIN {
 }
 use TestGitalist;
 
-for my $p ('', qw/ repo1 nodescription bare.git opml search /) {
+for my $p ('', qw{
+    repo1 nodescription bare.git opml search
+    fragment/collectionofrepositories
+}) {
     my $path = '/' . $p;
     ok( request($path)->is_success, "$path should succeed");
 }
@@ -20,7 +23,26 @@ for my $p ('', qw/ repo1 nodescription bare.git opml search /) {
 my $response = request('/DoesNotExist');
 is $response->code, 404, 'invalid repository 404s';
 like $response->content, qr/Page not found/, 'invalid repository handled correctly';
-
+{
+  # URI tests for repo1
+  local *test = curry_test_uri('fragment/repo1');
+  test('');
+  test('shortlog');
+  test('log');
+  test('reflog');
+  test('heads');
+  test('tags');
+  test('36c6c6708b8360d7023e8a1649c45bcf9b3bd818');
+  test('36c6c6708b8360d7023e8a1649c45bcf9b3bd818/tree');
+  test('36c6c6708b8360d7023e8a1649c45bcf9b3bd818/tree/dir1');
+  test('36c6c6708b8360d7023e8a1649c45bcf9b3bd818/diff');
+  test('36c6c6708b8360d7023e8a1649c45bcf9b3bd818/diff/plain');
+  test('36c6c6708b8360d7023e8a1649c45bcf9b3bd818/shortlog/dir1');
+  test('36c6c6708b8360d7023e8a1649c45bcf9b3bd818/history/dir1');
+  test('36c6c6708b8360d7023e8a1649c45bcf9b3bd818/blame/file1');
+  test('36c6c6708b8360d7023e8a1649c45bcf9b3bd818/raw/file1');
+  test('36c6c6708b8360d7023e8a1649c45bcf9b3bd818/blob/file1');
+}
 
 {
   # URI tests for repo1
