@@ -22,7 +22,7 @@
    <td class='head[% head.sha1 == HEAD ? ' current' : '' %]'>[% head.name %]</td>
    <td class='action-list'>[%# FIXME %]
      <a href="[% c.uri_for_action('/repository/shortlog', [Repository.name]) %]">shortlog</a>
-     <a href="[% c.uri_for_action('/repository/log', [Repository.name]) %]">log</a>
+     <a href="[% c.uri_for_action('/repository/longlog', [Repository.name]) %]">log</a>
      <a href="[% c.uri_for_action('/commit/tree', [Repository.name, head.name]) %]">tree</a>
    </td>
   </tr>
