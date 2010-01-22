@@ -50,13 +50,7 @@
 
 <div id='body'>
 [%
-  IF action;
-    SET actmpl = action _ ".tt2";
-    INCLUDE $actmpl;
-  ELSE;
-    # The output of gitweb.cgi is injected at this point.
     content;
-  END;
 %]
 </div>
 
