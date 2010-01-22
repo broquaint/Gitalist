@@ -39,13 +39,9 @@
   <a href="[% c.uri_for('/') %]">A Gitalist</a>
   [%- IF Repository %]
   / <a href="[% c.uri_for_action('/repository/summary', [Repository.name]) %]">[% Repository.name %]</a>
-  [% END %]
-[%
-  IF Repository;
+  [% 
     INCLUDE 'nav/search.tt2';
-  END;
-# / git_header_html
-%]
+  END; %]
 </div>
 
 <div id='body'>
