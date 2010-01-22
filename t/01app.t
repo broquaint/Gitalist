@@ -12,7 +12,7 @@ BEGIN {
 }
 use TestGitalist;
 
-for my $p ('', qw/ repo1 nodescription bare.git opml /) {
+for my $p ('', qw/ repo1 nodescription bare.git opml search /) {
     my $path = '/' . $p;
     ok( request($path)->is_success, "$path should succeed");
 }
@@ -26,6 +26,7 @@ like $response->content, qr/Page not found/, 'invalid repository handled correct
   # URI tests for repo1
   local *test = curry_test_uri('repo1');
   test('');
+  test('search');
   test('shortlog');
   test('log');
   test('reflog');
