@@ -58,7 +58,7 @@
 [% IF Repository %]
   [% Repository.description | html %]
 [% END %]
-[% INCLUDE '_footer_feeds.tt2' %]
+[% INCLUDE 'inc/footer_feeds.tt2' %]
 </div>
 
 </div>
