@@ -237,6 +237,8 @@ class Gitalist::Git::Repository with Gitalist::Git::HasUtils {
             $description = $self->path->file('description')->slurp;
             chomp $description;
         };
+	$description = "Unnamed repository, edit the .git/description file to set a description"
+	    if $description eq "Unnamed repository; edit this file 'description' to name the repository.";
         return $description;
     }
 
