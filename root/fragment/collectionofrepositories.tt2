@@ -8,7 +8,7 @@
     <td class="time-since">[% time_since(p.last_change) %]</td>
     <td class="link"><a href="[% repos_link %]">summary</a>
 	| <a href="[% c.uri_for_action('/repository/shortlog', [p.name]) %]">shortlog</a>
-	| <a href="[% c.uri_for_action('/repository/log', [p.name]) %]">log</a>
+	| <a href="[% c.uri_for_action('/repository/longlog', [p.name]) %]">log</a>
 	| <a href="[% c.uri_for_action('/commit/tree', [p.name, 'HEAD']) %]">tree</a></td>
 </tr>
   [% END %]
