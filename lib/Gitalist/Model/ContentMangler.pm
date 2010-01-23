@@ -1,20 +1,34 @@
 package Gitalist::Model::ContentMangler;
 use Moose;
 use MooseX::Types::Moose qw/HashRef/;
+use MooseX::Types::Common::String qw/NonEmptySimpleStr/;
+use Gitalist::ContentMangler::Resolver;
 use namespace::autoclean;
 
 extends 'Catalyst::Model';
 
-# FIXME - Never cleared!!
-has _languages => (
+has resolver_class => (
+    isa => NonEmptySimpleStr,
+    is => 'ro',
+    required => 1,
+    default => 'Gitalist::ContentMangler::Resolver::Default',
+);
+
+has resolver_config => (
     isa => HashRef,
     is => 'ro',
     default => sub { {} },
-    traits => ['Hash'],
-    handles => {
-        _add_language => 'set',
-        languages => 'keys',
-        css => 'values',
+);
+
+has _resolver => (
+    does => 'Gitalist::ContentMangler::Resolver',
+    handles => ['resolve'],
+    is => 'bare', lazy => 1,
+    default => sub {
+        my $self = shift;
+        my $class = $self->resolver_class;
+        Class::MOP::load_class($class);
+        return $class->new($self->resolver_config);
     },
 );
 
@@ -28,16 +42,15 @@ has _languages => (
 sub process {
     my ($self, $c) = @_;
 
-    # XXX Hack hack hack
-    my $language = $c->stash->{language} || '';
-    $language = 'Perl' if $c->stash->{filename} =~ /\.p[lm]$/i;
-    # FIXME - MOAR..
-
-    $self->_add_language($language, $c->uri_for('/static/css/syntax/' . $language . '.css')) if $language;
+    my @steps = $self->resolve({ filename => $c->stash->{filename} });
+    my @css = map { $_->[1]->{css} } grep { exists $_->[1] && exists $_->[1]->{css} && defined $_->[1]->{css} && length $_->[1]->{css} } @steps;
+    $c->stash(syntax_css => [ map { $c->uri_for('/static/css/syntax/' . $_ . '.css') } @css ]);
     
     if ($c->stash->{blobs} || $c->stash->{blob}) {
-        for($c->stash->{blobs} ? @{$c->stash->{blobs}} : $c->stash->{blob}) {
-            $_ = $c->view('SyntaxHighlight')->render($c, $_, { language => $language });
+        foreach my $step (@steps) {
+            for ($c->stash->{blobs} ? @{$c->stash->{blobs}} : $c->stash->{blob}) {
+                $_ = $c->view($step->[0])->render($c, $_, $step->[1]);
+            }
         }
     }
 }
