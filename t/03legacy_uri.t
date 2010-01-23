@@ -1,17 +1,6 @@
 #!/usr/bin/env perl
-use strict;
-use warnings;
-use Test::More;
 use FindBin qw/$Bin/;
 use lib "$Bin/lib";
-
-BEGIN {
-    $ENV{GITALIST_CONFIG} = $Bin;
-    no warnings;
-    $ENV{GITALIST_REPO_DIR} = undef;
-    use warnings;
-    use_ok 'Catalyst::Test', 'Gitalist';
-}
 use TestGitalist;
 
 ok( request('/')->is_success, 'Request should succeed' );

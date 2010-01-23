@@ -1,15 +1,6 @@
 #!/usr/bin/env perl
-use strict;
-use warnings;
-use Test::More;
 use FindBin qw/$Bin/;
 use lib "$Bin/lib";
-
-BEGIN {
-    $ENV{GITALIST_CONFIG} = $Bin;
-    $ENV{GITALIST_REPO_DIR} = '';
-    use_ok 'Catalyst::Test', 'Gitalist';
-}
 use TestGitalist;
 
 for my $p ('', qw{

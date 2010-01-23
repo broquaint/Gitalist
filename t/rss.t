@@ -1,14 +1,7 @@
 #!/usr/bin/env perl
-use strict;
-use warnings;
-use Test::More;
 use FindBin qw/$Bin/;
-
-BEGIN {
-    $ENV{GITALIST_CONFIG} = $Bin;
-    $ENV{GITALIST_REPO_DIR} = '';
-    use_ok 'Catalyst::Test', 'Gitalist';
-}
+use lib "$Bin/lib";
+use TestGitalist;
 
 my $res = request('/repo1/rss');
 ok $res->is_success;

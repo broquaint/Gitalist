@@ -1,15 +1,36 @@
 package TestGitalist;
 use strict;
 use warnings;
-use Exporter qw/import/;
+use Exporter ();
+use FindBin qw/$Bin/;
+BEGIN {
+    $ENV{GITALIST_CONFIG} = $Bin;
+    $ENV{GITALIST_REPO_DIR} = '';
+}
 use Catalyst::Test qw/Gitalist/;
 use Test::More;
+use Test::Exception;
 
-our @EXPORT = qw/
+our @EXPORT = (@Test::More::EXPORT, @Test::Exception::EXPORT, qw/
     test_uri
     curry_test_uri
     MECH
-/;
+    request
+    get
+    ctx_request
+    content_like
+    action_ok
+    action_redirect
+    action_notfound
+    contenttype_is
+/);
+
+sub import {
+    my $into = caller();
+    strict->import;
+    warnings->import;
+    goto \&Exporter::import;
+}
 
 use constant ();
 BEGIN {
@@ -17,9 +38,9 @@ BEGIN {
         require Test::WWW::Mechanize::Catalyst;
         require WWW::Mechanize::TreeBuilder;
         my $mech = Test::WWW::Mechanize::Catalyst->new(catalyst_app => 'Gitalist');
-        WWW::Mechanize::TreeBuilder->meta->apply($mech, {
+        WWW::Mechanize::TreeBuilder->meta->apply($mech,
            tree_class => 'HTML::TreeBuilder::XPath',
-        } );
+        );
         return $mech;
     };
     constant->import('MECH', $mech );
