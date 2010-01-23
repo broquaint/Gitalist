@@ -187,8 +187,10 @@ table.heads {
 }
 #blame td.date, #blame td.author, #blame td.commit-info {
 }
-#blame .data {
+#blame tbody td.data {
   padding-left: 5px;
+  background-color: #333;
+  color: #ddd;
 }
 
 /* /blob */
