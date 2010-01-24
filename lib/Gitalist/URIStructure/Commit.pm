@@ -14,7 +14,7 @@ after 'base' => sub {
 sub find : Chained('base') PathPart('') CaptureArgs(1) {
     my ($self, $c, $sha1part) = @_;
     # FIXME - Should not be here!
-    $c->stash->{Commit} = $c->stash->{Repository}->get_object($sha1part)
+    $c->stash->{Commit} = $c->stash->{Repository}->get_object_or_head($sha1part)
         or $c->detach('/error404', "Couldn't find a object for '$sha1part' in XXXX!");
 }
 
