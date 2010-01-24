@@ -24,7 +24,7 @@ sub diff_fancy : Chained('diff') PathPart('') Args(0) {}
 
 sub diff_plain : Chained('diff') PathPart('plain') Args(0) {}
 
-sub commit : Chained('find') PathPart('') Args(0) {}
+sub commit : Chained('find') PathPart('commit') Args(0) {}
 
 sub tree : Chained('find') Does('FilenameArgs') Args() {}
 
