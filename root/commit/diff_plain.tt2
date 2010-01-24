@@ -1,3 +1,0 @@
-<pre>
-[% subinclude('/fragment/commit/diff_plain', c.req.captures) %]
-</pre>

@@ -9,7 +9,7 @@
     <td class="link"><a href="[% repos_link %]">summary</a>
 	| <a href="[% c.uri_for_action('/repository/shortlog', [p.name]) %]">shortlog</a>
 	| <a href="[% c.uri_for_action('/repository/longlog', [p.name]) %]">log</a>
-	| <a href="[% c.uri_for_action('/commit/tree', [p.name, 'HEAD']) %]">tree</a></td>
+	| <a href="[% c.uri_for_action('/ref/tree', [p.name, 'HEAD']) %]">tree</a></td>
 </tr>
   [% END %]
 </tbody>

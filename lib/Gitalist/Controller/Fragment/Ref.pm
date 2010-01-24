@@ -1,9 +1,9 @@
-package Gitalist::Controller::Fragment::Commit;
+package Gitalist::Controller::Fragment::Ref;
 use Moose;
 use namespace::autoclean;
 
 BEGIN { extends 'Gitalist::Controller' }
-with 'Gitalist::URIStructure::Commit';
+with 'Gitalist::URIStructure::Ref';
 
 sub base : Chained('/fragment/repository/find') PathPart('') CaptureArgs(0) {}
 

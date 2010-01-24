@@ -9,6 +9,6 @@
   [% END %]
   [% INCLUDE 'nav/path.tt2' %]
   <div>
-   <pre class='blob'>[% subinclude('/fragment/commit/blob', c.req.captures, c.req.args.to_path) %]</pre>
+   <pre class='blob'>[% subinclude('/fragment/ref/blob', c.req.captures, c.req.args.to_path) %]</pre>
   </div>
 </div>

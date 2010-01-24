@@ -5,16 +5,16 @@
     <a href="[% c.uri_for_action('/repository/log', [c.req.captures.0]) %]">log</a>
     [% IF Commit %]
         &sect;
-        <a href="[% c.uri_for_action('/commit/commit', [c.req.captures.0, Commit.sha1]) %]">commit</a> &bull;
-        <a href="[% c.uri_for_action('/commit/diff_fancy', [c.req.captures.0, Commit.sha1]) %]">commitdiff</a> &bull;
-        <a href="[% c.uri_for_action('/commit/tree', [c.req.captures.0, Commit.sha1]) %]">tree</a>
+        <a href="[% c.uri_for_action('/ref/commit', [c.req.captures.0, Commit.sha1]) %]">commit</a> &bull;
+        <a href="[% c.uri_for_action('/ref/diff_fancy', [c.req.captures.0, Commit.sha1]) %]">commitdiff</a> &bull;
+        <a href="[% c.uri_for_action('/ref/tree', [c.req.captures.0, Commit.sha1]) %]">tree</a>
     [% END %]
     [% IF filename %]
     &sect;
-    <a href="[% c.uri_for_action('/commit/blob', [c.req.captures.0, Commit.sha1], filename) %]">blob</a> &bull;
-    <a href="[% c.uri_for_action('/commit/raw', [c.req.captures.0, Commit.sha1], filename) %]">raw</a> &bull;
-    <a href="[% c.uri_for_action('/commit/blame', [c.req.captures.0, Commit.sha1], filename)  %]">blame</a> &bull;
-    <a href="[% c.uri_for_action('/commit/shortlog', [c.req.captures.0, Commit.sha1], filename)  %]">history</a> &bull;
+    <a href="[% c.uri_for_action('/ref/blob', [c.req.captures.0, Commit.sha1], filename) %]">blob</a> &bull;
+    <a href="[% c.uri_for_action('/ref/raw', [c.req.captures.0, Commit.sha1], filename) %]">raw</a> &bull;
+    <a href="[% c.uri_for_action('/ref/blame', [c.req.captures.0, Commit.sha1], filename)  %]">blame</a> &bull;
+    <a href="[% c.uri_for_action('/ref/shortlog', [c.req.captures.0, Commit.sha1], filename)  %]">history</a> &bull;
     <a href="[% c.uri_for(c.controller.action_for('commit'), [c.req.captures.0, Repository.head_hash]) %]">HEAD</a>
     [% END %]
     <div class='chroma-hash'>[% INCLUDE 'inc/chroma_hash.tt2' sha1 = object.sha1 %]</div>

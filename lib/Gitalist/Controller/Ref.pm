@@ -1,10 +1,10 @@
-package Gitalist::Controller::Commit;
+package Gitalist::Controller::Ref;
 
 use Moose;
 use namespace::autoclean;
 
 BEGIN { extends 'Gitalist::Controller' }
-with 'Gitalist::URIStructure::Commit';
+with 'Gitalist::URIStructure::Ref';
 
 sub base : Chained('/repository/find') PathPart('') CaptureArgs(0) {}
 

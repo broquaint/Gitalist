@@ -16,14 +16,14 @@
     <dd>[% Commit.sha1 %]</dd>
    <dt>tree</dt>
     <dd>[% Commit.tree_sha1 %]
-	<span class='action-list'><a href="[% c.uri_for_action("/commit/tree", c.req.captures) %]">tree</a></span>
+	<span class='action-list'><a href="[% c.uri_for_action("/ref/tree", c.req.captures) %]">tree</a></span>
     </dd>
    [% FOREACH parent IN Commit.parents %]
    <dt>parent</dt>
     <dd>[% parent.sha1  %]
       <span class='action-list'>
-       <a href="[% c.uri_for_action('/commit/commit', [Repository.name, parent.sha1]) %]">commit</a>
-       <a href="[% c.uri_for_action('/commit/diff_fancy', [Repository.name, parent.sha1]) %]">diff</a>
+       <a href="[% c.uri_for_action('/ref/commit', [Repository.name, parent.sha1]) %]">commit</a>
+       <a href="[% c.uri_for_action('/ref/diff_fancy', [Repository.name, parent.sha1]) %]">diff</a>
       </span>
      </dd>
    [% END %]

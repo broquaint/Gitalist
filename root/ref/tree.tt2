@@ -10,6 +10,6 @@
       INCLUDE 'nav/path.tt2' filename = path;
     END;
 
-    subinclude('/fragment/commit/tree', c.req.captures);
+    subinclude('/fragment/ref/tree', c.req.captures);
   %]
 </div>

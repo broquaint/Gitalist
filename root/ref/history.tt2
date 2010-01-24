@@ -1,0 +1,3 @@
+[% INCLUDE 'nav/actions.tt2' object = commit %]
+
+[% subinclude('/fragment/ref/history', c.req.captures, c.req.args.to_path) %]

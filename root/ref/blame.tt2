@@ -29,7 +29,7 @@
  </tfoot>
 
  <tbody>
- [% subinclude('/fragment/commit/blame', c.req.captures, c.req.arguments.to_path ) %]
+ [% subinclude('/fragment/ref/blame', c.req.captures, c.req.arguments.to_path ) %]
  </tbody>
 </table>
 </div>

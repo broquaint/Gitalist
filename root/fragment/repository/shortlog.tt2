@@ -31,9 +31,9 @@
      [%# INCLUDE '_refs.tt2' object = line %]
    </td>
    <td class='action-list'>
-     <a href="[% c.uri_for_action("/commit/commit", [Repository.name, line.sha1]) %]">commit</a>
-     <a href="[% c.uri_for_action("/commit/diff_fancy", [Repository.name, line.sha1]) %]">commitdiff</a>
-     <a href="[% c.uri_for_action("/commit/tree", [Repository.name, line.sha1]) %]">tree</a>
+     <a href="[% c.uri_for_action("/ref/commit", [Repository.name, line.sha1]) %]">commit</a>
+     <a href="[% c.uri_for_action("/ref/diff_fancy", [Repository.name, line.sha1]) %]">commitdiff</a>
+     <a href="[% c.uri_for_action("/ref/tree", [Repository.name, line.sha1]) %]">tree</a>
    </td>
   </tr>
  [% END %]

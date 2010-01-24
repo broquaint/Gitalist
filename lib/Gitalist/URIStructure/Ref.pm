@@ -1,4 +1,4 @@
-package Gitalist::URIStructure::Commit;
+package Gitalist::URIStructure::Ref;
 use MooseX::MethodAttributes::Role;
 use Moose::Autobox;
 use namespace::autoclean;
