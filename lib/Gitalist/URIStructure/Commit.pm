@@ -47,4 +47,6 @@ sub history : Chained('find') Does('FilenameArgs') Args() {}
 
 sub shortlog : Chained('find') Does('FilenameArgs') Args() {}
 
+sub longlog : Chained('find') Does('FilenameArgs') PathPart('log') Args() {}
+
 1;
