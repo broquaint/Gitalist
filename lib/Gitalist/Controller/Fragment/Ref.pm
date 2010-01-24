@@ -3,7 +3,10 @@ use Moose;
 use namespace::autoclean;
 
 BEGIN { extends 'Gitalist::Controller' }
-with 'Gitalist::URIStructure::Ref';
+with qw/
+    Gitalist::URIStructure::Ref
+    Gitalist::URIStructure::Fragment::WithLog
+/;
 
 sub base : Chained('/fragment/repository/find') PathPart('') CaptureArgs(0) {}
 

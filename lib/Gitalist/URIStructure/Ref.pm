@@ -5,6 +5,10 @@ use namespace::autoclean;
 
 requires 'base';
 
+with qw/
+    Gitalist::URIStructure::WithLog
+/;
+
 after 'base' => sub {
     my ($self, $c) = @_;
     confess("No repository in the stash")
@@ -44,9 +48,5 @@ sub blob : Chained('find') Does('FilenameArgs') Args() {
 sub blame : Chained('find') Does('FilenameArgs') Args() {}
 
 sub history : Chained('find') Does('FilenameArgs') Args() {}
-
-sub shortlog : Chained('find') Does('FilenameArgs') Args() {}
-
-sub longlog : Chained('find') Does('FilenameArgs') PathPart('log') Args() {}
 
 1;
