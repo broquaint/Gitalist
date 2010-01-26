@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://purl.org/atom/ns#">
-  <title>[% title %]</title>
+  <title>[% title | html_entity %]</title>
   <modified>[% updated %]</modified>
   [% FOREACH Commit = Commits %]
   <entry>
-    <title>[% Commit.title %]</title>
+    <title>[% Commit.title | html_entity %]</title>
     <id>[% Commit.id %]</id>
     <content mode="xml">
-      <div xmlns="http://www.w3.org/1999/xhtml">[% Commit.content %]</div>
+      <div xmlns="http://www.w3.org/1999/xhtml">[% Commit.content | html_entity %]</div>
     </content>
   </entry>
   [% END %]

@@ -4,7 +4,7 @@
     [% FOR Repository = Repositories %]
     <outline id="[% count %]"
              description=""
-             text="[% Repository.name %] - [% Repository.description %]"
+             text="[% Repository.name | html_entity %] - [% Repository.description | html_entity %]"
              title=""
              type="rss"
              version="RSS"
@@ -14,6 +14,6 @@
     <head>
         <dateCreated>[% now %]</dateCreated>
         <dateModified>[% now %]</dateModified>
-        <title>[% title %]</title>
+        <title>[% title | html_entity %]</title>
     </head>
 </opml>
