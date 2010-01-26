@@ -81,7 +81,7 @@ sub atom : Chained('find') Args(0) {
   for my $commit ($repository->list_revs(%logargs)) {
     my $entry = XML::Atom::Entry->new;
     $entry->title( $mk_title->($commit->comment) );
-    $entry->id($c->uri_for_action('/commit/commit', [$repository->name, $commit->sha1]));
+    $entry->id($c->uri_for_action('/ref/commit', [$repository->name, $commit->sha1]));
     # XXX FIXME Needs work ...
     $entry->content($commit->comment);
     $feed->add_entry($entry);
@@ -122,7 +122,7 @@ sub rss : Chained('find') Args(0) {
     # XXX FIXME Needs work ....
     $rss->add_item(
         title       => $mk_title->($commit->comment),
-        permaLink   => $c->uri_for_action('/commit/commit', [$repository->name, $commit->sha1]),
+        permaLink   => $c->uri_for_action('/ref/commit', [$repository->name, $commit->sha1]),
         description => $commit->comment,
     );
   }

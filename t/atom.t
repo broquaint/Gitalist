@@ -12,7 +12,7 @@ TODO: {
     like $res->content, qr{description>some test repository</description};
 }
 like $res->content, qr{add dir1/file2</div};
-like $res->content, qr{<id>http://localhost/repo1/36c6c6708b8360d7023e8a1649c45bcf9b3bd818</id};
+like $res->content, qr{<id>http://localhost/repo1/36c6c6708b8360d7023e8a1649c45bcf9b3bd818/commit</id};
 like $res->content, qr{title>add dir1/file2</title};
 
 done_testing;
