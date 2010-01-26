@@ -93,7 +93,6 @@ requires 'Syntax::Highlight::Engine::Kate';
 requires 'Sys::Hostname';
 requires 'XML::Atom';
 requires 'XML::RSS';
-requires 'XML::OPML::SimpleGen';
 
 test_requires 'Test::More' => '0.88';
 test_requires 'Test::utf8' => '0.02';
