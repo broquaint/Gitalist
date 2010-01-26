@@ -5,7 +5,7 @@ use TestGitalist;
 
 my $res = request('/repo1/atom');
 ok $res->is_success;
-
+is $res->content_type, 'application/atom+xml';
 TODO: {
     local $TODO = "Does not work yet. Need similar info to RSS feed";
     like $res->content, qr{link>http://localhost/repo1</link};

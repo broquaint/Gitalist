@@ -5,7 +5,7 @@ use TestGitalist;
 
 my $res = request('/repo1/rss');
 ok $res->is_success;
-
+is $res->content_type, 'application/rss+xml';
 like $res->content, qr{link>http://localhost/repo1</link};
 like $res->content, qr{description>some test repository</description};
 like $res->content, qr{title>add dir1/file2</title};
