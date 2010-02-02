@@ -7,10 +7,11 @@ ok( request('/')->is_success, 'Request should succeed' );
 
 sub test {
     my ($uri, $qs) = @_;
-    my $request = $uri; 
+    my $request = "/$uri";
+    $request =~ s{/+}{/}g;
     $request .= "?$qs" if defined $qs;
     my $response = request($request);
-    $uri = $response->header('Location');
+    $uri = $response->header('Location') || '';
     is($response->code, 301, "ok $request 301 to " . $uri)
         or return $response;
     $response = request($uri);
@@ -24,13 +25,16 @@ sub test {
 test('/', 'a=project_index');
 test('/', 'a=opml');
 
-{
-    local *test = curry_test_uri('repos1', \&test);
-    local $TODO = 'FIXME';
-
+no warnings 'redefine';
+local *test = curry_test_uri('repo1', \&test);
+test('/', 'a=project_index');
+test('/', 'a=opml');
 test('/', 'a=summary');
 test('/', 'a=heads');
 test('/', 'a=tags');
+{
+
+    local $TODO = 'FIXME';
 
 test('/', 'a=blob;f=dir1/file2;h=257cc5642cb1a054f08cc83f2d943e56fd3ebe99;hb=36c6c6708b8360d7023e8a1649c45bcf9b3bd818');
 test('/', 'a=blob;f=dir1/file2;h=257cc5642cb1a054f08cc83f2d943e56fd3ebe99;hb=HEAD');

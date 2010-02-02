@@ -6,15 +6,15 @@ use namespace::autoclean;
 BEGIN { extends 'Gitalist::Controller' }
 
 sub handler : Chained('/base') PathPart('legacy') Args() {
-    my ( $self, $c ) = @_;
-    my $action;
+    my ( $self, $c, $repos ) = @_;
+    my ($action, @captures);
     if (my $a = $c->req->param('a')) {
         $a eq 'opml' && do { $action = '/opml/opml'; };
         $a eq 'project_index' && do { $action = '/legacyuri/project_index'; };
-        $a eq 'summary' && do { $action = '/repository/summary'; };
+        $a =~ /^(summary|heads|tags)$/ && do { $action = "/repository/$1"; push(@captures, $repos); };
     }
     die("Not supported") unless $action;
-    $c->res->redirect($c->uri_for_action($action));
+    $c->res->redirect($c->uri_for_action($action, \@captures));
     $c->res->status(301);
 }
 
