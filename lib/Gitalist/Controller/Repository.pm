@@ -63,32 +63,35 @@ Provides an atom feed for a given repository.
 =cut
 
 sub atom : Chained('find') Args(0) {
-  my($self, $c) = @_;
+    my ($self, $c) = @_;
 
-  my $feed = XML::Atom::Feed->new;
+    my $host = lc hostname();
+    $c->stash(
+        title => $host . ' - ' . Gitalist->config->{name},
+        updated => DateTime->now
+    );
 
-  my $host = lc hostname();
-  $feed->title($host . ' - ' . Gitalist->config->{name});
-  $feed->updated(~~DateTime->now);
+    my $repository = $c->stash->{Repository};
+    my %logargs = (
+        sha1   => $repository->head_hash,
+        count  => Gitalist->config->{paging}{log} || 25,
+    );
 
-  my $repository = $c->stash->{Repository};
-  my %logargs = (
-      sha1   => $repository->head_hash,
-      count  => Gitalist->config->{paging}{log} || 25,
-  );
-
-  my $mk_title = $c->stash->{short_cmt};
-  for my $commit ($repository->list_revs(%logargs)) {
-    my $entry = XML::Atom::Entry->new;
-    $entry->title( $mk_title->($commit->comment) );
-    $entry->id($c->uri_for_action('/ref/commit', [$repository->name, $commit->sha1]));
-    # XXX FIXME Needs work ...
-    $entry->content($commit->comment);
-    $feed->add_entry($entry);
-  }
-
-  $c->response->body($feed->as_xml);
-  $c->response->content_type('application/atom+xml');
+    my @revs;
+    my $mk_title = $c->stash->{short_cmt};
+    for my $commit ($repository->list_revs(%logargs)) {
+        my $entry = {};
+        $entry->{title} = $mk_title->($commit->comment);
+        $entry->{id} = $c->uri_for_action('/ref/commit', [$repository->name, $commit->sha1]);
+        # XXX FIXME Needs work ...
+        $entry->{content} = $commit->comment;
+        push(@revs, $entry);
+    }
+    $c->stash(
+        Commits => \@revs,
+        no_wrapper => 1,
+    );
+    $c->response->content_type('application/atom+xml');
 }
 
 =head2 rss
@@ -102,14 +105,12 @@ sub rss : Chained('find') Args(0) {
 
   my $repository = $c->stash->{Repository};
 
-  my $rss = XML::RSS->new(version => '2.0');
-  $rss->channel(
+  $c->stash(
     title          => lc(Sys::Hostname::hostname()) . ' - ' . Gitalist->config->{name},
-    link           => $c->uri_for_action('/repository/summary', [$repository->name]),
     language       => 'en',
-    description    => $repository->description,
     pubDate        => DateTime->now,
     lastBuildDate  => DateTime->now,
+    no_wrapper     => 1,
   );
 
   my %logargs = (
@@ -117,17 +118,17 @@ sub rss : Chained('find') Args(0) {
       count  => Gitalist->config->{paging}{log} || 25,
 #      ($c->req->param('f') ? (file => $c->req->param('f')) : ())
   );
+  my @revs;
   my $mk_title = $c->stash->{short_cmt};
   for my $commit ($repository->list_revs(%logargs)) {
     # XXX FIXME Needs work ....
-    $rss->add_item(
+    push(@revs, {
         title       => $mk_title->($commit->comment),
         permaLink   => $c->uri_for_action('/ref/commit', [$repository->name, $commit->sha1]),
         description => $commit->comment,
-    );
+    });
   }
-
-  $c->response->body($rss->as_string);
+  $c->stash(Commits => \@revs);
   $c->response->content_type('application/rss+xml');
 }
 

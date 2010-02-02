@@ -2,7 +2,7 @@ package Gitalist::Controller::OPML;
 
 use Moose;
 use Moose::Autobox;
-
+use DateTime;
 use Sys::Hostname qw/hostname/;
 use XML::OPML::SimpleGen;
 
@@ -15,16 +15,14 @@ sub opml : Chained('/base') Args(0) {
 
     my $opml = XML::OPML::SimpleGen->new();
 
-    $opml->head(title => lc(hostname()) . ' - ' . blessed($c)->config->{name});
+    $c->stash(
+        title => lc(hostname()) . ' - ' . blessed($c)->config->{name},
+        Repositories => $c->model()->repositories,
+        now => DateTime->now,
+        template => 'opml.tt2',
+        no_wrapper => 1,
+    );
 
-    for my $repos ( $c->model()->repositories->flatten ) {
-        $opml->insert_outline(
-            text   => $repos->name. ' - '. $repos->description,
-            xmlUrl => $c->uri_for_action('/repository/rss', [$repos->name])->as_string,
-        );
-    }
-
-    $c->response->body($opml->as_string);
     $c->response->content_type('application/rss');
 }
 
