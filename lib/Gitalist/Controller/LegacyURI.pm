@@ -6,10 +6,19 @@ use namespace::autoclean;
 BEGIN { extends 'Gitalist::Controller' }
 
 sub handler : Chained('/base') PathPart('legacy') Args() {
-    die("Not supported");
+    my ( $self, $c ) = @_;
+    my $action;
+    if (my $a = $c->req->param('a')) {
+        $a eq 'opml' && do { $action = '/opml/opml'; };
+        $a eq 'project_index' && do { $action = '/legacyuri/project_index'; };
+        $a eq 'summary' && do { $action = '/repository/summary'; };
+    }
+    die("Not supported") unless $action;
+    $c->res->redirect($c->uri_for_action($action));
+    $c->res->status(301);
 }
 
-sub repository_index : Chained('/base') Args(0) {
+sub project_index : Chained('/base') Args(0) {
       my ( $self, $c ) = @_;
 
       $c->response->content_type('text/plain');
