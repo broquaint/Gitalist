@@ -2,7 +2,7 @@
 use FindBin qw/$Bin/;
 use lib "$Bin/lib";
 use TestGitalist;
-plan 'skip_all' => 'No WWW::Mechanize' unless MECH();
+plan 'skip_all' => 'Either Test::WWW::Mechanize::Catalyst or WWW::Mechanize::TreeBuilder not present' unless MECH();
 
 MECH->get_ok('/');
 {

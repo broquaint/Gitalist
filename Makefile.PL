@@ -29,7 +29,7 @@ if ($ENV{GITALIST_RELEASE_TESTING}) {
     # Fill in provides info so that indexing works right (in the face of MX::Declare)
     # by just smashing filenames to package names and not trying to be smart..
     File::Find::find(sub {
-        return unless $File::Find::name =~ /\.pm$/;
+        return unless /^\w.*?\.pm$/;
         my $fn = $File::Find::name;
         my $ver = ExtUtils::MM_Unix->parse_version($fn);
 
