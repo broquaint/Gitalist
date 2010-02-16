@@ -91,7 +91,7 @@ Alternatively, you can get Gitalist using git.
 
 The canonical repository for the master branch is:
 
-    it://git.shadowcat.co.uk/catagits/Gitalist.git
+    git://git.shadowcat.co.uk/catagits/Gitalist.git
 
 Gitalist is also mirrored to github, and a number of people have active forks
 with branches and/or new features in the master branch.
@@ -131,13 +131,13 @@ You can then start the Gitalist demo server by setting C<< GITALIST_CONFIG >>. F
     GITALIST_CONFIG=/usr/local/etc/gitalist.conf gitalist_server.pl
 
 Alternatively, if you only want to set a repository directory and are otherwise happy with
-the default configuration, then you can set the C<< GITALIST_REPOS_DIR >> environment
+the default configuration, then you can set the C<< GITALIST_REPO_DIR >> environment
 variable, or pass the C<< --repos_dir >> flag to any of the scripts.
 
-    GITALIST_REPOS_DIR=/home/myuser/code/git gitalist_server.pl
+    GITALIST_REPO_DIR=/home/myuser/code/git gitalist_server.pl
     gitalist_server.pl --repos_dir home/myuser/code/git
 
-The C<< GITALIST_REPOS_DIR >> environment variable will override the repository directory set
+The C<< GITALIST_REPO_DIR >> environment variable will override the repository directory set
 in configuration, and will itself be overridden by he C<< --repos_dir >> flag.
 
 =head1 RUNNING
