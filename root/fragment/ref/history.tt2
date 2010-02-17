@@ -1,5 +1,5 @@
 [%
-  INCLUDE '_log_pager.tt2';
+  INCLUDE 'inc/log_pager.tt2';
 %]  <table class='history listing'>
    <thead>
     <tr>
@@ -24,7 +24,7 @@
    <tbody>
    [% FOREACH line IN log_lines %]
     <tr>
-     <td class='sha1' title='[% line.sha1 %]'>[% INCLUDE '_chroma_hash.tt2' sha1 = line.sha1.substr(0, 7) %]</td>
+     <td class='sha1' title='[% line.sha1 %]'>[% INCLUDE 'inc/chroma_hash.tt2' sha1 = line.sha1.substr(0, 7) %]</td>
      <td class='time-since' title='[% line.authored_time %]'>[% time_since(line.authored_time) %]</td>
      <td class='author'>[% line.author.name | html %]</td>
      <td>
@@ -47,5 +47,5 @@
    </tbody>
   </table>
 [%
-  INCLUDE '_log_pager.tt2';
+  INCLUDE 'inc/log_pager.tt2';
 %]

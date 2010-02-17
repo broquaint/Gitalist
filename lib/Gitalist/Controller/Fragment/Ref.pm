@@ -86,4 +86,34 @@ after blob => sub {
         unless $c->stash->{no_wrapper};
 };
 
+after history => sub {
+    my ($self, $c) = @_;
+    my $repository  = $c->stash->{Repository};
+    my $filename    = $c->stash->{filename};
+
+    my %logargs = (
+       sha1   => $c->stash->{Commit}->sha1,
+       count  => 25, #Gitalist->config->{paging}{log} || 25,
+       ($filename ? (file => $filename) : ())
+    );
+
+    my $file = $repository->get_object(
+        $repository->hash_by_path(
+            $repository->head_hash,
+            $filename
+        )
+    );
+
+    my $page = $c->req->param('pg') || 0;
+    $logargs{skip} = $c->req->param('pg') * $logargs{count}
+        if $c->req->param('pg');
+
+    $c->stash(
+       log_lines => [$repository->list_revs(%logargs)],
+       refs      => $repository->references,
+       filename  => $filename,
+       filetype  => $file->type,
+    );
+};
+
 __PACKAGE__->meta->make_immutable;

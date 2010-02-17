@@ -27,8 +27,7 @@
    <td class='author'><img style="padding-right: 10px" src="[% uri_for_gravatar(line.author.email, 20) %]" />[% line.author.name | html %]</td>
    <td>
      [% short_cmt(line.comment) | html %]
-     [%# FIXME What did this crap used to do? Did it work ever? %]
-     [%# INCLUDE '_refs.tt2' object = line %]
+     [% INCLUDE '_refs.tt2' object = line %]
    </td>
    <td class='action-list'>
      <a href="[% c.uri_for_action("/ref/commit", [Repository.name, line.sha1]) %]">commit</a>
