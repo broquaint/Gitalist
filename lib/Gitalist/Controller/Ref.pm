@@ -8,6 +8,14 @@ with 'Gitalist::URIStructure::Ref';
 
 sub base : Chained('/repository/find') PathPart('') CaptureArgs(0) {}
 
+after commit => sub {
+  my($self, $c) = @_;
+
+  $c->stash->{diff_tree} = ($c->stash->{Repository}->diff(
+    commit => $c->stash->{Commit},
+  ))[0];
+};
+
 sub raw : Chained('find') Does('FilenameArgs') Args() {
     my ($self, $c) = @_;
     $c->forward('find_blob');
