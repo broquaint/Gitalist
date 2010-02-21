@@ -90,7 +90,7 @@ Alternatively, you can get Gitalist using git.
 
 The canonical repository for the master branch is:
 
-    it://git.shadowcat.co.uk/catagits/Gitalist.git
+    git://git.shadowcat.co.uk/catagits/Gitalist.git
 
 Gitalist is also mirrored to github, and a number of people have active forks
 with branches and/or new features in the master branch.
