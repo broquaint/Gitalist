@@ -1,1 +1,2 @@
-[%- IF language %]<link rel="stylesheet" type="text/css" href="[% c.uri_for('/static/css/syntax/' _ language _ '.css') %]"/>[% END -%]
+[%- IF language == 'Diff' %]<link rel="stylesheet" type="text/css" href="[% c.uri_for('/static/css/syntax/Diff.css') %]"/>[% END -%]
+[%- IF language == 'Perl' %]<link rel="stylesheet" type="text/css" href="[% c.uri_for('/static/css/syntax/Perl.css') %]"/>[% END -%]
