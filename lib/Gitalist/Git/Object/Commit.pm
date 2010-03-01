@@ -49,7 +49,7 @@ class Gitalist::Git::Object::Commit
 
         method diff ( Maybe[Bool] :$patch?,
                        Maybe[NonEmptySimpleStr] :$parent?,
-                       Maybe[NonEmptySimpleStr] :$file?
+                       Maybe[NonEmptySimpleStr] :$filename?
                    ) {
             $parent = $parent
                 ? $parent
@@ -57,7 +57,7 @@ class Gitalist::Git::Object::Commit
                         ? $self->parent_sha1
                             : '-c';
             my @etc = (
-                ( $file  ? ('--', $file) : () ),
+                ( $filename  ? ('--', $filename) : () ),
             );
 
             my @out = $self->_raw_diff(

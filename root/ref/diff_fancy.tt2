@@ -9,6 +9,8 @@
     <img style="float: left; padding-right: 10px" src="[% uri_for_gravatar(Commit.committer.email, 40) %]">[% Commit.author.name | html %] <br />[% time_since(Commit.authored_time) %]
   </div>
 
-
-  [% subinclude('/fragment/ref/diff_fancy', c.req.captures c.req.args.to_path) %]
+  [%
+    # What I really want is @{ c.req.args }
+    subinclude('/fragment/' _ c.action, c.req.captures, c.req.args.0 c.req.args.1)
+  %]
 </div>

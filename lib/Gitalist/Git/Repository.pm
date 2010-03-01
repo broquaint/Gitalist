@@ -186,11 +186,11 @@ class Gitalist::Git::Repository with Gitalist::Git::HasUtils {
     method diff ( Gitalist::Git::Object :$commit!,
                   Bool :$patch?,
                   Maybe[NonEmptySimpleStr] :$parent?,
-                  NonEmptySimpleStr :$file?
+                  NonEmptySimpleStr :$filename?
               ) {
               return $commit->diff( patch => $patch,
                                     parent => $parent,
-                                    file => $file);
+                                    filename => $filename);
     }
 
     method reflog (@logargs) {

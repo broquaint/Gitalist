@@ -10,13 +10,15 @@ with qw/
 
 sub base : Chained('/fragment/repository/find') PathPart('') CaptureArgs(0) {}
 
-after diff => sub {
+sub _diff {
     my ($self, $c) = @_;
     my $commit = $c->stash->{Commit};
+    my %filename = $c->stash->{filename} ? (filename => $c->stash->{filename}) : ();
     my($tree, $patch) = $c->stash->{Repository}->diff(
         commit => $commit,
-        parent => $c->req->param('hp') || undef,
+        parent => $c->stash->{parent},
         patch  => 1,
+        %filename,
     );
     $c->stash(
       diff_tree => $tree,
@@ -24,16 +26,19 @@ after diff => sub {
       # XXX Hack hack hack, see View::SyntaxHighlight
       blobs     => [map $_->{diff}, @$patch],
       language  => 'Diff',
+      %filename,
     );
-};
+}
 
 after diff_fancy => sub {
     my ($self, $c) = @_;
+    $self->_diff($c);
     $c->forward('View::SyntaxHighlight');
 };
 
 after diff_plain => sub {
     my ($self, $c) = @_;
+    $self->_diff($c);
     $c->response->content_type('text/plain; charset=utf-8');
 };
 

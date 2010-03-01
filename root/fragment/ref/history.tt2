@@ -33,13 +33,13 @@
      </td>
      <td class='action-list'>
      [% IF filetype == 'tree' %]
-       <a href="[% c.uri_for("tree", {h=line.sha1, hb=line.sha1}) %]">tree</a>
+       <a href="[% c.uri_for_action("/ref/tree", [Repository.name, line.sha1], filename) %]">blob</a>
       [% ELSIF filetype == 'blob' %]
-       <a href="[% c.uri_for("blob", {hb=line.sha1, f=filename}) %]">blob</a>
+       <a href="[% c.uri_for_action("/ref/blob", [Repository.name, line.sha1], filename) %]">blob</a>
       [% END %]
-       <a href="[% c.uri_for("commitdiff", {h=line.sha1}) %]">commitdiff</a>
+       <a href="[% c.uri_for_action("/ref/diff_fancy", [Repository.name, line.sha1]) %]">commitdiff</a>
       [% IF filetype == 'blob' %]
-       <a href="[% c.uri_for("blobdiff", {hb="HEAD", hpb=line.sha1, f=filename}) %]">diff to current</a>
+       <a href="[% c.uri_for_action("/ref/diff_fancy", [Repository.name, line.sha1], 'HEAD', filename) %]">diff to current</a>
        [% END %]
      </td>
     </tr>

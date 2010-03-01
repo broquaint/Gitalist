@@ -2,7 +2,7 @@
 [% FOREACH item IN diff %]
 <div class='diff-head'>
  diff --git [%# FIXME %]
- <a href='[% c.uri_for_action("/ref/blob", [Repository.name, Commit.sha1], item.file) %]'>[% item.a %][% item %]</a>
+ <a href='[% c.uri_for_action("/ref/blob", [Repository.name, Commit.sha1], item.file) %]'>[% item.a %]</a>
  <a href='[% c.uri_for_action("/ref/blob", [Repository.name, Commit.sha1], item.file) %]'>[% item.b %]</a>
 </div>
 <div class='diff-index'>

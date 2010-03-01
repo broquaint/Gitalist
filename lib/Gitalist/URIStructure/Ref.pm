@@ -24,7 +24,14 @@ sub find : Chained('base') PathPart('') CaptureArgs(1) {
 
 sub diff : Chained('find') CaptureArgs(0) {}
 
-sub diff_fancy : Chained('diff') PathPart('') Args(0) {}
+sub diff_fancy : Chained('diff') PathPart('') Args() {
+    my($self, $c, $comparison, @rest) = @_;
+    # FIXME - This ain't pretty
+    $c->stash->{parent}   = $comparison
+      if $comparison;
+    $c->stash->{filename} = $rest[0]
+      if @rest;
+}
 
 sub diff_plain : Chained('diff') PathPart('plain') Args(0) {}
 
