@@ -33,7 +33,10 @@ sub diff_fancy : Chained('diff') PathPart('') Args() {
       if @rest;
 }
 
-sub diff_plain : Chained('diff') PathPart('plain') Args(0) {}
+sub diff_plain : Chained('diff') PathPart('plain') Args(0) {
+    my($self, $c) = @_;
+    $c->stash->{no_wrapper} = 1;
+}
 
 sub commit : Chained('find') PathPart('commit') Args(0) {}
 
