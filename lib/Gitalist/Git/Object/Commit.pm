@@ -105,7 +105,7 @@ class Gitalist::Git::Object::Commit
                 $line{sha1}   = $line{sha1dst};
                 $line{is_new} = $line{sha1src} =~ /^0+$/
                     if $line{sha1src};
-                @line{qw/status sim/} = $line{status} =~ /(R)(\d+)/
+                @line{qw/status sim/} = $line{status} =~ /(R)0*(\d+)/
                     if $line{status} =~ /^R/;
                 push @ret, \%line;
             }

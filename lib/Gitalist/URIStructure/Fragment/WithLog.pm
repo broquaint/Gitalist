@@ -14,9 +14,11 @@ after log => sub {
     );
 
     my $page = $c->req->param('pg') || 0;
-    $logargs{skip} = $c->req->param('pg') * $logargs{count}
-        if $c->req->param('pg');
+    $logargs{skip} = abs $page * $logargs{count}
+        if $page;
+
     $c->stash(
+       page      => $page,
        log_lines => [$repository->list_revs(%logargs)],
        refs      => $repository->references,
     );

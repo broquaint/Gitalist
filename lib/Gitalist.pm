@@ -39,6 +39,21 @@ around uri_for => sub {
   return $uri;
 };
 
+around uri_for_action => sub {
+  my ($orig, $c) = (shift, shift);
+  my $uri = $c->$orig(@_);
+  $$uri =~ s[/fragment\b][] if defined $uri;
+  return $uri;
+};
+
+sub uri_with {
+  my ($self, @args) = @_;
+  my $uri = $self->request->uri_with(@args);
+  # Wow this awful.
+  $uri =~ s[/fragment\b][];
+  return $uri;  
+}
+
 1;
 
 __END__
