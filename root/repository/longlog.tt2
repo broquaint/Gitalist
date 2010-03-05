@@ -1,8 +1,2 @@
-[%# FIXME - Why are actions here automagically %]
-<div class='content'>
-  [% INCLUDE '_log_pager.tt2';
-
-  subinclude('/fragment/' _ c.action, c.req.captures);
-
-  INCLUDE '_log_pager.tt2'; %]
-</div>
+[% INCLUDE 'nav/actions.tt2' object = Commit %]
+[% subinclude('/fragment/' _ c.action, c.req.captures, c.req.parameters) %]

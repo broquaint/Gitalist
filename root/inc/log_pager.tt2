@@ -1,9 +1,12 @@
 <div class='pager'>
- <a href='[% c.uri_for_action('/' _ c.action, [Repository.name, 'HEAD']) %]'>HEAD</a> &sect;
- [% IF log_lines.first.sha1 != commit.sha1 %]
- <a href='[% c.request.uri_with(pg => (page||0) - 1) %]'>&laquo; prev</a>
+ <a href='[% c.uri_for_action('/' _ c.action, [Repository.name]) %]'>HEAD</a> &sect;
+ [% IF log_lines.first.sha1 != Commit.sha1 %]
+ <a href='[% c.uri_with(pg => (page||0) + 1) %]'>&laquo; newer</a>
  [% END %]
- [% IF log_lines.size == 50 %]
- <a href='[% c.request.uri_with(pg => (page||0) + 1) %]'>next &raquo;</a>
+ [% IF log_lines.first.sha1 != Commit.sha1 && log_lines.size == 25%]
+ &bull;
+ [% END %]
+ [% IF log_lines.size == 25 %]
+ <a href='[% c.uri_with(pg => (page||0) - 1) %]'>older &raquo;</a>
  [% END %]
 </div>
