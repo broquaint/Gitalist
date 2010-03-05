@@ -1,3 +1,5 @@
+<div class='content'>
+[% INCLUDE 'inc/log_pager.tt2' %]
   <div id='log'>
   [% FOREACH line IN log_lines %]
     <div class='entry'>
@@ -30,3 +32,5 @@
     </div>
   [% END %]
   </div>
+[% INCLUDE 'inc/log_pager.tt2' %]
+</div>
