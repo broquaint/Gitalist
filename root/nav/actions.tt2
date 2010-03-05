@@ -10,7 +10,7 @@
         <a href="[% c.uri_for_action('/ref/diff_fancy', [c.req.captures.0, Commit.sha1]) %]">commitdiff</a> &bull;
         <a href="[% c.uri_for_action('/ref/tree', [c.req.captures.0, Commit.sha1]) %]">tree</a>
     [% END %]
-    [% IF filename %]
+    [% IF filename && c.action != 'ref/tree' %]
     &sect;
     <a href="[% c.uri_for_action('/ref/blob', [c.req.captures.0, Commit.sha1], filename) %]">blob</a> &bull;
     <a href="[% c.uri_for_action('/ref/raw', [c.req.captures.0, Commit.sha1], filename) %]">raw</a> &bull;
