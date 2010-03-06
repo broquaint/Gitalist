@@ -47,8 +47,8 @@ sub find_blob : Action {
     my($repo, $object) = @{$c->{stash}}{qw(Repository Commit)};
     # FIXME - Eugh!
     my $h  = $object->isa('Gitalist::Git::Object::Commit')
-	   ? $repo->hash_by_path($object->sha1, $c->stash->{filename})
-	   : $object->isa('Gitalist::Git::Object::Blob')
+           ? $repo->hash_by_path($object->sha1, $c->stash->{filename})
+           : $object->isa('Gitalist::Git::Object::Blob')
              ? $object->sha1
              : die "Unknown object type for '${\$object->sha1}'";
     die "No file or sha1 provided."
