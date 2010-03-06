@@ -27,15 +27,21 @@ sub diff : Chained('find') CaptureArgs(0) {}
 sub diff_fancy : Chained('diff') PathPart('') Args() {
     my($self, $c, $comparison, @rest) = @_;
     # FIXME - This ain't pretty
-    $c->stash->{parent}   = $comparison
+    $c->stash(parent   => $comparison)
       if $comparison;
-    $c->stash->{filename} = $rest[0]
+    $c->stash(filename => $rest[0])
       if @rest;
 }
 
-sub diff_plain : Chained('diff') PathPart('plain') Args(0) {
-    my($self, $c) = @_;
-    $c->stash->{no_wrapper} = 1;
+sub diff_plain : Chained('diff') PathPart('plain') Args() {
+    my($self, $c, $comparison, @rest) = @_;
+    # FIXME - This ain't pretty
+    $c->stash(parent   => $comparison)
+      if $comparison;
+    $c->stash(filename => $rest[0])
+      if @rest;
+    $c->stash(no_wrapper => 1);
+    $c->response->content_type('text/plain; charset=utf-8');
 }
 
 sub commit : Chained('find') PathPart('commit') Args(0) {}
