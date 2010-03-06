@@ -147,6 +147,7 @@ class Gitalist::Git::Repository with Gitalist::Git::HasUtils {
         if ($search) {
             $search->{type} = 'grep'
                 if $search->{type} eq 'commit';
+	    no warnings; # where's this warning coming from?
             @search_opts = (
                 # This seems a little fragile ...
                 qq[--$search->{type}=$search->{text}],
