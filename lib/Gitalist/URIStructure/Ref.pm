@@ -44,10 +44,16 @@ sub tree : Chained('find') Does('FilenameArgs') Args() {}
 
 sub find_blob : Action {
     my ($self, $c) = @_;
+    my($repo, $object) = @{$c->{stash}}{qw(Repository Commit)};
     # FIXME - Eugh!
-    my $h  = $c->stash->{Repository}->hash_by_path($c->stash->{Commit}->sha1, $c->stash->{filename})
-           || die "No file or sha1 provided.";
-    $c->stash(blob => $c->stash->{Repository}->get_object($h)->content);
+    my $h  = $object->isa('Gitalist::Git::Object::Commit')
+	   ? $repo->hash_by_path($object->sha1, $c->stash->{filename})
+	   : $object->isa('Gitalist::Git::Object::Blob')
+             ? $object->sha1
+             : die "Unknown object type for '${\$object->sha1}'";
+    die "No file or sha1 provided."
+        unless $h;
+    $c->stash(blob => $repo->get_object($h)->content);
 }
 
 sub blob : Chained('find') Does('FilenameArgs') Args() {
