@@ -39,7 +39,6 @@ after diff_fancy => sub {
 after diff_plain => sub {
     my ($self, $c) = @_;
     $self->_diff($c);
-    $c->response->content_type('text/plain; charset=utf-8');
 };
 
 after tree => sub {

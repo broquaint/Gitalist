@@ -28,6 +28,12 @@ my %LEGACY_DISPATCH = (
         my $compare = $c->req->param('hbp') || $c->req->param('hp');
         return '/ref/diff', [$repos, $ref], $compare, $c->req->param('f');
     },
+    blobdiff_plain           => sub {
+        my($c, $action, $repos) =  @_;
+        my $ref     = $c->req->param('hb')  || $c->req->param('h');
+        my $compare = $c->req->param('hbp') || $c->req->param('hp');
+        return '/ref/diff_plain', [$repos, $ref], $compare, $c->req->param('f');
+    },
 );
 
 sub _legacy_uri {
