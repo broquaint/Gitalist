@@ -6,16 +6,16 @@ use namespace::autoclean;
 BEGIN { extends 'Gitalist::Controller' }
 
 my %LEGACY_DISPATCH = (
-    opml		     => sub { '/opml/opml' },
-    project_index	     => sub { '/legacyuri/project_index' },
+    opml                     => sub { '/opml/opml' },
+    project_index            => sub { '/legacyuri/project_index' },
     '(?:summary|heads|tags)' => sub {
-	my($c, $action, $repos) = @_;
-	return "/repository/$action", [$repos];
+        my($c, $action, $repos) = @_;
+        return "/repository/$action", [$repos];
     },
     blob => sub {
-	my($c, $action, $repos) = @_;
-	my $ref = $c->req->param('hb') || $c->req->param('h');
-	return '/ref/blob', [$repos, $ref], $c->req->param('f');
+        my($c, $action, $repos) = @_;
+        my $ref = $c->req->param('hb') || $c->req->param('h');
+        return '/ref/blob', [$repos, $ref], $c->req->param('f');
     },
 );
 
@@ -23,14 +23,14 @@ sub _legacy_uri {
     my($self, $c, $repos, $action) = @_;
 
     return
-	unless $action;
+        unless $action;
 
     my @result  = grep { $action =~ /^$_$/ } keys %LEGACY_DISPATCH;
     die "Matched too many actions for '$a' - @result"
-	if @result > 1;
+        if @result > 1;
 
     return $LEGACY_DISPATCH{$result[0]}->($c, $action, $repos)
-	if $result[0];
+        if $result[0];
 }
 
 sub handler : Chained('/base') PathPart('legacy') Args() {
@@ -39,7 +39,7 @@ sub handler : Chained('/base') PathPart('legacy') Args() {
     my ($action, $captures, @args) = $self->_legacy_uri($c, $repos, $c->req->param('a'));
 
     die("Not supported")
-	unless $action;
+        unless $action;
 
     $c->res->redirect($c->uri_for_action($action, $captures || [], @args));
     $c->res->status(301);
