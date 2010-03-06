@@ -62,7 +62,7 @@ Provides an atom feed for a given repository.
 
 =cut
 
-sub atom : Chained('find') Args(0) {
+sub atom : Chained('find') Does('FilenameArgs') Args() {
     my ($self, $c) = @_;
 
     my $host = lc hostname();
@@ -73,8 +73,9 @@ sub atom : Chained('find') Args(0) {
 
     my $repository = $c->stash->{Repository};
     my %logargs = (
-        sha1   => $repository->head_hash,
-        count  => Gitalist->config->{paging}{log} || 25,
+        sha1     => $repository->head_hash,
+        count    => Gitalist->config->{paging}{log} || 25,
+        ($c->stash->{filename} ? (file => $c->stash->{filename}) : ()),
     );
 
     my @revs;
@@ -100,7 +101,7 @@ Provides an RSS feed for a given repository.
 
 =cut
 
-sub rss : Chained('find') Args(0) {
+sub rss : Chained('find') Does('FilenameArgs') Args() {
   my ($self, $c) = @_;
 
   my $repository = $c->stash->{Repository};
@@ -116,7 +117,7 @@ sub rss : Chained('find') Args(0) {
   my %logargs = (
       sha1   => $repository->head_hash,
       count  => Gitalist->config->{paging}{log} || 25,
-#      ($c->req->param('f') ? (file => $c->req->param('f')) : ())
+      ($c->stash->{filename} ? (file => $c->stash->{filename}) : ()),
   );
   my @revs;
   my $mk_title = $c->stash->{short_cmt};

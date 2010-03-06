@@ -1,3 +1,2 @@
-<pre>
-[% subinclude('/fragment/ref/diff_plain', c.req.captures) %]
-</pre>
+[% subinclude('/fragment/' _ c.action, c.req.captures, c.req.args.0 c.req.args.1) %]
+
