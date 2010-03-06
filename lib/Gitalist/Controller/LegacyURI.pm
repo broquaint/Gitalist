@@ -17,6 +17,11 @@ my %LEGACY_DISPATCH = (
         my $ref = $c->req->param('hb') || $c->req->param('h');
         return '/ref/blob', [$repos, $ref], $c->req->param('f');
     },
+    blob_plain               => sub {
+        my($c, $action, $repos) =  @_;
+        my $ref = $c->req->param('hb') || $c->req->param('h');
+        return '/ref/raw', [$repos, $ref], $c->req->param('f');
+    },
 );
 
 sub _legacy_uri {
