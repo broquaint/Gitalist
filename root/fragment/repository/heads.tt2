@@ -1,18 +1,15 @@
 [% BLOCK repository_heads_headfoot %]
+[% SET cell = type == 'head' ? 'th' : 'td' %]
 <tr>
-   <th>HEAD</th>
-   <th>age</th>
-   <th>branch</th>
-   <th>actions</th>
+   <[% cell %]>HEAD</[% cell %]>
+   <[% cell %]>age</[% cell %]>
+   <[% cell %]>branch</[% cell %]>
+   <[% cell %]>actions</[% cell %]>
 </tr>
 [% END %]
 <table class='[% action %] listing'>
- <thead>
-  [% PROCESS repository_heads_headfoot %]
- </thead>
- <tfoot>
-  [% PROCESS repository_heads_headfoot %]
- </tfoot>
+ <thead>[% PROCESS repository_heads_headfoot type = 'head' %]</thead>
+ <tfoot>[% PROCESS repository_heads_headfoot type = 'foot' %]</tfoot>
 
  <tbody>
  [% FOREACH head IN heads %]

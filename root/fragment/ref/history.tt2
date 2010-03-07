@@ -1,25 +1,18 @@
+[% BLOCK history_table_headfoot %]
+[% SET cell = type == 'head' ? 'th' : 'td' %]
+<tr>
+ <[% cell %]>sha1</[% cell %]>
+ <[% cell %]>time</[% cell %]>
+ <[% cell %]>author</[% cell %]>
+ <[% cell %]>message</[% cell %]>
+ <[% cell %]>actions</[% cell %]>
+</tr>
+[% END %]
 [%
   INCLUDE 'inc/log_pager.tt2';
 %]  <table class='history listing'>
-   <thead>
-    <tr>
-     <th>sha1</th>
-     <th>time</th>
-     <th>author</th>
-     <th>message</th>
-     <th>actions</th>
-    </tr>
-   </thead>
-
-   <tfoot>
-    <tr>
-     <td>sha1</td>
-     <td>time</td>
-     <td>author</td>
-     <td>message</td>
-     <td>actions</td>
-    </tr>
-   </tfoot>
+   <thead>[% PROCESS history_table_headfoot type = 'head' %]</thead
+   <tfoot>[% PROCESS history_table_headfoot type = 'foot' %]</tfoot>
 
    <tbody>
    [% FOREACH line IN log_lines %]

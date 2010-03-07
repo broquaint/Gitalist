@@ -1,4 +1,7 @@
+[%- SET object = commit || head -%]
 <div class='actions'>
+  <div class="clear"></div>
+  <div class='grid_8'>
   <!-- This should probably be a real LIst -->
     <a href="[% c.uri_for_action('/repository/summary', [c.req.captures.0]) %]">summary</a> &bull;
     [% IF c.req.captures.size == 1; SET path = 'repository'; ELSE; SET path = 'ref'; END %]
@@ -18,5 +21,6 @@
     <a href="[% c.uri_for_action('/ref/history', [c.req.captures.0, Commit.sha1], filename)  %]">history</a> &bull;
     <a href="[% c.uri_for(c.controller.action_for('commit'), [c.req.captures.0, Repository.head_hash]) %]">HEAD</a>
     [% END %]
-    <div class='chroma-hash'>[% INCLUDE 'inc/chroma_hash.tt2' sha1 = object.sha1 %]</div>
+  </div>
+  <div class='grid_4'>[% INCLUDE 'inc/chroma_hash.tt2' sha1 = object.sha1 %]</div>
 </div>

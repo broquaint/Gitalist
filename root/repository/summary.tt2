@@ -1,4 +1,3 @@
-[% PROCESS 'nav/actions.tt2' object = commit %]
 
 <div class='summary content'>
   [% subinclude('/fragment/repository/summary', c.req.captures) %]
@@ -9,6 +8,8 @@
   <h2><a href='[% c.uri_for(c.controller.action_for('heads'), c.req.captures) %]'>branches</a></h2>
   [% subinclude('/fragment/repository/heads', c.req.captures) %]
 
+  [% IF Repository.tags.size > 0 %]
   <h2><a href='[% c.uri_for(c.controller.action_for('tags'), c.req.captures) %]'>tags</a></h2>
   [% subinclude('/fragment/repository/tags', c.req.captures) %]
+  [% END %]
 </div>
