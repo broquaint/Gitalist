@@ -1,4 +1,3 @@
-[% INCLUDE 'nav/actions.tt2' object = commit %]
 
 <div class='content'>
   [% subinclude('/fragment/ref/commit', c.req.captures) %]

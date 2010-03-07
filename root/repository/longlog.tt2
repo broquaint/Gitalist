@@ -1,2 +1,1 @@
-[% INCLUDE 'nav/actions.tt2' object = Commit %]
 [% subinclude('/fragment/' _ c.action, c.req.captures, c.req.parameters) %]

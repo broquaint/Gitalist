@@ -1,4 +1,3 @@
-[% INCLUDE 'nav/actions.tt2' object = commit %]
 <div class='content'>
   [%# XXX Nabbed the HTML below from gitweb's log action. %]
   [% FOREACH result IN results %]

@@ -23,37 +23,46 @@
     <link rel="stylesheet" href="[% c.uri_for('/static/css/blueprint/ie.css') %]" type="text/css" media="screen, projection">
   <![endif]-->
   <link rel="stylesheet" type="text/css" href="[% c.uri_for('/static/css/site.css') %]">
+  <link rel="stylesheet" type="text/css" href="[% c.uri_for('/static/css/960.css') %]">
   <link rel="shortcut icon" href="[% c.uri_for('/static/git-favicon.png') %]" type="image/png">
 </head>
 
 <body>
 
-<div id='the-container'>
+<div id='the-container' class='container_12'>
 
-<div id="page-header">
-  <a title="git homepage" href="http://git-scm.org">
-   <img src="[% c.uri_for('/logo.png') %]" alt="git" class="logo">
-  </a>
-  <div id='header-title'>
-   <a href="[% c.uri_for('/') %]">A Gitalist</a>
-   [%- IF Repository %]
-    / <a href="[% c.uri_for_action('/repository/summary', [Repository.name]) %]">[% Repository.name %]</a>
-    [%# INCLUDE 'nav/branches.tt2' %]
+ <div id="page-header">
+   <div class="clear"></div> 
+   <div class='grid_6'>
+    <a href="[% c.uri_for('/') %]">A Gitalist</a>
+    [%- IF Repository %]
+     / <a href="[% c.uri_for_action('/repository/summary', [Repository.name]) %]">[% Repository.name %]</a>
+    [%- END %]
    </div>
-   [% INCLUDE 'nav/search.tt2' %]
-  [% END %]
-</div>
+   <div class='grid_6'>
+    <a title="git homepage" href="http://git-scm.org">
+     <img src="[% c.uri_for('/logo.png') %]" alt="git" class="logo">
+    </a>
+    [% IF Repository; INCLUDE 'nav/search.tt2'; END %]
+   </div>
+ </div>
 
-<div id='body'>
-[% content %]
-</div>
+ [% INCLUDE 'nav/actions.tt2' %]
 
-<div id="page-footer">
-[% IF Repository %]
-  [% Repository.description | html %]
-[% END %]
-[% INCLUDE 'inc/footer_feeds.tt2' %]
-</div>
+ <div class="clear"></div>
+ <div id='body' class='grid_12'>
+ [% content %]
+ </div>
+
+ <div class="clear"></div>
+ <div id="page-footer">
+  <div class='grid_12'>
+   [%
+     IF Repository; Repository.description | html; END;
+     INCLUDE 'inc/footer_feeds.tt2';
+   %]
+  </div>
+ </div>
 
 </div>
 

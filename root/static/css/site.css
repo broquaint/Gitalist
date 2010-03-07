@@ -1,21 +1,12 @@
-#the-container {
-  margin: 1em 100px;
-  text-align: center;
-  background-color: white;
-}
-#body {
-  text-align: justify;
-}
-div.content {
-  padding: 0 7px;
-}
-
 /*
 14d2f2ca3732551d1585e7590e60b82492f3
 ^^ A rather nice chroma hash
 */
 body {
-  background-color: #555;
+  background-color: #999;
+}
+#the-container {
+  background-color: white;
 }
 
 thead, tfoot {
@@ -43,7 +34,7 @@ tfoot td {
   font-size:   1em;
   font-style: normal;
 }
-div.chroma-hash {
+.actions span.chroma-hash {
   float: right;
 }
 
@@ -72,23 +63,23 @@ div.chroma-hash {
 /* header */
 #page-header {
   height: 25px;
-  padding: 8px;
   font-size: 1.5em;
   font-weight: bold;
   border-bottom: solid 1px #777;
   text-align: justify;
+  padding: 8px 0;
 }
 
 img.logo {
-  float: right;
   border-width: 0px;
-  margin-top: 4px;
+  margin-top: 6px;
+  float: right;
+  padding-left: 15px;
 }
 
 /* footer */
 #page-footer {
   height: 20px;
-  padding: 8px;
   margin-top: 10px;
   font-style: italic;
   background-color: #d9d8d1;
@@ -97,11 +88,9 @@ img.logo {
 
 /* actions include */
 .actions {
-  padding-bottom: 4px 0;
   font-style: italic;
   border-bottom: solid 1px #777;
-  margin-bottom: 10px;
-  padding: 5px 7px;
+  height: 25px;
 }
 
 /* pager include */
@@ -112,9 +101,7 @@ img.logo {
 /* search include */
 #page-search {
   text-align: right;
-  float: right;
   font-size: 0.7em;
-  padding-right: 20px;
 }
 
 /* shortlog include */

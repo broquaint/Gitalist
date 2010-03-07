@@ -1,23 +1,18 @@
 [% BLOCK shortlog_table_headfoot %]
+[% SET cell = type == 'head' ? 'th' : 'td' %]
 <tr>
- <th>sha1</th>
- <th>time</th>
- <th>author</th>
- <th>message</th>
- <th>actions</th>
+ <[% cell %]>sha1</[% cell %]>
+ <[% cell %]>time</[% cell %]>
+ <[% cell %]>author</[% cell %]>
+ <[% cell %]>message</[% cell %]>
+ <[% cell %]>actions</[% cell %]>
 </tr>
 [% END %]
 <div class='content'>
-[%
-  INCLUDE 'inc/log_pager.tt2';
-%]<table class='shortlog listing'>
- <thead>
-    [% PROCESS shortlog_table_headfoot %]
- </thead>
-
- <tfoot>
-    [% PROCESS shortlog_table_headfoot %]
- </tfoot>
+ [% INCLUDE 'inc/log_pager.tt2' %]
+ <table class='shortlog listing'>
+ <thead>[% PROCESS shortlog_table_headfoot type = 'head' %]</thead>
+ <tfoot>[% PROCESS shortlog_table_headfoot type = 'foot' %]</tfoot>
 
  <tbody>
  [% FOREACH line IN log_lines %]

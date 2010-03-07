@@ -7,7 +7,6 @@
  <td class='data'>data</td>
 </tr>
 [% END -%]
-[% PROCESS 'nav/actions.tt2' object = head %]
 [%- INCLUDE inc/syntax_highlight_css.tt2 -%]
 
 <div class='content'>
