@@ -30,7 +30,7 @@ Provides a snapshot of a given commit.
 
 =cut
 
-sub snapshot : Chained('base') Args() {
+sub snapshot : Chained('find') PathPart('snapshot') Args() {
     my ($self, $c, $format) = @_;
     $format ||= 'tgz';
     my @snap = $c->stash->{Repository}->snapshot(

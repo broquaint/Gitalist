@@ -32,9 +32,6 @@ test('/', 'a=opml');
 test('/', 'a=summary');
 test('/', 'a=heads');
 test('/', 'a=tags');
-{
-
-    local $TODO = 'FIXME';
 
 test('/', 'a=blob;f=dir1/file2;h=257cc5642cb1a054f08cc83f2d943e56fd3ebe99;hb=36c6c6708b8360d7023e8a1649c45bcf9b3bd818');
 test('/', 'a=blob;f=dir1/file2;h=257cc5642cb1a054f08cc83f2d943e56fd3ebe99;hb=HEAD');
@@ -64,6 +61,7 @@ test('/', 'a=blob_plain;f=file1;hb=3f7567c7bdf7e7ebf410926493b92d398333116e');
 test('/', 'a=blob_plain;f=file1;hb=HEAD');
 test('/', 'a=blob_plain;f=file1;hb=master');
 test('/', 'a=blob_plain;f=file1;hb=refs/heads/master');
+
 
 test('/', 'a=blobdiff;f=file1;h=5716ca5987cbf97d6bb54920bea6adde242d87e6;hp=257cc5642cb1a054f08cc83f2d943e56fd3ebe99;hb=36c6c6708b8360d7023e8a1649c45bcf9b3bd818;hpb=3bc0634310b9c62222bb0e724c11ffdfb297b4ac');
 test('/', 'a=blobdiff;f=file1;h=5716ca5987cbf97d6bb54920bea6adde242d87e6;hp=257cc5642cb1a054f08cc83f2d943e56fd3ebe99;hb=3f7567c7bdf7e7ebf410926493b92d398333116e;hpb=3bc0634310b9c62222bb0e724c11ffdfb297b4ac');
@@ -112,7 +110,6 @@ test('/', 'a=commitdiff_plain;h=master');
 test('/', 'a=commitdiff_plain;h=master;hp=3f7567c7bdf7e7ebf410926493b92d398333116e');
 test('/', 'a=commitdiff_plain;h=refs/heads/master');
 test('/', 'a=commitdiff_plain;h=refs/heads/master;hp=3f7567c7bdf7e7ebf410926493b92d398333116e');
-
 
 test('/', 'a=history;f=dir1/file2;h=257cc5642cb1a054f08cc83f2d943e56fd3ebe99;hb=36c6c6708b8360d7023e8a1649c45bcf9b3bd818');
 test('/', 'a=history;f=dir1/file2;h=257cc5642cb1a054f08cc83f2d943e56fd3ebe99;hb=HEAD');
@@ -217,7 +214,6 @@ test('/', 'a=tree;hb=HEAD');
 test('/', 'a=tree;hb=master');
 test('/', 'a=tree;hb=refs/heads/master');
 
-
 test('/', 'a=atom');
 test('/', 'a=atom;f=dir1');
 test('/', 'a=atom;f=dir1/file2');
@@ -258,7 +254,4 @@ test('/', 'a=blame;f=file1;h=5716ca5987cbf97d6bb54920bea6adde242d87e6;hb=refs/he
 test('/', 'a=blame;f=file1;hb=3bc0634310b9c62222bb0e724c11ffdfb297b4ac');
 test('/', 'a=blame;f=file1;hb=3f7567c7bdf7e7ebf410926493b92d398333116e');
 
-}
-
 done_testing;
-
