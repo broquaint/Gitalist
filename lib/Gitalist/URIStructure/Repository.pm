@@ -30,6 +30,18 @@ before 'log' => sub {
     $c->stash->{Commit} = $c->stash->{Repository}->get_object($c->stash->{Repository}->head_hash);
 };
 
+sub object : Chained('find') PathPart('') Args(1) {
+    my ($self, $c, $sha1) = @_;
+
+    my $repo = $c->stash->{Repository};
+    my $obj  = $c->stash->{Commit} = $repo->get_object($sha1);
+    my($act) = (ref($obj) || '') =~ /::(\w+)$/;
+
+    $c->res->redirect($c->uri_for_action("/ref/\L$act", [$repo->name, $obj->sha1]));
+    $c->res->status(301);
+
+}
+
 sub summary : Chained('find') PathPart('') Args(0) {}
 
 sub heads : Chained('find') Args(0) {}

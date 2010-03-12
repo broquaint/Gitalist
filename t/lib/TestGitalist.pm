@@ -73,7 +73,7 @@ sub test_uri {
     my $request = "/$uri"; 
     $request .= "?$qs" if defined $qs;
     my $response = request($request);
-    ok($response->is_success, "ok $request");
+    ok($response->is_success || $response->is_redirect, "ok $request");
     if (MECH) {
         my $res = MECH()->get($request);
         ok $res->is_success, "ok mech $request (" . $res->code . ')';
