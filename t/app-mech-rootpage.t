@@ -11,7 +11,7 @@ MECH->get_ok('/');
         my $uri = $row->findnodes('.//a')->[0]->attr('href');
         my ($repos_name) = $uri =~ m{^http://localhost/([\w\.]+)$};
         ok $repos_name, "Repos name $repos_name";
-        like $row->findnodes('.//a')->[1]->as_text, qr/^[\w\s;'\.]+$/, 'Have description'
+        like $row->findnodes('.//a')->[1]->as_text, qr{^[\w\s/;',\.]+$}, 'Have description'
             unless $repos_name eq 'nodescription';
         like $row->findnodes('.//td[@class="time-since"')->[0]->as_text, qr/^(never|\d\s+(years|months)\s+ago)$/,
             'Last change looks ok';
