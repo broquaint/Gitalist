@@ -1,11 +1,12 @@
 [% BLOCK repos_table_headfoot %]
+[% SET cell = type == 'head' ? 'th' : 'td' %]
 <tr>
-    <th>Repository</th>
+    <[% cell %]>Repository</[% cell %]>
     <!-- XXX These do nothing presently -->
-    <th><a class="header" href="/?o=descr">Description</a></th>
-    <th><a class="header" href="/?o=owner">Owner</a></th>
-    <th><a class="header" href="/?o=age">Last Change</a></th>
-    <th></th>
+    <[% cell %]><a class="header" href="/?o=descr">Description</a></[% cell %]>
+    <[% cell %]><a class="header" href="/?o=owner">Owner</a></[% cell %]>
+    <[% cell %]><a class="header" href="/?o=age">Last Change</a></[% cell %]>
+    <[% cell %]></[% cell %]>
 </tr>
 [% END %]
 <div class='content'>
@@ -17,10 +18,10 @@
 
   <table class="repository_list">
     <thead>
-		[% INCLUDE repos_table_headfoot %]
+		[% INCLUDE repos_table_headfoot type = 'head' %]
     </thead>
     <tfoot>
-		[% INCLUDE repos_table_headfoot %]
+		[% INCLUDE repos_table_headfoot type = 'foot'%]
     </tfoot>
 
 	[% subinclude('/fragment/collectionofrepositories') %]

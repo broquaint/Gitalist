@@ -3,27 +3,32 @@
 ^^ A rather nice chroma hash
 */
 body {
-  background-color: #999;
+  /* From http://jasonsantamaria.com/ via http://www.inspirationbit.com/striking-web-sites-with-font-stacks-that-inspire/ */
+  font-family: "Lucida Sans Unicode","Lucida Grande","Lucida Sans",Verdana,Arial,sans-serif;
 }
 #the-container {
-  background-color: white;
+}
+
+a {
+  color: mediumblue;
 }
 
 thead, tfoot {
-  /* FTR all table columns should be sortable hence the colour to indicate clickableness. */
-  color: navy;
+  /* FTR all table columns should be sortable hence the colour to indicate clickableness.
+  color: mediumblue; XXX uncomment this when sorting is implemented*/
+  color: slategray;
   font-size: small;
   font-weight: bold !important;
 }
 thead th {
-  border-bottom: solid 1px #777;
+  border-bottom: solid 1px lightsteelblue;
 }
 tfoot td {
-  border-top: solid 1px #777;
+  border-top: solid 1px lightsteelblue
 }
 
 .listing tbody tr:nth-child(even) {
-  background-color: #f7f7f7;
+  background-color: whitesmoke;
 }
 .listing tbody tr:hover {
   background-color: #fefeaa;
@@ -43,7 +48,8 @@ tfoot td {
 }
 .author, .head {
   font-weight: bold;
-  font-family: "Trebuchet MS", "Lucida Grande", serif;
+  /* From http://designr.it/ via http://www.inspirationbit.com/striking-web-sites-with-font-stacks-that-inspire/ */
+  font-family: Baskerville,Georgia,Cambria,Times,Times New Roman,serif;
 }
 
 .file-name, .file-mode {
@@ -65,7 +71,7 @@ tfoot td {
   height: 25px;
   font-size: 1.5em;
   font-weight: bold;
-  border-bottom: solid 1px #777;
+  border-bottom: solid 3px limegreen;
   text-align: justify;
   padding: 8px 0;
 }
@@ -82,14 +88,13 @@ img.logo {
   height: 20px;
   margin-top: 10px;
   font-style: italic;
-  background-color: #d9d8d1;
-  border-top: solid 1px #777;
+  border-top: solid 3px crimson;
 }
 
 /* actions include */
 .actions {
   font-style: italic;
-  border-bottom: solid 1px #777;
+  border-bottom: solid 1px limegreen;
   height: 25px;
 }
 
@@ -288,6 +293,7 @@ a.rss_logo {
   font-style: normal;
   text-align: center;
   text-decoration: none;
+  margin: 3px 0;
 }
 
 a.rss_logo:hover {

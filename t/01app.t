@@ -27,7 +27,7 @@ foreach my $test (map {curry_test_uri($_)} ('fragment/repo1', 'repo1') ) {
   $test->('36c6c6708b8360d7023e8a1649c45bcf9b3bd818/tree/dir1');
   $test->('36c6c6708b8360d7023e8a1649c45bcf9b3bd818/diff');
   $test->('36c6c6708b8360d7023e8a1649c45bcf9b3bd818/diff/plain');
-  #test->('36c6c6708b8360d7023e8a1649c45bcf9b3bd818/shortlog/dir1');
+  $test->('36c6c6708b8360d7023e8a1649c45bcf9b3bd818/history/dir1');
   $test->('36c6c6708b8360d7023e8a1649c45bcf9b3bd818/history/dir1');
   $test->('36c6c6708b8360d7023e8a1649c45bcf9b3bd818/blame/file1');
   $test->('36c6c6708b8360d7023e8a1649c45bcf9b3bd818/blob/file1');
