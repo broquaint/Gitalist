@@ -66,6 +66,12 @@
 
 </div>
 
++[% USE Dumper %]
++<pre>
+[% Repository.path %]
++[% Dumper.dump(c.stash) %]
++</pre>
+
 </body>
 </html>
 [%- END -%]
