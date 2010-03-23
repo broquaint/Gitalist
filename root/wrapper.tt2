@@ -1,11 +1,12 @@
 [%- IF no_wrapper || template.name.match('\.(css|js|txt)'); content; ELSE; -%]
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
   <!-- git core binaries version [% git_version %] -->
-  <meta charset="utf-8">
-  <meta name="generator" content="gitweb/[% version %] git/[% git_version %]">
-  <meta name="robots" content="index, nofollow">
+  <meta charset="utf-8" />
+  <meta name="generator" content="gitweb/[% version %] git/[% git_version %]" />
+  <meta name="robots" content="index, nofollow" />
   <title>[%# FIXME - MING %][%-
     title = BLOCK;
       c.config.sitename;
@@ -17,59 +18,78 @@
     title;
   -%] (Gitalist)</title>
   [% INCLUDE '_header_feeds.tt2' %]
-  <link rel="stylesheet" href="[% c.uri_for('/static/css/blueprint/screen.css') %]" type="text/css" media="screen, projection">
-  <link rel="stylesheet" href="[% c.uri_for('/static/css/blueprint/print.css') %]" type="text/css" media="print">
-  <!--[if lt IE 8]>
-    <link rel="stylesheet" href="[% c.uri_for('/static/css/blueprint/ie.css') %]" type="text/css" media="screen, projection">
-  <![endif]-->
-  <link rel="stylesheet" type="text/css" href="[% c.uri_for('/static/css/site.css') %]">
-  <link rel="stylesheet" type="text/css" href="[% c.uri_for('/static/css/960.css') %]">
-  <link rel="shortcut icon" href="[% c.uri_for('/static/git-favicon.png') %]" type="image/png">
+   
+	<link rel="stylesheet" type="text/css" href="[% c.uri_for('/static/css/core.css') %]" />
+	<link rel="shortcut icon" href="[% c.uri_for('/static/git-favicon.png') %]" type="image/png" />
 </head>
 
 <body>
 
-<div id='the-container' class='container_12'>
+<div id="header">
+	<div class="sub_holder">
+		<a href="[% c.uri_for('/') %]" id="logo"><img src="[% c.uri_for('/static/i/logo.png') %]" alt="Gitalist" /></a>
+	
+		<div class="search">
+			[% IF Repository; INCLUDE 'nav/search.tt2'; END %]
+		</div>
+		
+		
+		<div id="nav_logs" [% 'style="visibility:hidden"' IF c.action.name == "index" %]>
+			<ul>
+				[% IF c.req.captures.size == 1; SET path = 'repository'; ELSE; SET path = 'ref'; END %]
+				<li [% 'class="selected"' IF c.action.name.match('shortlog') %]><a href="[% c.uri_for_action('/' _ path _ '/shortlog', c.req.captures) %]" id="log_short">Short log</a></li>
+				<li [% 'class="selected"' IF c.action.name.match('longlog') %]><a href="[% c.uri_for_action('/' _ path _ '/longlog', c.req.captures) %]" id="log_full">Long log</a></li>
+			</ul>
+		</div>
+	
+		<h1>
+			<a href="[% c.uri_for('/') %]">Home</a>
+		
+			[%- IF Repository %]
+    		/ <a href="[% c.uri_for_action('/repository/summary', [Repository.name]) %]/shortlog">[% Repository.name %]</a>
+   			[%- END %]
+			/
+			
+			[% c.action.name.replace("_"," ").replace("log", " log") FILTER ucfirst %]
 
- <div id="page-header">
-   <div class="clear"></div> 
-   <div class='grid_6'>
-    <a href="[% c.uri_for('/') %]">A Gitalist</a>
-    [%- IF Repository %]
-     / <a href="[% c.uri_for_action('/repository/summary', [Repository.name]) %]">[% Repository.name %]</a>
-    [%- END %]
-   </div>
-   <div class='grid_6'>
-    <a title="git homepage" href="http://git-scm.org">
-     <img src="[% c.uri_for('/logo.png') %]" alt="git" class="logo">
-    </a>
-    [% IF Repository; INCLUDE 'nav/search.tt2'; END %]
-   </div>
- </div>
-
- [% INCLUDE 'nav/actions.tt2' %]
-
- <div class="clear"></div>
- <div id='body' class='grid_12'>
- [% content %]
- </div>
-
- <div class="clear"></div>
- <div id="page-footer">
-  <div class='grid_12'>
-   [%
-     IF Repository; Repository.description | html; END;
-     INCLUDE 'inc/footer_feeds.tt2';
-   %]
-  </div>
- </div>
-
+			</h1>
+	
+	</div>
 </div>
+
+
+
+<div id="content_holder">
+	<div id="content" class="sub_holder">
+		<div id="content_inner">
+
+	
+
+ [% content %]
+
+ 
+ 
+  [% INCLUDE 'nav/actions.tt2' %]
+		</div>
+   	</div>
+</div>
+
+<div id="footer">
+	<div class="sub_holder">
+	[%
+		IF Repository; Repository.description | html; END;
+		INCLUDE 'inc/footer_feeds.tt2';
+	%]
+	<a title="git homepage" href="http://git-scm.org"><img src="[% c.uri_for('/logo.png') %]" alt="git" /></a>
+	</div>
+</div>
+
+
 
 +[% USE Dumper %]
 +<pre>
 [% Repository.path %]
-+[% Dumper.dump(c.stash) %]
++[% Dumper.dump(c.req.action) %]
 +</pre>
 
 </body>

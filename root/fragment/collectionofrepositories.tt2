@@ -3,7 +3,7 @@
   [%- repos_link = c.uri_for_action('/repository/summary', [p.name]) -%]
 <tr class="reposrow">
     <td><a class="list" href="[% repos_link %]">[% p.name %]</a></td>
-    <td><a class="list" title="[% p.description %]" href="[% repos_link %]">[% abridged_description(p.description)  %]</a></td>
+    <td><a class="list" title="[% p.description %]" href="[% repos_link %]/shortlog">[% abridged_description(p.description)  %]</a></td>
     <td>[% p.owner %]</td>
     <td class="time-since">[% time_since(p.last_change) %]</td>
     <td class="link"><a href="[% repos_link %]">summary</a>

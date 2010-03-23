@@ -1,8 +1,8 @@
 
 <div class='summary content'>
-  [% subinclude('/fragment/repository/summary', c.req.captures) %]
+  <!-- [% subinclude('/fragment/repository/summary', c.req.captures) %]
 
-  <h2><a href='[% c.uri_for(c.controller.action_for('shortlog'), c.req.captures) %]'>shortlog</a></h2>
+ <h2><a href='[% c.uri_for(c.controller.action_for('shortlog'), c.req.captures) %]'>shortlog</a></h2> -->
   [% subinclude('/fragment/repository/shortlog', c.req.captures) %]
 
   <h2><a href='[% c.uri_for(c.controller.action_for('heads'), c.req.captures) %]'>branches</a></h2>

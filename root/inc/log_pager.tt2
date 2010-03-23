@@ -1,12 +1,11 @@
-<div class='pager'>
- <a href='[% c.uri_for_action('/' _ c.action, [Repository.name]) %]'>HEAD</a> &sect;
- [% IF log_lines.first.sha1 != Commit.sha1 || (log_lines.size != 25 && page) %]
- <a href='[% c.uri_with(pg => (page||0) + 1) %]'>&laquo; newer</a>
- [% END %]
- [% IF log_lines.first.sha1 != Commit.sha1 && log_lines.size == 25%]
- &bull;
- [% END %]
- [% IF log_lines.size == 25 %]
- <a href='[% c.uri_with(pg => (page||0) - 1) %]'>older &raquo;</a>
- [% END %]
-</div>
+<ul class="pager">
+	[% IF log_lines.first.sha1 != Commit.sha1 || (log_lines.size != 25 && page) %]
+	<li class="pager_prev"><a href='[% c.uri_with(pg => (page||0) + 1) %]'>Newer commits</a></li>
+	[% END %]
+	
+	[% IF log_lines.first.sha1 != Commit.sha1 && log_lines.size == 25 %]	[% END %]
+	
+	[% IF log_lines.size == 25 %]
+	<li class="pager_next"><a href='[% c.uri_with(pg => (page||0) - 1) %]'>Older commits</a></li>
+	[% END %]
+</ul>
