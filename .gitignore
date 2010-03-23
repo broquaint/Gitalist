@@ -7,7 +7,6 @@ META.yml
 Makefile
 Makefile.old
 blib*
-inc*
 pm_to_blib
 MANIFEST
 MANIFEST.bak
