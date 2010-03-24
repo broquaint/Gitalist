@@ -2,16 +2,16 @@
 [% SET cell = type == 'head' ? 'th' : 'td' %]
 <tr>
 	<[% cell %]>ID (sha1)</[% cell %]>
-	<[% cell %]>Time</[% cell %]>
+	<[% cell %]>Last change</[% cell %]>
 	<[% cell %]>Message</[% cell %]>
-	<[% cell %]>Author</[% cell %]>
+	<[% cell %]>By</[% cell %]>
 	<[% cell %]>Actions</[% cell %]>
 </tr>
 [% END %]
 
 
 
-<table class='shortlog listing'>
+<table class='listing'>
 <thead>[% PROCESS shortlog_table_headfoot type = 'head' %]</thead>
 <tbody>
  [% FOREACH line IN log_lines %]

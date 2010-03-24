@@ -30,12 +30,13 @@ div{
 	aborder:1px solid olive;
 }
 #content{
+	min-height:200px;
 	padding:0 12px 40px 10px;
-	aborder:1px solid red;
 	background:transparent url(/static/i/bg_bottom.png) no-repeat center bottom;
 }
 #content_inner{
 	aborder:1px solid blue;
+	padding-bottom:30px;
 	background:transparent url(/static/i/bg_top.png) no-repeat;
 }
 #logo{
@@ -46,7 +47,30 @@ div{
 	margin-right:50px;
 	float:right;
 }
+#git_logo{
+	float:left;
+	margin-left:15px;
+}
+#feeds{
+	float:right;
+	margin-right:15px;
+}
 
+#footer p{
+	margin-left:15px;
+}
+#debug_holder{
+	clear:both;
+	padding-top:30px;
+	margin:30px 0;
+}
+
+#debug_holder pre{
+	margin:0;
+	padding:10px;
+	border:1px solid #ddd;
+	background-color:#f0f0f0;
+}
 
 /* nav tabs */
 #nav_logs{
@@ -134,7 +158,24 @@ a:hover{
 .tree{
 	background:transparent url(/static/i/icons/tree.png) no-repeat;
 }
-
+.shortlog{
+	background:transparent url(/static/i/icons/shortlog.png) no-repeat;
+}
+.longlog{
+	background:transparent url(/static/i/icons/longlog.png) no-repeat;
+}
+.blob{
+	background:transparent url(/static/i/icons/blob.png) no-repeat;
+}
+.blame{
+	background:transparent url(/static/i/icons/blame.png) no-repeat;
+}
+.history{
+	background:transparent url(/static/i/icons/history.png) no-repeat;
+}
+.raw{
+	background:transparent url(/static/i/icons/raw.png) no-repeat;
+}
 .sha1_holder{
 	background:transparent url(/static/i/icons/button_sha1.png) no-repeat;
 }
@@ -185,10 +226,16 @@ th{
 	text-align:left;
 	color:#fff;
 }
+th a{
+	color:#fff;
+}
 tr.invert{
 	background-color:#f0f0f0;
 }
 .sha1{
+	width:80px;
+}
+.file-mode{
 	width:80px;
 }
 .time-since{
@@ -210,5 +257,5 @@ table.listing{
 	padding:9px 5px 9px 10px;
 }
 .action-list{
-	width:90px;
+	width:120px;
 }

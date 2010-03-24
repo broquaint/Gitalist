@@ -1,18 +1,16 @@
 [% BLOCK tree_table_headfoot %]
 [% SET cell = type == 'head' ? 'th' : 'td' %]
   <tr>
-   <[% cell %]>mode</[% cell %]>
-   <[% cell %]>file</[% cell %]>
-   <[% cell %]>actions</[% cell %]>
+   <[% cell %]>Mode</[% cell %]>
+   <[% cell %]>File</[% cell %]>
+   <[% cell %]>Actions</[% cell %]>
   </tr>
 [% END %]
-<table class='tree listing'>
+<table class="listing">
  <thead>[% PROCESS tree_table_headfoot type = 'head' %]</thead>
- <tfoot>[% PROCESS tree_table_headfoot type = 'foot' %]</tfoot>
-
  <tbody>
   [% FOREACH item IN tree_list %]
-  <tr>
+ <tr [% "class='invert'" IF loop.count % 2 %]>
    <td class='file-mode'>[% item.modestr %]</td>
    [%-
         action_type = item.type == 'tree' ? 'tree' : 'blob';
@@ -23,15 +21,13 @@
     <a href="[% blob_or_tree_link %]">[% item.file %]</a>
    </td>
    <td class='action-list'>
-     <a href="[% blob_or_tree_link %]">[% theact %]</a>
+	<a href="[% blob_or_tree_link %]">[% theact %]</a>
 	  [% IF item.type == 'blob' %]
-	  <a href="[% c.uri_for_action('/ref/blob', c.req.captures, c.req.args.to_path(item.file)) %]">blob</a>
-	  <a href="[% c.uri_for_action('/ref/blame', c.req.captures, c.req.args.to_path(item.file)) %]">blame</a>
+	<a href="[% c.uri_for_action('/ref/blob', c.req.captures, c.req.args.to_path(item.file)) %]" title="Blob" class="button blob">Blob</a>
+	<a href="[% c.uri_for_action('/ref/raw', c.req.captures, c.req.args.to_path(item.file)) %]" title="Raw" class="button raw">raw</a>
+	<a href="[% c.uri_for_action('/ref/blame', c.req.captures, c.req.args.to_path(item.file)) %]" title="Blame" class="button blame">blame</a>
 	  [% END %]
-     <a href="[% c.uri_for_action('/ref/history', c.req.captures, c.req.args.to_path(item.file)) %]">history</a>
-     [% IF item.type == 'blob' %]
-     <a href="[% c.uri_for_action('/ref/raw', c.req.captures, c.req.args.to_path(item.file)) %]">raw</a>
-     [% END %]
+     <a href="[% c.uri_for_action('/ref/history', c.req.captures, c.req.args.to_path(item.file)) %]" title="Short log" class="button shortlog">Short log</a>
    </td>
   </tr>
   [% END %]

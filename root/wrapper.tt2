@@ -30,7 +30,14 @@
 		<a href="[% c.uri_for('/') %]" id="logo"><img src="[% c.uri_for('/static/i/logo.png') %]" alt="Gitalist" /></a>
 	
 		<div class="search">
-			[% IF Repository; INCLUDE 'nav/search.tt2'; END %]
+			[% IF Repository; INCLUDE 'nav/search.tt2'; ELSE; %]
+			
+			<form method="get" action="[% c.uri_for_action('/search') %]" enctype="application/x-www-form-urlencoded">
+   <p class="projsearch">Search:
+    <input type="text" name="s" value="[% search_text %]" />
+   </p>
+  </form>
+		[% END %]
 		</div>
 		
 		
@@ -50,8 +57,11 @@
    			[%- END %]
 			/
 			
-			[% c.action.name.replace("_"," ").replace("log", " log") FILTER ucfirst %]
-
+			
+			[% c.action.name.replace("_"," ").replace("log", " log").replace("index","Repositories") FILTER ucfirst %]
+			
+	
+			
 			</h1>
 	
 	</div>
@@ -69,28 +79,39 @@
 
  
  
-  [% INCLUDE 'nav/actions.tt2' %]
+  [%# INCLUDE 'nav/actions.tt2' %]
 		</div>
    	</div>
 </div>
 
-<div id="footer">
-	<div class="sub_holder">
-	[%
-		IF Repository; Repository.description | html; END;
-		INCLUDE 'inc/footer_feeds.tt2';
-	%]
-	<a title="git homepage" href="http://git-scm.org"><img src="[% c.uri_for('/logo.png') %]" alt="git" /></a>
+<div id="footer_holder">
+	<div id="footer" class="sub_holder">
+		
+		<p>[% IF Repository; Repository.description | html; END; %]</p>
+	
+		<a title="git homepage" href="http://git-scm.org"><img src="[% c.uri_for('/logo.png') %]" id="git_logo" alt="git" /></a>
+		
+		<div id="feeds">
+		[% INCLUDE 'inc/footer_feeds.tt2' %]
+		</div>
 	</div>
+
 </div>
 
 
+<div id="debug_holder">
+	<div id="debug" class="sub_holder">
 
-+[% USE Dumper %]
-+<pre>
-[% Repository.path %]
-+[% Dumper.dump(c.req.action) %]
-+</pre>
+	<p>Debug:</p>
+	
+	[% USE Dumper %]
+	<pre>
+	[% Repository.path %]
+	[% Dumper.dump(c.req.action) %]
+	</pre>
+	
+	</div>
+</div>
 
 </body>
 </html>

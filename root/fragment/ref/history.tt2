@@ -3,27 +3,25 @@
 <tr>
  <[% cell %]>sha1</[% cell %]>
  <[% cell %]>time</[% cell %]>
- <[% cell %]>author</[% cell %]>
  <[% cell %]>message</[% cell %]>
+ <[% cell %]>author</[% cell %]>
  <[% cell %]>actions</[% cell %]>
 </tr>
 [% END %]
-[%
-  INCLUDE 'inc/log_pager.tt2';
-%]  <table class='history listing'>
+ <table class='listing'>
    <thead>[% PROCESS history_table_headfoot type = 'head' %]</thead
-   <tfoot>[% PROCESS history_table_headfoot type = 'foot' %]</tfoot>
 
    <tbody>
    [% FOREACH line IN log_lines %]
-    <tr>
+ <tr [% "class='invert'" IF loop.count % 2 %]>
      <td class='sha1' title='[% line.sha1 %]'>[% INCLUDE 'inc/chroma_hash.tt2' sha1 = line.sha1.substr(0, 7) %]</td>
      <td class='time-since' title='[% line.authored_time %]'>[% time_since(line.authored_time) %]</td>
-     <td class='author'>[% line.author.name | html %]</td>
+    
      <td>
        [% short_cmt(line.comment) | html %]
        [% INCLUDE '_refs.tt2' object = line.0 %]
      </td>
+	  <td class='author'>[% line.author.name | html %]</td>
      <td class='action-list'>
      [% IF filetype == 'tree' %]
        <a href="[% c.uri_for_action("/ref/tree", [Repository.name, line.sha1], filename) %]">blob</a>
