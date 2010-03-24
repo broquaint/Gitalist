@@ -19,8 +19,12 @@
 	<td class='sha1' title='[% line.sha1 %]'>[% INCLUDE 'inc/chroma_hash.tt2' sha1 = line.sha1.substr(0, 7) %]</td>
 	<td class='time-since' title='[% line.authored_time %]'>[% time_since(line.authored_time) %]</td>
 	<td>
-		[% short_cmt(line.comment) | html %]
-		[% INCLUDE '_refs.tt2' object = line %]
+		[% IF longlogformat %]
+		 	[% message = line.comment | html; message.replace("\n", "<br/>") %]
+		[% ELSE %]
+			[% short_cmt(line.comment) | html %]
+			[% INCLUDE '_refs.tt2' object = line %]
+		[% END %]
 	</td>
 	<td class='author'><img src="[% uri_for_gravatar(line.author.email, 21) %]" />[% line.author.name | html %]</td>
 	<td class='action-list'>

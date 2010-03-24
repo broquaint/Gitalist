@@ -1,7 +1,6 @@
-<div class='path'>
- <a href="[% c.uri_for_action("/ref/tree", [Repository.name, Commit.sha1]) %]">[% Repository.name %]</a>
+ <a href="[% c.uri_for_action("/ref/tree", [Repository.name, Commit.sha1]) %]">[% Repository.name %] (tree)</a>
  [% FOREACH part IN filename.split('/') %]
   [% path = loop.first ? part : path _ '/' _ part %]
   / <a href="[% action_name = loop.last ? '/ref/blob' : '/ref/tree'; c.uri_for_action(action_name, [Repository.name,Commit.sha1], path.to_path ) %]">[% part %]</a>
  [% END %]
-</div>
+

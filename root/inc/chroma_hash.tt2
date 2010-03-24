@@ -7,4 +7,7 @@
     END;
 -%]
 
-<div class='button sha1_holder[% "_invert" IF loop.count % 2 %]' style="background-color:#[% sha1part %]"></div> <div class="sha1_label">[% sha1part %]</div>
+<div class='button sha1_holder[% "_invert" IF loop.count % 2 %]' style="background-color:#[% sha1part %]"></div>
+[% IF !hide_sha1_output %]
+<div class="sha1_label">[% sha1part %]</div>
+[% END %]

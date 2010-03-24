@@ -1,15 +1,25 @@
 
-<div class='content'>
-  <div class='commit-message'>
-  [% short_cmt(Commit.comment) | html %]
-  </div>
+<table class='listing'>
+<thead>
+<tr>
+	<th>ID (sha1)</th>
+	<th>Last change</th>
+	<th>Message</th>
+	<th>By</th>
+</tr>
+</thead>
+<tbody>
+<tr class="invert">
+	<td class='sha1' title='[% Commit.sha1 %]'>[% INCLUDE 'inc/chroma_hash.tt2' sha1 = Commit.sha1.substr(0, 7) %]</td>
+	<td class='time-since' title='[% Commit.authored_time %]'>[% time_since(Commit.authored_time) %]</td>
+	<td>[% short_cmt(Commit.comment) | html %]</td>
+	<td class='author'><img src="[% uri_for_gravatar(Commit.committer.email, 21) %]" />[% Commit.author.name | html %]</td>
+</tr>
+</tbody>
+</table>
 
-  <div style="padding-bottom: 20px" class='author'>
-    <img style="float: left; padding-right: 10px" src="[% uri_for_gravatar(Commit.committer.email, 40) %]">[% Commit.author.name | html %] <br />[% time_since(Commit.authored_time) %]
-  </div>
 
   [%
     # What I really want is @{ c.req.args }
     subinclude('/fragment/' _ c.action, c.req.captures, c.req.args.0 c.req.args.1)
   %]
-</div>

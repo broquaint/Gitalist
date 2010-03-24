@@ -8,26 +8,24 @@ body{
 a img{
 	border:0;
 }
-div{
-	aborder:1px solid red;
-}
 
 
 /* structure */
 .sub_holder{
 	width:970px;
 	margin:0 auto;
-	aborder:1px solid red;
 	text-align:left;
 }
 
-#header{
+#header_holder{
 	margin-top:20px;
-	aheight:300px;
 }
+#header{
+	height:60px;
+}
+
 #content_holder{
 	background:transparent url(/static/i/bg_content.png) repeat-y center center;
-	aborder:1px solid olive;
 }
 #content{
 	min-height:200px;
@@ -35,7 +33,6 @@ div{
 	background:transparent url(/static/i/bg_bottom.png) no-repeat center bottom;
 }
 #content_inner{
-	aborder:1px solid blue;
 	padding-bottom:30px;
 	background:transparent url(/static/i/bg_top.png) no-repeat;
 }
@@ -74,13 +71,18 @@ div{
 
 /* nav tabs */
 #nav_logs{
+	width:80%;
 	clear:both;
 	float:right;
-	margin:-18px 50px 0 50px;
+	margin:-5px 50px 0 0;
+}
+#nav_logs ul{
+	margin:0;
+	padding:0;
 }
 #nav_logs li{
 	display:block;
-	float:left;
+	float:right;
 	list-style:none;
 	margin:0;
 	padding:0;
@@ -130,6 +132,30 @@ h1 a{
 h1 a:hover{
 	color:#EAF2F5;
 }
+h2{
+	font-size:1.85em;
+	font-weight:normal;
+	color:#666;
+	margin:30px 15px 20px;
+}
+h2 span{
+	color:#ccc;
+}
+h3{
+	margin:0;
+	color:#fff;
+	padding:9px 5px 9px 10px;
+	font-size:1em;
+}
+h3 a{
+	color:#ffffff;
+}
+h4 a{
+	color:#ffffff;
+}
+h4 a:hover{
+	color:#EAF2F5;
+}
 p,
 td,
 a{
@@ -145,35 +171,36 @@ a:hover{
 	float:left;
 	vertical-align:middle;
 	margin-right:8px;
-	text-indent:-999999999999px;
+	text-indent:-999999px;
 	width:21px;
 	height:21px;
+	outline:none;
 }
-.commit{
+a.commit{
 	background:transparent url(/static/i/icons/commit.png) no-repeat;
 }
-.diff{
+a.diff{
 	background:transparent url(/static/i/icons/diff.png) no-repeat;
 }
-.tree{
+a.tree{
 	background:transparent url(/static/i/icons/tree.png) no-repeat;
 }
-.shortlog{
+a.shortlog{
 	background:transparent url(/static/i/icons/shortlog.png) no-repeat;
 }
-.longlog{
+a.longlog{
 	background:transparent url(/static/i/icons/longlog.png) no-repeat;
 }
-.blob{
+a.blob{
 	background:transparent url(/static/i/icons/blob.png) no-repeat;
 }
-.blame{
+a.blame{
 	background:transparent url(/static/i/icons/blame.png) no-repeat;
 }
-.history{
+a.history{
 	background:transparent url(/static/i/icons/history.png) no-repeat;
 }
-.raw{
+a.raw{
 	background:transparent url(/static/i/icons/raw.png) no-repeat;
 }
 .sha1_holder{
@@ -186,6 +213,30 @@ a:hover{
 	padding-top:2px;
 	float:left;
 }
+
+
+a.rss_logo {
+  float: right;
+  padding: 3px 0px;
+  width: 35px;
+  line-height: 10px;
+  border: 1px solid;
+  border-color: #fcc7a5 #7d3302 #3e1a01 #ff954e;
+  color: #ffffff;
+  background-color: #ff6600;
+  font-weight: bold;
+  font-family: sans-serif;
+  font-size: 70%;
+  font-style: normal;
+  text-align: center;
+  text-decoration: none;
+  margin: 3px;
+}
+
+a.rss_logo:hover {
+  background-color: #ee5500;
+}
+
 
 
 /* paging */
@@ -229,6 +280,13 @@ th{
 th a{
 	color:#fff;
 }
+.summary tr{
+	background-color:#FAFAFA;
+	border-bottom:1px solid #fff;
+}
+.summary td{
+	vertical-align:middle !important;
+}
 tr.invert{
 	background-color:#f0f0f0;
 }
@@ -254,8 +312,104 @@ table.listing{
 	border-collapse:collapse;
 }
 .listing td{
+	vertical-align:top;
 	padding:9px 5px 9px 10px;
 }
 .action-list{
 	width:120px;
 }
+
+.diff-tree{
+	background-color:#f0f0f0;
+}
+.diff-tree th{
+	background-color:#666;
+}
+.diff-tree tr{
+	border-bottom:1px solid #fff;
+}
+.diff-tree td{
+	padding:6px 5px 4px 10px;
+}
+.differences{
+	margin-top:0;
+	padding:0px 15px;
+}
+.differences pre{
+	line-height:140%;
+	font-size:12px;
+	overflow:auto;
+	margin:0;
+	padding:10px;
+	border:1px solid #ddd;
+	background-color:#f0f0f0;
+}
+.diff-head{
+	background-color:#666;
+	color:#fff;
+	margin:10px 0 0 0 !important;
+	border:1px solid #ddd;
+	border-bottom:none;
+	font-family: monospace;
+	padding:10px;
+	font-size:13px;
+}
+.diff-index {
+	margin:0 0 30px 0;
+	border:1px solid #ddd;
+	border-top:none;
+	background-color:#ccc;
+	padding:5px 10px;
+}
+
+
+/* /blame */
+#blame pre, #blame tt {
+  margin: 0;
+  font-size: 0.9em;
+}
+#blame .commit-info {
+}
+#blame .lineno {
+  text-align: right;
+  padding: 0 8px;
+}
+#blame a {
+  text-decoration: none;
+}
+#blame {
+    overflow-x: scroll;
+}
+#blame tr.alt {
+  background-color: #f7f7f7;
+}
+#blame tbody tr:hover {
+  background-color: #fefeaa;
+}
+#blame td {
+  padding: 0 0.2em;
+}
+#blame td.lineno {
+  background-color: #eee;
+}
+#blame td.date, #blame td.author, #blame td.commit-info {
+}
+#blame tbody td.data {
+  padding-left: 5px;
+  background-color: #333;
+  color: #ddd;
+}
+
+/* /blob */
+pre.blob {
+  background-color: #333;
+  color: #ddd;
+  border-left: solid 3px #c33;
+  padding: 5px;
+  padding-left: 15px;
+  margin: 20px 15px 20px;
+  overflow:auto;
+}
+
+/* /blobdiff etc */
+

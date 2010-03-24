@@ -1,35 +1,63 @@
-<div class='commit-message'>
-  [%
-    short_cmt(Commit.comment) | html;
+<table class="listing">
+<thead>
+<tr>
+	<th>ID (sha1)</th>
+	<th>Last change</th>
+	<th>Message</th>
+	<th>By</th>
+	<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr class="invert">
+	<td class='sha1' title='[% Commit.sha1 %]'>[% INCLUDE 'inc/chroma_hash.tt2' sha1 = Commit.sha1.substr(0, 7) %]</td>
+	<td class='time-since'>[% time_since(Commit.authored_time) %]</td>
+	<td rowspan="2">
+	[% Commit.comment | html%]
+	[%
+ 
     INCLUDE '_refs.tt2' object = commit;
-  %]
-  </div>
+  %]</td>
+	<td class='author'><a href="mailto:[% Commit.author.email %]" title="Email"><img style="float: left; padding-right: 10px" src="[% uri_for_gravatar(Commit.committer.email, 21) %]">[% Commit.author.name | html %]</a></td>
+	<td class='action-list'>Author</td>
+</tr>
+<tr class="invert">
+	<td></td>
+	<td class='time-since'>[% time_since(Commit.committed_time) %]</td>
+	<!-- spanned -->
+	<td class='author'><a href="mailto:[% Commit.committer.email %]" title="Email"><img style="float: left; padding-right: 10px" src="[% uri_for_gravatar(Commit.committer.email, 21) %]">[% Commit.committer.name %]</a></td>
+	<td class='action-list'>Committer</td>
+</tr>
+</tbody>
+</table>
   <!-- [% USE dumper; dumper.dump(commit.parents) %] -->
-  <dl class='commit-info'>
-   <dt>author</dt>
-    <dd><img style="float: left; padding-right: 10px" src="[% uri_for_gravatar(Commit.committer.email, 40) %]">[% Commit.author.name | html %] &lt;[% Commit.author.email %]&gt;<br/>
-	[% time_since(Commit.authored_time) %]</dd>
-   <dt style="clear: left">committer</dt>
-    <dd><img style="float: left; padding-right: 10px" src="[% uri_for_gravatar(Commit.committer.email, 40) %]">[% Commit.committer.name %] &lt;[% Commit.committer.email %]&gt;<br/>
-	[% time_since(Commit.committed_time) %]</dd>
-   <dt style="clear: left">commit</dt>
-    <dd>[% Commit.sha1 %]</dd>
-   <dt>tree</dt>
-    <dd>[% Commit.tree_sha1 %]
-	<span class='action-list'><a href="[% c.uri_for_action("/ref/tree", c.req.captures) %]">tree</a></span>
-    </dd>
-   [% FOREACH parent IN Commit.parents %]
-   <dt>parent</dt>
-    <dd>[% parent.sha1  %]
-      <span class='action-list'>
-       <a href="[% c.uri_for_action('/ref/commit', [Repository.name, parent.sha1]) %]">commit</a>
-       <a href="[% c.uri_for_action('/ref/diff_fancy', [Repository.name, parent.sha1]) %]">diff</a>
-      </span>
-     </dd>
-   [% END %]
-  </dl>
+ 
+ 
+ 
+<table class="listing summary">
+	<tr>
+		<td class='sha1'>[% INCLUDE 'inc/chroma_hash.tt2' sha1 = Commit.sha1.substr(0, 7), hide_sha1_output = 1 %] <div class="sha1_label">Commit</div></td>
+		<td>[% Commit.sha1 %]</td>
+		<td class='action-list'></td>
+	</tr>
+	<tr>
+		<td class='sha1'>[% INCLUDE 'inc/chroma_hash.tt2' sha1 = Commit.tree_sha1.substr(0, 7), hide_sha1_output = 1 %] <div class="sha1_label">Tree</div></td>
+		<td>[% Commit.tree_sha1 %]</td>
+		<td class='action-list'><a href="[% c.uri_for_action("/ref/tree", c.req.captures) %]" title="Tree" class="button tree">tree</a></td>
+	</tr>
+	 [% FOREACH parent IN Commit.parents %]
+	<tr>
+		<td class='sha1'>[% INCLUDE 'inc/chroma_hash.tt2' sha1 = parent.sha1.substr(0, 7), hide_sha1_output = 1 %] <div class="sha1_label">Parent</div></td>
+		<td>[% parent.sha1 %]</td>
+		<td class='action-list'>
+			<a href="[% c.uri_for_action('/ref/commit', [Repository.name, parent.sha1]) %]" title="Commit" class="button commit">commit</a>
+    		<a href="[% c.uri_for_action('/ref/diff_fancy', [Repository.name, parent.sha1]) %]" title="Difference" class="button diff">diff</a>
+		</td>
+	</tr>
+[% END %]       
+</table>
 
-  <pre class='commit-message'>[% Commit.comment | html%]</pre>
+
 
   [%
     # In the case of merge commits there will be no diff tree.

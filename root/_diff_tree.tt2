@@ -1,18 +1,13 @@
+<h2>[% diff_tree.size %] file[% "s" IF diff_tree.size > 1 %] in this commit <span>([%- Commit.sha1 || HEAD -%])</span></h2>
+
 <table class='diff-tree listing'>
  <thead>
   <tr>
-   <th>file</th>
-   <th>status</th>
-   <th>actions</th>
+   <th>File</th>
+   <th>Status</th>
+   <th>Actions</th>
   </tr>
  </thead>
- <tfoot>
-  <tr>
-   <td>file</td>
-   <td>status</td>
-   <td>actions</td>
-  </tr>
- </tfoot>
  <tbody>
   [% FOREACH line IN diff_tree -%]
   <tr>
@@ -32,9 +27,9 @@
     %]
    </td>
    <td class='action-list'>
-     [% IF !line.is_new %]<a href="[% c.uri_for_action("/ref/diff_fancy", [Repository.name, Commit.sha1], line.file.to_path) %]">diff</a>[% END %]
-     <a href="[% c.uri_for_action("/ref/blob", [Repository.name, Commit.sha1], line.file.to_path) %]">blob</a>
-     [% IF !line.is_new %]<a href="[% c.uri_for("/ref/shortlog", [Repository.name, Commit.sha1], line.file.to_path) %]">history</a>[% END %]
+     [% IF !line.is_new %]<a href="[% c.uri_for_action("/ref/diff_fancy", [Repository.name, Commit.sha1], line.file.to_path) %]#diff[% loop.count %]" title="Difference" class="button diff">diff</a>[% END %]
+     [% IF !line.is_new %]<a href="[% c.uri_for("/ref/shortlog", [Repository.name, Commit.sha1], line.file.to_path) %]" title="History (Short Log)" class="button history">history</a>[% END %]
+	<a href="[% c.uri_for_action("/ref/blob", [Repository.name, Commit.sha1], line.file.to_path) %]" title="Blob" class="button blob">blob</a>
    </td>
   </tr>
   [% END %]
