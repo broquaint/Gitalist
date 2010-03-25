@@ -52,11 +52,14 @@ a img{
 	float:right;
 	margin-right:15px;
 }
-
+#footer_holder{
+	margin-bottom:100px;
+}
 #footer p{
 	margin-left:15px;
 }
 #debug_holder{
+	display:none;
 	clear:both;
 	padding-top:30px;
 	margin:30px 0;
@@ -182,6 +185,9 @@ a.commit{
 a.diff{
 	background:transparent url(/static/i/icons/diff.png) no-repeat;
 }
+a.diffcurrent{
+	background:transparent url(/static/i/icons/diffcurrent.png) no-repeat;
+}
 a.tree{
 	background:transparent url(/static/i/icons/tree.png) no-repeat;
 }
@@ -213,7 +219,12 @@ a.raw{
 	padding-top:2px;
 	float:left;
 }
-
+.msg{
+	padding:5px 10px 5px 35px;
+	background:#f0f0f0 url(/static/i/icons/attention.png) no-repeat 10px center;
+	border:1px solid #ddd;
+	margin:30px 15px;
+}
 
 a.rss_logo {
   float: right;
@@ -289,6 +300,9 @@ th a{
 }
 tr.invert{
 	background-color:#f0f0f0;
+}
+tr.header{
+	background-color:#666;
 }
 .sha1{
 	width:80px;
@@ -366,16 +380,17 @@ table.listing{
 /* /blame */
 #blame pre, #blame tt {
   margin: 0;
-  font-size: 0.9em;
+  font-size: 12px;
 }
 #blame .commit-info {
+
 }
 #blame .lineno {
   text-align: right;
   padding: 0 8px;
 }
 #blame a {
-  text-decoration: none;
+ atext-decoration: none;
 }
 #blame {
     overflow-x: scroll;
@@ -387,7 +402,8 @@ table.listing{
   background-color: #fefeaa;
 }
 #blame td {
-  padding: 0 0.2em;
+	vertical-align:middle;
+	padding: 3px;
 }
 #blame td.lineno {
   background-color: #eee;
@@ -409,6 +425,7 @@ pre.blob {
   padding-left: 15px;
   margin: 20px 15px 20px;
   overflow:auto;
+  font-size:12px;
 }
 
 /* /blobdiff etc */

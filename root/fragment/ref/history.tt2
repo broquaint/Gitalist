@@ -24,13 +24,13 @@
 	  <td class='author'>[% line.author.name | html %]</td>
      <td class='action-list'>
      [% IF filetype == 'tree' %]
-       <a href="[% c.uri_for_action("/ref/tree", [Repository.name, line.sha1], filename) %]">blob</a>
+       <a href="[% c.uri_for_action("/ref/tree", [Repository.name, line.sha1], filename) %]" title="Blob" class="button blob">blob</a>
       [% ELSIF filetype == 'blob' %]
-       <a href="[% c.uri_for_action("/ref/blob", [Repository.name, line.sha1], filename) %]">blob</a>
+       <a href="[% c.uri_for_action("/ref/blob", [Repository.name, line.sha1], filename) %]" title="Blob" class="button blob">blob</a>
       [% END %]
-       <a href="[% c.uri_for_action("/ref/diff_fancy", [Repository.name, line.sha1]) %]">commitdiff</a>
+       <a href="[% c.uri_for_action("/ref/diff_fancy", [Repository.name, line.sha1]) %]" title="Commit diff" class="button diff">commitdiff</a>
       [% IF filetype == 'blob' %]
-       <a href="[% c.uri_for_action("/ref/diff_fancy", [Repository.name, line.sha1], 'HEAD', filename) %]">diff to current</a>
+       <a href="[% c.uri_for_action("/ref/diff_fancy", [Repository.name, line.sha1], 'HEAD', filename) %]" title="Diff to current" class="button diffcurrent">diff to current</a>
        [% END %]
      </td>
     </tr>

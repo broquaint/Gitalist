@@ -1,1 +1,4 @@
 [% subinclude('/fragment/' _ c.action, c.req.captures, c.req.parameters) %]
+
+<h2>Branches</h2>
+[% subinclude('/fragment/repository/heads', c.req.captures) %]

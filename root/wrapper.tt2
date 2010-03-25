@@ -46,6 +46,7 @@
 		<div id="nav_logs" [% 'style="visibility:hidden"' IF c.action.name == "index" %]>
 			<ul>
 				[% IF c.req.captures.size == 1; SET path = 'repository'; ELSE; SET path = 'ref'; END %]
+				
 				<li [% 'class="selected"' IF c.action.name.match('longlog') %]><a href="[% c.uri_for_action('/' _ path _ '/longlog', c.req.captures) %]" id="log_full">Long log</a></li>
 				<li [% 'class="selected"' IF c.action.name.match('shortlog') %]><a href="[% c.uri_for_action('/' _ path _ '/shortlog', c.req.captures) %]" id="log_short">Short log</a></li>
 			</ul>
@@ -80,8 +81,6 @@
  [% content %]
 
  
- 
-  [%# INCLUDE 'nav/actions.tt2' %]
 		</div>
    	</div>
 </div>
