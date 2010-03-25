@@ -29,7 +29,7 @@
 	<div class="sub_holder">
 		<div id="header">
 			<a href="[% c.uri_for('/') %]" id="logo"><img src="[% c.uri_for('/static/i/logo.png') %]" alt="Gitalist" /></a>
-		
+
 			<div class="search">
 				[% IF Repository; INCLUDE 'nav/search.tt2'; ELSE; %]
 				
@@ -44,11 +44,40 @@
 		
 		
 		<div id="nav_logs" [% 'style="visibility:hidden"' IF c.action.name == "index" %]>
+		
+			[% IF c.req.captures.size == 1; SET path = 'repository'; ELSE; SET path = 'ref'; END %]
+			
 			<ul>
-				[% IF c.req.captures.size == 1; SET path = 'repository'; ELSE; SET path = 'ref'; END %]
 				
+				[%# FIXME: tree path  #%]
+					[%- IF Repository %]
+						[% SET tree_path = c.uri_for_action('/' _ path _ '/shortlog', c.req.captures).replace("/shortlog","/HEAD/tree") %]
+					[% ELSE %]
+						[% SET tree_path = c.uri_for_action('/' _ path _ '/tree', c.req.captures) %]
+					[% END %]
+					
+				<li [% 'class="selected"' IF c.action.name.match('tree') %]><a href="[% tree_path %]" id="tree">Tree</a></li>
+
+
 				<li [% 'class="selected"' IF c.action.name.match('longlog') %]><a href="[% c.uri_for_action('/' _ path _ '/longlog', c.req.captures) %]" id="log_full">Long log</a></li>
+				
 				<li [% 'class="selected"' IF c.action.name.match('shortlog') %]><a href="[% c.uri_for_action('/' _ path _ '/shortlog', c.req.captures) %]" id="log_short">Short log</a></li>
+
+				
+				<li id="branch_selector">
+					[%# FIXME: convert to c.uri_for_action  #%]
+					
+					Branches 
+					<select onchange="document.location.href='/[% Repository.name %]/'+this.options[this.selectedIndex].text + '/shortlog';">
+						<option value="">HEAD</option>
+					
+					[% FOREACH branch_head IN Repository.heads %]
+						<option [% "selected" IF c.req.path.search(branch_head.name) %]>[% branch_head.name %]</option>
+					[% END %]
+					
+					</select>
+				</li>
+				
 			</ul>
 		</div>
 	
@@ -59,9 +88,23 @@
     		/ <a href="[% c.uri_for_action('/repository/summary', [Repository.name]) %]/shortlog">[% Repository.name %]</a>
    			[%- END %]
 			/
+			[%- IF Repository %]
+				[%# FIXME: output branch name in a nicer way!!!  #%]
+				[% FOREACH branch_head IN Repository.heads %]
+					[% IF c.req.path.search(branch_head.name) %]
+    				<a href="[% c.uri_for_action('/repository/summary', [Repository.name]) %]/[% branch_head.name %]/shortlog">[% branch_head.name %]</a> /
+					[% END %]
+				[% END %]
+   			[%- END %]
 			
-			
-			[% c.action.name.replace("_"," ").replace("log", " log").replace("fancy","").replace("index","Repositories") FILTER ucfirst %]
+			[%- 
+				c.action.name
+					.replace("_"," ")
+					.replace("log", " log")
+					.replace("fancy","")
+					.replace("index","Repositories") 
+					FILTER ucfirst 
+			-%]
 			
 	
 			
@@ -69,7 +112,6 @@
 	
 	</div>
 </div>
-
 
 
 <div id="content_holder">
@@ -100,6 +142,7 @@
 </div>
 
 
+
 <div id="debug_holder">
 	<div id="debug" class="sub_holder">
 
@@ -108,7 +151,7 @@
 	[% USE Dumper %]
 	<pre>
 	[% Repository.path %]
-	[% Dumper.dump(c.action.name) %]
+	[%# Dumper.dump(c.req.path) %]
 	</pre>
 	
 	</div>

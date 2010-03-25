@@ -1,3 +1,20 @@
+#debug_holder{
+	
+	display:none;
+	
+	clear:both;
+	padding-top:30px;
+	margin:30px 0;
+}
+
+#debug_holder pre{
+	margin:0;
+	padding:10px;
+	border:1px solid #ddd;
+	background-color:#f0f0f0;
+}
+
+
 body{
 	background:#FAFAFA url(/static/i/bg.png) repeat-x left top;
 	padding:0;
@@ -41,7 +58,7 @@ a img{
 	float:left;
 }
 #header .search{
-	margin-right:50px;
+	margin-right:10px;
 	float:right;
 }
 #git_logo{
@@ -58,26 +75,14 @@ a img{
 #footer p{
 	margin-left:15px;
 }
-#debug_holder{
-	display:none;
-	clear:both;
-	padding-top:30px;
-	margin:30px 0;
-}
 
-#debug_holder pre{
-	margin:0;
-	padding:10px;
-	border:1px solid #ddd;
-	background-color:#f0f0f0;
-}
 
 /* nav tabs */
 #nav_logs{
 	width:80%;
 	clear:both;
 	float:right;
-	margin:-5px 50px 0 0;
+	margin:-5px 10px 0 0;
 }
 #nav_logs ul{
 	margin:0;
@@ -105,6 +110,9 @@ a#log_short{
 a#log_full{
 	background:#666 url(/static/i/icons/fulllog.gif) no-repeat 15px center;
 }
+a#tree{
+	background:#666 url(/static/i/icons/tree.gif) no-repeat 15px center;
+}
 #nav_logs li a:hover{
 	text-decoration:underline;
 	background-color:#DC143C;
@@ -112,8 +120,12 @@ a#log_full{
 #nav_logs li.selected a{
 	background-color:#333;
 }
-
-
+#nav_logs #branch_selector{
+	padding:10px 15px 10px 48px;
+	font-size:1.3em;
+	font-weight:bold;
+	color:#666;
+}
 
 
 
