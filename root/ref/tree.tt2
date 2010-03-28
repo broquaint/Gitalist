@@ -1,6 +1,3 @@
-
-
-
   [%
     IF path;
       INCLUDE 'nav/path.tt2' filename = path;
@@ -9,6 +6,3 @@
     subinclude('/fragment/ref/tree', c.req.captures, c.req.args.to_path);
   %]
 
-   <div class='commit-message'>
-  [% short_cmt(commit.comment) | html %] ...
-  </div>
