@@ -5,18 +5,6 @@ class Gitalist::Git::Object {
     use MooseX::Types::Moose qw/Str Int Bool Maybe ArrayRef/;
     use MooseX::Types::Common::String qw/NonEmptySimpleStr/;
 
-    use Fcntl ':mode';
-    use constant {
-        S_IFINVALID => 0030000,
-        S_IFGITLINK => 0160000,
-    };
-
-    BEGIN {
-        no warnings;
-        *S_ISLNK = sub ($) {}
-            if $^O eq 'MSWin32';
-    }
-
     # repository and sha1 are required initargs
     has repository => ( isa => 'Gitalist::Git::Repository',
                      required => 1,
@@ -80,11 +68,16 @@ class Gitalist::Git::Object {
     }
 
     method _build_modestr {
-	# XXX The POSIX constants make win32 sad :(
         return _mode_str($self->mode);
     }
 
-    # via gitweb.pm
+    # via gitweb.pm circa line 1305
+    use Fcntl ':mode';
+    use constant {
+        S_IFINVALID => 0030000,
+        S_IFGITLINK => 0160000,
+    };
+
     # submodule/subrepository, a commit object reference
     sub S_ISGITLINK($) {
         return (($_[0] & S_IFMT) == S_IFGITLINK)
