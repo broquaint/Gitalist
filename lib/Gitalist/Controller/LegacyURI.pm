@@ -123,6 +123,8 @@ sub _legacy_uri {
 sub handler : Chained('/base') PathPart('legacy') Args() {
     my ( $self, $c, $repos ) = @_;
 
+    $repos ||= $c->req->param('p');
+
     my ($action, $captures, @args) = $self->_legacy_uri($c, $repos, $c->req->param('a'));
 
     die("Not supported")
