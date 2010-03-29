@@ -37,7 +37,6 @@ foreach my $test (map {curry_test_uri($_)} ('fragment/repo1', 'repo1') ) {
   # URI tests for repo1
   local *test = curry_test_uri('repo1');
   test('search');
-  test('reflog');
 
   test('36c6c6708b8360d7023e8a1649c45bcf9b3bd818/patch');
   test('36c6c6708b8360d7023e8a1649c45bcf9b3bd818/patches/1');

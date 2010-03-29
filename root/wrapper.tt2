@@ -48,20 +48,11 @@
 			[% IF c.req.captures.size == 1; SET path = 'repository'; ELSE; SET path = 'ref'; END %]
 			
 			<ul>
-				
-				[%# FIXME: tree path  #%]
-					[%- IF Repository %]
-						[% SET tree_path = c.uri_for_action('/' _ path _ '/shortlog', c.req.captures).replace("/shortlog","/HEAD/tree") %]
-					[% ELSE %]
-						[% SET tree_path = c.uri_for_action('/' _ path _ '/tree', c.req.captures) %]
-					[% END %]
-					
-				<li [% 'class="selected"' IF c.action.name.match('tree') %]><a href="[% tree_path %]" id="tree">Tree</a></li>
+				<li[% ' class="selected"' IF c.action.name.match('tree') %]><a href="[% c.uri_for_action('/ref/tree', c.req.captures) %]" id="tree">Tree</a></li>
 
-
-				<li [% 'class="selected"' IF c.action.name.match('longlog') %]><a href="[% c.uri_for_action('/' _ path _ '/longlog', c.req.captures) %]" id="log_full">Long log</a></li>
+				<li[% ' class="selected"' IF c.action.name.match('longlog') %]><a href="[% c.uri_for_action('/' _ path _ '/longlog', c.req.captures) %]" id="log_full">Long log</a></li>
 				
-				<li [% 'class="selected"' IF c.action.name.match('shortlog') %]><a href="[% c.uri_for_action('/' _ path _ '/shortlog', c.req.captures) %]" id="log_short">Short log</a></li>
+				<li[% ' class="selected"' IF c.action.name.match('shortlog') %]><a href="[% c.uri_for_action('/' _ path _ '/shortlog', c.req.captures) %]" id="log_short">Short log</a></li>
 
 				
 				<li id="branch_selector">

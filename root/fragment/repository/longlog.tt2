@@ -2,4 +2,4 @@
 
 
 <h2>Branches</h2>
-[% subinclude('/fragment/repository/heads', c.req.captures) %]
+[% subinclude('/fragment/repository/heads', [Repository.name]) %]
