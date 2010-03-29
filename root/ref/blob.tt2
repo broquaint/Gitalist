@@ -1,13 +1,14 @@
 [% INCLUDE inc/syntax_highlight_css.tt2 %]
 
-<div class='content'>
+<h3>[% INCLUDE 'nav/path.tt2' %]</h3>
+
   [% IF object.type == 'commit' %]
    <div class='commit-message'>
     [% short_cmt(head.comment) %]
    </div>
   [% END %]
-  [% INCLUDE 'nav/path.tt2' %]
-  <div>
-   <pre class='blob'>[% subinclude('/fragment/ref/blob', c.req.captures, c.req.args.to_path) %]</pre>
-  </div>
-</div>
+ 
+	<pre class='blob'>[% subinclude('/fragment/ref/blob', c.req.captures, c.req.args.to_path) | html %]</pre>
+
+
+ 

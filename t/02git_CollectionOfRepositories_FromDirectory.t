@@ -12,7 +12,7 @@ my $repo_dir = "$Bin/lib/repositories";
 my $repo = Gitalist::Git::CollectionOfRepositories::FromDirectory->new( repo_dir => $repo_dir );
 isa_ok($repo, 'Gitalist::Git::CollectionOfRepositories::FromDirectory');
 
-is($repo->repo_dir, $repo_dir, "repo->repo_dir is correct" );
+is($repo->repo_dir, Path::Class::Dir->new($repo_dir), "repo->repo_dir is correct" );
 
 # 'bare.git' is a bare git repository in the repository dir
 use Path::Class;

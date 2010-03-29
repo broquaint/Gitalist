@@ -1,16 +1,15 @@
 [% BLOCK repository_heads_headfoot %]
 [% SET cell = type == 'head' ? 'th' : 'td' %]
-<tr>
+<tr class="header">
    <[% cell %]>HEAD</[% cell %]>
-   <[% cell %]>age</[% cell %]>
-   <[% cell %]>branch</[% cell %]>
-   <[% cell %]>actions</[% cell %]>
+   <[% cell %]>Last change</[% cell %]>
+   <[% cell %]>Branch</[% cell %]>
+   <[% cell %]>Actions</[% cell %]>
 </tr>
 [% END %]
+
 <table class='[% action %] listing'>
  <thead>[% PROCESS repository_heads_headfoot type = 'head' %]</thead>
- <tfoot>[% PROCESS repository_heads_headfoot type = 'foot' %]</tfoot>
-
  <tbody>
  [% FOREACH head IN heads %]
   <tr>
@@ -18,9 +17,9 @@
    <td class='time-since' title='[% head.last_change %]'>[% time_since(head.last_change) %]</td>
    <td class='head[% head.sha1 == HEAD ? ' current' : '' %]'>[% head.name %]</td>
    <td class='action-list'>[%# FIXME %]
-     <a href="[% c.uri_for_action('/ref/shortlog', [Repository.name, head.name]) %]">shortlog</a>
-     <a href="[% c.uri_for_action('/ref/longlog', [Repository.name, head.name]) %]">log</a>
-     <a href="[% c.uri_for_action('/ref/tree', [Repository.name, head.name]) %]">tree</a>
+     <a href="[% c.uri_for_action('/ref/shortlog', [Repository.name, head.name]) %]" title="Short log" class="button shortlog">shortlog</a>
+     <a href="[% c.uri_for_action('/ref/longlog', [Repository.name, head.name]) %]" title="Long log" class="button longlog">log</a>
+     <a href="[% c.uri_for_action('/ref/tree', [Repository.name, head.name]) %]" title="Tree" class="button tree">tree</a>
    </td>
   </tr>
  [% END %]

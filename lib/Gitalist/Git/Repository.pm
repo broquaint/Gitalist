@@ -11,7 +11,16 @@ class Gitalist::Git::Repository with Gitalist::Git::HasUtils {
     use List::MoreUtils qw/any zip/;
     use DateTime;
     use Encode qw/decode/;
-    use I18N::Langinfo qw/langinfo CODESET/;
+
+    use if $^O ne 'MSWin32', 'I18N::Langinfo', => qw/langinfo CODESET/;
+    BEGIN {
+        no strict 'subs';
+        *__owner = defined &langinfo
+            ? sub { map { decode(langinfo(CODESET), $_) } (getpwuid $_[0]->path->stat->uid)[6,0] }
+            : sub { return qw/OwnEr GroUp/ }
+        ;
+    }
+
     use Gitalist::Git::Object::Blob;
     use Gitalist::Git::Object::Tree;
     use Gitalist::Git::Object::Commit;
@@ -138,6 +147,7 @@ class Gitalist::Git::Repository with Gitalist::Git::HasUtils {
         if ($search) {
             $search->{type} = 'grep'
                 if $search->{type} eq 'commit';
+	    no warnings; # where's this warning coming from?
             @search_opts = (
                 # This seems a little fragile ...
                 qq[--$search->{type}=$search->{text}],
@@ -247,11 +257,13 @@ class Gitalist::Git::Repository with Gitalist::Git::HasUtils {
             $description = $self->path->file('description')->slurp;
             chomp $description;
         };
+	$description = "Unnamed repository, edit the .git/description file to set a description"
+	    if $description eq "Unnamed repository; edit this file 'description' to name the repository.";
         return $description;
     }
 
     method _build_owner {
-        my ($gecos, $name) = map { decode(langinfo(CODESET), $_) } (getpwuid $self->path->stat->uid)[6,0];
+        my ($gecos, $name) = $self->__owner;
         $gecos =~ s/,+$//;
         return length($gecos) ? $gecos : $name;
     }

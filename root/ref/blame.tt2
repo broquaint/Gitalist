@@ -1,31 +1,26 @@
 [%- BLOCK blame_table_headfoot %]
 <tr>
- <td>author</td>
- <td>date</td>
- <td>sha1</td>
- <td></td>
- <td class='data'>data</td>
+ <th>Author</th>
+ <th>Date</th>
+ <th width="80" nowrap="nowrap">ID (sha1)</thd>
+ <th></tdh>
+ <th class='data'>Data</th>
 </tr>
 [% END -%]
+
 [%- INCLUDE inc/syntax_highlight_css.tt2 -%]
 
-<div class='content'>
 
-[% IF object.type == 'commit' %]
-<div class='commit-message'>[% short_cmt(head.comment) %]</div>
-[% END %]
 
-[% INCLUDE 'nav/path.tt2' %]
+
+
+
 
 <div id='blame'>
-<table>
+<table class="listing">
  <thead>
   [% PROCESS blame_table_headfoot %]
  </thead>
-
- <tfoot>
-   [% PROCESS blame_table_headfoot %]
- </tfoot>
 
  <tbody>
  [% subinclude('/fragment/ref/blame', c.req.captures, c.req.arguments.to_path ) %]
@@ -33,4 +28,10 @@
 </table>
 </div>
 
-</div>
+<h2>[% INCLUDE 'nav/path.tt2' %]</h2>
+
+
+[% IF object.type == 'commit' %]
+<div class='commit-message'>[% short_cmt(head.comment) %]</div>
+[% END %]
+

@@ -1,1 +1,2 @@
 [% subinclude('/fragment/' _ c.action, c.req.captures, c.req.parameters) %]
+

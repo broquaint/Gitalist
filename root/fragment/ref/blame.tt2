@@ -7,14 +7,15 @@
        styleinfo = " style='border-top: solid 3px #" _ linecolour _ ";'"; -%]
    <td nowrap class='author'[% styleinfo %]>[% info.commit.author %]</td>
    <td nowrap class='date'[% styleinfo %]>[% info.commit.author_dt.ymd %]</td>
-   <td nowrap class='commit-info chroma-hash'[% styleinfo %]><a title="[% info.commit.author %] on [% info.commit.author_dt %]" href='[% c.uri_for_action('/ref/commit', [Repository.name, info.commit.sha1]) %]'>[% linecolour %]</td>
+   <td nowrap class='sha1 commit-info chroma-hash'[% styleinfo %]><a title="[% info.commit.author %] on [% info.commit.author_dt %]" href='[% c.uri_for_action('/ref/commit', [Repository.name, info.commit.sha1]) %]'>[% INCLUDE 'inc/chroma_hash.tt2' sha1 = info.commit.sha1.substr(0, 7) %]</a>
+[%# linecolour %]</td>
      [%- ELSE -%]
      <td nowrap class='author'></td>
      <td nowrap class='date'></td>
      <td nowrap class='commit-info'></td>
      [%- END -%]
    <td nowrap class='lineno' id='l[% info.meta.lineno %]' style='border-right: solid 3px #[% linecolour %]; border-left: solid 3px #[% linecolour %];'><tt><a href='[% c.uri_for_action('/ref/blame', [Repository.name, info.commit.sha1], filename.to_path ) %]#l[% info.meta.orig_lineno %]'>[% info.meta.lineno %]</a></tt></td>
-   <td nowrap class='data'><pre>[% blame_lines.${loop.index} %]</pre></td>
+   <td nowrap class='data'><pre>[% blame_lines.${loop.index} | html %]</pre></td>
    [% lastsha1 = info.commit.sha1 %]
  </tr>
  [% END %]

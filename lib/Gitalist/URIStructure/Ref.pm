@@ -3,6 +3,8 @@ use MooseX::MethodAttributes::Role;
 use Moose::Autobox;
 use namespace::autoclean;
 
+use Gitalist::Git::Types qw/SHA1/;
+
 requires 'base';
 
 with qw/
@@ -24,22 +26,29 @@ sub find : Chained('base') PathPart('') CaptureArgs(1) {
 
 sub diff : Chained('find') CaptureArgs(0) {}
 
-sub diff_fancy : Chained('diff') PathPart('') Args() {
-    my($self, $c, $comparison, @rest) = @_;
+sub _set_diff_args {
+    my($self, $c, @rest) = @_;
+
     # FIXME - This ain't pretty
-    $c->stash(parent   => $comparison)
-      if $comparison;
-    $c->stash(filename => $rest[0])
+    $c->stash(parent   => shift @rest)
+	if @rest == 2
+	# Check that the single arg is unlikely to be a path.
+	or @rest && to_SHA1($rest[0]) && $c->stash->{Repository}->get_object_or_head($rest[0]);
+    $c->stash(filename => $rest[-1])
       if @rest;
 }
 
+sub diff_fancy : Chained('diff') PathPart('') Args() {
+    my($self, $c, @rest) = @_;
+
+    $self->_set_diff_args($c, @rest);
+ }
+
 sub diff_plain : Chained('diff') PathPart('plain') Args() {
     my($self, $c, $comparison, @rest) = @_;
-    # FIXME - This ain't pretty
-    $c->stash(parent   => $comparison)
-      if $comparison;
-    $c->stash(filename => $rest[0])
-      if @rest;
+
+    $self->_set_diff_args($c, @rest);
+
     $c->stash(no_wrapper => 1);
     $c->response->content_type('text/plain; charset=utf-8');
 }

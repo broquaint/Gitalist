@@ -39,21 +39,16 @@ sub search : Chained('find') Args(0) {
   );
 }
 
-=head2 reflog
+=head2 tree
 
-Expose the local reflog. This may go away.
+Provide a simple redirect to C</ref/tree>.
 
 =cut
 
-sub reflog : Chained('find') Args(0) {
-  my ( $self, $c ) = @_;
-  my @log = $c->stash->{Repository}->reflog(
-      '--since=yesterday'
-  );
-
-  $c->stash(
-      log    => \@log,
-  );
+sub tree : Chained('find') Args(0) {
+    my($self, $c) = @_;
+    $c->res->redirect($c->uri_for_action('/ref/tree', [$c->stash->{Repository}->name, 'HEAD']));
+    $c->res->status(301);
 }
 
 =head2 atom
