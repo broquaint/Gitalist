@@ -31,9 +31,9 @@ sub _set_diff_args {
 
     # FIXME - This ain't pretty
     $c->stash(parent   => shift @rest)
-	if @rest == 2
-	# Check that the single arg is unlikely to be a path.
-	or @rest && to_SHA1($rest[0]) && $c->stash->{Repository}->get_object_or_head($rest[0]);
+        if @rest == 2
+        # Check that the single arg is unlikely to be a path.
+        or @rest && to_SHA1($rest[0]) && $c->stash->{Repository}->get_object_or_head($rest[0]);
     $c->stash(filename => $rest[-1])
       if @rest;
 }

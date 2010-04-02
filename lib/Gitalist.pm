@@ -14,7 +14,7 @@ use Catalyst qw/
                 SubRequest
 /;
 
-our $VERSION = '0.000005';
+our $VERSION = '0.000006_01';
 $VERSION = eval $VERSION;
 
 __PACKAGE__->config(
