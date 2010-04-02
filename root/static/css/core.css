@@ -42,16 +42,16 @@ a img{
 }
 
 #content_holder{
-	background:transparent url(/static/i/bg_content.png) repeat-y center center;
+	background:transparent url([% c.uri_for('/static/i/bg_content.png') %]) repeat-y center center;
 }
 #content{
 	min-height:200px;
 	padding:0 12px 40px 10px;
-	background:transparent url(/static/i/bg_bottom.png) no-repeat center bottom;
+	background:transparent url([% c.uri_for('/static/i/bg_bottom.png') %]) no-repeat center bottom;
 }
 #content_inner{
 	padding-bottom:30px;
-	background:transparent url(/static/i/bg_top.png) no-repeat;
+	background:transparent url([% c.uri_for('/static/i/bg_top.png') %]) no-repeat;
 }
 #logo{
 	margin-left:-10px;
@@ -105,13 +105,13 @@ a img{
 	text-decoration:none;
 }
 a#log_short{
-	background:#666 url(/static/i/icons/shortlog.gif) no-repeat 15px center;
+	background:#666 url([% c.uri_for('/static/i/icons/shortlog.gif') %]) no-repeat 15px center;
 }
 a#log_full{
-	background:#666 url(/static/i/icons/fulllog.gif) no-repeat 15px center;
+	background:#666 url([% c.uri_for('/static/i/icons/fulllog.gif') %]) no-repeat 15px center;
 }
 a#tree{
-	background:#666 url(/static/i/icons/tree.gif) no-repeat 15px center;
+	background:#666 url([% c.uri_for('/static/i/icons/tree.gif') %]) no-repeat 15px center;
 }
 #nav_logs li a:hover{
 	text-decoration:underline;
@@ -192,40 +192,40 @@ a:hover{
 	outline:none;
 }
 a.commit{
-	background:transparent url(/static/i/icons/commit.png) no-repeat;
+	background:transparent url([% c.uri_for('/static/i/icons/commit.png') %]) no-repeat;
 }
 a.diff{
-	background:transparent url(/static/i/icons/diff.png) no-repeat;
+	background:transparent url([% c.uri_for('/static/i/icons/diff.png') %]) no-repeat;
 }
 a.diffcurrent{
-	background:transparent url(/static/i/icons/diffcurrent.png) no-repeat;
+	background:transparent url([% c.uri_for('/static/i/icons/diffcurrent.png') %]) no-repeat;
 }
 a.tree{
-	background:transparent url(/static/i/icons/tree.png) no-repeat;
+	background:transparent url([% c.uri_for('/static/i/icons/tree.png') %]) no-repeat;
 }
 a.shortlog{
-	background:transparent url(/static/i/icons/shortlog.png) no-repeat;
+	background:transparent url([% c.uri_for('/static/i/icons/shortlog.png') %]) no-repeat;
 }
 a.longlog{
-	background:transparent url(/static/i/icons/longlog.png) no-repeat;
+	background:transparent url([% c.uri_for('/static/i/icons/longlog.png') %]) no-repeat;
 }
 a.blob{
-	background:transparent url(/static/i/icons/blob.png) no-repeat;
+	background:transparent url([% c.uri_for('/static/i/icons/blob.png') %]) no-repeat;
 }
 a.blame{
-	background:transparent url(/static/i/icons/blame.png) no-repeat;
+	background:transparent url([% c.uri_for('/static/i/icons/blame.png') %]) no-repeat;
 }
 a.history{
-	background:transparent url(/static/i/icons/history.png) no-repeat;
+	background:transparent url([% c.uri_for('/static/i/icons/history.png') %]) no-repeat;
 }
 a.raw{
-	background:transparent url(/static/i/icons/raw.png) no-repeat;
+	background:transparent url([% c.uri_for('/static/i/icons/raw.png') %]) no-repeat;
 }
 .sha1_holder{
-	background:transparent url(/static/i/icons/button_sha1.png) no-repeat;
+	background:transparent url([% c.uri_for('/static/i/icons/button_sha1.png') %]) no-repeat;
 }
 .sha1_holder_invert{
-	background:transparent url(/static/i/icons/button_sha1_invert.png) no-repeat;
+	background:transparent url([% c.uri_for('/static/i/icons/button_sha1_invert.png') %]) no-repeat;
 }
 .sha1_label{
 	padding-top:2px;
@@ -233,7 +233,7 @@ a.raw{
 }
 .msg{
 	padding:5px 10px 5px 35px;
-	background:#f0f0f0 url(/static/i/icons/attention.png) no-repeat 10px center;
+	background:#f0f0f0 url([% c.uri_for('/static/i/icons/attention.png') %]) no-repeat 10px center;
 	border:1px solid #ddd;
 	margin:30px 15px;
 }

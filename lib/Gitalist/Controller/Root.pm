@@ -18,6 +18,14 @@ sub index : Chained('base') PathPart('') Args(0) {
     $c->stash( search_text => $c->req->param('s') || '' ) # FIXME - XSS?
 }
 
+# XXX Fragile much?
+sub css : Chained('/root') PathPart('core.css') Args(0) {
+    my ( $self, $c ) = @_;
+
+    $c->response->content_type('text/css');
+    $c->stash(template => 'static/css/core.css');
+}
+
 sub base : Chained('/root') PathPart('') CaptureArgs(0) {
   my($self, $c) = @_;
 

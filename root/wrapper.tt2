@@ -19,7 +19,7 @@
   -%] (Gitalist)</title>
   [% INCLUDE '_header_feeds.tt2' %]
    
-	<link rel="stylesheet" type="text/css" href="[% c.uri_for('/static/css/core.css') %]" />
+	<link rel="stylesheet" type="text/css" href="[% c.uri_for('/core.css') %]" />
 	<link rel="shortcut icon" href="[% c.uri_for('/static/git-favicon.png') %]" type="image/png" />
 </head>
 
