@@ -1,0 +1,7 @@
+<div class='content'>
+  <div>
+  [% Repository.name %]
+  </div>
+
+  [% subinclude('/fragment/repository/tags', c.req.captures) %]
+</div>

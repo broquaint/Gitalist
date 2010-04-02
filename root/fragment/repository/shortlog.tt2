@@ -1,0 +1,38 @@
+[% BLOCK shortlog_table_headfoot %]
+[% SET cell = type == 'head' ? 'th' : 'td' %]
+<tr>
+	<[% cell %]>ID (sha1)</[% cell %]>
+	<[% cell %]>Last change</[% cell %]>
+	<[% cell %]>Message</[% cell %]>
+	<[% cell %]>By</[% cell %]>
+	<[% cell %]>Actions</[% cell %]>
+</tr>
+[% END %]
+
+<table class='listing'>
+<thead>[% PROCESS shortlog_table_headfoot type = 'head' %]</thead>
+<tbody>
+ [% FOREACH line IN log_lines %]
+ <tr [% "class='invert'" IF loop.count % 2 %]>
+	<td class='sha1' title='[% line.sha1 %]'>[% INCLUDE 'inc/chroma_hash.tt2' sha1 = line.sha1.substr(0, 7) %]</td>
+	<td class='time-since' title='[% line.authored_time %]'>[% time_since(line.authored_time) %]</td>
+	<td>
+		[% IF longlogformat %]
+		 	[% message = line.comment | html; message.replace("\n", "<br/>") %]
+		[% ELSE %]
+			[% short_cmt(line.comment) | html %]
+			[% INCLUDE '_refs.tt2' object = line %]
+		[% END %]
+	</td>
+	<td class='author'><img src="[% uri_for_gravatar(line.author.email, 21) %]" />[% line.author.name | html %]</td>
+	<td class='action-list'>
+ 		<a href="[% c.uri_for_action("/ref/commit", [Repository.name, line.sha1]) %]" title="Commit details" class="button commit">commit</a>
+ 		<a href="[% c.uri_for_action("/ref/diff_fancy", [Repository.name, line.sha1]) %]" title="Commit difference" class="button diff">commitdiff</a>
+ 		<a href="[% c.uri_for_action("/ref/tree", [Repository.name, line.sha1]) %]" title="Tree" class="button tree">tree</a>
+	</td>
+</tr>
+[% END %]
+</tbody>
+</table>
+
+[% INCLUDE 'inc/log_pager.tt2' %]

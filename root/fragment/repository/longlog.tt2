@@ -1,0 +1,5 @@
+[% INCLUDE 'fragment/repository/shortlog.tt2' longlogformat = 1 %]
+
+
+<h2>Branches</h2>
+[% subinclude('/fragment/repository/heads', [Repository.name]) %]

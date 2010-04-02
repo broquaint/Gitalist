@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:blogChannel="http://backend.userland.com/blogChannelModule">
+
+<channel>
+<title>[% title | html_entity %]</title>
+<link>[% c.uri_for_action('/repository/summary', [Repository.name]) %]</link>
+<description>[% Repository.description | html_entity %]</description>
+<language>[% lang %]</language>
+<pubDate>[% pubDate %]</pubDate>
+<lastBuildDate>[% lastBuildDate %]</lastBuildDate>
+[% FOREACH Commit = Commits %]
+<item>
+<title>[% Commit.title | html_entity %]</title>
+<description>[% Commit.description | html_entity %]</description>
+<guid isPermaLink="true">[% Commit.permaLink %]</guid>
+</item>
+[% END %]
+</channel>
+</rss>

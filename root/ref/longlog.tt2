@@ -1,0 +1,1 @@
+[% PROCESS 'repository/longlog.tt2' %]

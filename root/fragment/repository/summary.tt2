@@ -1,0 +1,5 @@
+<dl>
+ <dt>description</dt><dd>[% Repository.description %]</dd>
+ <dt>owner</dt><dd>[% Repository.owner %]</dd>
+ <dt>last change</dt><dd>[% time_since(Repository.last_change) %]</dd>
+</dl>

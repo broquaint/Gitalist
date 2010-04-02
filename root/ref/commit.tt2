@@ -1,0 +1,4 @@
+
+<div class='content'>
+  [% subinclude('/fragment/ref/commit', c.req.captures) %]
+</div>

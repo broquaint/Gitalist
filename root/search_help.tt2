@@ -1,5 +1,3 @@
-[% PROCESS 'nav/actions.tt2' object = head %]
-
 <p><strong>Pattern</strong> is by default a normal string that is matched precisely (but without
 regard to case, except in the case of pickaxe). However, when you check the <em>re</em> checkbox,
 the pattern entered is recognized as the POSIX extended

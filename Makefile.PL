@@ -29,7 +29,7 @@ if ($ENV{GITALIST_RELEASE_TESTING}) {
     # Fill in provides info so that indexing works right (in the face of MX::Declare)
     # by just smashing filenames to package names and not trying to be smart..
     File::Find::find(sub {
-        return unless $File::Find::name =~ /\.pm$/;
+        return unless /^\w.*?\.pm$/;
         my $fn = $File::Find::name;
         my $ver = ExtUtils::MM_Unix->parse_version($fn);
 
@@ -54,10 +54,13 @@ requires 'Catalyst::Plugin::ConfigLoader';
 requires 'Catalyst::Plugin::StackTrace';
 requires 'Catalyst::Plugin::Static::Simple';
 requires 'Catalyst::Plugin::Unicode::Encoding';
+requires 'Catalyst::Plugin::SubRequest' => '0.15';
 requires 'Catalyst::Action::RenderView';
 requires 'Catalyst::Component::InstancePerContext';
+requires 'Catalyst::Controller::ActionRole';
+requires 'Catalyst::View::Component::SubInclude' => '0.07';
 requires 'Catalyst::View::TT';
-
+requires 'Try::Tiny';
 requires 'Template';
 requires 'Template::Provider::Encoding';
 requires 'Template::Plugin::Cycle';
@@ -66,6 +69,7 @@ requires 'Config::General';
 
 requires 'Moose';
 requires 'Moose::Autobox';
+requires 'MooseX::MultiMethods' => '0.10';
 requires 'MooseX::Declare' => '0.32';
 requires 'MooseX::Types::Common';
 requires 'MooseX::Types::Path::Class';
@@ -87,9 +91,6 @@ requires 'Path::Class' => '0.17';
 requires 'Sub::Exporter';
 requires 'Syntax::Highlight::Engine::Kate';
 requires 'Sys::Hostname';
-requires 'XML::Atom';
-requires 'XML::RSS';
-requires 'XML::OPML::SimpleGen';
 
 test_requires 'Test::More' => '0.88';
 test_requires 'Test::utf8' => '0.02';
@@ -102,6 +103,16 @@ catalyst;
 if ($Module::Install::AUTHOR) {
     system("pod2text lib/Gitalist.pm > README")
         and die $!;
+}
+
+if ($ENV{GITALIST_RELEASE_TESTING}) {
+    author_tests 't/author';
+    author_requires 'Test::NoTabs';
+    author_requires 'Test::Pod' => '1.14';
+    author_requires 'Test::Pod::Coverage' => '1.04';
+    author_requires 'Test::WWW::Mechanize::Catalyst' => '0.51';
+    author_requires 'HTML::TreeBuilder::XPath';
+    author_requires 'WWW::Mechanize::TreeBuilder';
 }
 
 install_script glob('script/*.pl');
