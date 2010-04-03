@@ -1,3 +1,7 @@
+* Root /search page doesn't do anything
+* Atom feed sucks shit (see t/atom.t)
+* OPML & RSS & Atom Feed dates incorrect format
+* Gitweb compat URIs are borked - there were some I just wholesale ripped out. Put back..
 * Sort out commitdiff so conflicted merges have an equivalent display to gitweb (d7f39bebabeb31ce9a7b4f1b6f3db9f391b78c3e as a reference)
 * Need to sanitise the input ...
 * The snapshot action does not properly support tgz - requests for this format will receive a tar.  tbz2 is not supported at all (yet).

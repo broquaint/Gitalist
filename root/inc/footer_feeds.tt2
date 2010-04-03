@@ -1,0 +1,32 @@
+  [% IF Repository %]
+    [%-
+      has_branch = c.req.param('h').match('^(refs/heads/.*)') || c.req.param('hb').match('^(refs/heads/.*)');
+      branch     = has_branch.0 || '';
+      feed_title = 'log';
+      feed_fn    = c.req.param('f');
+      IF feed_fn;
+        title = 'history of ' _ c.req.param('filename');
+        title = title _ (branch ? ' on ' _ branch : '');
+      ELSE;
+        title = title _ (branch ? ' of ' _ branch : '');
+      END;
+
+      feed_args = { h = branch || c.req.param('h') || c.req.param('hb') || 'HEAD' };
+      IF feed_fn; feed_args.f = feed_fn; END;
+    -%]
+    <a
+      class="rss_logo"
+      title="[% feed_title %]"
+      href="[% c.uri_for_action('/repository/rss', [Repository.name]) %]">RSS</a>
+    <a
+      class="rss_logo"
+      title="[% feed_title %]"
+      href="[% c.uri_for_action('/repository/atom', [Repository.name]) %]">Atom</a>
+  [% ELSE %]
+    <a
+      class="rss_logo"
+      href="[% c.uri_for_action('/opml/opml') %]">OPML</a>
+    <a
+      class="rss_logo"
+      href="[% c.uri_for('/repository_index') %]">TXT</a>
+  [% END %]

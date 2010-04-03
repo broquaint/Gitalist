@@ -59,7 +59,7 @@ my $commit_obj = Gitalist::Git::Object::Commit->new(
 isa_ok($commit_obj, 'Gitalist::Git::Object::Commit', "commit object");
 my ($tree, $patch) = $commit_obj->diff(
     parent => undef,
-    file => undef,
+    filename => undef,
     patch => 1,
 );
 $patch = $patch->[0];

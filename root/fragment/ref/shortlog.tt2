@@ -1,0 +1,1 @@
+[% PROCESS 'fragment/repository/shortlog.tt2' %]

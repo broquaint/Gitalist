@@ -41,7 +41,7 @@ GETTING GITALIST
 
     The canonical repository for the master branch is:
 
-        it://git.shadowcat.co.uk/catagits/Gitalist.git
+        git://git.shadowcat.co.uk/catagits/Gitalist.git
 
     Gitalist is also mirrored to github, and a number of people have active
     forks with branches and/or new features in the master branch.
@@ -83,13 +83,13 @@ INITIAL CONFIGURATION
 
     Alternatively, if you only want to set a repository directory and are
     otherwise happy with the default configuration, then you can set the
-    "GITALIST_REPOS_DIR" environment variable, or pass the "--repos_dir"
-    flag to any of the scripts.
+    "GITALIST_REPO_DIR" environment variable, or pass the "--repos_dir" flag
+    to any of the scripts.
 
-        GITALIST_REPOS_DIR=/home/myuser/code/git gitalist_server.pl
+        GITALIST_REPO_DIR=/home/myuser/code/git gitalist_server.pl
         gitalist_server.pl --repos_dir home/myuser/code/git
 
-    The "GITALIST_REPOS_DIR" environment variable will override the
+    The "GITALIST_REPO_DIR" environment variable will override the
     repository directory set in configuration, and will itself be overridden
     by he "--repos_dir" flag.
 

@@ -1,16 +1,21 @@
 span.Keyword {
-  color: #777;
+  color: #aaa;
   font-weight: bold;
 }
 span.DataType {
+	background-color:#F3E6FF;
   color: purple;
 }
 span.Normal {
-  color: gray;
+ 
 }
 span.String {
-  color: green;
+	background-color:#CCF5CC;
+	padding:2px 0;
+	color: #006F00;
 }
 span.Others {
-  color: red;
+	background-color:#F3CCCC;
+	padding:2px 0;
+	color: #750000;
 }

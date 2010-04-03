@@ -1,0 +1,17 @@
+<tbody>
+[% FOR p IN repositories %]
+	[%- repos_link = c.uri_for_action('/repository/summary', [p.name]) -%]
+<tr [% "class='invert'" IF loop.count % 2 %]>
+    <td>[% loop.count %]</td>
+	<td><a href="[% repos_link %]/shortlog"><strong>[% p.name %]</strong></a></td>
+    <td><span title="[% p.description %]">[% abridged_description(p.description) %]</span></td>
+    <td class="time-since">[% time_since(p.last_change) %]</td>
+    <td>[% p.owner %]</td>
+    <td class="action-list">
+	<a href="[% c.uri_for_action('/repository/shortlog', [p.name]) %]" title="Short log" class="button shortlog">short log</a>
+	<a href="[% c.uri_for_action('/repository/longlog', [p.name]) %]" title="Long log" class="button longlog">long log</a>
+	<a href="[% c.uri_for_action('/ref/tree', [p.name, 'HEAD']) %]" title="Tree" class="button tree">tree</a>
+	</td>
+</tr>
+[% END %]
+</tbody>
