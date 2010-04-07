@@ -6,6 +6,7 @@ class Gitalist::Git::Repository with Gitalist::Git::HasUtils {
     use MooseX::Types::Path::Class qw/Dir/;
     use MooseX::Types::Moose qw/Str Maybe Bool HashRef ArrayRef/;
     use Gitalist::Git::Types qw/SHA1/;
+    use MooseX::MultiMethods;
     use Moose::Autobox;
     use List::MoreUtils qw/any zip/;
     use DateTime;
@@ -74,6 +75,15 @@ class Gitalist::Git::Repository with Gitalist::Git::HasUtils {
     }
 
     ## Public methods
+
+    multi method get_object_or_head (SHA1 $sha1) {
+        $self->get_object($sha1);
+    }
+    multi method get_object_or_head (NonEmptySimpleStr $ref) {
+        my $sha1 = $self->head_hash($ref);
+        $self->get_object($sha1);
+    }    
+    
     method head_hash (Str $head?) {
         my $output = $self->run_cmd(qw/rev-parse --verify/, $head || 'HEAD' );
         confess("No such head: " . $head) unless defined $output;
@@ -176,11 +186,11 @@ class Gitalist::Git::Repository with Gitalist::Git::HasUtils {
     method diff ( Gitalist::Git::Object :$commit!,
                   Bool :$patch?,
                   Maybe[NonEmptySimpleStr] :$parent?,
-                  NonEmptySimpleStr :$file?
+                  NonEmptySimpleStr :$filename?
               ) {
               return $commit->diff( patch => $patch,
                                     parent => $parent,
-                                    file => $file);
+                                    filename => $filename);
     }
 
     method reflog (@logargs) {

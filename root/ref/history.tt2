@@ -1,0 +1,2 @@
+[%# FIXME - Pager links are broken because I can't figure out how to pass the parameters %]
+[% subinclude('/fragment/ref/history', c.req.captures, c.req.args.to_path) %]

@@ -3,13 +3,13 @@
   <link
     rel="alternate"
     title="[% Repository.name %] - [% title %] Atom feed"
-    href="[% c.uri_for('atom') %]"
+    href="[% c.uri_for_action('/repository/atom', [Repository.name]) %]"
     type="application/atom+xml"
   >
   <link
     rel="alternate"
     title="[% Repository.name %] - [% title %] RSS feed"
-    href="[% c.uri_for('rss') %]"
+    href="[% c.uri_for_action('/repository/rss', [Repository.name]) %]"
     type="application/rss+xml"
   >
   [% ELSE %]
@@ -18,11 +18,11 @@
     title="[% c.config.sitename %] Git repositories list"
     href="[% c.uri_for('repository_index') %]"
     type="text/plain; charset=utf-8"
-  > 
+  >
   <link
     rel="alternate"
     title="[% c.config.sitename %] Git repositories feeds"
-    href="[% c.uri_for('opml') %]"
+    href="[% c.uri_for_action('/opml/opml') %]"
     type="text/x-opml"
   >
   [% END %]

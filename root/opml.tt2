@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<opml version="1.1">
+  <body>[% count = 1 %]
+    [% FOR Repository = Repositories %]
+    <outline id="[% count %]"
+             description=""
+             text="[% Repository.name | html_entity %] - [% Repository.description | html_entity %]"
+             title=""
+             type="rss"
+             version="RSS"
+             xmlUrl="[% c.uri_for_action('/repository/rss', [ Repository.name ])%]" />
+    [% SET count = count + 1; END %]
+    </body>
+    <head>
+        <dateCreated>[% now %]</dateCreated>
+        <dateModified>[% now %]</dateModified>
+        <title>[% title | html_entity %]</title>
+    </head>
+</opml>

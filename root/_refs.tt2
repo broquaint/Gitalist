@@ -1,7 +1,7 @@
 <span class='refs'>
  [% FOREACH ref IN refs.${object.sha1} %]
  <span class='[% ref.search('^remotes/') ? 'remote' : 'head' %]'>
-  <a href='[% c.uri_for("shortlog", {h='refs/' _ ref}) %]'>[% ref.replace('^(remote|head)s/', '') %]</a>
+  <a href='[% c.uri_for_action("/repository/shortlog", [Repository, object.sha1]) %]'>[% ref.replace('^(remote|head)s/', '') %]</a>
  </span>
  [% END %]
 </span>

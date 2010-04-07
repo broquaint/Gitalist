@@ -1,9 +1,0 @@
-[% INCLUDE 'nav/actions.tt2' object = commit %]
-
-<div class='content'>
-[%
-  INCLUDE '_log_pager.tt2';
-  INCLUDE '_shortlog.tt2';
-  INCLUDE '_log_pager.tt2';
-%]
-</div>
