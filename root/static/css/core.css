@@ -1,6 +1,6 @@
 #debug_holder{
 	
-	display:none;
+	adisplay:none;
 	
 	clear:both;
 	padding-top:30px;
@@ -79,7 +79,7 @@ a img{
 
 /* nav tabs */
 #nav_logs{
-	width:80%;
+	width:100%;
 	clear:both;
 	float:right;
 	margin:-5px 10px 0 0;
@@ -303,12 +303,21 @@ th{
 th a{
 	color:#fff;
 }
+th a:hover{
+	color:#f0f0f0;
+}
 .summary tr{
 	background-color:#FAFAFA;
 	border-bottom:1px solid #fff;
 }
 .summary td{
 	vertical-align:middle !important;
+}
+tr{
+	background-color:#fff;
+}
+thead tr{
+	background-color:transparent !important;
 }
 tr.invert{
 	background-color:#f0f0f0;
@@ -369,6 +378,7 @@ table.listing{
 	padding:10px;
 	border:1px solid #ddd;
 	background-color:#f0f0f0;
+	min-height:40px;
 }
 .diff-head{
 	background-color:#666;
