@@ -52,7 +52,6 @@ after tree => sub {
     $c->stash(
         tree      => $tree,
         tree_list => [$repository->list_tree($tree->sha1)],
-        path      => $c->stash->{filename}, # FIXME?
     );
 };
 

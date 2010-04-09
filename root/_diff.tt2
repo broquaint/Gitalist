@@ -7,11 +7,17 @@
 [% FOREACH item IN diff %]
 
 <h4 id="diff[% loop.count %]" class='diff-head'>diff --git [%# FIXME %]
- <a href='[% c.uri_for_action("/ref/blob", [Repository.name, Commit.sha1], item.file) %]' title="Blob">[% item.a %]</a>
- <a href='[% c.uri_for_action("/ref/blob", [Repository.name, Commit.sha1], item.file) %]' title="Blob">[% item.b %]</a>
+ [% IF !item.src.match('^0+$') %]
+   <a href='[% c.uri_for_action("/ref/blob", [Repository.name, item.src]) %]' title="Blob">[% item.a %]</a>
+ [% ELSE %]
+   [% item.a %]
+ [% END %]
+ [% IF !item.dst.match('^0+$') %]
+ <a href='[% c.uri_for_action("/ref/blob", [Repository.name, item.dst]) %]' title="Blob">[% item.b %]</a>
+ [% ELSE %]
+   [% item.b %]
+ [% END %]
 </h4>
-
-
 
 
 <div class='diff-patch'>

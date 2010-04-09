@@ -128,7 +128,7 @@ class Gitalist::Git::Object::Commit
                     next;
                 }
 
-                if (/^index (\w+)\.\.(\w+) (\d+)$/) {
+                if (/^index (\w+)\.\.(\w+)(?: (\d+))?$/) {
                     @{$ret[-1]}{qw(index src dst mode)} = ($_, $1, $2, $3);
                     next
                 }

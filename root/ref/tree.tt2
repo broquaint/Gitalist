@@ -1,8 +1,1 @@
-  [%
-    IF path;
-      INCLUDE 'nav/path.tt2' filename = path;
-    END;
-
-    subinclude('/fragment/ref/tree', c.req.captures, c.req.args.to_path);
-  %]
-
+[% subinclude('/fragment/ref/tree', c.req.captures, c.req.args.to_path) %]
