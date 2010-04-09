@@ -1,6 +1,6 @@
 #debug_holder{
 	
-	adisplay:none;
+	display:none;
 	
 	clear:both;
 	padding-top:30px;
@@ -350,6 +350,24 @@ table.listing{
 	vertical-align:top;
 	padding:9px 5px 9px 10px;
 }
+
+/*
+
+puts the repo description on one line which gets truncated if the repo name is too long
+BUT the final width needs to be set with javascript based on the parent element (td) width
+
+.description{
+	white-space:nowrap;
+	overflow:hidden;
+}
+.description div{
+	position:absolute;
+	white-space:nowrap;
+	overflow:hidden;
+	width:200px;
+}
+*/
+
 .action-list{
 	width:120px;
 }

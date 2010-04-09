@@ -147,7 +147,7 @@
 <div id="footer_holder">
 	<div id="footer" class="sub_holder">
 		
-		<p>[% IF Repository; Repository.description | html; END; %]</p>
+		<p>[% IF Repository; Repository.description | html IF Repository.description != "Unnamed repository; edit this file to name it for gitweb." ; END; %]</p>
 	
 		<a title="git homepage" href="http://git-scm.org"><img src="[% c.uri_for('/logo.png') %]" id="git_logo" alt="git" /></a>
 		
