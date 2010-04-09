@@ -74,7 +74,7 @@
 			[% IF c.req.captures.size == 1; SET path = 'repository'; ELSE; SET path = 'ref'; END %]
 			
 			<ul>
-				<li[% ' class="selected"' IF c.action.name.match('tree') %]><a href="[% c.uri_for_action('/ref/tree', c.req.captures) %]" id="tree">Tree</a></li>
+				<li[% ' class="selected"' IF c.action.name.match('tree') %]><a href="[% c.uri_for_action('/ref/tree', c.req.captures) || c.uri_for_action('/repository/tree', c.req.captures) %]" id="tree">Tree</a></li>
 
 				<li[% ' class="selected"' IF c.action.name.match('longlog') %]><a href="[% c.uri_for_action('/' _ path _ '/longlog', c.req.captures) %]" id="log_full">Long log</a></li>
 				
