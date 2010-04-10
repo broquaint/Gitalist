@@ -24,13 +24,13 @@ sub raw : Chained('find') Does('FilenameArgs') Args() {
     $c->forward('find_blob');
 
     if(-T $c->stash->{blob}) {
-	$c->response->content_type('text/plain; charset=utf-8');
+        $c->response->content_type('text/plain; charset=utf-8');
     } else {
-	my $ft = File::Type->new();
-	$c->response->content_type(
-	    File::Type::WebImages::mime_type($c->stash->{blob})
-	 || File::Type->new->mime_type($c->stash->{blob})
-	);
+        my $ft = File::Type->new();
+        $c->response->content_type(
+            File::Type::WebImages::mime_type($c->stash->{blob})
+         || File::Type->new->mime_type($c->stash->{blob})
+        );
     }
 
     $c->response->body(delete $c->stash->{blob});
