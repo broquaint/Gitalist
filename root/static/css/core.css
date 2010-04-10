@@ -467,6 +467,10 @@ pre.blob {
   overflow:auto;
   font-size:12px;
 }
+div.blob {
+    text-align: center;
+    margin: 30px;
+}
 
 /* /blobdiff etc */
 

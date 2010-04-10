@@ -7,8 +7,8 @@
     [% short_cmt(head.comment) %]
    </div>
   [% END %]
- 
-	<pre class='blob'>[% subinclude('/fragment/ref/blob', c.req.captures, c.req.args.to_path) | html %]</pre>
+
+[% subinclude('/fragment/ref/blob', c.req.captures, c.req.args.to_path) %]
 
 
  
