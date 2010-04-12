@@ -38,7 +38,7 @@
 	<tr>
 		<td class='sha1'>[% INCLUDE 'inc/chroma_hash.tt2' sha1 = Commit.sha1.substr(0, 7), hide_sha1_output = 1 %] <div class="sha1_label">Commit</div></td>
 		<td>[% Commit.sha1 %]</td>
-		<td class='action-list'></td>
+		<td class='action-list'><a href="[% c.uri_for_action('/ref/diff_fancy', [Repository.name, Commit.sha1]) %]" title="Difference" class="button diff">diff</a></td>
 	</tr>
 	<tr>
 		<td class='sha1'>[% INCLUDE 'inc/chroma_hash.tt2' sha1 = Commit.tree_sha1.substr(0, 7), hide_sha1_output = 1 %] <div class="sha1_label">Tree</div></td>

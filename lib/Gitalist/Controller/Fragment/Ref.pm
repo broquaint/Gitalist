@@ -8,6 +8,8 @@ with qw/
     Gitalist::URIStructure::Fragment::WithLog
 /;
 
+use File::Type::WebImages ();
+
 sub base : Chained('/fragment/repository/find') PathPart('') CaptureArgs(0) {}
 
 sub _diff {
@@ -52,7 +54,6 @@ after tree => sub {
     $c->stash(
         tree      => $tree,
         tree_list => [$repository->list_tree($tree->sha1)],
-        path      => $c->stash->{filename}, # FIXME?
     );
 };
 
@@ -83,7 +84,9 @@ after blob => sub {
     my ( $self, $c ) = @_;
     $c->stash(
         # XXX Hack hack hack, see View::SyntaxHighlight
-        language => ($c->stash->{filename} =~ /\.p[lm]$/i ? 'Perl' : ''),
+        language  => ($c->stash->{filename} =~ /\.p[lm]$/i ? 'Perl' : ''),
+        is_image  => File::Type::WebImages::mime_type($c->stash->{blob}),
+        is_binary => -B $c->stash->{blob},
     );
 
     $c->forward('View::SyntaxHighlight')
