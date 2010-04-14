@@ -1,30 +1,44 @@
-<div class='content'>
-  [%# XXX Nabbed the HTML below from gitweb's log action. %]
-  [% FOREACH result IN results %]
-  <div class="header">
-   <a class="title" href="[% c.uri_for_action('/ref/commit', [ Repository.name, result.sha1 ]) %]">
-    <span class="age">[% result.authored_time %]</span>
-    [% short_cmt(result.comment) | html %]
-   </a>
-  </div>
+[% BLOCK shortlog_table_headfoot %]
+[% SET cell = type == 'head' ? 'th' : 'td' %]
+<tr>
+	<[% cell %] colspan="2"><a href="#" onclick="compareDiffs('[% Repository.name %]');return false;">Compare</a></[% cell %]>
+	<[% cell %]>ID (sha1)</[% cell %]>
+	<[% cell %]>Last change</[% cell %]>
+	<[% cell %]>Message</[% cell %]>
+	<[% cell %]>By</[% cell %]>
+	<[% cell %]>Actions</[% cell %]>
+</tr>
+[% END %]
 
-  <div class="title_text">
-   <div class="log_link">
-     <a href="[% c.uri_for_action('/ref/commit', [Repository.name, result.sha1]) %]">commit</a>
-   | <a href="[% c.uri_for_action('/ref/diff_fancy', [Repository.name, result.sha1]) %]">commitdiff</a>
-   | <a href="[% c.uri_for_action('/ref/tree', [Repository.name, result.tree_sha1]); %][%# hb=line.sha1 %]">tree</a>
-   </div>
-   <i>[% result.author.name | html %] [% line.authored_time %]</i>
-  </div>
-
-  <div class="log_body">
-   [%
+<form name="theform">
+<table class='listing'>
+<thead>[% PROCESS shortlog_table_headfoot type = 'head' %]</thead>
+<tbody>
+[% FOREACH result IN results %]
+ <tr [% "class='invert'" IF loop.count % 2 %]>
+ 	<td><input type="radio" name="sha1_a" value="[% result.sha1 %]" [% "checked" IF loop.count == 2 %] /></td>
+	<td><input type="radio" name="sha1_b" value="[% result.sha1 %]" [% "checked" IF loop.count == 1 %]/></td>
+	<td class='sha1' title='[% result.sha1 %]'>[% INCLUDE 'inc/chroma_hash.tt2' sha1 = result.sha1.substr(0, 7) %]</td>
+	<td class='time-since' title='[% result.authored_time %]'>[% time_since(result.authored_time) %]</td>
+	<td>[%
      # XXX This is fragile at best.
      html_comment = result.comment | html;
      html_comment.replace(
        c.req.param('text'), '<span class="match">' _ c.req.param('text') _ '</span>'
      );
-   %]
-  </div>
-  [% END %]
-</div>
+   %]</td>
+	<td class='author'><img src="[% uri_for_gravatar(result.author.email, 21) %]" />[% result.author.name | html %]</td>
+	<td class='action-list'>
+ 		<a href="[% c.uri_for_action("/ref/commit", [Repository.name, result.sha1]) %]" title="Commit details" class="button commit">commit</a>
+ 		<a href="[% c.uri_for_action("/ref/diff_fancy", [Repository.name, result.sha1]) %]" title="Commit difference" class="button diff">commitdiff</a>
+ 		<a href="[% c.uri_for_action("/ref/tree", [Repository.name, result.sha1]) %]" title="Tree" class="button tree">tree</a>
+	</td>
+</tr>
+[% END %]
+<tr>
+	<td colspan="2"><a href="#" onclick="compareDiffs('[% Repository.name %]');return false;">Compare</a></td>
+	<td colspan="5"></td>
+</tr>
+</tbody>
+</table>
+</form>
