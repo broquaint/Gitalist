@@ -177,19 +177,6 @@
 			
 			
 			[%- 
-				SET action_name = c.action.name
-									.replace("_"," ")
-									.replace("log", " log")
-									.replace("fancy","")
-									.replace("index","Repositories");
-				action_name_ucfirst = action_name FILTER ucfirst;
-				'<a href="#" id="actions_nav_link"><span>' _ action_name_ucfirst _ '</span></a>';
-				
-			-%]
-
-			</h1>
-	
-			[%- 
 				SET actions_list = {
 						"blob" 		=> 1,
 						"raw" 	 	=> 1,
@@ -197,6 +184,23 @@
 						"history"  	=> 1,
 					};
 					
+				SET action_name = c.action.name
+									.replace("_"," ")
+									.replace("log", " log")
+									.replace("fancy","")
+									.replace("index","Repositories");
+				action_name_ucfirst = action_name FILTER ucfirst;
+				IF actions_list.$action_name;
+					'<a href="#" id="actions_nav_link"><span>' _ action_name_ucfirst _ '</span></a>';
+				ELSE;
+					action_name_ucfirst;
+				END;
+				
+			-%]
+
+			</h1>
+	
+			[%- 
 				IF actions_list.$action_name;
 				'<ul id="actions_nav_list">';
 					FOREACH action IN actions_list;
