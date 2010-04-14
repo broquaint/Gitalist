@@ -23,7 +23,7 @@ sub raw : Chained('find') Does('FilenameArgs') Args() {
     my ($self, $c) = @_;
     $c->forward('find_blob');
 
-    if(-T $c->stash->{blob}) {
+    if(!Gitalist::Utils::is_binary($c->stash->{blob})) {
         $c->response->content_type('text/plain; charset=utf-8');
     } else {
         my $ft = File::Type->new();

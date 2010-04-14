@@ -135,7 +135,7 @@ class Gitalist::Git::Repository with Gitalist::Git::HasUtils {
             if !$sha1 || $sha1 !~ $SHA1RE;
 
         my @search_opts;
-        if ($search) {
+        if ($search and exists $search->{text}) {
             $search->{type} = 'grep'
                 if $search->{type} eq 'commit';
             @search_opts = (
