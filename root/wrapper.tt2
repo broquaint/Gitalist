@@ -21,6 +21,93 @@
    
 	<link rel="stylesheet" type="text/css" href="[% c.uri_for('/core.css') %]" />
 	<link rel="shortcut icon" href="[% c.uri_for('/static/git-favicon.png') %]" type="image/png" />
+	<script type="text/javascript">
+	// FIXME: this should be in an external js file once c.uri_for works in js files
+	function compareDiffs(repo, path){
+		var f = document.theform;
+		if(!repo){
+			var repo = "";
+		}
+		if(!path){
+			var path = "";
+		}
+		var sha1,sha2;
+		for(var i=0,len=f.length;i<len;i++){
+			if(f[i].name == "sha1_a"){
+				if(f[i].checked){
+					sha1 = f[i].value;
+				}
+			}
+			if(f[i].name == "sha1_b"){
+				if(f[i].checked){
+					sha2 = f[i].value;
+				}
+			}
+		}
+		document.location.href = "[% c.uri_for("/") %]" + repo + "/"+ sha1 + "/diff/" + sha2 + "/" + path;
+	}
+	// handles hover sub menus in IE
+	startList = function() {
+		if (document.getElementById && document.getElementById("actions_nav_link")) {
+			var navList = document.getElementById("actions_nav_list");
+			var navLink = document.getElementById("actions_nav_link");
+			// assign event handlers to each element
+			navLink.onmouseover=function() {
+				setNavClass(navList);
+			}
+			navList.onmouseover=function() {
+				setNavClass(navList);
+			}
+			navList.onmouseout=function() {
+				navList.className=navList.className.replace(" actions_nav_list_over", "");
+			}
+			navLink.onmouseout=function() {
+				navList.className=navList.className.replace(" actions_nav_list_over", "");
+			}
+		}
+		
+	}
+	function setNavClass(el){
+		var link_el = document.getElementById("actions_nav_link");
+		var offsetAry = findPos(link_el);
+		// set position of list
+		el.style.left = offsetAry[0]+"px";
+		el.style.top = offsetAry[1]+30 +"px";
+		el.className+=" actions_nav_list_over";
+	}
+	
+	function addLoadListener(fn){ 
+		if (typeof window.addEventListener != 'undefined') { 
+			window.addEventListener('load', fn, false); 
+		}else if (typeof document.addEventListener != 'undefined'){ 
+			document.addEventListener('load', fn, false); 
+	 	}else if (typeof window.attachEvent != 'undefined'){ 
+			window.attachEvent('onload', fn); 
+		}else{ 
+			var oldfn = window.onload; 
+			if (typeof window.onload != 'function'){ 
+				window.onload = fn; 
+			}else{ 
+				window.onload = function(){
+					oldfn();
+					fn();
+				}; 
+	   		}
+		}
+	}
+	function findPos(obj) {
+		var curleft = curtop = 0;
+		if (obj.offsetParent) {
+		do {
+			curleft += obj.offsetLeft;
+			curtop += obj.offsetTop;
+		} 
+		while (obj = obj.offsetParent);
+		return [curleft,curtop];
+		}
+	}
+	addLoadListener(startList);
+	</script>
 </head>
 
 <body>
@@ -48,7 +135,7 @@
 			[% IF c.req.captures.size == 1; SET path = 'repository'; ELSE; SET path = 'ref'; END %]
 			
 			<ul>
-				<li[% ' class="selected"' IF c.action.name.match('tree') %]><a href="[% c.uri_for_action('/ref/tree', c.req.captures) %]" id="tree">Tree</a></li>
+				<li[% ' class="selected"' IF c.action.name.match('tree') %]><a href="[% c.uri_for_action('/ref/tree', c.req.captures) || c.uri_for_action('/repository/tree', c.req.captures) %]" id="tree">Tree</a></li>
 
 				<li[% ' class="selected"' IF c.action.name.match('longlog') %]><a href="[% c.uri_for_action('/' _ path _ '/longlog', c.req.captures) %]" id="log_full">Long log</a></li>
 				
@@ -88,23 +175,48 @@
 				[% END %]
    			[%- END %]
 			
+			
 			[%- 
-				c.action.name
-					.replace("_"," ")
-					.replace("log", " log")
-					.replace("fancy","")
-					.replace("index","Repositories") 
-					FILTER ucfirst 
+				SET actions_list = {
+						"blob" 		=> 1,
+						"raw" 	 	=> 1,
+						"blame" 	=> 1,
+						"history"  	=> 1,
+					};
+					
+				SET action_name = c.action.name
+									.replace("_"," ")
+									.replace("log", " log")
+									.replace("fancy","")
+									.replace("index","Repositories");
+				action_name_ucfirst = action_name FILTER ucfirst;
+				IF actions_list.$action_name;
+					'<a href="#" id="actions_nav_link"><span>' _ action_name_ucfirst _ '</span></a>';
+				ELSE;
+					action_name_ucfirst;
+				END;
+				
 			-%]
-			
-	
-			
+
 			</h1>
 	
+			[%- 
+				IF actions_list.$action_name;
+				'<ul id="actions_nav_list">';
+					FOREACH action IN actions_list;
+						action_output = action.key FILTER ucfirst;
+						NEXT IF action_output == action_name_ucfirst;	
+						action = action.key;
+						'<li><a href="/' _ c.req.path.replace(action_name, action) _ '">' _ action_output _ '</a></li>';
+					END;			
+				'</ul>';
+				END;
+			-%]
+		
 	</div>
 </div>
 
-
+	
 <div id="content_holder">
 	<div id="content" class="sub_holder">
 		<div id="content_inner">
@@ -121,7 +233,7 @@
 <div id="footer_holder">
 	<div id="footer" class="sub_holder">
 		
-		<p>[% IF Repository; Repository.description | html; END; %]</p>
+		<p>[% IF Repository; Repository.description | html IF Repository.description != "Unnamed repository; edit this file to name it for gitweb." ; END; %]</p>
 	
 		<a title="git homepage" href="http://git-scm.org"><img src="[% c.uri_for('/logo.png') %]" id="git_logo" alt="git" /></a>
 		

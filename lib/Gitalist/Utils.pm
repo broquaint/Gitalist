@@ -45,6 +45,12 @@ sub age_string {
   return $age_str;
 }
 
+sub is_binary {
+  my($str) = @_;
+  open my $fh, '<', \$str or return;
+  return -B $fh;
+}
+
 1;
 
 __END__
@@ -57,7 +63,11 @@ Gitalist::Utils - trivial utils for Gitalist
 
 =head2 age_string
 
-Turns an integer number of seconds into a string..
+Turns an integer number of seconds into a string.
+
+=head2 is_binary
+
+Check whether a string is binary according to C<-B>.
 
 =head1 AUTHORS
 

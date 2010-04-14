@@ -4,7 +4,7 @@
 <tr [% "class='invert'" IF loop.count % 2 %]>
     <td>[% loop.count %]</td>
 	<td><a href="[% repos_link %]/shortlog"><strong>[% p.name %]</strong></a></td>
-    <td><span title="[% p.description %]">[% abridged_description(p.description) %]</span></td>
+    <td class="description"><div title="[% p.description %]">[% abridged_description(p.description) IF p.description != "Unnamed repository; edit this file to name it for gitweb." %]</div></td>
     <td class="time-since">[% time_since(p.last_change) %]</td>
     <td>[% p.owner %]</td>
     <td class="action-list">

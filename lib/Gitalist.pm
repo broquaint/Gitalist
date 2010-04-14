@@ -14,7 +14,7 @@ use Catalyst qw/
                 SubRequest
 /;
 
-our $VERSION = '0.000006_01';
+our $VERSION = '0.000006';
 $VERSION = eval $VERSION;
 
 __PACKAGE__->config(
@@ -139,7 +139,7 @@ by running:
 
   cp `perl -Ilib -MGitalist -e'print Gitalist->path_to("gitalist.conf")'` gitalist.conf
 
-You can then edit this confg, adding a repos_dir path and customising other settings as desired.
+You can then edit this confg, adding a repo_dir path and customising other settings as desired.
 
 You can then start the Gitalist demo server by setting C<< GITALIST_CONFIG >>. For example:
 
@@ -147,13 +147,13 @@ You can then start the Gitalist demo server by setting C<< GITALIST_CONFIG >>. F
 
 Alternatively, if you only want to set a repository directory and are otherwise happy with
 the default configuration, then you can set the C<< GITALIST_REPO_DIR >> environment
-variable, or pass the C<< --repos_dir >> flag to any of the scripts.
+variable, or pass the C<< --repo_dir >> flag to any of the scripts.
 
     GITALIST_REPO_DIR=/home/myuser/code/git gitalist_server.pl
-    gitalist_server.pl --repos_dir home/myuser/code/git
+    gitalist_server.pl --repo_dir home/myuser/code/git
 
 The C<< GITALIST_REPO_DIR >> environment variable will override the repository directory set
-in configuration, and will itself be overridden by he C<< --repos_dir >> flag.
+in configuration, and will itself be overridden by he C<< --repo_dir >> flag.
 
 =head1 RUNNING
 

@@ -6,6 +6,9 @@ use namespace::autoclean;
 BEGIN { extends 'Gitalist::Controller' }
 with 'Gitalist::URIStructure::Ref';
 
+use File::Type;
+use File::Type::WebImages ();
+
 sub base : Chained('/repository/find') PathPart('') CaptureArgs(0) {}
 
 after commit => sub {
@@ -20,7 +23,16 @@ sub raw : Chained('find') Does('FilenameArgs') Args() {
     my ($self, $c) = @_;
     $c->forward('find_blob');
 
-    $c->response->content_type('text/plain; charset=utf-8');
+    if(!Gitalist::Utils::is_binary($c->stash->{blob})) {
+        $c->response->content_type('text/plain; charset=utf-8');
+    } else {
+        my $ft = File::Type->new();
+        $c->response->content_type(
+            File::Type::WebImages::mime_type($c->stash->{blob})
+         || File::Type->new->mime_type($c->stash->{blob})
+        );
+    }
+
     $c->response->body(delete $c->stash->{blob});
 }
 

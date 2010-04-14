@@ -1,11 +1,18 @@
 This file documents the revision history for Perl extension Gitalist.
 
+0.000006 2010-04-10
+
+    - Major frontend redesign, thanks to ranguard and the web designers at
+      Foxtons for making this happen.
+    - Major URI overhaul, Gitalist has gone from old gitweb style CGI
+      parameters to proper URIs, however the old URIs are still supported
+      and will redirect appropriately (Tomas Doran).
+    - With the URI overhaul also came breaking up actions into fragments
+      for use with Catalyst::View::Component::SubInclude.
     - BIG BREAKING CHANGE - Gitalist::Model::GitRepos has been renamed
       Gitalist::Model::CollectionOfRepos. You need to fix your config and
       if you have actually installed Gitalist - remove the old model file.
-
     - Bump required version of Git::PurePerl for Encoding fixes.
-
     - Fix Makefile.PL to not need release deps when checking out of Git.
 
 0.000005 2010-01-09
