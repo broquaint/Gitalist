@@ -46,6 +46,67 @@
 		}
 		document.location.href = "[% c.uri_for("/") %]" + repo + "/"+ sha1 + "/diff/" + sha2 + "/" + path;
 	}
+	// handles hover sub menus in IE
+	startList = function() {
+		if (document.getElementById && document.getElementById("actions_nav_link")) {
+			var navList = document.getElementById("actions_nav_list");
+			var navLink = document.getElementById("actions_nav_link");
+			// assign event handlers to each element
+			navLink.onmouseover=function() {
+				setNavClass(navList);
+			}
+			navList.onmouseover=function() {
+				setNavClass(navList);
+			}
+			navList.onmouseout=function() {
+				navList.className=navList.className.replace(" actions_nav_list_over", "");
+			}
+			navLink.onmouseout=function() {
+				navList.className=navList.className.replace(" actions_nav_list_over", "");
+			}
+		}
+		
+	}
+	function setNavClass(el){
+		var link_el = document.getElementById("actions_nav_link");
+		var offsetAry = findPos(link_el);
+		// set position of list
+		el.style.left = offsetAry[0]+"px";
+		el.style.top = offsetAry[1]+30 +"px";
+		el.className+=" actions_nav_list_over";
+	}
+	
+	function addLoadListener(fn){ 
+		if (typeof window.addEventListener != 'undefined') { 
+			window.addEventListener('load', fn, false); 
+		}else if (typeof document.addEventListener != 'undefined'){ 
+			document.addEventListener('load', fn, false); 
+	 	}else if (typeof window.attachEvent != 'undefined'){ 
+			window.attachEvent('onload', fn); 
+		}else{ 
+			var oldfn = window.onload; 
+			if (typeof window.onload != 'function'){ 
+				window.onload = fn; 
+			}else{ 
+				window.onload = function(){
+					oldfn();
+					fn();
+				}; 
+	   		}
+		}
+	}
+	function findPos(obj) {
+		var curleft = curtop = 0;
+		if (obj.offsetParent) {
+		do {
+			curleft += obj.offsetLeft;
+			curtop += obj.offsetTop;
+		} 
+		while (obj = obj.offsetParent);
+		return [curleft,curtop];
+		}
+	}
+	addLoadListener(startList);
 	</script>
 </head>
 
@@ -114,23 +175,44 @@
 				[% END %]
    			[%- END %]
 			
+			
 			[%- 
-				c.action.name
-					.replace("_"," ")
-					.replace("log", " log")
-					.replace("fancy","")
-					.replace("index","Repositories") 
-					FILTER ucfirst 
+				SET action_name = c.action.name
+									.replace("_"," ")
+									.replace("log", " log")
+									.replace("fancy","")
+									.replace("index","Repositories");
+				action_name_ucfirst = action_name FILTER ucfirst;
+				'<a href="#" id="actions_nav_link"><span>' _ action_name_ucfirst _ '</span></a>';
+				
 			-%]
-			
-	
-			
+
 			</h1>
 	
+			[%- 
+				SET actions_list = {
+						"blob" 		=> 1,
+						"raw" 	 	=> 1,
+						"blame" 	=> 1,
+						"history"  	=> 1,
+					};
+					
+				IF actions_list.$action_name;
+				'<ul id="actions_nav_list">';
+					FOREACH action IN actions_list;
+						action_output = action.key FILTER ucfirst;
+						NEXT IF action_output == action_name_ucfirst;	
+						action = action.key;
+						'<li><a href="/' _ c.req.path.replace(action_name, action) _ '">' _ action_output _ '</a></li>';
+					END;			
+				'</ul>';
+				END;
+			-%]
+		
 	</div>
 </div>
 
-
+	
 <div id="content_holder">
 	<div id="content" class="sub_holder">
 		<div id="content_inner">
@@ -168,7 +250,7 @@
 	[% USE Dumper %]
 	<pre>
 	[% Repository.path %]
-	[%# Dumper.dump(c.req.arguments.0) %]
+	[%# Dumper.dump(c.req.path) %]
 	</pre>
 	
 	</div>
