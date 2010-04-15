@@ -28,14 +28,14 @@ sub _diff {
       diff      => $patch,
       # XXX Hack hack hack, see View::SyntaxHighlight
       blobs     => [map $_->{diff}, @$patch],
-      language  => 'Diff',
+      %filename,
     );
 }
 
 after diff_fancy => sub {
     my ($self, $c) = @_;
     $self->_diff($c);
-    $c->forward('View::SyntaxHighlight');
+    $c->forward('Model::ContentMangler');
 };
 
 after diff_plain => sub {
@@ -65,12 +65,10 @@ after blame => sub {
     my $blame = $c->stash->{Commit}->blame($c->stash->{filename}, $c->stash->{Commit}->sha1);
     $c->stash(
         blame    => $blame,
-        # XXX Hack hack hack, see View::SyntaxHighlight
-        language => ($c->stash->{filename} =~ /\.p[lm]$/i ? 'Perl' : ''),
         blob     => join("\n", map $_->{line}, @$blame),
     );
 
-    $c->forward('View::SyntaxHighlight')
+    $c->forward('Model::ContentMangler')
         unless $c->stash->{no_wrapper};
 };
 
@@ -83,13 +81,11 @@ The blob action i.e the contents of a file.
 after blob => sub {
     my ( $self, $c ) = @_;
     $c->stash(
-        # XXX Hack hack hack, see View::SyntaxHighlight
-        language  => ($c->stash->{filename} =~ /\.p[lm]$/i ? 'Perl' : ''),
         is_image  => File::Type::WebImages::mime_type($c->stash->{blob}),
         is_binary => Gitalist::Utils::is_binary($c->stash->{blob}),
     );
 
-    $c->forward('View::SyntaxHighlight')
+    $c->forward('Model::ContentMangler')
         unless $c->stash->{no_wrapper};
 };
 
