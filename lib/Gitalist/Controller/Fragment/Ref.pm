@@ -86,7 +86,7 @@ after blob => sub {
         # XXX Hack hack hack, see View::SyntaxHighlight
         language  => ($c->stash->{filename} =~ /\.p[lm]$/i ? 'Perl' : ''),
         is_image  => File::Type::WebImages::mime_type($c->stash->{blob}),
-        is_binary => -B $c->stash->{blob},
+        is_binary => Gitalist::Utils::is_binary($c->stash->{blob}),
     );
 
     $c->forward('View::SyntaxHighlight')

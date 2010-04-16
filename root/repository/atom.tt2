@@ -6,7 +6,8 @@
   <entry>
     <title>[% Commit.title | html_entity %]</title>
     <id>[% Commit.id %]</id>
-    <content mode="xml">
+    <link rel="alternate" type="text/html" href="[% Commit.id %]" />
+    <content type="xhtml">
       <div xmlns="http://www.w3.org/1999/xhtml">[% Commit.content | html_entity %]</div>
     </content>
   </entry>

@@ -93,6 +93,9 @@ requires 'Path::Class' => '0.17';
 requires 'Sub::Exporter';
 requires 'Syntax::Highlight::Engine::Kate';
 requires 'Sys::Hostname';
+requires 'XML::OPML::SimpleGen';
+requires 'XML::Atom::Feed';
+requires 'XML::RSS';
 
 test_requires 'Test::More' => '0.88';
 test_requires 'Test::utf8' => '0.02';

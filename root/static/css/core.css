@@ -16,7 +16,7 @@
 
 
 body{
-	background:#FAFAFA url(/static/i/bg.png) repeat-x left top;
+	background:#FAFAFA url([% c.uri_for('/static/i/bg.png') %]) repeat-x left top;
 	padding:0;
 	margin:0;
 	font-family:Arial, Verdana, sans-serif;
