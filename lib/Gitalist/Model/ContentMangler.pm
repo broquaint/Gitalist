@@ -44,7 +44,10 @@ sub process {
 
     my @steps = $self->resolve({ filename => $c->stash->{filename} });
     my @css = map { $_->[1]->{css} } grep { exists $_->[1] && exists $_->[1]->{css} && defined $_->[1]->{css} && length $_->[1]->{css} } @steps;
-    $c->stash(syntax_css => [ map { $c->uri_for('/static/css/syntax/' . $_ . '.css') } @css ]);
+    $c->stash(
+      syntax_css => [ map { $c->uri_for('/static/css/syntax/' . $_ . '.css') } @css ],
+      mangled    => scalar @steps,
+    );
     
     if ($c->stash->{blobs} || $c->stash->{blob}) {
         foreach my $step (@steps) {
