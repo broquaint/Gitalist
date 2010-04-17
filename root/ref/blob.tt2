@@ -1,5 +1,3 @@
-[% INCLUDE inc/syntax_highlight_css.tt2 %]
-
 <h3>[% INCLUDE 'nav/path.tt2' %]</h3>
 
   [% IF object.type == 'commit' %]

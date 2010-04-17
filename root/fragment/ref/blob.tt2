@@ -3,5 +3,6 @@
 [%- ELSIF is_binary -%]
 <div class='blob'>This is a binary file which won't render natively on the web, but you can get it here all the same: <a href="[% c.uri_for_action('/ref/raw', c.req.captures, filename) %]" title="[% filename %]">[% filename %]</a></div>
 [%- ELSE -%]
-<pre class='blob'>[% blob | html %]</pre>
+[%- INCLUDE inc/syntax_highlight_css.tt2 -%]
+<pre class='blob'>[% IF mangled; blob; ELSE; blob | html; END; %]</pre>
 [%- END -%]

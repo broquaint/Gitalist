@@ -67,8 +67,7 @@ after blame => sub {
         blob     => join("\n", map $_->{line}, @$blame),
     );
 
-    $c->forward('Model::ContentMangler')
-        unless $c->stash->{no_wrapper};
+    $c->forward('Model::ContentMangler');
 };
 
 =head2 blob
@@ -83,9 +82,7 @@ after blob => sub {
         is_image  => File::Type::WebImages::mime_type($c->stash->{blob}),
         is_binary => Gitalist::Utils::is_binary($c->stash->{blob}),
     );
-
-    $c->forward('Model::ContentMangler')
-        unless $c->stash->{no_wrapper};
+    $c->forward('Model::ContentMangler');
 };
 
 after history => sub {
