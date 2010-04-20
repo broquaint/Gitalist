@@ -1,12 +1,16 @@
 This file documents the revision history for Perl extension Gitalist.
 
+0.001002 2010-04-20
+    - Fix link for the project_index action.
+    - Add missing images to MANIFEST.
+
 0.001001 2010-04-15
     - Bumping version number to a format I understand, thanks to mst for
-	  pointing me in the right direction and t0m for the new number.
-	- Cleaned up the search results - removed search from the homepage as
-	  wasn't working (Foxtons).
-	- Provide a link for an atom entry. switch mode=xml to type=xhtml (Brian
-	  Cassidy).
+      pointing me in the right direction and t0m for the new number.
+    - Cleaned up the search results - removed search from the homepage as
+      wasn't working (Foxtons).
+    - Provide a link for an atom entry. switch mode=xml to type=xhtml (Brian
+      Cassidy).
 
 0.000006.1 2010-04-14
     - Documentation fixes for the --repo-dir flag (Dagfinn Ilmari Mannsåker).
