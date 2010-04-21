@@ -210,7 +210,7 @@
 						action_output = action.key FILTER ucfirst;
 						NEXT IF action_output == action_name_ucfirst;	
 						action = action.key;
-						'<li><a href="/' _ c.req.path.replace(action_name, action) _ '">' _ action_output _ '</a></li>';
+						'<li><a href="' _ c.uri_for("/")  _ c.req.path.replace(action_name, action) _ '">' _ action_output _ '</a></li>';
 					END;			
 				'</ul>';
 				END;
