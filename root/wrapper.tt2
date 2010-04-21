@@ -44,7 +44,7 @@
 				}
 			}
 		}
-		document.location.href = "[% c.uri_for("/") %]" + repo + "/"+ sha1 + "/diff/" + sha2 + "/" + path;
+		document.location.href = "[% c.uri_for("/") %]" + repo + "/"+ sha2 + "/diff/" + sha1 + "/" + path;
 	}
 	// handles hover sub menus in IE
 	startList = function() {
