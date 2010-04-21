@@ -20,7 +20,7 @@
   [% INCLUDE '_header_feeds.tt2' %]
    
 	<link rel="stylesheet" type="text/css" href="[% c.uri_for('/core.css') %]" />
-	<link rel="shortcut icon" href="[% c.uri_for('/static/git-favicon.png') %]" type="image/png" />
+	<link rel="shortcut icon" href="[% c.uri_for('/static/favicon.ico') %]" type="image/png" />
 	<script type="text/javascript">
 	// FIXME: this should be in an external js file once c.uri_for works in js files
 	function compareDiffs(repo, path){
@@ -178,6 +178,10 @@
 			
 			
 			[%- 
+				
+				#FIXME on a history view of a folder, don't show extra actions in dropdown
+				SET on_file_page = 1;
+				
 				SET actions_list = {
 						"blob" 		=> 1,
 						"raw" 	 	=> 1,
@@ -191,7 +195,7 @@
 									.replace("fancy","")
 									.replace("index","Repositories");
 				action_name_ucfirst = action_name FILTER ucfirst;
-				IF actions_list.$action_name;
+				IF actions_list.$action_name && on_file_page;
 					'<a href="#" id="actions_nav_link"><span>' _ action_name_ucfirst _ '</span></a>';
 				ELSE;
 					action_name_ucfirst;
@@ -255,7 +259,7 @@
 	[% USE Dumper %]
 	<pre>
 	[% Repository.path %]
-	[%# Dumper.dump(c.req.path) %]
+	[%# Dumper.dump(Commit) %]
 	</pre>
 	
 	</div>
