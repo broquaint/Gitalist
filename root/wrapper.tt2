@@ -146,10 +146,8 @@
 
 				
 				<li id="branch_selector">
-					[%# FIXME: convert to c.uri_for_action  #%]
-					
 					Branches 
-					<select onchange="document.location.href='/[% Repository.name %]/'+this.options[this.selectedIndex].text + '/shortlog';">
+					<select onchange="document.location.href='[% c.uri_for("/") %][% Repository.name %]/'+this.options[this.selectedIndex].text + '/shortlog';">
 						<option value="">HEAD</option>
 					
 					[% FOREACH branch_head IN Repository.heads %]
