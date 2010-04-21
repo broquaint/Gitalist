@@ -20,7 +20,7 @@
   [% INCLUDE '_header_feeds.tt2' %]
    
 	<link rel="stylesheet" type="text/css" href="[% c.uri_for('/core.css') %]" />
-	<link rel="shortcut icon" href="[% c.uri_for('/static/favicon.ico') %]" type="image/png" />
+	<link rel="shortcut icon" href="[% c.uri_for('/static/favicon.ico') %]" />
 	<script type="text/javascript">
 	// FIXME: this should be in an external js file once c.uri_for works in js files
 	function compareDiffs(repo, path){

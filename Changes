@@ -1,5 +1,8 @@
 This file documents the revision history for Perl extension Gitalist.
 
+    - Added folder / file icons in tree view (Foxtons)
+    - Added favicon
+
 0.001002 2010-04-20
     - Fix link for the project_index action.
     - Add missing images to MANIFEST.
