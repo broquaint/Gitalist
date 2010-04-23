@@ -9,6 +9,7 @@ with qw/
 /;
 
 use File::Type::WebImages ();
+use JSON::XS qw(encode_json);
 
 sub base : Chained('/fragment/repository/find') PathPart('') CaptureArgs(0) {}
 
@@ -113,6 +114,26 @@ after history => sub {
        filename  => $filename,
        filetype  => $file->type,
     );
+};
+
+after file_commit_info => sub {
+    my ($self, $c) = @_;
+
+    my $repository  = $c->stash->{Repository};
+
+    my($commit) = $repository->list_revs(
+       sha1   => $c->stash->{Commit}->sha1,
+       count  => 1,
+       file   => $c->stash->{filename},
+    );
+
+    my $json_obj = $commit
+                 ? { sha1 => $commit->sha1, comment => $c->stash->{short_cmt}->($commit->comment) }
+                 : { };
+
+    $c->response->content_type('application/json');
+    # XXX Make use of the json branch
+    $c->response->body( encode_json $json_obj );
 };
 
 __PACKAGE__->meta->make_immutable;

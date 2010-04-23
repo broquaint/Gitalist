@@ -1,13 +1,27 @@
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+<script>
+// Wait for image requests to come back first - $(function() {
+$(window).load(function() {
+  $('#commit-tree .message').each(function() {
+    var cell     = $(this);
+    var filename = cell.parent().find('.file-name').text();
+    $.getJSON('/fragment/Gitalist/[% Commit.sha1 %]/file_commit_info/'+filename, {}, function(commitInfo) {
+      cell.empty();
+      cell.html('<a href="/Gitalist/"'+commitInfo.sha1+'">'+commitInfo.comment+'</a>');
+    });
+  });
+});
+</script>
+
 [% BLOCK tree_table_headfoot %]
 [% SET cell = type == 'head' ? 'th' : 'td' %]
   <tr>
    <[% cell %]>Mode</[% cell %]>
    <[% cell %]>Folder / File</[% cell %]>
    <[% cell %]>Actions</[% cell %]>
+   <[% cell %]>Message</[% cell %]>
   </tr>
 [% END %]
-
-
 
 [%-
 	SET counter 	    = 1;
@@ -43,6 +57,7 @@
 	  [% END %]
 	    <a href="[% c.uri_for_action('/ref/history', c.req.captures, c.req.args.to_path(item.file)) %]" title="History (Short log)" class="button shortlog">Short log</a>
 		</td>
+          <td class="message">Loading commit info ...</td>
 	</tr>
 		[% counter = counter + 1 %]
 	[% END %]
@@ -51,7 +66,7 @@
 
 
 
-<table class="listing">
+<table class="listing" id="commit-tree">
 <thead>[% PROCESS tree_table_headfoot type = 'head' %]</thead>
 <tbody>
 	[% INCLUDE output_tree tree_type => tree_folders %]
