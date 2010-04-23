@@ -55,6 +55,8 @@ sub diff_plain : Chained('diff') PathPart('plain') Args() {
 
 sub commit : Chained('find') PathPart('commit') Args(0) {}
 
+sub file_commit_info : Chained('find') Does('FilenameArgs') Args() {}
+
 sub tree : Chained('find') Does('FilenameArgs') Args() {}
 
 sub find_blob : Action {
