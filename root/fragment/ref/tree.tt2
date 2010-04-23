@@ -7,7 +7,7 @@ $(window).load(function() {
     var filename = cell.parent().find('.file-name').text();
     $.getJSON('/fragment/Gitalist/[% Commit.sha1 %]/file_commit_info/'+filename, {}, function(commitInfo) {
       cell.empty();
-      cell.html('<a href="/Gitalist/"'+commitInfo.sha1+'">'+commitInfo.comment+'</a>');
+      cell.html('<a href="/Gitalist/'+commitInfo.sha1+'/commit">'+commitInfo.comment+'</a>');
     });
   });
 });
