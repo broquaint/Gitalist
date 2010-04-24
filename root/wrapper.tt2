@@ -179,15 +179,15 @@
 	</div>
 </div>
 
-<span id="current-uri">[%
+<span id="current-uri" class="js-data">[%
       # A bit of smoke and mirrors to get the /repository/shortlog URIs working
       cur_act = '' _ c.action;
       cur_uri = cur_act.match("log") || cur_act.match("^ref")
               ? '/ref/' _ cur_act.replace("^(repository|ref)/", '')
 	      : cur_act;
-      # XXX I just want an empty list!
+      # XXX I just want lists!
       IF c.req.args.size > 0;
-          c.uri_for_action(cur_uri, [Repository.name, 'HEAD'], c.req.args);
+          c.uri_for_action(cur_uri, [Repository.name, 'HEAD'], c.req.args.0);
       ELSE;
           c.uri_for_action(cur_uri, [Repository.name, 'HEAD']);
       END;
