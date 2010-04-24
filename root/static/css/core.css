@@ -14,7 +14,6 @@
 	background-color:#f0f0f0;
 }
 
-
 body{
 	background:#FAFAFA url([% c.uri_for('/static/i/bg.png') %]) repeat-x left top;
 	padding:0;
@@ -537,3 +536,7 @@ div.blob {
 
 /* /blobdiff etc */
 
+/* Hidden spans that contain bits of data to be used by JS */
+.js-data {
+    display: none;
+}
