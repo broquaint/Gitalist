@@ -127,9 +127,13 @@ after file_commit_info => sub {
        file   => $c->stash->{filename},
     );
 
-    my $json_obj = $commit
-                 ? { sha1 => $commit->sha1, comment => $c->stash->{short_cmt}->($commit->comment) }
-                 : { };
+    my $json_obj = !$commit
+                 ? { }
+                 : {
+		     sha1    => $commit->sha1,
+		     comment => $c->stash->{short_cmt}->($commit->comment),
+		     age     => $c->stash->{time_since}->($commit->authored_time),
+		 };
 
     $c->response->content_type('application/json');
     # XXX Make use of the json branch
