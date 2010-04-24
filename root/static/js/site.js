@@ -54,14 +54,14 @@ function compareDiffs(){
         baseSha1 = jQuery('#compare-form input[name=sha1_a]:checked').val(),
         compSha1 = jQuery('#compare-form input[name=sha1_b]:checked').val(),
         diffUri  = uriFor('diff', baseSha1);
-    document.location.href = diffUri + '/' + compSha1 + (path ? '/' + escape(path) : '');
+    document.location.href = diffUri + '/' + compSha1 + (path ? '/' + encodeURIComponent(path) : '');
     return false;
 }
 
 function loadCommitInfo() {
   jQuery('#commit-tree .message').each(function() {
     var cell     = jQuery(this);
-    var filename = unescape( cell.find('.js-data').text() );
+    var filename = cell.find('.js-data').text();
     jQuery.getJSON(uriFor('file_commit_info') + '/' + filename, {}, function(commitInfo) {
       cell.empty();
       cell.html('<a href="'+uriFor('commit', commitInfo.sha1)+'">'+commitInfo.comment+'</a> '+commitInfo.age);
