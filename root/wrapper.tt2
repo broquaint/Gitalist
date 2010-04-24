@@ -21,93 +21,8 @@
    
 	<link rel="stylesheet" type="text/css" href="[% c.uri_for('/core.css') %]" />
 	<link rel="shortcut icon" href="[% c.uri_for('/static/favicon.ico') %]" />
-	<script type="text/javascript">
-	// FIXME: this should be in an external js file once c.uri_for works in js files
-	function compareDiffs(repo, path){
-		var f = document.theform;
-		if(!repo){
-			var repo = "";
-		}
-		if(!path){
-			var path = "";
-		}
-		var sha1,sha2;
-		for(var i=0,len=f.length;i<len;i++){
-			if(f[i].name == "sha1_a"){
-				if(f[i].checked){
-					sha1 = f[i].value;
-				}
-			}
-			if(f[i].name == "sha1_b"){
-				if(f[i].checked){
-					sha2 = f[i].value;
-				}
-			}
-		}
-		document.location.href = "[% c.uri_for("/") %]" + repo + "/"+ sha2 + "/diff/" + sha1 + "/" + path;
-	}
-	// handles hover sub menus in IE
-	startList = function() {
-		if (document.getElementById && document.getElementById("actions_nav_link")) {
-			var navList = document.getElementById("actions_nav_list");
-			var navLink = document.getElementById("actions_nav_link");
-			// assign event handlers to each element
-			navLink.onmouseover=function() {
-				setNavClass(navList);
-			}
-			navList.onmouseover=function() {
-				setNavClass(navList);
-			}
-			navList.onmouseout=function() {
-				navList.className=navList.className.replace(" actions_nav_list_over", "");
-			}
-			navLink.onmouseout=function() {
-				navList.className=navList.className.replace(" actions_nav_list_over", "");
-			}
-		}
-		
-	}
-	function setNavClass(el){
-		var link_el = document.getElementById("actions_nav_link");
-		var offsetAry = findPos(link_el);
-		// set position of list
-		el.style.left = offsetAry[0]+"px";
-		el.style.top = offsetAry[1]+30 +"px";
-		el.className+=" actions_nav_list_over";
-	}
-	
-	function addLoadListener(fn){ 
-		if (typeof window.addEventListener != 'undefined') { 
-			window.addEventListener('load', fn, false); 
-		}else if (typeof document.addEventListener != 'undefined'){ 
-			document.addEventListener('load', fn, false); 
-	 	}else if (typeof window.attachEvent != 'undefined'){ 
-			window.attachEvent('onload', fn); 
-		}else{ 
-			var oldfn = window.onload; 
-			if (typeof window.onload != 'function'){ 
-				window.onload = fn; 
-			}else{ 
-				window.onload = function(){
-					oldfn();
-					fn();
-				}; 
-	   		}
-		}
-	}
-	function findPos(obj) {
-		var curleft = curtop = 0;
-		if (obj.offsetParent) {
-		do {
-			curleft += obj.offsetLeft;
-			curtop += obj.offsetTop;
-		} 
-		while (obj = obj.offsetParent);
-		return [curleft,curtop];
-		}
-	}
-	addLoadListener(startList);
-	</script>
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+	<script src="[% c.uri_for('/static/js/site.js') %]"></script>
 </head>
 
 <body>
@@ -147,11 +62,10 @@
 				
 				<li id="branch_selector">
 					Branches 
-					<select onchange="document.location.href='[% c.uri_for("/") %][% Repository.name %]/'+this.options[this.selectedIndex].text + '/shortlog';">
+					<select id='branch-list'>
 						<option value="">HEAD</option>
-					
-					[% FOREACH branch_head IN Repository.heads %]
-						<option [% "selected" IF c.req.path.search(branch_head.name) %]>[% branch_head.name %]</option>
+					[% FOREACH branch IN Repository.heads %]
+						<option value="[% branch.name %]">[% branch.name %]</option>
 					[% END %]
 					
 					</select>
@@ -259,11 +173,25 @@
 	[% USE Dumper %]
 	<pre>
 	[% Repository.path %]
-	[%# Dumper.dump(Commit) %]
+	[% Dumper.dump(c.req.args) %]
 	</pre>
 	
 	</div>
 </div>
+
+<span id="current-uri">[%
+      # A bit of smoke and mirrors to get the /repository/shortlog URIs working
+      cur_act = '' _ c.action;
+      cur_uri = cur_act.match("log") || cur_act.match("^ref")
+              ? '/ref/' _ cur_act.replace("^(repository|ref)/", '')
+	      : cur_act;
+      # XXX I just want an empty list!
+      IF c.req.args.size > 0;
+          c.uri_for_action(cur_uri, [Repository.name, 'HEAD'], c.req.args);
+      ELSE;
+          c.uri_for_action(cur_uri, [Repository.name, 'HEAD']);
+      END;
+%]</span>
 
 </body>
 </html>

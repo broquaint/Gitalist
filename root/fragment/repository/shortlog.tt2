@@ -1,7 +1,7 @@
 [% BLOCK shortlog_table_headfoot %]
 [% SET cell = type == 'head' ? 'th' : 'td' %]
 <tr>
-	<[% cell %] colspan="2"><a href="#" onclick="compareDiffs('[% Repository.name %]');return false;">Compare</a></[% cell %]>
+	<[% cell %] colspan="2"><a href="" class="compare-link">Compare</a></[% cell %]>
 	<[% cell %]>ID (sha1)</[% cell %]>
 	<[% cell %]>Last change</[% cell %]>
 	<[% cell %]>Message</[% cell %]>
@@ -10,14 +10,14 @@
 </tr>
 [% END %]
 
-<form name="theform">
+<form id="compare-form">
 <table class='listing'>
 <thead>[% PROCESS shortlog_table_headfoot type = 'head' %]</thead>
 <tbody>
  [% FOREACH line IN log_lines %]
  <tr [% "class='invert'" IF loop.count % 2 %]>
- 	<td><input type="radio" name="sha1_a" value="[% line.sha1 %]" [% "checked" IF loop.count == 2 %] /></td>
-	<td><input type="radio" name="sha1_b" value="[% line.sha1 %]" [% "checked" IF loop.count == 1 %]/></td>
+ 	<td><input type="radio" name="sha1_a" value="[% line.sha1 %]" [% "checked" IF loop.count == 1 %] /></td>
+	<td><input type="radio" name="sha1_b" value="[% line.sha1 %]" [% "checked" IF loop.count == 2 %]/></td>
 	<td class='sha1' title='[% line.sha1 %]'>[% INCLUDE 'inc/chroma_hash.tt2' sha1 = line.sha1.substr(0, 7) %]</td>
 	<td class='time-since' title='[% line.authored_time %]'>[% time_since(line.authored_time) %]</td>
 	<td>
@@ -37,11 +37,13 @@
 </tr>
 [% END %]
 <tr>
-	<td colspan="2"><a href="#" onclick="compareDiffs('[% Repository.name %]');return false;">Compare</a></td>
+	<td colspan="2"><a href="" class="compare-link">Compare</a></td>
 	<td colspan="5"></td>
 </tr>
 </tbody>
 </table>
-</form>
+</form
+
+<span id="diff-uri" class="js-data">[% c.uri_for_action('/ref/diff_fancy', [Repository.name, 'HEAD']) %]</span> 
 
 [% INCLUDE 'inc/log_pager.tt2' %]

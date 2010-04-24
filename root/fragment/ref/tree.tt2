@@ -1,18 +1,3 @@
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
-<script>
-// Wait for image requests to come back first - $(function() {
-$(window).load(function() {
-  $('#commit-tree .message').each(function() {
-    var cell     = $(this);
-    var filename = cell.parent().find('.file-name').text();
-    $.getJSON('/fragment/Gitalist/[% Commit.sha1 %]/file_commit_info/'+filename, {}, function(commitInfo) {
-      cell.empty();
-      cell.html('<a href="/Gitalist/'+commitInfo.sha1+'/commit">'+commitInfo.comment+'</a> '+commitInfo.age);
-    });
-  });
-});
-</script>
-
 [% BLOCK tree_table_headfoot %]
 [% SET cell = type == 'head' ? 'th' : 'td' %]
   <tr>
@@ -22,7 +7,6 @@ $(window).load(function() {
    <[% cell %]>Message</[% cell %]>
   </tr>
 [% END %]
-
 [%-
 	SET counter 	    = 1;
 	
@@ -43,7 +27,7 @@ $(window).load(function() {
 	<tr [% "class='invert'" IF counter % 2 %]>
 		<td class='file-mode'>[% item.modestr %]</td>
 	  [%-
-	       action_type = item.type == 'tree' ? 'tree' : 'blob';
+	       action_type     = item.type == 'tree' ? 'tree' : 'blob';
 	       action_for_link = item.type == 'tree' ? '/ref/tree' : '/ref/blob';
 	       blob_or_tree_link = c.uri_for_action(action_for_link, c.req.captures, c.req.args.to_path(item.file))
 	  -%]
@@ -57,14 +41,11 @@ $(window).load(function() {
 	  [% END %]
 	    <a href="[% c.uri_for_action('/ref/history', c.req.captures, c.req.args.to_path(item.file)) %]" title="History (Short log)" class="button shortlog">Short log</a>
 		</td>
-          <td class="message">Loading commit info ...</td>
+          <td class="message"><span class='js-data'>[% c.req.args.to_path(item.file) %]</span>Loading commit info ...</td>
 	</tr>
 		[% counter = counter + 1 %]
 	[% END %]
 [% END %]
-
-
-
 
 <table class="listing" id="commit-tree">
 <thead>[% PROCESS tree_table_headfoot type = 'head' %]</thead>
@@ -73,3 +54,7 @@ $(window).load(function() {
 	[% PROCESS output_tree tree_type => tree_files   %]
 </tbody>
 </table>
+
+[%- # We use uri_for instead of uri_for_action as we *want* a /fragment URI in this case %]
+<span id='file_commit_info-uri' class='js-data'>[% c.uri_for('/fragment/' _ Repository.name _ '/' _ Commit.sha1 _ '/file_commit_info') %]</span>
+<span id='commit-uri' class='js-data'>[% c.uri_for_action('/ref/commit', [Repository.name, 'HEAD']) %]</span>
