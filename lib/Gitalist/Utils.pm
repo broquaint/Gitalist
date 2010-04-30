@@ -46,9 +46,8 @@ sub age_string {
 }
 
 sub is_binary {
-  my($str) = @_;
-  open my $fh, '<', \$str or return;
-  return -B $fh;
+  # Crappy heuristic - does the first line or so look printable?
+  return $_[0] !~ /^[[:print:]]+$ (?: \s ^[[:print:]]+$ )?/mx;
 }
 
 1;
