@@ -63,8 +63,10 @@ if ( $on ) {
 
     $ENV{PERL_MM_OPT} .= " INSTALLMAN1DIR=none INSTALLMAN3DIR=none";
 
+    require lib::core::only;
     require local::lib;
-    local::lib->import( '--self-contained', $target );
+    lib::core::only->import();
+    local::lib->import( $target );
 }
 
 unless ( caller ) {

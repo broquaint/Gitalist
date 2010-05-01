@@ -1,4 +1,5 @@
 #!/usr/bin/env perl
+
 use FindBin;
 BEGIN { do "$FindBin::Bin/script/env" or die $@ }
 
@@ -95,6 +96,7 @@ requires 'File::Type::WebImages';
 requires 'File::Which';
 requires 'HTML::Entities';
 requires 'IPC::Run';
+requires 'JSON::XS';
 requires 'List::MoreUtils';
 requires 'Path::Class' => '0.17';
 requires 'Sub::Exporter';

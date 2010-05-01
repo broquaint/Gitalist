@@ -46,11 +46,13 @@ lib->import("$target/lib/perl5");
 local %CPAN::Config;
 require CPAN::HandleConfig;
 CPAN::HandleConfig->load();
-$CPAN::Config->{prefs_dir} = "~/.cpan/prefs";
+$CPAN::Config->{prefs_dir} = "$ENV{HOME}/.cpan/prefs";
 
 force(qw/install local::lib/);
 
+require lib::core::only; # Turn lib::core:only on
 require local::lib; # Turn local::lib on
+lib::core::only->import();
 local::lib->import( $target );
 
 # Become fully self contained
@@ -60,7 +62,8 @@ $ENV{PERL5LIB} = ""; # If we used a local::lib to bootstrap, this kills it.
 $ENV{PERL_AUTOINSTALL_PREFER_CPAN}=1;
 $ENV{PERL_MM_OPT} .= " INSTALLMAN1DIR=none INSTALLMAN3DIR=none";
 
-local::lib->import( '--self-contained', $target );
+lib::core::only->import();
+local::lib->import( $target );
 
 # Force a re-install of local::lib here to get the dependencies for local::lib
 # It requires things which ensure we have an unfucked toolchain :)
@@ -70,6 +73,8 @@ force(qw/install local::lib/);
 install('Module::Install');
 install('YAML');
 install('CPAN');
+# For some reason this isn't installed along with M::I::Catalyst.
+install('File::Copy::Recursive');
 install('Module::Install::Catalyst');
 
 print "local::lib setup, type perl Makefile.PL && make installdeps to install dependencies";
