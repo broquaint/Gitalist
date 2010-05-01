@@ -118,13 +118,16 @@
 			<a href="[% c.uri_for('/') %]" id="logo"><img src="[% c.uri_for('/static/i/logo.png') %]" alt="Gitalist" /></a>
 
 			<div class="search">
-				[% IF Repository; INCLUDE 'nav/search.tt2'; ELSE; %]
-				
-				<form method="get" action="[% c.uri_for_action('/search') %]" enctype="application/x-www-form-urlencoded">
-	   <p class="projsearch">Search:
-	    <input type="text" name="s" value="[% search_text %]" />
-	   </p>
-	  </form>
+			[% IF Repository; INCLUDE 'nav/search.tt2'; ELSE; %]
+			
+			<!--
+			[%# FIXME - Search submits to blank(ish) page %]
+			<form method="get" action="[% c.uri_for_action('/search') %]" enctype="application/x-www-form-urlencoded">
+			   <p class="projsearch">Search:
+			    <input type="text" name="s" value="[% search_text %]" />
+			   </p>
+			</form>
+			-->
 			[% END %]
 			</div>
 		</div>
@@ -143,10 +146,8 @@
 
 				
 				<li id="branch_selector">
-					[%# FIXME: convert to c.uri_for_action  #%]
-					
 					Branches 
-					<select onchange="document.location.href='/[% Repository.name %]/'+this.options[this.selectedIndex].text + '/shortlog';">
+					<select onchange="document.location.href='[% c.uri_for("/") %][% Repository.name %]/'+this.options[this.selectedIndex].text + '/shortlog';">
 						<option value="">HEAD</option>
 					
 					[% FOREACH branch_head IN Repository.heads %]
@@ -207,7 +208,7 @@
 						action_output = action.key FILTER ucfirst;
 						NEXT IF action_output == action_name_ucfirst;	
 						action = action.key;
-						'<li><a href="/' _ c.req.path.replace(action_name, action) _ '">' _ action_output _ '</a></li>';
+						'<li><a href="' _ c.uri_for("/")  _ c.req.path.replace(action_name, action) _ '">' _ action_output _ '</a></li>';
 					END;			
 				'</ul>';
 				END;

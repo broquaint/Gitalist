@@ -28,5 +28,5 @@
       href="[% c.uri_for_action('/opml/opml') %]">OPML</a>
     <a
       class="rss_logo"
-      href="[% c.uri_for('/repository_index') %]">TXT</a>
+      href="[% c.uri_for('/project_index') %]">TXT</a>
   [% END %]

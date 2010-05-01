@@ -14,7 +14,9 @@
       -->
   </select>
   <span title="Extended regular expression"><label><input type="checkbox" name="regexp" value="1">re</label></span>
-   <sup><a href="[% c.uri_for_action('/search_help') %]">?</a></sup> 
+   <sup><a href="[% c.uri_for_action('/search_help') %]">?</a></sup>
+   
+   <input type="submit" class="button_submit" value="" />
   </form>
 </div>
 [% END %]

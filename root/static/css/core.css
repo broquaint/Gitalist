@@ -16,7 +16,7 @@
 
 
 body{
-	background:#FAFAFA url(/static/i/bg.png) repeat-x left top;
+	background:#FAFAFA url([% c.uri_for('/static/i/bg.png') %]) repeat-x left top;
 	padding:0;
 	margin:0;
 	font-family:Arial, Verdana, sans-serif;
@@ -52,6 +52,9 @@ a img{
 #content_inner{
 	padding-bottom:30px;
 	background:transparent url([% c.uri_for('/static/i/bg_top.png') %]) no-repeat;
+}
+.copy{
+	padding:10px;
 }
 #logo{
 	margin-left:-10px;
@@ -275,7 +278,9 @@ a.raw{
 	border:1px solid #ddd;
 	margin:30px 15px;
 }
-
+.match{
+	background-color:#ffff00;
+}
 a.rss_logo {
   float: right;
   padding: 3px 0px;
@@ -298,6 +303,16 @@ a.rss_logo:hover {
   background-color: #ee5500;
 }
 
+
+.button_submit{
+	text-indent:-999999px;
+	overflow:hidden;
+	width:95px;
+	height:26px;
+	border:0;
+	background:transparent url([% c.uri_for('/static/i/buttons/search.png') %]) no-repeat;
+	cursor: pointer;
+}
 
 
 /* paging */

@@ -1,3 +1,4 @@
+// THIS IS NOT USED - it is in the wrapper.tt as js is not parsed by TT (needed for the c.uri_for)
 function compareDiffs(repo, path){
 	var f = document.theform;
 	if(!repo){
@@ -19,6 +20,5 @@ function compareDiffs(repo, path){
 			}
 		}
 	}
-	//document.location.href = [% c.uri_for("/" + repo + "/"+ sha1 + "/diff/" + sha2 + "/" + path) %];
-	document.location.href = "/" + repo + "/"+ sha1 + "/diff/" + sha2 + "/" + path;
+	document.location.href = [% c.uri_for("/" + repo + "/"+ sha1 + "/diff/" + sha2 + "/" + path) %];
 }

@@ -1,8 +1,12 @@
+<h3>Search help</h3>
+
+<div class="copy">
 <p><strong>Pattern</strong> is by default a normal string that is matched precisely (but without
 regard to case, except in the case of pickaxe). However, when you check the <em>re</em> checkbox,
 the pattern entered is recognized as the POSIX extended
 <a href="http://en.wikipedia.org/wiki/Regular_expression">regular expression</a> (also case
 insensitive).</p>
+
 <dl>
 <dt><b>commit</b></dt>
 <dd>The commit messages and authorship information will be scanned for the given pattern.</dd>
@@ -23,4 +27,4 @@ added, removed or "modified" the string) will be listed. This search can take a 
 takes a lot of strain on the server, so please use it wisely. Note that since you may be
 interested even in changes just changing the case as well, this search is case sensitive.</dd>
 </dl>
-
+</div>
