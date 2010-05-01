@@ -1,5 +1,7 @@
 This file documents the revision history for Perl extension Gitalist.
 
+    - Added folder / file icons in tree view (Foxtons)
+    - Added favicon
     - Fix for non uri_for hard coded links for running at not root locations.
       (RT#56747)
 

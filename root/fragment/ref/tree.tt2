@@ -2,34 +2,59 @@
 [% SET cell = type == 'head' ? 'th' : 'td' %]
   <tr>
    <[% cell %]>Mode</[% cell %]>
-   <[% cell %]>File</[% cell %]>
+   <[% cell %]>Folder / File</[% cell %]>
    <[% cell %]>Actions</[% cell %]>
   </tr>
 [% END %]
-<table class="listing">
- <thead>[% PROCESS tree_table_headfoot type = 'head' %]</thead>
- <tbody>
-  [% FOREACH item IN tree_list %]
- <tr [% "class='invert'" IF loop.count % 2 %]>
-   <td class='file-mode'>[% item.modestr %]</td>
-   [%-
-        action_type = item.type == 'tree' ? 'tree' : 'blob';
-        action_for_link = item.type == 'tree' ? '/ref/tree' : '/ref/blob';
-        blob_or_tree_link = c.uri_for_action(action_for_link, c.req.captures, c.req.args.to_path(item.file))
-   -%]
-   <td class='file-name'>
-    <a href="[% blob_or_tree_link %]">[% item.file %]</a>
-   </td>
-   <td class='action-list'>
+
+
+
+[%-
+	SET counter 	    = 1;
+	
+ 	# sort files and folders
+	SET tree_files 		= [];
+	SET tree_folders 	= [];
+	FOREACH item IN tree_list;
+		IF item.type == "blob";
+			tree_files.push(item);
+		ELSE;
+			tree_folders.push(item);
+		END;
+	END;
+%]
+
+[% BLOCK output_tree %]
+	[% FOREACH item IN tree_type.sort('file') %]
+	<tr [% "class='invert'" IF counter % 2 %]>
+		<td class='file-mode'>[% item.modestr %]</td>
+	  [%-
+	       action_type = item.type == 'tree' ? 'tree' : 'blob';
+	       action_for_link = item.type == 'tree' ? '/ref/tree' : '/ref/blob';
+	       blob_or_tree_link = c.uri_for_action(action_for_link, c.req.captures, c.req.args.to_path(item.file))
+	  -%]
+		<td class="file-name"><a href="[% blob_or_tree_link %]" class="[% item.type == 'blob' ? 'file' : 'folder' %]">[% item.file %]</a></td>
+		<td class='action-list'>
 	<a href="[% blob_or_tree_link %]">[% theact %]</a>
 	  [% IF item.type == 'blob' %]
 	<a href="[% c.uri_for_action('/ref/blob', c.req.captures, c.req.args.to_path(item.file)) %]" title="Blob" class="button blob">Blob</a>
 	<a href="[% c.uri_for_action('/ref/raw', c.req.captures, c.req.args.to_path(item.file)) %]" title="Raw" class="button raw">raw</a>
 	<a href="[% c.uri_for_action('/ref/blame', c.req.captures, c.req.args.to_path(item.file)) %]" title="Blame" class="button blame">blame</a>
 	  [% END %]
-     <a href="[% c.uri_for_action('/ref/history', c.req.captures, c.req.args.to_path(item.file)) %]" title="History (Short log)" class="button shortlog">Short log</a>
-   </td>
-  </tr>
-  [% END %]
- </tbody>
+	    <a href="[% c.uri_for_action('/ref/history', c.req.captures, c.req.args.to_path(item.file)) %]" title="History (Short log)" class="button shortlog">Short log</a>
+		</td>
+	</tr>
+		[% counter = counter + 1 %]
+	[% END %]
+[% END %]
+
+
+
+
+<table class="listing">
+<thead>[% PROCESS tree_table_headfoot type = 'head' %]</thead>
+<tbody>
+	[% INCLUDE output_tree tree_type => tree_folders %]
+	[% PROCESS output_tree tree_type => tree_files   %]
+</tbody>
 </table>
