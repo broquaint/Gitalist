@@ -1,5 +1,6 @@
 #!/usr/bin/env perl
 use FindBin qw/$Bin/;
+BEGIN { do "$FindBin::Bin/../script/env" or die $@ }
 use lib "$Bin/lib";
 use TestGitalist qw/request curry_test_uri done_testing ok is $TODO/;
 

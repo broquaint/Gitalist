@@ -18,6 +18,7 @@ sub find : Chained('base') PathPart('') CaptureArgs(1) {
         $c->stash(
             Repository => $repos,
             HEAD => $repos->head_hash,
+            data => $repos,
         );
     }
     catch {

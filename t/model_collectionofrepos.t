@@ -1,3 +1,5 @@
+use FindBin qw/$Bin/;
+BEGIN { do "$FindBin::Bin/../script/env" or die $@ }
 use strict;
 use warnings;
 
