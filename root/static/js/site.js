@@ -1,12 +1,12 @@
 function findPos(obj) {
 	var curleft = curtop = 0;
 	if (obj.offsetParent) {
-	do {
-		curleft += obj.offsetLeft;
-		curtop += obj.offsetTop;
-	} 
-	while (obj = obj.offsetParent);
-	return [curleft,curtop];
+	  do {
+		  curleft += obj.offsetLeft;
+		  curtop += obj.offsetTop;
+	  } 
+	  while (obj = obj.offsetParent);
+	  return [curleft,curtop];
 	}
 }
 
@@ -58,15 +58,19 @@ function compareDiffs(){
     return false;
 }
 
-function loadCommitInfo() {
-  jQuery('#commit-tree .message').each(function() {
-    var cell     = jQuery(this);
-    var filename = cell.find('.js-data').text();
-    jQuery.getJSON(uriFor('file_commit_info') + '/' + filename, {}, function(commitInfo) {
-      cell.empty();
-      cell.html('<a href="'+uriFor('commit', commitInfo.sha1)+'">'+commitInfo.comment+'</a> '+commitInfo.age);
-    });
+function _loadCommitInfo(cells) {
+  var cell     = jQuery(cells.shift());
+  var filename = cell.find('.js-data').text();
+  jQuery.getJSON(uriFor('file_commit_info') + '/' + filename, {}, function(commitInfo) {
+    cell.empty();
+    cell.html('<a href="'+uriFor('commit', commitInfo.sha1)+'">'+commitInfo.comment+'</a> '+commitInfo.age);
+    if(cells.length > 0)
+      _loadCommitInfo(cells);
   });
+}
+
+function loadCommitInfo() {
+  _loadCommitInfo( jQuery('#commit-tree .message').get() );
 }
 
 jQuery(function() {
