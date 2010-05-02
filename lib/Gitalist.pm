@@ -171,12 +171,11 @@ are running from a git checkout, adding a trivial FCGI script as C<script/gitali
 (this file is specifically in C<.gitignore> so you can have your own copy):
 
     #!/bin/sh
-    export PERL5LIB=/home/t0m/public_html/Gitalist/lib:/home/t0m/perl5/lib/perl5:$PERL5LIB
     exec /home/t0m/public_html/Gitalist/script/gitalist_fastcgi.pl
 
 This example can be seen live here:
 
-    http://goatse.co.uk/~bobtfish/Gitalist/script/gitalist.fcgi/
+    http://example.gitalist.com
 
 =head1 CONTRIBUTING
 
