@@ -70,7 +70,9 @@ function _loadCommitInfo(cells) {
 }
 
 function loadCommitInfo() {
-  _loadCommitInfo( jQuery('#commit-tree .message').get() );
+  var cells = jQuery('#commit-tree .message').get();
+  if(cells.length > 0)
+    _loadCommitInfo( cells );
 }
 
 jQuery(function() {
