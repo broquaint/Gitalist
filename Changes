@@ -1,5 +1,12 @@
 This file documents the revision history for Perl extension Gitalist.
 
+    - Fix for loadCommitInfo.
+    - Fix tests to work with local-libbery.
+    - Correct example link and FCGI script.
+    - Bumping version and updated Changes appropriately.
+    - Throttle the commit info loading.
+    - Update bootstrapping for local::lib 1.006000.
+
 0.001008 2010-06-03
    - Add a requires_external_bin for the git command so we won't try running
      tests unless it's present.
