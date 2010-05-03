@@ -1,5 +1,7 @@
 This file documents the revision history for Perl extension Gitalist.
 
+    - Fixed author_* barewords in Makefile.PL.
+
 0.001003 2010-04-21
     - Added folder / file icons in tree view (Foxtons)
     - Added favicon
