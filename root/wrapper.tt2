@@ -21,7 +21,7 @@
    
 	<link rel="stylesheet" type="text/css" href="[% c.uri_for('/core.css') %]" />
 	<link rel="shortcut icon" href="[% c.uri_for('/static/favicon.ico') %]" />
-	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+	<script src="[% c.uri_for('/static/js/jquery-min.js') %]"></script>
 	<script src="[% c.uri_for('/static/js/site.js') %]"></script>
 </head>
 
