@@ -2,7 +2,6 @@ package Gitalist::Controller::Repository;
 use Moose;
 use XML::Atom::Feed;
 use XML::Atom::Entry;
-use XML::RSS;
 use Sys::Hostname qw/hostname/;
 use namespace::autoclean;
 
