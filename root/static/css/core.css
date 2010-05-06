@@ -274,10 +274,12 @@ a.raw{
 }
 a.file{
 	padding-left:25px;
+	padding-bottom:1px;
 	background:transparent url([% c.uri_for('/static/i/icons/file.png') %]) no-repeat;
 }
 a.folder{
 	padding-left:25px;
+	padding-bottom:1px;
 	background:transparent url([% c.uri_for('/static/i/icons/folder.png') %]) no-repeat;
 }
 .msg{
