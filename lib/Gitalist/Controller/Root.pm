@@ -79,8 +79,12 @@ sub error_404 : Action {
 __PACKAGE__->config(
     default => 'text/html',
     map => {
-        'text/html'        => [qw/ View Default /],
         'application/json' => [qw/ JSON /],
+        map { $_ => [qw/ View Default /] }
+	     qw( text/css text/html text/plain
+		 application/atom+xml application/rss+xml 
+		 application/rss application/xml )
+
     }
 );
 

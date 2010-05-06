@@ -28,15 +28,6 @@ is_deeply $data, {
           'is_bare' => 1,
           '__CLASS__' => 'Gitalist::Git::Repository',
           'last_change' => '2009-11-12T19:00:34Z',
-          'references' => {
-                            '0710a7c8ee11c73e8098d08f9384c2a839c65e4e' => [
-                                                                            'heads/branch1'
-                                                                          ],
-                            '36c6c6708b8360d7023e8a1649c45bcf9b3bd818' => [
-                                                                            'heads/master',
-                                                                            'tags/0.01'
-                                                                          ]
-                          },
           'name' => 'repo1',
           'description' => 'some test repository'
         };

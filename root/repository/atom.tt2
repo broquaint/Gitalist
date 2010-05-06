@@ -4,7 +4,7 @@
   <modified>[% updated %]</modified>
   [% FOREACH Commit = Commits %]
   <entry>
-    <title>[% Commit.title | html_entity %]</title>
+    <title>[% Commit.title | xml %]</title>
     <id>[% Commit.id %]</id>
     <link rel="alternate" type="text/html" href="[% Commit.id %]" />
     <content type="xhtml">

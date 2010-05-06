@@ -3,8 +3,10 @@ use FindBin qw/$Bin/;
 BEGIN { do "$FindBin::Bin/../script/env" or die $@ }
 use lib "$Bin/lib";
 use TestGitalist;
+use HTTP::Request::Common;
 
-my $res = request('/opml');
+my $res = request(GET 'http://localhost/opml', 'Content-Type' => 'application/rss');
+
 ok $res->is_success;
 
 is $res->content_type, 'application/rss';
