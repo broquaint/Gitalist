@@ -93,9 +93,6 @@ requires 'Path::Class' => '0.17';
 requires 'Sub::Exporter';
 requires 'Syntax::Highlight::Engine::Kate';
 requires 'Sys::Hostname';
-requires 'XML::OPML::SimpleGen';
-requires 'XML::Atom::Feed';
-requires 'XML::RSS';
 
 test_requires 'Test::More' => '0.88';
 test_requires 'Test::utf8' => '0.02';
@@ -111,13 +108,13 @@ if ($Module::Install::AUTHOR) {
 }
 
 if ($ENV{GITALIST_RELEASE_TESTING}) {
-    author_tests 't/author';
-    author_requires 'Test::NoTabs';
-    author_requires 'Test::Pod' => '1.14';
-    author_requires 'Test::Pod::Coverage' => '1.04';
-    author_requires 'Test::WWW::Mechanize::Catalyst' => '0.51';
-    author_requires 'HTML::TreeBuilder::XPath';
-    author_requires 'WWW::Mechanize::TreeBuilder';
+    author_tests('t/author');
+    author_requires('Test::NoTabs');
+    author_requires('Test::Pod' => '1.14');
+    author_requires('Test::Pod::Coverage' => '1.04');
+    author_requires('Test::WWW::Mechanize::Catalyst' => '0.51');
+    author_requires('HTML::TreeBuilder::XPath');
+    author_requires('WWW::Mechanize::TreeBuilder');
 }
 
 install_script glob('script/*.pl');

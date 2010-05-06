@@ -1,5 +1,14 @@
 This file documents the revision history for Perl extension Gitalist.
 
+0.001004 2010-05-06
+    - Remove unneeded dependencies:
+      - XML::OPML::SimpleGen
+      - XML::Atom
+      - XML::RSS
+    - Fixed author_* barewords in Makefile.PL so that users checking out from
+      git without the author modules works correctly.
+
+0.001003 2010-04-21
     - Added folder / file icons in tree view (Foxtons)
     - Added favicon
     - Fix for non uri_for hard coded links for running at not root locations.
