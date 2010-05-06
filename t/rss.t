@@ -3,8 +3,9 @@ use FindBin qw/$Bin/;
 BEGIN { do "$FindBin::Bin/../script/env" or die $@ }
 use lib "$Bin/lib";
 use TestGitalist;
+use HTTP::Request::Common;
 
-my $res = request('/repo1/rss');
+my $res = request(GET 'http://localhost/repo1/rss', 'Content-Type' => 'application/rss+xml');
 ok $res->is_success;
 is $res->content_type, 'application/rss+xml';
 like $res->content, qr{link>http://localhost/repo1</link};

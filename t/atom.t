@@ -3,8 +3,9 @@ use FindBin qw/$Bin/;
 BEGIN { do "$FindBin::Bin/../script/env" or die $@ }
 use lib "$Bin/lib";
 use TestGitalist;
+use HTTP::Request::Common;
 
-my $res = request('/repo1/atom');
+my $res = request(GET 'http://localhost/repo1/atom', 'Content-Type' => 'application/atom+xml');
 ok $res->is_success;
 is $res->content_type, 'application/atom+xml';
 TODO: {

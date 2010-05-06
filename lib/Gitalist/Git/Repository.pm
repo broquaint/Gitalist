@@ -74,7 +74,7 @@ class Gitalist::Git::Repository with Gitalist::Git::HasUtils {
                         lazy_build => 1 );
 
     method BUILD {
-        $self->$_() for qw/last_change owner description references/; # Ensure to build early.
+        $self->$_() for qw/last_change owner description /; # Ensure to build early.
     }
 
     ## Public methods
