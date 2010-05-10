@@ -22,6 +22,7 @@ sub find : Chained('base') PathPart('') CaptureArgs(1) {
     # FIXME - Should not be here!
     $c->stash->{Commit} = $c->stash->{Repository}->get_object_or_head($sha1part)
         or $c->detach('/error404', "Couldn't find a object for '$sha1part' in XXXX!");
+    $c->stash->{data} = $c->stash->{Commit};
 }
 
 sub diff : Chained('find') CaptureArgs(0) {}
