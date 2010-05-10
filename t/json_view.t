@@ -32,6 +32,28 @@ is_deeply $data, {
           'description' => 'some test repository'
         };
 
+$res = request(GET 'http://localhost/repo1/3f7567c7bdf7e7ebf410926493b92d398333116e/commit', 'Content-Type' => 'application/json');
+is $res->code, 200;
+$data = $j->decode($res->content);
+is ref($data), 'HASH';
+delete $data->{repository}{owner}
+  if $data && exists $data->{repository}{owner};
+is_deeply $data, {
+  'repository' => {
+    'is_bare' => 1,
+    '__CLASS__' => 'Gitalist::Git::Repository',
+    'last_change' => '2009-11-12T19:00:34Z',
+    'name' => 'repo1',
+    'description' => 'some test repository'
+  },
+  '__CLASS__' => 'Gitalist::Git::Object::Commit',
+  'sha1' => '3f7567c7bdf7e7ebf410926493b92d398333116e',
+  'mode' => 0,
+  'type' => 'commit',
+  'modestr' => '----------',
+  'size' => '218'
+};
+
 done_testing;
 
 
