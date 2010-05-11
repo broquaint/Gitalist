@@ -1,7 +1,6 @@
 [%- IF no_wrapper || template.name.match('\.(css|js|txt)'); content; ELSE; -%]
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!DOCTYPE html>
+<html>
 <head>
   <!-- git core binaries version [% git_version %] -->
   <meta charset="utf-8" />
@@ -21,7 +20,7 @@
    
 	<link rel="stylesheet" type="text/css" href="[% c.uri_for('/core.css') %]" />
 	<link rel="shortcut icon" href="[% c.uri_for('/static/favicon.ico') %]" />
-	<script src="[% c.uri_for('/static/js/jquery-min.js') %]"></script>
+	<script src="[% c.uri_for('/static/js/jquery.min.js') %]"></script>
 	<script src="[% c.uri_for('/static/js/site.js') %]"></script>
 </head>
 
@@ -78,7 +77,7 @@
 			<a href="[% c.uri_for('/') %]">Home</a>
 		
 			[%- IF Repository %]
-    		/ <a href="[% c.uri_for_action('/repository/summary', [Repository.name]) %]/shortlog">[% Repository.name %]</a>
+    		/ <a href="[% c.uri_for_action('/repository/summary', [Repository.name]) %]">[% Repository.name %]</a>
    			[%- END %]
 			/
 			[%- IF Repository %]

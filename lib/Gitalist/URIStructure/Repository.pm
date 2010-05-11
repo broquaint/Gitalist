@@ -43,7 +43,7 @@ sub object : Chained('find') PathPart('') Args(1) {
 
 }
 
-sub summary : Chained('find') PathPart('') Args(0) {}
+sub summary : Chained('find') Args() {}
 
 sub heads : Chained('find') Args(0) {}
 
