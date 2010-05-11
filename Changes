@@ -1,7 +1,10 @@
 This file documents the revision history for Perl extension Gitalist.
 
+0.001005 2010-05-11
     - Depend on latest MX::Declare to fix issues for people who upgrade
       MooseX::Types::Structured to a newer version.
+    - Add some padding below, so file icons are not chopped off
+    - Updated favicon to cope with dark grey backgrounds
 
 0.001004 2010-05-06
     - Remove unneeded dependencies:
