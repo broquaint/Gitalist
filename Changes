@@ -1,5 +1,8 @@
 This file documents the revision history for Perl extension Gitalist.
 
+    - Depend on latest MX::Declare to fix issues for people who upgrade
+      MooseX::Types::Structured to a newer version.
+
 0.001004 2010-05-06
     - Remove unneeded dependencies:
       - XML::OPML::SimpleGen

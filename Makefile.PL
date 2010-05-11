@@ -70,7 +70,7 @@ requires 'Config::General';
 requires 'Moose';
 requires 'Moose::Autobox';
 requires 'MooseX::MultiMethods' => '0.10';
-requires 'MooseX::Declare' => '0.32';
+requires 'MooseX::Declare' => '0.33';
 requires 'MooseX::Types::Common';
 requires 'MooseX::Types::Path::Class';
 requires 'MooseX::Types';
