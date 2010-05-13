@@ -12,6 +12,7 @@ __PACKAGE__->config(
   TEMPLATE_EXTENSION => '.tt2',
   WRAPPER            => 'wrapper.tt2',
   subinclude_plugin => 'SubRequest',
+  render_die => 1,
 );
 
 use Template::Stash;

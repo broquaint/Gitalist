@@ -1,5 +1,11 @@
 This file documents the revision history for Perl extension Gitalist.
 
+    - Fix Catalyst::Action::REST dependency (there wasn't one previously)
+    - Depend on latest Catalyst::View::TT due to a previous bad version
+      breaking things.
+    - Add render_die => 1 in the View::TT config as we do want real exceptions
+      when we call ->render ourselves.
+
 0.001005 2010-05-11
     - Depend on latest MX::Declare to fix issues for people who upgrade
       MooseX::Types::Structured to a newer version.
