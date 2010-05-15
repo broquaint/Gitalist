@@ -40,22 +40,23 @@ has _resolver => (
 # We need to support multiple languages, and we also want to be able to do HTMLizing (for e.g. Pod)
 
 sub process {
-    my ($self, $c) = @_;
+  my ($self, $c) = @_;
 
-    my @steps = $self->resolve({ filename => $c->stash->{filename} });
-    my @css = map { $_->[1]->{css} } grep { exists $_->[1] && exists $_->[1]->{css} && defined $_->[1]->{css} && length $_->[1]->{css} } @steps;
-    $c->stash(
-      syntax_css => [ map { $c->uri_for('/static/css/syntax/' . $_ . '.css') } @css ],
-      mangled    => scalar @steps,
-    );
-    
-    if ($c->stash->{blobs} || $c->stash->{blob}) {
-        foreach my $step (@steps) {
-            for ($c->stash->{blobs} ? @{$c->stash->{blobs}} : $c->stash->{blob}) {
-                $_ = $c->view($step->[0])->render($c, $_, $step->[1]);
-            }
-        }
-    }
+  # Find appropriate mangler based on filename,action,config
+  # Mangler should provide a transform e.g what part of the stash to mangle
+  # Then call the transform with the appropriate mangling
+
+  my($transformer, $config) = $self->resolve({
+    filename => $c->stash->{filename} || '',
+    config   => Gitalist->config->{'Model::ContentMangler'},
+    action   => $c->action->name,
+  });
+
+  return
+       unless $transformer;
+
+  Class::MOP::load_class($transformer);
+  $transformer->new($config)->transform($c, $config);
 }
 
 __PACKAGE__->meta->make_immutable;
