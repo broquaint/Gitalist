@@ -2,8 +2,11 @@ use MooseX::Declare;
 
 class Gitalist::ContentMangler::Resolver::Default with Gitalist::ContentMangler::Resolver {
     method resolve ($data) {
-        return unless $data->{filename};
-        my $language = 'Perl' if $data->{filename} =~ /\.p[lm]$/i;
-        return (['SyntaxHighlight', {language => $language, css => $language}]);
+        # This should be pulled out of $self->config
+        my $language;
+        $language = 'Perl' if $data->{filename} =~ /\.p[lm]$/i;
+        $language = 'Diff' if $data->{action} eq 'diff_fancy';
+        return unless $language;
+        return 'Gitalist::ContentMangler::Transformer::SyntaxHighlight' => {language => $language, css => $language};
     }
 }
