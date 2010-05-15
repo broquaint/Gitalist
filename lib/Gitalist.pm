@@ -14,13 +14,15 @@ use Catalyst qw/
                 SubRequest
 /;
 
-our $VERSION = '0.001006';
+our $VERSION = '0.001007';
 $VERSION = eval $VERSION;
 
 __PACKAGE__->config(
     name => 'Gitalist',
     default_view => 'Default',
     default_model => 'CollectionOfRepos',
+    use_request_uri_for_path => 1,
+    disable_component_resolution_regex_fallback => 1,
 );
 
 __PACKAGE__->setup();
