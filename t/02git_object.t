@@ -78,7 +78,9 @@ is($patch->{diff}, '--- a/file1
 ', 'patch->{diff} is correct');
 is($patch->{dst}, '5716ca5987cbf97d6bb54920bea6adde242d87e6', 'patch->{dst} is correct');
 
-ok(index(do { local $/; my $fh = $commit_obj->get_patch; <$fh> },
+{
+    my $contents = do { local $/; my $fh = $commit_obj->get_patch; <$fh> };
+ok(index($contents,
 'From 3f7567c7bdf7e7ebf410926493b92d398333116e Mon Sep 17 00:00:00 2001
 From: Florian Ragwitz <rafl@debian.org>
 Date: Tue, 6 Mar 2007 20:39:45 +0100
@@ -95,13 +97,17 @@ index 257cc56..5716ca5 100644
 @@ -1 +1 @@
 -foo
 +bar
---') == 0, 'commit_obj->get_patch can return a patch');
+--') == 0, 'commit_obj->get_patch can return a patch')
+    or warn("Got instead: $contents");
+}
 
 # Note - 2 patches = 3 parts due to where we split.
 {
-    my @bits = split /Subject: \[PATC/, do { local $/; my $fh = $commit_obj->get_patch(undef, 3); <$fh> };
+    my $contents = do { local $/; my $fh = $commit_obj->get_patch(undef, 3); <$fh> };
+    my @bits = split /Subject: \[PATC/, $contents;
     is(scalar(@bits), 3,
-        'commit_obj->get_patch can return a patchset');
+        'commit_obj->get_patch can return a patchset')
+        or warn("Contents was $contents");
 }
 done_testing;
 
