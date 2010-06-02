@@ -1,9 +1,15 @@
 This file documents the revision history for Perl extension Gitalist.
 
+0.001008 2010-06-03
    - Add a requires_external_bin for the git command so we won't try running
      tests unless it's present.
    - Remove MooseX::MultiMethods as it has been broken by a recent Moose
      change. The new code is smaller and will be faster.
+   - Add diagnostics to the tests to print out the version of git that
+     people are using.
+   - Make tests which commonly fail with older/different versions of git
+     fail with the output of their git command to make debugging the tests
+     from automated reports possible.
 
 0.001007 2010-05-15
     - Set the use_request_uri_for_path configuration variable to be compatible
