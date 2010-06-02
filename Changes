@@ -1,5 +1,7 @@
 This file documents the revision history for Perl extension Gitalist.
 
+   - Add a requires_external_bin for the git command.
+
 0.001007 2010-05-15
     - Set the use_request_uri_for_path configuration variable to be compatible
       with Catalyst 5.80024.
