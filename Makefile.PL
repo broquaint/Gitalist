@@ -74,7 +74,6 @@ requires 'Config::General';
 requires 'Moose';
 requires 'Moose::Autobox';
 requires 'MooseX::Declare' => '0.33';
-requires 'MooseX::Declare' => '0.32';
 requires 'MooseX::Types::DateTime';
 requires 'MooseX::Types::ISO8601';
 requires 'MooseX::Types::Common';
