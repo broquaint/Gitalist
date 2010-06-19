@@ -6,6 +6,7 @@ This file documents the revision history for Perl extension Gitalist.
     - Bumping version and updated Changes appropriately.
     - Throttle the commit info loading.
     - Update bootstrapping for local::lib 1.006000.
+    - Fixed author_* barewords in Makefile.PL.
 
 0.001008 2010-06-03
    - Add a requires_external_bin for the git command so we won't try running
