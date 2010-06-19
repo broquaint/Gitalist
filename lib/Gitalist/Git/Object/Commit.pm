@@ -60,10 +60,16 @@ class Gitalist::Git::Object::Commit
                 ( $filename  ? ('--', $filename) : () ),
             );
 
+	    # If we're not comparing against something and we have multiple
+	    # parents then it's a merge commit so show what was merged.
+	    my $sha1 = $parent eq '-c' && @{[$self->parents]} > 1
+		 ? sprintf("%s^1..%s^2", ($self->sha1) x 2)
+		      : $self->sha1;
+
             my @out = $self->_raw_diff(
                 ( $patch ? '--patch-with-raw' : () ),
                 ( $parent ? $parent : () ),
-                $self->sha1, @etc,
+                $sha1, @etc,
             );
 
             # XXX Yes, there is much wrongness having _parse_diff_tree be destructive.
