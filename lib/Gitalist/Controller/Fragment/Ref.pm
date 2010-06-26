@@ -14,13 +14,14 @@ sub base : Chained('/fragment/repository/find') PathPart('') CaptureArgs(0) {}
 
 sub _diff {
     my ($self, $c) = @_;
-    my $commit = $c->stash->{Commit};
-    my %filename = $c->stash->{filename} ? (filename => $c->stash->{filename}) : ();
-    my($tree, $patch) = $c->stash->{Repository}->diff(
-        commit => $commit,
-        parent => $c->stash->{parent},
-        patch  => 1,
-        %filename,
+    my %diff_args = ( patch => 1 );
+    foreach my $arg qw/filename parent/ {
+        if (defined $c->stash->{$arg}) {
+            $diff_args{$arg} = $c->stash->{$arg};
+        };
+    };
+    my ($tree, $patch) = $c->stash->{Commit}->diff(
+        %diff_args,
     );
     $c->stash(
       diff_tree => $tree,
@@ -28,7 +29,6 @@ sub _diff {
       # XXX Hack hack hack, see View::SyntaxHighlight
       blobs     => [map $_->{diff}, @$patch],
       language  => 'Diff',
-      %filename,
     );
 }
 
