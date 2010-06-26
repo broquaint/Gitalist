@@ -49,7 +49,7 @@ after tree => sub {
     my $repository = $c->stash->{Repository};
     my $commit  = $c->stash->{Commit};
     my $tree    = $c->stash->{filename}
-      ? $repository->get_object($repository->hash_by_path($commit->sha1, $c->stash->{filename}))
+      ? $repository->get_object($commit->sha_by_path($c->stash->{filename}))
       : $repository->get_object($commit->tree_sha1)
     ;
     $c->stash(
@@ -98,12 +98,8 @@ after history => sub {
        ($filename ? (file => $filename) : ())
     );
 
-    my $file = $repository->get_object(
-        $repository->hash_by_path(
-            $repository->head_hash,
-            $filename
-        )
-    );
+    my $commit = $repository->get_object('HEAD');
+    my $file = $repository->get_object($commit->sha_by_path($filename));
 
     my $page = $c->req->param('pg') || 0;
     $logargs{skip} = $c->req->param('pg') * $logargs{count}
