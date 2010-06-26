@@ -108,7 +108,7 @@ class Gitalist::Git::Repository with Gitalist::Git::HasUtils {
         );
     }
 
-    method hash_by_path ($base, $path = '', $type?) {
+    method hash_by_path ($base, $path) {
         $path =~ s{/+$}();
         # FIXME should this really just take the first result?
         my @paths = $self->run_cmd('ls-tree', $base, '--', $path)
@@ -117,9 +117,7 @@ class Gitalist::Git::Repository with Gitalist::Git::HasUtils {
 
         #'100644 blob 0fa3f3a66fb6a137f6ec2c19351ed4d807070ffa	panic.c'
         $line =~ m/^([0-9]+) (.+) ($SHA1RE)\t/;
-        return defined $type && $type ne $2
-            ? ()
-                : $3;
+        return $3;
     }
 
     method list_revs ( NonEmptySimpleStr :$sha1!,
@@ -401,9 +399,9 @@ Each item is a L<Gitalist::Git::Object>.
 
 Return an appropriate subclass of L<Gitalist::Git::Object> for the given sha1.
 
-=head2 hash_by_path ($sha1, $path, $type?)
+=head2 hash_by_path ($commit, $path)
 
-Returns the sha1 for a given path, optionally limited by type.
+Returns the tree/file sha1 for a given path in a commit.
 
 =head2 list_revs ($sha1, $count?, $skip?, \%search?, $file?)
 
