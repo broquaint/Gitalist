@@ -39,6 +39,7 @@ is($object->file, 'dir1', 'file is correct');
 is($object->mode, 16384, 'mode is correct');
 is($object->modestr, 'drwxr-xr-x', "modestr is correct" );
 is($object->size, 33, "size is correct");
+is($object,'729a7c3f6ba5453b42d16a43692205f67fb23bc1', 'stringifies correctly');
 
 # Create object from sha1.
 my $obj2 = Gitalist::Git::Object::Blob->new(

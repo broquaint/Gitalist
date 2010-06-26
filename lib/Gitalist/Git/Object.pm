@@ -1,9 +1,10 @@
 use MooseX::Declare;
 use Moose::Autobox;
 
-class Gitalist::Git::Object {
+class Gitalist::Git::Object is dirty {
     use MooseX::Types::Moose qw/Str Int Bool Maybe ArrayRef/;
     use MooseX::Types::Common::String qw/NonEmptySimpleStr/;
+    use overload '""' => '_to_string';
 
     # repository and sha1 are required initargs
     has repository => ( isa => 'Gitalist::Git::Repository',
@@ -50,6 +51,9 @@ class Gitalist::Git::Object {
     method BUILD { $self->$_() for qw/_gpp_obj size modestr/ }
 
 ## Private methods
+    method _to_string {
+        return $self->sha1;
+    };
 
 ## Builders
     method _build__gpp_obj {
