@@ -23,6 +23,19 @@ class Gitalist::Git::Object::Commit
                                       ],
                          );
 
+        method sha_by_path ($path) {
+            $path =~ s{/+$}();
+            # FIXME should this really just take the first result?
+            my @paths = $self->repository->run_cmd('ls-tree', $self->sha1, '--', $path)
+                or return;
+            my $line = $paths[0];
+
+            #'100644 blob 0fa3f3a66fb6a137f6ec2c19351ed4d807070ffa	panic.c'
+            $line =~ m/^([0-9]+) (.+) ($SHA1RE)\t/;
+            my $sha1 = $3;
+            return $sha1;
+    }
+
         method get_patch ( Maybe[NonEmptySimpleStr] $parent_hash?,
                            Int $patch_count?) {
             # assembling the git command to execute...
@@ -232,6 +245,10 @@ Subclass of C<Gitalist::Git::Object>.
 
 
 =head1 METHODS
+
+=head2 sha_by_path ($path)
+
+Returns the tree/file sha1 for a given path in a commit.
 
 =head2 get_patch
 
