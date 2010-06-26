@@ -48,13 +48,13 @@ after tree => sub {
     my ( $self, $c ) = @_;
     my $repository = $c->stash->{Repository};
     my $commit  = $c->stash->{Commit};
-    my $tree    = $c->stash->{filename}
+    my $tree_obj    = $c->stash->{filename}
       ? $repository->get_object($commit->sha_by_path($c->stash->{filename}))
-      : $repository->get_object($commit->tree_sha1)
+      : $commit->tree->[0]
     ;
     $c->stash(
-        tree      => $tree,
-        tree_list => [$repository->list_tree($tree->sha1)],
+        tree      => $tree_obj,
+        tree_list => $tree_obj->tree,
     );
 };
 

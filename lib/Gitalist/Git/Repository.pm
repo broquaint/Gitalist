@@ -88,12 +88,6 @@ class Gitalist::Git::Repository with Gitalist::Git::HasUtils {
         return $sha1;
     }
 
-    method list_tree (SHA1 $sha1?) {
-        $sha1 ||= $self->head_hash;
-        my $object = $self->get_object($sha1);
-        return @{$object->tree};
-    }
-
     method get_object (NonEmptySimpleStr $sha1) {
         unless (is_SHA1($sha1)) {
             $sha1 = $self->head_hash($sha1);
@@ -376,12 +370,6 @@ Hashref of ArrayRefs for each reference.
 =head2 head_hash ($head?)
 
 Return the sha1 for HEAD, or any specified head.
-
-=head2 list_tree ($sha1?)
-
-Return an array of contents for a given tree.
-The tree is specified by sha1, and defaults to HEAD.
-Each item is a L<Gitalist::Git::Object>.
 
 =head2 get_object ($sha1)
 
