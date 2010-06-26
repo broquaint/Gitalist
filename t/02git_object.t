@@ -65,6 +65,7 @@ my $commit_obj = Gitalist::Git::Object::Commit->new(
     sha1 => '3f7567c7bdf7e7ebf410926493b92d398333116e',
 );
 isa_ok($commit_obj, 'Gitalist::Git::Object::Commit', "commit object");
+isa_ok($commit_obj->tree->[0], 'Gitalist::Git::Object::Tree');
 my ($tree, $patch) = $commit_obj->diff(
     patch => 1,
 );

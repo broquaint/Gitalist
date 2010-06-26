@@ -23,6 +23,10 @@ class Gitalist::Git::Object::Commit
                                       ],
                          );
 
+        method _build_tree {
+            return [$self->repository->get_object($self->tree_sha1)];
+        }
+
         method sha_by_path ($path) {
             $path =~ s{/+$}();
             # FIXME should this really just take the first result?
