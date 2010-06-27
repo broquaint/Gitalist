@@ -238,24 +238,8 @@ class Gitalist::Git::Repository with Gitalist::Git::HasUtils {
         my @revlines = $self->run_cmd_list(qw/for-each-ref --sort=-committerdate /, '--format=%(objectname)%00%(refname)%00%(committer)', 'refs/heads');
         my @ret;
         for my $line (@revlines) {
-            my ($sha1, $name, $commitinfo) = split /\0/, $line, 3;
-            $name =~ s!^refs/heads/!!;
-
-            my ($committer, $epoch, $tz) =
-                $commitinfo =~ /(.*)\s(\d+)\s+([+-]\d+)$/;
-            my $dt = DateTime->from_epoch(
-                epoch => $epoch,
-                time_zone => $tz,
-            );
-            my $head = Gitalist::Git::Head->new(
-                sha1 => $sha1,
-                name => $name,
-                committer => $committer,
-                last_change => $dt,
-            );
-            push @ret, $head;
+            push @ret, Gitalist::Git::Head->new($line);
         }
-
         return \@ret;
     }
 
