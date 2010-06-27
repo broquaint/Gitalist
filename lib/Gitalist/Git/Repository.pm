@@ -16,6 +16,7 @@ class Gitalist::Git::Repository with Gitalist::Git::HasUtils {
     use Gitalist::Git::Object::Commit;
     use Gitalist::Git::Object::Tag;
     use Gitalist::Git::Head;
+    use Gitalist::Git::Tag;
 
     our $SHA1RE = qr/[0-9a-fA-F]{40}/;
 
@@ -63,7 +64,7 @@ class Gitalist::Git::Repository with Gitalist::Git::HasUtils {
     has heads => ( isa => ArrayRef['Gitalist::Git::Head'],
                    is => 'ro',
                    lazy_build => 1);
-    has tags => ( isa => ArrayRef[HashRef],
+    has tags => ( isa => ArrayRef['Gitalist::Git::Tag'],
                    is => 'ro',
                    lazy_build => 1);
     has references => ( isa => HashRef[ArrayRef[Str]],
@@ -251,21 +252,8 @@ class Gitalist::Git::Repository with Gitalist::Git::HasUtils {
         );
         my @ret;
         for my $line (@revlines) {
-            my($refinfo, $creatorinfo) = split /\0/, $line;
-            my($rev, $type, $name, $refid, $reftype, $title) = split(' ', $refinfo, 6);
-            my($creator, $epoch, $tz) = ($creatorinfo =~ /^(.*) ([0-9]+) (.*)$/);
-            $name =~ s!^refs/tags/!!;
-
-            push @ret, { sha1 => $rev, name => $name };
-
-            #FIXME: That isn't the time I'm looking for..
-            if($epoch and $tz) {
-                my $dt = DateTime->from_epoch(epoch => $epoch);
-                $dt->set_time_zone($tz);
-                $ret[-1]->{last_change} = $dt;
-            }
+            push @ret, Gitalist::Git::Tag->new($line);
         }
-
         return \@ret;
     }
 
