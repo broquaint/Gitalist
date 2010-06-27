@@ -74,7 +74,7 @@ is($obj2->content, "foo\n", 'sha_by_path obj content is correct');
 like($proj->head_hash('HEAD'), qr/^([0-9a-fA-F]{40})$/, 'head_hash');
 
 {
-    my @tree = $proj->list_tree('3bc0634310b9c62222bb0e724c11ffdfb297b4ac');
+    my @tree = @{$obj3->tree};
     is(scalar @tree, 1, "tree array contains one entry.");
     isa_ok($tree[0], 'Gitalist::Git::Object', 'tree element 0');
 }
