@@ -20,7 +20,7 @@ after 'base' => sub {
 sub find : Chained('base') PathPart('') CaptureArgs(1) {
     my ($self, $c, $sha1part) = @_;
     # FIXME - Should not be here!
-    $c->stash->{Commit} = $c->stash->{Repository}->get_object_or_head($sha1part)
+    $c->stash->{Commit} = $c->stash->{Repository}->get_object($sha1part)
         or $c->detach('/error404', "Couldn't find a object for '$sha1part' in XXXX!");
     $c->stash->{data} = $c->stash->{Commit};
 }
@@ -34,7 +34,7 @@ sub _set_diff_args {
     $c->stash(parent   => shift @rest)
         if @rest == 2
         # Check that the single arg is unlikely to be a path.
-        or @rest && to_SHA1($rest[0]) && $c->stash->{Repository}->get_object_or_head($rest[0]);
+        or @rest && to_SHA1($rest[0]) && $c->stash->{Repository}->get_object($rest[0]);
     $c->stash(filename => $rest[-1])
       if @rest;
 }
