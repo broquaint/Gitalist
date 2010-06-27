@@ -7,6 +7,10 @@ use Data::Dumper;
 BEGIN { use_ok 'Gitalist::Git::Head' }
 
 
+my $revline="a92fb1c9282f7319099ce7f783c8be7d5360f6e3\0refs/heads/model-cleanup\0Zachary Stevens <zts\@cryptocracy.com> 1277601094 +0100";
+my $instance = Gitalist::Git::Head->new($revline);
+isa_ok($instance, 'Gitalist::Git::Head');
+
 # Create an instance, passing last_change as a DateTime
 use DateTime;
 my $timespec = [1277578462, '+0100'];

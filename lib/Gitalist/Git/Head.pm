@@ -1,26 +1,57 @@
 package Gitalist::Git::Head;
-use MooseX::Declare;
+use Moose;
+use namespace::autoclean;
 
-class Gitalist::Git::Head {
-    use Gitalist::Git::Types qw/SHA1/;
-    use MooseX::Types::Common::String qw/NonEmptySimpleStr/;
-    use MooseX::Types::DateTime qw/DateTime/;
+use Gitalist::Git::Types qw/SHA1/;
+use MooseX::Types::Common::String qw/NonEmptySimpleStr/;
+use MooseX::Types::DateTime;
+use DateTime;
 
-    has sha1        => ( isa      => SHA1,
-                         is       => 'ro',
-                         required => 1,
-                     );
-    has name        => ( isa      => NonEmptySimpleStr,
-                         is       => 'ro',
-                         required => 1,
-                     );
-    has committer   => ( isa      => NonEmptySimpleStr,
-                         is       => 'ro',
-                         required => 1,
-                     );
-    has last_change => ( isa      => DateTime,
-                         is       => 'ro',
-                         required => 1,
-                         coerce   => 1,
-                     );
-}
+has sha1        => ( isa      => SHA1,
+                     is       => 'ro',
+                     required => 1,
+                 );
+has name        => ( isa      => NonEmptySimpleStr,
+                     is       => 'ro',
+                     required => 1,
+                 );
+has committer   => ( isa      => NonEmptySimpleStr,
+                     is       => 'ro',
+                     required => 1,
+                 );
+has last_change => ( isa      => 'DateTime',
+                     is       => 'ro',
+                     required => 1,
+                     coerce   => 1,
+);
+
+around BUILDARGS => sub {
+    my $orig = shift;
+    my $class = shift;
+
+    if ( @_ == 1 && ! ref $_[0] ) {
+        my $line = $_[0];
+        # expects $line to match the output from
+        # for-each-ref --format=%(objectname)%00%(refname)%00%(committer)
+        my ($sha1, $name, $commitinfo) = split /\0/, $line, 3;
+        $name =~ s!^refs/heads/!!;
+
+        my ($committer, $epoch, $tz) =
+            $commitinfo =~ /(.*)\s(\d+)\s+([+-]\d+)$/;
+        my $dt = DateTime->from_epoch(
+            epoch => $epoch,
+            time_zone => $tz,
+        );
+
+        return $class->$orig(
+            sha1 => $sha1,
+            name => $name,
+            committer => $committer,
+            last_change => $dt,
+        );
+    } else {
+        return $class->$orig(@_);
+    }
+};
+
+1;
