@@ -15,6 +15,7 @@ class Gitalist::Git::Repository with Gitalist::Git::HasUtils {
     use Gitalist::Git::Object::Tree;
     use Gitalist::Git::Object::Commit;
     use Gitalist::Git::Object::Tag;
+    use Gitalist::Git::Head;
 
     our $SHA1RE = qr/[0-9a-fA-F]{40}/;
 
@@ -59,7 +60,7 @@ class Gitalist::Git::Repository with Gitalist::Git::HasUtils {
                              ? 1 : 0
                          },
                      );
-    has heads => ( isa => ArrayRef[HashRef],
+    has heads => ( isa => ArrayRef['Gitalist::Git::Head'],
                    is => 'ro',
                    lazy_build => 1);
     has tags => ( isa => ArrayRef[HashRef],
@@ -237,17 +238,22 @@ class Gitalist::Git::Repository with Gitalist::Git::HasUtils {
         my @revlines = $self->run_cmd_list(qw/for-each-ref --sort=-committerdate /, '--format=%(objectname)%00%(refname)%00%(committer)', 'refs/heads');
         my @ret;
         for my $line (@revlines) {
-            my ($rev, $head, $commiter) = split /\0/, $line, 3;
-            $head =~ s!^refs/heads/!!;
+            my ($sha1, $name, $commitinfo) = split /\0/, $line, 3;
+            $name =~ s!^refs/heads/!!;
 
-            push @ret, { sha1 => $rev, name => $head };
-
-            #FIXME: That isn't the time I'm looking for..
-            if (my ($epoch, $tz) = $line =~ /\s(\d+)\s+([+-]\d+)$/) {
-                my $dt = DateTime->from_epoch(epoch => $epoch);
-                $dt->set_time_zone($tz);
-                $ret[-1]->{last_change} = $dt;
-            }
+            my ($committer, $epoch, $tz) =
+                $commitinfo =~ /(.*)\s(\d+)\s+([+-]\d+)$/;
+            my $dt = DateTime->from_epoch(
+                epoch => $epoch,
+                time_zone => $tz,
+            );
+            my $head = Gitalist::Git::Head->new(
+                sha1 => $sha1,
+                name => $name,
+                committer => $committer,
+                last_change => $dt,
+            );
+            push @ret, $head;
         }
 
         return \@ret;
