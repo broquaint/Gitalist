@@ -56,6 +56,8 @@ is($proj->head_hash, '36c6c6708b8360d7023e8a1649c45bcf9b3bd818', 'head_hash for 
 is($proj->head_hash('refs/heads/master'), '36c6c6708b8360d7023e8a1649c45bcf9b3bd818', 'head_hash for refs/heads/master is correct');
 is($proj->head_hash('rafs/head/mister'), undef, 'head_hash for rafs/head/mister is undef');
 
+ok(scalar @{$proj->tags} == 1, '->tags list has one element');
+
 # Return an ::Object from a sha1
 my $obj1 = $proj->get_object('729a7c3f6ba5453b42d16a43692205f67fb23bc1');
 isa_ok($obj1, 'Gitalist::Git::Object::Tree');
