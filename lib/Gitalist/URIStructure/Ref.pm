@@ -63,15 +63,20 @@ sub tree : Chained('find') Does('FilenameArgs') Args() {}
 sub find_blob : Action {
     my ($self, $c) = @_;
     my($repo, $object) = @{$c->{stash}}{qw(Repository Commit)};
+
     # FIXME - Eugh!
-    my $h  = $object->isa('Gitalist::Git::Object::Commit')
-           ? $object->sha_by_path($c->stash->{filename})
-           : $object->isa('Gitalist::Git::Object::Blob')
-             ? $object->sha1
-             : die "Unknown object type for '${\$object->sha1}'";
+    my $blob;
+    if ($object->isa('Gitalist::Git::Object::Commit')) {
+        $blob = $object->sha_by_path($c->stash->{filename});
+    } elsif ($object->isa('Gitalist::Git::Object::Blob')) {
+        $blob = $object;
+    } else {
+        die "Unknown object type for '${\$object->sha1}'";
+    }
     die "No file or sha1 provided."
-        unless $h;
-    $c->stash(blob => $repo->get_object($h)->content);
+        unless $blob;
+
+    $c->stash(blob => $blob->content);
 }
 
 sub blob : Chained('find') Does('FilenameArgs') Args() {

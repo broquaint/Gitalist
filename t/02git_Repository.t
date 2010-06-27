@@ -65,8 +65,7 @@ isa_ok($obj1, 'Gitalist::Git::Object::Tree');
 my $obj3 = $proj->get_object($proj->head_hash);
 isa_ok($obj3, 'Gitalist::Git::Object::Commit');
 
-my $hbp_sha1 = $obj3->sha_by_path('dir1/file2');
-my $obj2 = $proj->get_object($hbp_sha1);
+my $obj2 = $obj3->sha_by_path('dir1/file2');
 isa_ok($obj2, 'Gitalist::Git::Object::Blob');
 is($obj2->type, 'blob', 'sha_by_path obj is a blob');
 is($obj2->content, "foo\n", 'sha_by_path obj content is correct');
