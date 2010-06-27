@@ -37,7 +37,7 @@ class Gitalist::Git::Object::Commit
             #'100644 blob 0fa3f3a66fb6a137f6ec2c19351ed4d807070ffa	panic.c'
             $line =~ m/^([0-9]+) (.+) ($SHA1RE)\t/;
             my $sha1 = $3;
-            return $sha1;
+            return $self->repository->get_object($sha1);
     }
 
         method get_patch ( Maybe[NonEmptySimpleStr] $parent_hash?,
