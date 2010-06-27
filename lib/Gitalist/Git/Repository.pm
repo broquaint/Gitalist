@@ -75,11 +75,6 @@ class Gitalist::Git::Repository with Gitalist::Git::HasUtils {
 
     ## Public methods
 
-    method get_object_or_head (NonEmptySimpleStr $ref) {
-        my $sha1 = is_SHA1($ref) ? $ref : $self->head_hash($ref);
-        $self->get_object($sha1);
-    }
-
     method head_hash (Str $head?) {
         my $output = $self->run_cmd(qw/rev-parse --verify/, $head || 'HEAD' );
         confess("No such head: " . $head) unless defined $output;
