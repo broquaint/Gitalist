@@ -5,8 +5,6 @@ class Gitalist::Git::Object {
     use MooseX::Types::Moose qw/Str Int Bool Maybe ArrayRef/;
     use MooseX::Types::Common::String qw/NonEmptySimpleStr/;
 
-    with 'Gitalist::Serializeable';
-
     # repository and sha1 are required initargs
     has repository => ( isa => 'Gitalist::Git::Repository',
                      required => 1,
@@ -38,7 +36,6 @@ class Gitalist::Git::Object {
                       is => 'ro',
                       lazy_build => 1,
                       handles => [ 'content' ],
-                      traits => [qw/ DoNotSerialize /],
                   );
 
     # objects can't determine their mode or filename

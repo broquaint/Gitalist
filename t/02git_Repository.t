@@ -39,24 +39,6 @@ is($proj->name, qw/repo1/, 'repository name is set');
 is($proj->description, qq/some test repository/, 'repository description loaded');
 isa_ok($proj->last_change, 'DateTime', 'last_change');
 
-is_deeply $proj->pack, {
-    '__CLASS__' => 'Gitalist::Git::Repository',
-    'is_bare' => 1,
-    'owner' => "T\x{e9}st",
-    'last_change' => '2009-11-12T19:00:34Z',
-    'name' => 'repo1',
-    'description' => 'some test repository'
-};
-
-is_deeply $proj->pack, {
-    '__CLASS__' => 'Gitalist::Git::Repository',
-    'is_bare' => 1,
-    'owner' => "T\x{e9}st",
-    'last_change' => '2009-11-12T19:00:34Z',
-    'name' => 'repo1',
-    'description' => 'some test repository'
-};
-
 my %references = %{$proj->references};
 ok(keys %references >= 2, '->references hash has elements');
 is($references{'36c6c6708b8360d7023e8a1649c45bcf9b3bd818'}->[0], 'heads/master', 'reference looks ok');

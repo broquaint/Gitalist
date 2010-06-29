@@ -3,19 +3,18 @@ use MooseX::Declare;
 class Gitalist::Git::Repository with Gitalist::Git::HasUtils {
     # FIXME, use Types::Path::Class and coerce
     use MooseX::Types::Common::String qw/NonEmptySimpleStr/;
+    use MooseX::Types::Path::Class qw/Dir/;
     use MooseX::Types::Moose qw/Str Maybe Bool HashRef ArrayRef/;
-    use Gitalist::Git::Types qw/SHA1 DateTime Dir/;
+    use Gitalist::Git::Types qw/SHA1/;
     use Moose::Autobox;
     use List::MoreUtils qw/any zip/;
-    use aliased 'DateTime' => 'DT';
+    use DateTime;
     use Encode qw/decode/;
     use I18N::Langinfo qw/langinfo CODESET/;
     use Gitalist::Git::Object::Blob;
     use Gitalist::Git::Object::Tree;
     use Gitalist::Git::Object::Commit;
     use Gitalist::Git::Object::Tag;
-    
-    with 'Gitalist::Serializeable';
 
     our $SHA1RE = qr/[0-9a-fA-F]{40}/;
 
@@ -35,8 +34,7 @@ class Gitalist::Git::Repository with Gitalist::Git::HasUtils {
                   is => 'ro', required => 1 );
 
     has path => ( isa => Dir,
-                  is => 'ro', required => 1,
-                  traits => [qw/ DoNotSerialize /] );
+                  is => 'ro', required => 1);
 
     has description => ( isa => Str,
                          is => 'ro',
@@ -48,7 +46,7 @@ class Gitalist::Git::Repository with Gitalist::Git::HasUtils {
                    lazy_build => 1,
                );
 
-    has last_change => ( isa => Maybe[DateTime],
+    has last_change => ( isa => Maybe['DateTime'],
                          is => 'ro',
                          lazy_build => 1,
                      );
@@ -63,9 +61,7 @@ class Gitalist::Git::Repository with Gitalist::Git::HasUtils {
                      );
     has heads => ( isa => ArrayRef[HashRef],
                    is => 'ro',
-                   lazy_build => 1,
-                   traits => [qw/ DoNotSerialize /],
-                   );
+                   lazy_build => 1);
     has tags => ( isa => ArrayRef[HashRef],
                    is => 'ro',
                    lazy_build => 1);
@@ -265,7 +261,7 @@ class Gitalist::Git::Repository with Gitalist::Git::HasUtils {
                 --sort=-committerdate --count=1 refs/heads
           });
         if (my ($epoch, $tz) = $output =~ /\s(\d+)\s+([+-]\d+)$/) {
-            my $dt = DT->from_epoch(epoch => $epoch);
+            my $dt = DateTime->from_epoch(epoch => $epoch);
             $dt->set_time_zone($tz);
             $last_change = $dt;
         }
@@ -283,7 +279,7 @@ class Gitalist::Git::Repository with Gitalist::Git::HasUtils {
 
             #FIXME: That isn't the time I'm looking for..
             if (my ($epoch, $tz) = $line =~ /\s(\d+)\s+([+-]\d+)$/) {
-                my $dt = DT->from_epoch(epoch => $epoch);
+                my $dt = DateTime->from_epoch(epoch => $epoch);
                 $dt->set_time_zone($tz);
                 $ret[-1]->{last_change} = $dt;
             }
@@ -309,7 +305,7 @@ class Gitalist::Git::Repository with Gitalist::Git::HasUtils {
 
             #FIXME: That isn't the time I'm looking for..
             if($epoch and $tz) {
-                my $dt = DT->from_epoch(epoch => $epoch);
+                my $dt = DateTime->from_epoch(epoch => $epoch);
                 $dt->set_time_zone($tz);
                 $ret[-1]->{last_change} = $dt;
             }
