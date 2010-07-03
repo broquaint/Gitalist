@@ -1,5 +1,6 @@
 This file documents the revision history for Perl extension Gitalist.
 
+0.002001 2010-07-03
     - Fix for loadCommitInfo.
     - Fix tests to work with local-libbery.
     - Correct example link and FCGI script.
@@ -7,6 +8,7 @@ This file documents the revision history for Perl extension Gitalist.
     - Throttle the commit info loading.
     - Update bootstrapping for local::lib 1.006000.
     - Fixed author_* barewords in Makefile.PL.
+    - Handle merges in the diff view.
 
 0.001008 2010-06-03
    - Add a requires_external_bin for the git command so we won't try running

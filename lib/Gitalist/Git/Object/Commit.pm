@@ -60,11 +60,11 @@ class Gitalist::Git::Object::Commit
                 ( $filename  ? ('--', $filename) : () ),
             );
 
-	    # If we're not comparing against something and we have multiple
-	    # parents then it's a merge commit so show what was merged.
-	    my $sha1 = $parent && $parent eq '-c' && @{[$self->parents]} > 1
-		 ? sprintf("%s^1..%s^2", ($self->sha1) x 2)
-		      : $self->sha1;
+            # If we're not comparing against something and we have multiple
+            # parents then it's a merge commit so show what was merged.
+            my $sha1 = $parent && $parent eq '-c' && @{[$self->parents]} > 1
+                 ? sprintf("%s^1..%s^2", ($self->sha1) x 2)
+                      : $self->sha1;
 
             my @out = $self->_raw_diff(
                 ( $patch ? '--patch-with-raw' : () ),
