@@ -14,7 +14,7 @@ use Catalyst qw/
                 SubRequest
 /;
 
-our $VERSION = '0.002001_01';
+our $VERSION = '0.002001_02';
 $VERSION = eval $VERSION;
 
 __PACKAGE__->config(
@@ -121,17 +121,20 @@ L<local::lib>. So instead of installing the prerequisites to the
 system path with CPAN they are installed under the Gitalist directory.
 
 To do this clone Gitalist from the Shadowcat repository mentioned
-above or grab a download from CPAN or broquaint's github repository:
+above or grab a snapshot from broquaint's github repository:
 
     http://github.com/broquaint/Gitalist/downloads
 
 With the source acquired and unpacked run the following from within the
 Gitalist directory:
 
-    perl script/bootstrap
+    perl script/bootstrap.pl
 
 This will install the necessary modules for the build process which in
 turn installs the prerequisites locally.
+
+I<NB> The relevant bootstrap scripts aren't available in the CPAN dist
+as the bootstrap scripts should not be installed.
 
 =head1 INITIAL CONFIGURATION
 
