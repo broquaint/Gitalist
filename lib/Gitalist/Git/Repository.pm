@@ -179,16 +179,6 @@ class Gitalist::Git::Repository with Gitalist::Git::HasUtils {
         # TODO - support compressed archives
     }
 
-    method diff ( Gitalist::Git::Object :$commit!,
-                  Bool :$patch?,
-                  Maybe[NonEmptySimpleStr] :$parent?,
-                  NonEmptySimpleStr :$filename?
-              ) {
-              return $commit->diff( patch => $patch,
-                                    parent => $parent,
-                                    filename => $filename);
-    }
-
     method reflog (@logargs) {
         my @entries
             =  $self->run_cmd(qw(log -g), @logargs)

@@ -47,10 +47,10 @@ class Gitalist::Git::Object::Commit
             return $self->_run_cmd_fh( @cmd );
         }
 
-        method diff ( Maybe[Bool] :$patch?,
-                       Maybe[NonEmptySimpleStr] :$parent?,
-                       Maybe[NonEmptySimpleStr] :$filename?
-                   ) {
+        method diff ( Bool              :$patch?,
+                      NonEmptySimpleStr :$parent?,
+                      NonEmptySimpleStr :$filename?
+                    ) {
             $parent = $parent
                 ? $parent
                     : $self->parents <= 1
