@@ -1,8 +1,11 @@
 This file documents the revision history for Perl extension Gitalist.
 
-0.002002 2010-07-04
+0.002003 2010-07-04
     - Fix for distribution not including script/env causing Makefile.PL
       and scripts to die.
+
+0.002002 2010-07-04
+    - Fix dist packaging issues.
 
 0.002001 2010-07-03
     - Fix for loadCommitInfo.
