@@ -1,7 +1,12 @@
 #!/usr/bin/env perl
 
 use FindBin;
-BEGIN { do "$FindBin::Bin/script/env" or die $@ }
+BEGIN {
+    my $env = "$FindBin::Bin/script/env";
+    if (-r $env) {
+        do $env or die $@;
+    }
+}
 
 use strict;
 use warnings;

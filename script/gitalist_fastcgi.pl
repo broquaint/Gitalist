@@ -1,6 +1,11 @@
 #!/usr/bin/env perl
 use FindBin;
-BEGIN { do "$FindBin::Bin/env" or die $@ }
+BEGIN {
+    my $env = "$FindBin::Bin/script/env";
+    if (-r $env) {
+        do $env or die $@;
+    }
+}
 
 use Catalyst::ScriptRunner;
 Catalyst::ScriptRunner->run('Gitalist','FastCGI');
