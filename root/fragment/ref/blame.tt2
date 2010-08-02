@@ -1,3 +1,4 @@
+[%- IF mangled; INCLUDE inc/syntax_highlight_css.tt2; END -%]
 [% blame_lines = blob.split("\n") %]
  [% FOR info IN blame %]
  <tr class=''>
@@ -15,7 +16,9 @@
      <td nowrap class='commit-info'></td>
      [%- END -%]
    <td nowrap class='lineno' id='l[% info.meta.lineno %]' style='border-right: solid 3px #[% linecolour %]; border-left: solid 3px #[% linecolour %];'><tt><a href='[% c.uri_for_action('/ref/blame', [Repository.name, info.commit.sha1], filename.to_path ) %]#l[% info.meta.orig_lineno %]'>[% info.meta.lineno %]</a></tt></td>
-   <td nowrap class='data'><pre>[% blame_lines.${loop.index} | html %]</pre></td>
+   <td nowrap class='data'><pre>[%-
+     IF mangled; blame_lines.${loop.index}; ELSE; blame_lines.${loop.index} | html; END
+   -%]</pre></td>
    [% lastsha1 = info.commit.sha1 %]
  </tr>
  [% END %]

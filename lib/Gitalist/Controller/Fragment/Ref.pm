@@ -29,7 +29,7 @@ sub _diff {
       diff      => $patch,
       # XXX Hack hack hack, see View::SyntaxHighlight
       blobs     => [map $_->{diff}, @$patch],
-      %filename,
+      %diff_args,
     );
 }
 
