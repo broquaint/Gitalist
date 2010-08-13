@@ -45,8 +45,9 @@ function uriFor(action, sha1) {
 }
 
 function switchBranch() {
-    var branch = jQuery('#branch-list').val();
-    document.location.href = uriFor('current', branch);
+    var branch = jQuery('#branch-list').val(),
+        action = branch != '...' ? 'current' : 'heads';
+    document.location.href = uriFor(action, branch);
 }
 
 function compareDiffs(){

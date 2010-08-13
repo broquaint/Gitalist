@@ -63,9 +63,13 @@
 					Branches 
 					<select id='branch-list'>
 						<option value="">HEAD</option>
-					[% FOREACH branch IN Repository.heads %]
+					[%- FOREACH branch IN Repository.heads -%]
 						<option value="[% branch.name %]">[% branch.name %]</option>
-					[% END %]
+						[% IF loop.count == c.config.paging.summary %]
+						<option value="...">&gt;Branch list</option>
+						[% LAST %]
+						[% END %]
+					[% END -%]
 					
 					</select>
 				</li>
@@ -82,11 +86,11 @@
 			/
 			[%- IF Repository %]
 				[%# FIXME: output branch name in a nicer way!!!  #%]
-				[% FOREACH branch_head IN Repository.heads %]
-					[% IF c.req.path.search(branch_head.name) %]
+				[%- FOREACH branch_head IN Repository.heads %]
+					[%- IF c.req.path.search(branch_head.name) %]
     				<a href="[% c.uri_for_action('/repository/summary', [Repository.name]) %]/[% branch_head.name %]/shortlog">[% branch_head.name %]</a> /
-					[% END %]
-				[% END %]
+					[% END -%]
+				[% END -%]
    			[%- END %]
 			
 			
@@ -191,6 +195,7 @@
           c.uri_for_action(cur_uri, [Repository.name, 'HEAD']);
       END;
 %]</span>
+<span id="heads-uri" class="js-data">[% c.uri_for_action('/repository/heads', [Repository.name]) %]</span>
 
 </body>
 </html>

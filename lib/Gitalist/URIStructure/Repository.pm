@@ -45,8 +45,8 @@ sub object : Chained('find') PathPart('') Args(1) {
 
 sub summary : Chained('find') PathPart('') Args() {}
 
-sub heads : Chained('find') Args(0) {}
+sub heads : Chained('find') Args() {}
 
-sub tags : Chained('find') Args(0) {}
+sub tags : Chained('find') Args() {}
 
 1;

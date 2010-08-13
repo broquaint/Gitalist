@@ -42,7 +42,7 @@
 </tr>
 </tbody>
 </table>
-</form
+</form>
 
 <span id="diff-uri" class="js-data">[% c.uri_for_action('/ref/diff_fancy', [Repository.name, 'HEAD']) %]</span> 
 

@@ -22,6 +22,7 @@
      <a href="[% c.uri_for_action('/ref/tree', [Repository.name, head.name]) %]" title="Tree" class="button tree">tree</a>
    </td>
   </tr>
+  [% LAST IF c.req.args.0 AND c.req.args.0 == loop.count %]
  [% END %]
  </tbody>
 </table>

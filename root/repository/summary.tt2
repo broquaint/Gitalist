@@ -6,10 +6,10 @@
   [% subinclude('/fragment/repository/shortlog', c.req.captures) %]
 
   <h2><a href='[% c.uri_for(c.controller.action_for('heads'), c.req.captures) %]'>Branches</a></h2>
-  [% subinclude('/fragment/repository/heads', c.req.captures) %]
+  [% subinclude('/fragment/repository/heads', c.req.captures, c.config.paging.summary) %]
 
   [% IF Repository.tags.size > 0 %]
   <h2><a href='[% c.uri_for(c.controller.action_for('tags'), c.req.captures) %]'>Tags</a></h2>
-  [% subinclude('/fragment/repository/tags', c.req.captures) %]
+  [% subinclude('/fragment/repository/tags', c.req.captures, c.config.paging.summary) %]
   [% END %]
 
