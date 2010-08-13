@@ -1,5 +1,11 @@
 use FindBin qw/$Bin/;
-BEGIN { do "$FindBin::Bin/../script/env" or die $@ }
+BEGIN {
+    my $env = "$FindBin::Bin/script/env";
+    if (-r $env) {
+        do $env or die $@;
+    }
+}
+
 
 use strict;
 use warnings;

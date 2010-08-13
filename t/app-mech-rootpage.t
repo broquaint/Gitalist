@@ -1,6 +1,12 @@
 #!/usr/bin/env perl
 use FindBin qw/$Bin/;
-BEGIN { do "$FindBin::Bin/../script/env" or die $@ }
+BEGIN {
+    my $env = "$FindBin::Bin/script/env";
+    if (-r $env) {
+        do $env or die $@;
+    }
+}
+
 use lib "$Bin/lib";
 use TestGitalist;
 plan 'skip_all' => "One or more of the following modules aren't present: Test::WWW::Mechanize::Catalyst WWW::Mechanize::TreeBuilder HTML::TreeBuilder::XPath" unless MECH();
