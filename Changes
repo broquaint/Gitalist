@@ -1,5 +1,8 @@
 This file documents the revision history for Perl extension Gitalist.
 
+0.002005 2010-08-13
+    - Limit the number of branches/tags listed by default.
+
 0.002004 2010-08-02
     - Fix misnamed variable which was giving a syntax error in
       Gitalist::Controller::Fragment::Ref.

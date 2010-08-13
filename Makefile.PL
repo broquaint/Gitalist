@@ -85,7 +85,7 @@ requires 'MooseX::Types::Path::Class';
 requires 'MooseX::Types';
 requires 'namespace::autoclean';
 
-requires 'Git::PurePerl' => '0.46';
+requires 'Git::PurePerl' => '0.47';
 
 requires 'aliased';
 requires 'CGI';
