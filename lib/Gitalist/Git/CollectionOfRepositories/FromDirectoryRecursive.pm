@@ -19,38 +19,37 @@ class Gitalist::Git::CollectionOfRepositories::FromDirectoryRecursive
     }
 
     method _get_path_for_repository_name (NonEmptySimpleStr $name) {
-        my $path = $self->repo_dir->subdir($name)->resolve;
-        die "Directory traversal prohibited"
-            unless $self->repo_dir->contains($path);
-        return $path;
+      my $path = $self->repo_dir->subdir($name)->resolve;
+      die "Directory traversal prohibited"
+          unless $self->repo_dir->contains($path);
+      return $path;
     }
 
     ## Builders
     method _build_repositories {
-        my @ret = $self->_recurse_directories( $self->repo_dir );
-        return \@ret;
-    }
-
-    method _recurse_directories (Dir $dir) {
-        my @ret;
-        # can't use Dir->recurse since will kep going even if
-        # know its a git repo so will do manually
-        $dir->recurse( 
-            callback => sub {
-                my ( $dir ) = @_;
-                print STDERR Data::Dumper->Dump([$dir]);
-                if ( $dir->is_dir ) {
-                    eval {
-                        # slight hack since get_repo expects string
-                        # prob needs rewrite.
-                        my @list = $dir->dir_list();
-                        my $p = $self->get_repository($list[$#list]);
-                        push @ret, $p;
-                    };
-                }
+      my @ret;
+      my @git_dirs; #don't recurse in here
+      $self->repo_dir->recurse( 
+        callback => sub {
+          my ( $dir ) = @_;
+          if ( $dir->is_dir ) {
+            for my $already_gitted ( @git_dirs ) {
+              # no need to go further if parent is git dir
+              # never have a git repo in a git repo?
+              return if ( $already_gitted->contains( $dir ) );
             }
-        );
-        return @ret;
+            eval {
+              # slight hack since get_repo expects string
+              my @list = $dir->dir_list();
+              my $p = $self->get_repository($list[$#list]);
+              push @ret, $p;
+              push @git_dirs, $dir;
+            };  
+          }
+          return;
+        }
+      );
+      return \@ret;
     }
       
 }                                # end class
