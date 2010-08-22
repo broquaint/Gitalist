@@ -199,6 +199,42 @@ are running from a git checkout, adding a trivial FCGI script as C<script/gitali
 This example can be seen live here:
 
     http://example.gitalist.com
+    
+=head2 FASTCGI
+			Running Gitalist in FastCGI mode requires a webserver with FastCGI 
+			support (such as apache with mod_fcgi or fcgid). Below is a sample configuration using Apache2 with fcgid in a
+			dynamic configuration (as opposed to static or standalone mode). More information on these modes and 
+			their configuration can be found at 
+			http://search.cpan.org/~bobtfish/Catalyst-Runtime-5.80025/lib/Catalyst/Engine/FastCGI.pm#Standalone_server_mode
+			
+			In Apache's mime.conf, add AddHandler fcgid-script .fcgi (or AddHandler fastcgi-script .fcgi for mod_fcgi)
+			
+			And a quick VirtualHost configuration:
+			
+			<VirtualHost *:80>
+        ServerName gitalist.yourdomain.com
+        DocumentRoot /path/to/gitalist.fcgi
+        <Directory "/path/to/gitalist.fcgi">
+                AllowOverride all
+                Options +ExecCGI -MultiViews +SymLinksIfOwnerMatch
+                Order allow,deny
+                Allow from all
+        </Directory>
+
+        # Tell Apache this is a FastCGI application
+        <Files gitalist.fcgi>
+        		#change the below to fastcgi-script if using mod_fcgi
+            SetHandler fcgid-script
+        </Files>
+			</VirtualHost>
+			
+			Now to access your gitalist instance, you'll go to gitalist.yourdomain.com/gitalist.fcgi/ 
+			(DO NOT FORGET THAT TRAILING /). If you'd like a different URL, of course, you'll likely want to use 
+			mod_rewrite or equivalent
+			
+			If you find the need to do some troubleshooting, you can call http://url_to_gitalist.fcgi?dump_info=1
+			and/or add export GITALIST_DEBUG=1 to the top of you gitalist.fcgi file (just below the shebang line).
+		
 
 =head1 CONTRIBUTING
 
