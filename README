@@ -160,7 +160,7 @@ RUNNING
 
         # Tell Apache this is a FastCGI application
         <Files gitalist.fcgi>
-        		#change the below to fastcgi-script if using mod_fcgi
+            #change the below to fastcgi-script if using mod_fcgi
             SetHandler fcgid-script
         </Files>
 			</VirtualHost>
