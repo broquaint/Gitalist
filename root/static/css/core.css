@@ -492,7 +492,7 @@ BUT the final width needs to be set with javascript based on the parent element 
   padding: 0 8px;
 }
 #blame a {
- atext-decoration: none;
+ text-decoration: none;
 }
 #blame {
     overflow-x: scroll;
