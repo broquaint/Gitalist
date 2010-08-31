@@ -2,52 +2,51 @@ use MooseX::Declare;
 
 class Gitalist::Git::CollectionOfRepositories::FromDirectoryRecursive
     with Gitalist::Git::CollectionOfRepositories {
-    use MooseX::Types::Common::String qw/NonEmptySimpleStr/;
-    use MooseX::Types::Path::Class qw/Dir/;
+      use MooseX::Types::Common::String qw/NonEmptySimpleStr/;
+      use MooseX::Types::Path::Class qw/Dir/;
 
-    has repo_dir => (
+      has repo_dir => (
         isa => Dir,
         is => 'ro',
         required => 1,
         coerce => 1,
-    );
+      );
 
     method BUILD {
-        # Make sure repo_dir is an absolute path so that
-        # ->contains() works correctly.
-        $self->repo_dir->resolve;
+      # Make sure repo_dir is an absolute path so that
+      # ->contains() works correctly.
+      $self->repo_dir->resolve;
     }
 
     method _get_path_for_repository_name (NonEmptySimpleStr $name) {
-        my $path = $self->repo_dir->subdir($name)->resolve;
-        die "Directory traversal prohibited"
-            unless $self->repo_dir->contains($path);
-        return $path;
+      my $path = Path::Class::Dir->new( $name )->resolve;
+      die "Directory traversal prohibited: $path"
+          unless $self->repo_dir->contains($path);
+      return $path;
     }
 
     ## Builders
     method _build_repositories {
-        my @ret;
-        $self->repo_dir->recurse( 
-            callback => sub {
-                my ( $dir ) = @_;
-                if ( $dir->is_dir ) {
-                    for my $repo ( @ret ) {
-                        # no need to go further if parent is git dir
-                        # never have a git repo in a git repo?
-                        return if ( $repo->path->contains( $dir ) );
-                    }
-                    eval {
-                        # slight hack since get_repo expects string
-                        my @list = $dir->dir_list();
-                        my $p = $self->get_repository($list[$#list]);
-                        push @ret, $p;
-                    };
-                }
-                return;
+      my @ret;
+      $self->repo_dir->recurse( 
+        callback => sub {
+          my ( $dir ) = @_;
+          if ( $dir->is_dir ) {
+            for my $repo ( @ret ) {
+              # no need to go further if parent is git dir
+              # never have a git repo in a git repo?
+              return if ( $repo->path->contains( $dir ) );
             }
-        );
-        return \@ret;
+            eval {
+              # pass directory as string
+              my $p = $self->get_repository("$dir");
+              push @ret, $p;
+            };
+          }
+          return;
+        }
+      );
+      return \@ret;
     }
 }                         # end class
 

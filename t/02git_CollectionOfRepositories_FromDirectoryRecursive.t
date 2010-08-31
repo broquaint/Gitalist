@@ -24,30 +24,30 @@ is($repo->repo_dir, $repo_dir, "repo->repo_dir is correct" );
 # 'bare.git' is a bare git repository in the repository dir
 
 my $repository_list = $repo->repositories;
-ok(scalar @{$repository_list} == 5, '->repositories is an array with the correct number of members' );
+is( scalar @{$repository_list}, 5, '->repositories is an array with the correct number of members' );
 isa_ok($repository_list->[0], 'Gitalist::Git::Repository');
-is($repository_list->[0]->{name}, 'bare.git', '->repositories has correct name for "bare.git" repo' );
+my @sorted_names = sort map { $_->{name} } @{$repository_list};
+is_deeply( \@sorted_names, [ qw( bare.git barerecursive.git nodescription repo1 scratch.git) ], 'Repositories are correctly loaded' );
 
 dies_ok {
-    my $repository = $repo->get_repository('NoSuchRepository');
+  my $repository = $repo->get_repository("$repo_dir/NoSuchRepository");
 } 'throws exception for invalid repository';
 
 dies_ok {
-    my $repository = $repo->get_repository();
+  my $repository = $repo->get_repository();
 } 'throws exception for no repository';
 
 dies_ok {
-    my $repository = $repo->get_repository('../../../');
-} 'throws exception for directory traversal';
+  my $repository = $repo->get_repository('../../../');
+} 'Relative directory not contained within repo_dir';
 
-my $repository = $repo->get_repository('repo1');
+my $repository = $repo->get_repository( "$repo_dir/repo1" );
 isa_ok($repository, 'Gitalist::Git::Repository');
-
 
 # check for bug where get_repository blew up if repo_dir
 # was a relative path
 lives_ok {
-    my $repo2_dir = "$Bin/lib/../lib/repositories";
-    my $repo2 = Gitalist::Git::CollectionOfRepositories::FromDirectoryRecursive->new( repo_dir => $repo2_dir );
-    my $repo2_proj = $repo2->get_repository('repo1');
+  my $repo2_dir = "$Bin/lib/../lib/repositories";
+  my $repo2 = Gitalist::Git::CollectionOfRepositories::FromDirectoryRecursive->new( repo_dir => $repo2_dir );
+  my $repo2_proj = $repo2->get_repository("$repo2_dir/repo1");
 } 'relative repo_dir properly handled';
