@@ -30,7 +30,7 @@ my @sorted_names = sort map { $_->{name} } @{$repository_list};
 is_deeply( \@sorted_names, [ qw( bare.git barerecursive.git nodescription repo1 scratch.git) ], 'Repositories are correctly loaded' );
 
 dies_ok {
-  my $repository = $repo->get_repository("$repo_dir/NoSuchRepository");
+  my $repository = $repo->get_repository("NoSuchRepository");
 } 'throws exception for invalid repository';
 
 dies_ok {
@@ -41,7 +41,7 @@ dies_ok {
   my $repository = $repo->get_repository('../../../');
 } 'Relative directory not contained within repo_dir';
 
-my $repository = $repo->get_repository( "$repo_dir/repo1" );
+my $repository = $repo->get_repository( "repo1" );
 isa_ok($repository, 'Gitalist::Git::Repository');
 
 # check for bug where get_repository blew up if repo_dir
@@ -49,5 +49,7 @@ isa_ok($repository, 'Gitalist::Git::Repository');
 lives_ok {
   my $repo2_dir = "$Bin/lib/../lib/repositories";
   my $repo2 = Gitalist::Git::CollectionOfRepositories::FromDirectoryRecursive->new( repo_dir => $repo2_dir );
-  my $repo2_proj = $repo2->get_repository("$repo2_dir/repo1");
+  my $repo2_proj = $repo2->get_repository("repo1");
 } 'relative repo_dir properly handled';
+
+# TODO Write a recursive test ignoring directories

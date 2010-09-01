@@ -19,8 +19,17 @@ class Gitalist::Git::CollectionOfRepositories::FromDirectoryRecursive
     }
 
     method _get_path_for_repository_name (NonEmptySimpleStr $name) {
-      my $path = Path::Class::Dir->new( $name )->resolve;
-      die "Directory traversal prohibited: $path"
+      my $path;
+      $self->repo_dir->recurse( 
+        callback => sub {
+          my ( $thing ) = @_;
+          return unless ( $thing->is_dir );
+          $path = $thing if ( $thing->dir_list(-1) eq $name 
+                                  && $self->_is_git_repo( $thing ) );
+        }
+      );
+      $path->resolve if $path;
+      die "Directory traversal prohibited: ".( $path || 'path undefined' )
           unless $self->repo_dir->contains($path);
       return $path;
     }
@@ -35,11 +44,17 @@ class Gitalist::Git::CollectionOfRepositories::FromDirectoryRecursive
             for my $repo ( @ret ) {
               # no need to go further if parent is git dir
               # never have a git repo in a git repo?
-              return if ( $repo->path->contains( $dir ) );
+              my $check_dir = $repo->path;
+              # go up one and ignore all in that path
+              # if in hidden .git directory
+              $check_dir = $check_dir->parent 
+                  if ( -f $check_dir->parent->file('.git', 'HEAD') );
+              return if ( $check_dir->contains( $dir ) );
             }
             eval {
-              # pass directory as string
-              my $p = $self->get_repository("$dir");
+              # pass directory name as string
+              my @list = $dir->dir_list();
+              my $p = $self->get_repository($list[$#list]);
               push @ret, $p;
             };
           }
