@@ -10,8 +10,7 @@ use strict;
 use warnings;
 use Test::More qw/no_plan/;
 use Test::Exception;
-
-use Data::Dumper;
+use Path::Class::Dir;
 
 BEGIN { use_ok 'Gitalist::Git::CollectionOfRepositories::FromDirectoryRecursive' }
 
@@ -52,4 +51,12 @@ lives_ok {
   my $repo2_proj = $repo2->get_repository("repo1");
 } 'relative repo_dir properly handled';
 
-# TODO Write a recursive test ignoring directories
+#A test ignoring git repos within git directories
+# test will ignor the fake repos under the t/ directory
+$repo_dir = Path::Class::Dir->new("$Bin/../../")->absolute;
+$repo = Gitalist::Git::CollectionOfRepositories::FromDirectoryRecursive->new( repo_dir => $repo_dir );
+isa_ok($repo, 'Gitalist::Git::CollectionOfRepositories::FromDirectoryRecursive');
+is( $repo->repo_dir, $repo_dir, "repo->repo_dir is correct" );
+$repository_list = $repo->repositories;
+is( scalar @{$repository_list}, 1, '->repositories is an array with the correct number of members' );
+is( $repository_list->[0]->{name}, 'Gitalist', 'repository correctly loaded' );
