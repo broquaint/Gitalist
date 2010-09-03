@@ -43,6 +43,9 @@ dies_ok {
 my $repository = $repo->get_repository( "repo1" );
 isa_ok($repository, 'Gitalist::Git::Repository');
 
+$repository = $repo->get_repository( "scratch.git" );
+isa_ok($repository, 'Gitalist::Git::Repository');
+
 # check for bug where get_repository blew up if repo_dir
 # was a relative path
 lives_ok {
