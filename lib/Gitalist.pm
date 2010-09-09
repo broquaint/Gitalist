@@ -227,7 +227,7 @@ This example can be seen live here:
             #change the below to fastcgi-script if using mod_fcgi
             SetHandler fcgid-script
         </Files>
-			</VirtualHost>
+      </VirtualHost>
 			
         Now to access your gitalist instance, you'll go to gitalist.yourdomain.com/gitalist.fcgi/ 
         (DO NOT FORGET THAT TRAILING /). If you'd like a different URL, of course, you'll likely want to use 
@@ -236,6 +236,9 @@ This example can be seen live here:
         If you find the need to do some troubleshooting, you can call http://url_to_gitalist.fcgi?dump_info=1
         and/or add export GITALIST_DEBUG=1 to the top of you gitalist.fcgi file (just below the shebang line).
 		
+        Also, note that  Apache will refuse %2F in Gitalist URL's unless configured otherwise. Make sure
+        "AllowEncodedSlashes On" is in your httpd.conf file in order for this to run smoothly.
+
 
 =head1 CONTRIBUTING
 
