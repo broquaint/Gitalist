@@ -1,5 +1,12 @@
 This file documents the revision history for Perl extension Gitalist.
 
+0.002006 2010-10-17
+   - Added notes regarding slash encoding in Catalyst
+   - Fixed typo in core.css
+   - Updated formatting in Gitalist.pm
+   - Modified README with more details on FCGI deployment with Apache
+   - Fix broken env includes in script/gitalist*.pl.
+
 0.002005 2010-08-13
     - Limit the number of branches/tags listed by default.
 
