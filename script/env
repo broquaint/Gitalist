@@ -30,14 +30,25 @@ use warnings;
 use Carp;
 use lib;
 use FindBin;
+use File::Spec ();
 
-my $basedir;
-if (-r "$FindBin::Bin/Makefile.PL") {
-    $basedir = $FindBin::Bin;
-}
-elsif (-r "$FindBin::Bin/../Makefile.PL") {
-    $basedir = "$FindBin::Bin/..";
-}
+# Look up to see find Makefile.PL aka the base of the local::lib install.
+my $lookup; $lookup = sub {
+    my $dir = $_[0] || '.';
+
+    my(undef, $dirbit) = File::Spec->splitpath($FindBin::Bin);
+    my $trydir         = File::Spec->catdir($dirbit, $dir);
+
+    return '' unless -d $trydir;
+
+    my $tryfile = File::Spec->catfile($trydir, "Makefile.PL");
+
+    return $trydir if -r $tryfile;
+
+    return $lookup->( File::Spec->catdir($dir, File::Spec->updir) );
+};
+
+my $basedir = $lookup->();
 
 $basedir ||= '';
 my $target = "$basedir/local-lib5";
