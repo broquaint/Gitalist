@@ -45,7 +45,7 @@ my $lookup; $lookup = sub {
 
     return $trydir if -r $tryfile;
 
-    return $lookup->( File::Spec->catdir($dir, File::Spec->updir) );
+    return $lookup->( File::Spec->catdir($trydir, File::Spec->updir) );
 };
 
 my $basedir = $lookup->();
