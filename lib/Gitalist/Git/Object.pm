@@ -4,7 +4,7 @@ use Moose::Autobox;
 class Gitalist::Git::Object is dirty {
     use MooseX::Types::Moose qw/Str Int Bool Maybe ArrayRef/;
     use MooseX::Types::Common::String qw/NonEmptySimpleStr/;
-    use overload '""' => '_to_string';
+    use overload '""' => '_to_string', fallback => 1;
 
     # repository and sha1 are required initargs
     has repository => ( isa => 'Gitalist::Git::Repository',
