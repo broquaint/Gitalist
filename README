@@ -6,7 +6,7 @@ SYNOPSIS
 
 INSTALL
     As Gitalist follows the usual Perl module format the usual approach for
-    installation should work e.g.
+    installation should work, e.g.:
 
       perl Makefile.PL
       make
@@ -17,20 +17,20 @@ INSTALL
 
       cpan -i Gitalist
 
-    You can also check gitalist out from git and run it, in this case you'll
-    additionally need the author modules, but no configuration will be
-    needed as it will default to looking for repositories the directory
-    above the checkout.
+    You can also check Gitalist out from its git repository and run it, in
+    this case you'll additionally need the author modules, but no
+    configuration will be needed as it will default to looking for
+    repositories the directory above the checkout.
 
 DESCRIPTION
-    Gitalist is a web frontend for git repositories based on gitweb.cgi and
-    backed by Catalyst.
+    Gitalist is a web frontend for git repositories based on <gitweb.cgi>
+    and backed by Catalyst.
 
   History
-    This project started off as an attempt to port gitweb.cgi to a Catalyst
-    app in a piecemeal fashion. As it turns out, thanks largely to Florian
-    Ragwitz's earlier effort, it was easier to use gitweb.cgi as a template
-    for building a new Catalyst application.
+    This project started off as an attempt to port *gitweb.cgi* to a
+    Catalyst app in a piecemeal fashion. As it turns out, thanks largely to
+    Florian Ragwitz's earlier effort, it was easier to use *gitweb.cgi* as a
+    template for building a new Catalyst application.
 
 GETTING GITALIST
     You can install Gitalist from CPAN in the usual way:
@@ -43,8 +43,9 @@ GETTING GITALIST
 
         git://git.shadowcat.co.uk/catagits/Gitalist.git
 
-    Gitalist is also mirrored to github, and a number of people have active
-    forks with branches and/or new features in the master branch.
+    Gitalist is also mirrored to GitHub at
+    <https://github.com/broquaint/Gitalist>, and a number of people have
+    active forks with branches and/or new features in the master branch.
 
 BOOTSTRAPPING
     As of 0.002001 Gitalist can now be bootstrapped to run out of its own
@@ -53,9 +54,9 @@ BOOTSTRAPPING
     path with CPAN they are installed under the Gitalist directory.
 
     To do this clone Gitalist from the Shadowcat repository mentioned above
-    or grab a snapshot from broquaint's github repository:
+    or grab a snapshot from broquaint's GitHub repository:
 
-        http://github.com/broquaint/Gitalist/downloads
+        https://github.com/broquaint/Gitalist/downloads
 
     With the source acquired and unpacked run the following from within the
     Gitalist directory:
@@ -65,7 +66,7 @@ BOOTSTRAPPING
     This will install the necessary modules for the build process which in
     turn installs the prerequisites locally.
 
-    *NB* The relevant bootstrap scripts aren't available in the CPAN dist as
+    NB: The relevant bootstrap scripts aren't available in the CPAN dist as
     the bootstrap scripts should not be installed.
 
 INITIAL CONFIGURATION
@@ -95,8 +96,8 @@ INITIAL CONFIGURATION
 
       cp `perl -Ilib -MGitalist -e'print Gitalist->path_to("gitalist.conf")'` gitalist.conf
 
-    You can then edit this confg, adding a repo_dir path and customising
-    other settings as desired.
+    You can then edit this configuration, adding a "repo_dir" path and
+    customising other settings as desired.
 
     You can then start the Gitalist demo server by setting
     "GITALIST_CONFIG". For example:
@@ -121,7 +122,7 @@ RUNNING
     than using the single threaded developement server.
 
     The recommended deployment method for Gitalist is FastCGI, although
-    Gitalist can also be run under mod_perl or as pure perl with
+    Gitalist can also be run under <mod_perl> or as pure Perl with
     Catalyst::Engine::PreFork.
 
     Assuming that you have installed Gitalist's dependencies into a
@@ -137,42 +138,48 @@ RUNNING
         http://example.gitalist.com
 
   FASTCGI
-        Running Gitalist in FastCGI mode requires a webserver with FastCGI
-        support (such as apache with mod_fcgi or fcgid). Below is a sample 
-        configuration using Apache2 with fcgid in a dynamic configuration
-        (as opposed to static or standalone mode). More information on these modes and 
-        their configuration can be found at 
-        http://search.cpan.org/~bobtfish/Catalyst-Runtime-5.80025/lib/Catalyst/Engine/FastCGI.pm#Standalone_server_mode
-            In Apache's mime.conf, add AddHandler fcgid-script .fcgi (or AddHandler fastcgi-script .fcgi for mod_fcgi)
-                        
-            And a quick VirtualHost configuration:
-                        
-            <VirtualHost *:80>
-              ServerName gitalist.yourdomain.com
-              DocumentRoot /path/to/gitalist.fcgi
-              <Directory "/path/to/gitalist.fcgi">
+    Running Gitalist in FastCGI mode requires a webserver with FastCGI
+    support (such as apache with <mod_fcgi> or <mod_fcgid>). Below is a
+    sample configuration using Apache2 with mod_fcgid in a dynamic
+    configuration (as opposed to static or standalone mode). More
+    information on these modes and their configuration can be found at
+    "Standalone server mode" in Catalyst::Engine::FastCGI.
+
+    In Apache's mime.conf, add "AddHandler fcgid-script .fcgi" (or
+    "AddHandler fastcgi-script .fcgi" for mod_fcgi).
+
+    And a quick VirtualHost configuration:
+
+        <VirtualHost *:80>
+            ServerName gitalist.yourdomain.com
+            DocumentRoot /path/to/gitalist.fcgi
+            <Directory "/path/to/gitalist.fcgi">
                 AllowOverride all
                 Options +ExecCGI -MultiViews +SymLinksIfOwnerMatch
                 Order allow,deny
                 Allow from all
-              </Directory>
+            </Directory>
 
             # Tell Apache this is a FastCGI application
             <Files gitalist.fcgi>
                 #change the below to fastcgi-script if using mod_fcgi
                 SetHandler fcgid-script
             </Files>
-          </VirtualHost>
-                        
-            Now to access your gitalist instance, you'll go to gitalist.yourdomain.com/gitalist.fcgi/ 
-            (DO NOT FORGET THAT TRAILING /). If you'd like a different URL, of course, you'll likely want to use 
-            mod_rewrite or equivalent
-                        
-            If you find the need to do some troubleshooting, you can call http://url_to_gitalist.fcgi?dump_info=1
-            and/or add export GITALIST_DEBUG=1 to the top of you gitalist.fcgi file (just below the shebang line).
-                
-            Also, note that  Apache will refuse %2F in Gitalist URL's unless configured otherwise. Make sure
-            "AllowEncodedSlashes On" is in your httpd.conf file in order for this to run smoothly.
+        </VirtualHost>
+
+    Now to access your Gitalist instance, you'll go to
+    "gitalist.yourdomain.com/gitalist.fcgi/" (do not forget that trailing
+    "/"). If you'd like a different URL, of course, you'll likely want to
+    use <mod_rewrite> or equivalent.
+
+    If you find the need to do some troubleshooting, you can call
+    "http://url_to_gitalist.fcgi?dump_info=1" and/or add export
+    "GITALIST_DEBUG=1" to the top of your gitalist.fcgi file (just below the
+    shebang line).
+
+    Also, note that Apache will refuse %2F in Gitalist URLs unless
+    configured otherwise. Make sure "AllowEncodedSlashes On" is in your
+    httpd.conf file in order for this to run smoothly.
 
 CONTRIBUTING
     Patches are welcome, please feel free to fork on github and send pull
@@ -194,16 +201,16 @@ SEE ALSO
 
 AUTHORS AND COPYRIGHT
       Catalyst application:
-        (C) 2009 Venda Ltd and Dan Brook <broq@cpan.org>
-        (C) 2009, Tom Doran <bobtfish@bobtfish.net>
-        (C) 2009, Zac Stevens <zts@cryptocracy.com>
+        © 2009 Venda Ltd and Dan Brook <broq@cpan.org>
+        © 2009, Tom Doran <bobtfish@bobtfish.net>
+        © 2009, Zac Stevens <zts@cryptocracy.com>
 
       Original gitweb.cgi from which this was derived:
-        (C) 2005-2006, Kay Sievers <kay.sievers@vrfy.org>
-        (C) 2005, Christian Gierke
+        © 2005-2006, Kay Sievers <kay.sievers@vrfy.org>
+        © 2005, Christian Gierke
 
       Model based on http://github.com/rafl/gitweb
-        (C) 2008, Florian Ragwitz
+        © 2008, Florian Ragwitz
 
 LICENSE
     Licensed under GNU GPL v2

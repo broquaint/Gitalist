@@ -77,5 +77,5 @@ install('CPAN');
 install('File::Copy::Recursive');
 install('Module::Install::Catalyst');
 
-print "local::lib setup, type perl Makefile.PL && make installdeps to install dependencies";
+print "local::lib setup, type perl Makefile.PL && make installdeps to install dependencies\n";
 
