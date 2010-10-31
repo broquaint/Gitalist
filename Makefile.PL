@@ -106,8 +106,9 @@ requires 'Sys::Hostname';
 
 requires_external_bin 'git';
 
-test_requires 'Test::More' => '0.88';
-test_requires 'Test::utf8' => '0.02';
+test_requires 'Test::More'      => '0.88';
+test_requires 'Test::utf8'      => '0.02';
+test_requires 'Test::Exception' => '0.31';
 
 resources bugtracker => 'http://rt.cpan.org/Public/Dist/Display.html?Name=Gitalist';
 resources repository => 'git://git.shadowcat.co.uk/catagits/Gitalist.git';
