@@ -31,21 +31,17 @@ use Carp;
 use lib;
 use FindBin;
 use File::Spec ();
+use Cwd ();
 
 # Look up to see find Makefile.PL aka the base of the local::lib install.
 my $lookup; $lookup = sub {
-    my $dir = $_[0] || '.';
+    my $dir = $_[0] || $FindBin::Bin;
 
-    my(undef, $dirbit) = File::Spec->splitpath($FindBin::Bin);
-    my $trydir         = File::Spec->catdir($dirbit, $dir);
+    return '' if Cwd::abs_path($dir) eq File::Spec->rootdir;
 
-    return '' unless -d $trydir;
+    my $tryfile = File::Spec->catfile($dir, "Makefile.PL");
 
-    my $tryfile = File::Spec->catfile($trydir, "Makefile.PL");
-
-    return $trydir if -r $tryfile;
-
-    return $lookup->( File::Spec->catdir($trydir, File::Spec->updir) );
+    return -r $tryfile ? $dir : $lookup->( File::Spec->catdir($dir, File::Spec->updir) );
 };
 
 my $basedir = $lookup->();
