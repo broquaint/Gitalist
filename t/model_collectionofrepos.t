@@ -95,7 +95,7 @@ throws_ok { Gitalist::Model::CollectionOfRepos->COMPONENT($ctx_gen->(), { repos 
 
 {
     my $i = test_with_config({ repo_dir => "$FindBin::Bin/lib/repositories"});
-    is scalar($i->repositories->flatten), 3, 'Found 3 repos';
+    is scalar($i->repositories->flatten), 5, 'Found 5 repos';
 }
 
 {
