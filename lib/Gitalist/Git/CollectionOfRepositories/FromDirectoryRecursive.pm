@@ -30,7 +30,7 @@ class Gitalist::Git::CollectionOfRepositories::FromDirectoryRecursive
       );
       $path->resolve if $path;
       die "Directory traversal prohibited: ".( $path || 'path undefined' )
-          unless $self->repo_dir->contains($path);
+          unless $path and $self->repo_dir->contains($path);
       return $path;
     }
 
