@@ -5,12 +5,18 @@ class Gitalist::Git::CollectionOfRepositories::FromDirectoryRecursive
       use MooseX::Types::Common::String qw/NonEmptySimpleStr/;
       use MooseX::Types::Path::Class qw/Dir/;
 
-      has repo_dir => (
+    use MooseX::Types::Common::String qw/NonEmptySimpleStr/;
+    use MooseX::Types::Path::Class qw/Dir/;
+
+    use Moose::Autobox;
+    use List::Util 'first';
+
+    has repo_dir => (
         isa => Dir,
         is => 'ro',
         required => 1,
         coerce => 1,
-      );
+    );
 
     method BUILD {
       # Make sure repo_dir is an absolute path so that
@@ -18,50 +24,23 @@ class Gitalist::Git::CollectionOfRepositories::FromDirectoryRecursive
       $self->repo_dir->resolve;
     }
 
+    method _find_repos(Dir $dir) {
+      return map {
+        $self->_is_git_repo($_) ? $_ : $self->_find_repos($_)
+      } grep $_->is_dir, $dir->children;
+    }
+
     method _get_path_for_repository_name (NonEmptySimpleStr $name) {
-      my $path;
-      $self->repo_dir->recurse( 
-        callback => sub {
-          my ( $thing ) = @_;
-          return unless ( $thing->is_dir );
-          $path = $thing if ( $thing->dir_list(-1) eq $name 
-                                  && $self->_is_git_repo( $thing ) );
-        }
-      );
-      $path->resolve if $path;
-      die "Directory traversal prohibited: ".( $path || 'path undefined' )
-          unless $path and $self->repo_dir->contains($path);
-      return $path;
+      my $repo = first { $_->name eq $name } $self->repositories->flatten
+        or return;
+      return $repo->path;
     }
 
     ## Builders
     method _build_repositories {
-      my @ret;
-      $self->repo_dir->recurse( 
-        callback => sub {
-          my ( $dir ) = @_;
-          if ( $dir->is_dir ) {
-            for my $repo ( @ret ) {
-              # no need to go further if parent is git dir
-              # never have a git repo in a git repo?
-              my $check_dir = $repo->path;
-              # go up one and ignore all in that path
-              # if in hidden .git directory
-              $check_dir = $check_dir->parent 
-                  if ( -f $check_dir->parent->file('.git', 'HEAD') );
-              return if ( $check_dir->contains( $dir ) );
-            }
-            eval {
-              # pass directory name as string
-              my @list = $dir->dir_list();
-              my $p = $self->get_repository($list[$#list]);
-              push @ret, $p;
-            };
-          }
-          return;
-        }
-      );
-      return \@ret;
+      return [
+        map Gitalist::Git::Repository->new($_), $self->_find_repos( $self->repo_dir )
+      ];
     }
 }                         # end class
 
