@@ -25,7 +25,12 @@ class Gitalist::Git::Repository with Gitalist::Git::HasUtils {
         # Last path component becomes $self->name
         # Full path to git objects becomes $self->path
         my $name = $dir->dir_list(-1);
-        $dir = $dir->subdir('.git') if (-f $dir->file('.git', 'HEAD'));
+	if(-f $dir->file('.git', 'HEAD')) { # Non-bare repo above .git
+	    $dir  = $dir->subdir('.git');
+	    $name = $dir->dir_list(-2, 1); # .../name/.git
+	} elsif('.git' eq $dir->dir_list(-1)) { # Non-bare repo in .git
+	    $name = $dir->dir_list(-2);
+	}
         confess("Can't find a git repository at " . $dir)
             unless ( -f $dir->file('HEAD') );
         return $class->$orig(name => $name,
