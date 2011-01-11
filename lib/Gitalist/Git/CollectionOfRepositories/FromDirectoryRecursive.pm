@@ -2,8 +2,6 @@ use MooseX::Declare;
 
 class Gitalist::Git::CollectionOfRepositories::FromDirectoryRecursive
     with Gitalist::Git::CollectionOfRepositories {
-      use MooseX::Types::Common::String qw/NonEmptySimpleStr/;
-      use MooseX::Types::Path::Class qw/Dir/;
 
     use MooseX::Types::Common::String qw/NonEmptySimpleStr/;
     use MooseX::Types::Path::Class qw/Dir/;
@@ -19,8 +17,7 @@ class Gitalist::Git::CollectionOfRepositories::FromDirectoryRecursive
     );
 
     method BUILD {
-      # Make sure repo_dir is an absolute path so that
-      # ->contains() works correctly.
+      # Make sure repo_dir is an absolute path so that ->contains() works correctly.
       $self->repo_dir->resolve;
     }
 

@@ -14,11 +14,12 @@ role Gitalist::Git::CollectionOfRepositories {
     );
     method get_repository (NonEmptySimpleStr $name) {
         my $path = $self->_get_path_for_repository_name($name);
-        die "Not a valid git repository."
+        die "Couldn't get_repository '$name' - not a valid git repository."
             unless $self->_is_git_repo($path);
         return Repository->new( $path );
     }
     # Determine whether a given directory is a git repo.
+    # http://www.kernel.org/pub/software/scm/git/docs/gitrepository-layout.html
     method _is_git_repo ($dir) {
         return -f $dir->file('HEAD') || -f $dir->file('.git', 'HEAD');
     }
