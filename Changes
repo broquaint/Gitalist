@@ -1,5 +1,12 @@
 This file documents the revision history for Perl extension Gitalist.
 
+0.002007 2011-02-19
+   - Add support for recursively searching for git repos (Dipesh Patel)
+   - Cleaned up model code in Gitalist::Git:: (Zachary Stevens)
+   - Improve POD mark-up, some typos (Lars Dɪᴇᴄᴋᴏᴡ 迪拉斯)
+   - Regenerated README and fixed tests for bootstrapped checkouts.
+   - Add Test::Exception dep.
+
 0.002006 2010-10-17
    - Added notes regarding slash encoding in Catalyst
    - Fixed typo in core.css
