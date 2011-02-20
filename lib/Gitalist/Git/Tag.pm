@@ -76,4 +76,10 @@ around BUILDARGS => sub {
     }
 };
 
+sub is_valid_tag {
+    local $_ = pop;
+    # Ignore tags like - http://git.kernel.org/?p=git/git.git;a=tag;h=d6602ec
+    return /^\S+ \S+ \S+ (?:\S+)? (?:\S+)?[^\0]+\0.*\s\d+\s+[+-]\d+$/;
+}
+
 1;

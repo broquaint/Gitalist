@@ -25,12 +25,12 @@ class Gitalist::Git::Repository with Gitalist::Git::HasUtils {
         # Last path component becomes $self->name
         # Full path to git objects becomes $self->path
         my $name = $dir->dir_list(-1);
-	if(-f $dir->file('.git', 'HEAD')) { # Non-bare repo above .git
-	    $dir  = $dir->subdir('.git');
-	    $name = $dir->dir_list(-2, 1); # .../name/.git
-	} elsif('.git' eq $dir->dir_list(-1)) { # Non-bare repo in .git
-	    $name = $dir->dir_list(-2);
-	}
+        if(-f $dir->file('.git', 'HEAD')) { # Non-bare repo above .git
+            $dir  = $dir->subdir('.git');
+            $name = $dir->dir_list(-2, 1); # .../name/.git
+        } elsif('.git' eq $dir->dir_list(-1)) { # Non-bare repo in .git
+            $name = $dir->dir_list(-2);
+        }
         confess("Can't find a git repository at " . $dir)
             unless ( -f $dir->file('HEAD') );
         return $class->$orig(name => $name,
@@ -215,8 +215,8 @@ class Gitalist::Git::Repository with Gitalist::Git::HasUtils {
             $description = $self->path->file('description')->slurp;
             chomp $description;
         };
-	$description = "Unnamed repository, edit the .git/description file to set a description"
-	    if $description eq "Unnamed repository; edit this file 'description' to name the repository.";
+        $description = "Unnamed repository, edit the .git/description file to set a description"
+            if $description eq "Unnamed repository; edit this file 'description' to name the repository.";
         return $description;
     }
 
@@ -255,11 +255,10 @@ class Gitalist::Git::Repository with Gitalist::Git::HasUtils {
           '--format=%(objectname) %(objecttype) %(refname) %(*objectname) %(*objecttype) %(subject)%00%(creator)',
           'refs/tags'
         );
-        my @ret;
-        for my $line (@revlines) {
-            push @ret, Gitalist::Git::Tag->new($line);
-        }
-        return \@ret;
+        return [
+            map  Gitalist::Git::Tag->new($_),
+            grep Gitalist::Git::Tag::is_valid_tag($_), @revlines
+        ];
     }
 
     method _build_references {
