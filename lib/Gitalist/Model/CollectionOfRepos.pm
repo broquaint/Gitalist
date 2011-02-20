@@ -49,6 +49,11 @@ has repos => (
     coerce => 1,
 );
 
+has export_ok => (
+    is  => 'ro',
+    isa => 'Str',
+);
+
 sub _build_repo_dir {
     my $self = shift;
     $ENV{GITALIST_REPO_DIR} ?
@@ -67,12 +72,19 @@ after BUILD => sub {
 
 sub build_per_context_instance {
     my ($self, $app) = @_;
+
+    my %args = (export_ok => $self->export_ok || '');
+    my $class;
     if ($self->_repos_count) {
-        Gitalist::Git::CollectionOfRepositories::FromListOfDirectories->new(repos => $self->repos);
+        $class = 'Gitalist::Git::CollectionOfRepositories::FromListOfDirectories';
+        $args{repos} = $self->repos;
     }
     else {
-        Gitalist::Git::CollectionOfRepositories::FromDirectoryRecursive->new(repo_dir => $self->repo_dir);
+        $class = 'Gitalist::Git::CollectionOfRepositories::FromDirectoryRecursive';
+        $args{repo_dir} = $self->repo_dir;
     }
+
+    return $class->new(%args);
 }
 
 __PACKAGE__->meta->make_immutable;

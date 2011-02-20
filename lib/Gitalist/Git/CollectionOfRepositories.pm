@@ -7,11 +7,17 @@ role Gitalist::Git::CollectionOfRepositories {
     use aliased 'Gitalist::Git::Repository';
 
     has repositories => (
-        is => 'ro',
-        isa => ArrayRef['Gitalist::Git::Repository'],
-        required => 1,
+        is         => 'ro',
+        isa        => ArrayRef['Gitalist::Git::Repository'],
+        required   => 1,
         lazy_build => 1,
     );
+
+    has export_ok => (
+        is => 'ro',
+        isa => 'Str',
+    );
+
     method get_repository (NonEmptySimpleStr $name) {
         my $path = $self->_get_path_for_repository_name($name);
         die "Couldn't get_repository '$name' - not a valid git repository."
@@ -21,7 +27,13 @@ role Gitalist::Git::CollectionOfRepositories {
     # Determine whether a given directory is a git repo.
     # http://www.kernel.org/pub/software/scm/git/docs/gitrepository-layout.html
     method _is_git_repo ($dir) {
-        return -f $dir->file('HEAD') || -f $dir->file('.git', 'HEAD');
+        my $has_head   = -f $dir->file('HEAD') || -f $dir->file('.git', 'HEAD');
+        my $eok_file   = $self->export_ok
+             or return $has_head;
+        my $is_visible = $eok_file
+             && (-f $dir->file($eok_file) || -f $dir->file('.git', $eok_file));
+
+        return $has_head && $is_visible;
     }
     requires qw/
         _build_repositories

@@ -61,3 +61,13 @@ lives_ok {
     my $repo2 = Gitalist::Git::CollectionOfRepositories::FromDirectory->new( repo_dir => $repo2_dir );
     my $repo2_proj = $repo2->get_repository('repo1');
 } 'relative repo_dir properly handled';
+
+my $repo_eok = Gitalist::Git::CollectionOfRepositories::FromDirectory->new(
+    repo_dir  => $repo_dir,
+    export_ok => 'export-ok',
+);
+
+my @eok_repos = @{$repo_eok->repositories};
+
+is(1, @eok_repos, "Found the 1 export-ok repo");
+is('repo1', $eok_repos[0]->name, "Found repo1 export-ok repo");
