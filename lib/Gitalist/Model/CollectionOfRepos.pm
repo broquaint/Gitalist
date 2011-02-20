@@ -3,6 +3,7 @@ package Gitalist::Model::CollectionOfRepos;
 use Moose;
 use Gitalist::Git::CollectionOfRepositories::FromDirectoryRecursive;
 use Gitalist::Git::CollectionOfRepositories::FromListOfDirectories;
+use Gitalist::Git::CollectionOfRepositories::FromDirectory::WhiteList;
 use MooseX::Types::Moose qw/Maybe ArrayRef/;
 use MooseX::Types::Common::String qw/NonEmptySimpleStr/;
 use Moose::Util::TypeConstraints;
@@ -54,6 +55,12 @@ has export_ok => (
     isa => 'Str',
 );
 
+has whitelist => (
+    is  => 'ro',
+    isa => 'Str',
+);
+
+
 sub _build_repo_dir {
     my $self = shift;
     $ENV{GITALIST_REPO_DIR} ?
@@ -75,7 +82,11 @@ sub build_per_context_instance {
 
     my %args = (export_ok => $self->export_ok || '');
     my $class;
-    if ($self->_repos_count) {
+    if($self->whitelist && -f $self->whitelist) {
+        $class = 'Gitalist::Git::CollectionOfRepositories::FromDirectory::WhiteList';
+        $args{repo_dir}  = $self->repo_dir;
+        $args{whitelist} = $self->whitelist;
+    } elsif ($self->_repos_count) {
         $class = 'Gitalist::Git::CollectionOfRepositories::FromListOfDirectories';
         $args{repos} = $self->repos;
     }
