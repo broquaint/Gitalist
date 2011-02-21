@@ -68,21 +68,21 @@ Gitalist - A modern git web viewer
 
 =head1 SYNOPSIS
 
-    script/gitalist_server.pl --repo_dir /home/me/code/git
+    perl script/gitalist_server.pl --repo_dir /home/me/code/git
 
 =head1 INSTALL
 
 As Gitalist follows the usual Perl module format the usual approach
 for installation should work, e.g.:
 
-  perl Makefile.PL
-  make
-  make test
-  make install
+    perl Makefile.PL
+    make
+    make test
+    make install
 
 or
 
-  cpan -i Gitalist
+    cpan -i Gitalist
 
 You can also L<check Gitalist out from its git repository|/"GETTING GITALIST">
 and run it, in this case you'll additionally need the author modules,
@@ -155,7 +155,7 @@ directory to one directory higher than the Gitalist repository.
 This means that if you check Gitalist out next to your other git checkouts, then starting
 the demo server needs no parameters at all:
 
-    Gitalist [master]$ ./script/gitalist_server.pl
+    Gitalist [master]$ perl script/gitalist_server.pl
     You can connect to your server at http://localhost:3000
 
 =head2 FOR CPAN INSTALLS
