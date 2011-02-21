@@ -16,7 +16,8 @@ class Gitalist::Git::CollectionOfRepositories::FromDirectory::WhiteList
         return [
             map  Gitalist::Git::Repository->new($_),
             grep -d $_,
-            map  $self->repo_dir->subdir($_), $self->whitelist->slurp(chomp => 1)
+            map  $self->repo_dir->subdir($_),
+            map  [split]->[0], $self->whitelist->slurp(chomp => 1)
         ];
     }
 }
