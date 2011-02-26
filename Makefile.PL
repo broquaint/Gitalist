@@ -66,7 +66,6 @@ requires 'Catalyst::Plugin::SubRequest' => '0.15';
 requires 'Catalyst::Action::RenderView';
 requires 'Catalyst::Component::InstancePerContext';
 requires 'Catalyst::Controller::ActionRole';
-requires 'Catalyst::Action::REST' => '0.85';
 requires 'Catalyst::View::Component::SubInclude' => '0.07';
 requires 'Catalyst::View::TT' => '0.34';
 requires 'Try::Tiny';
