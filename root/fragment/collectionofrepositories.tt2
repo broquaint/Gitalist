@@ -1,7 +1,7 @@
 <tbody>
 [% FOR p IN repositories %]
 	[%- repos_link = c.uri_for_action('/repository/summary', [p.name]) -%]
-<tr [% "class='invert'" IF loop.count % 2 %]>
+<tr class="repository[% " invert" IF loop.count % 2 %]">
     <td>[% loop.count %]</td>
 	<td><a href="[% repos_link %]/summary"><strong>[% p.name %]</strong></a></td>
     <td class="description"><div title="[% p.description %]">[% abridged_description(p.description) IF p.description != "Unnamed repository; edit this file to name it for gitweb." %]</div></td>
