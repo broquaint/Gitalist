@@ -12,10 +12,10 @@
 <tr class="invert">
 	<td class='sha1' title='[% Commit.sha1 %]'>[% INCLUDE 'inc/chroma_hash.tt2' sha1 = Commit.sha1.substr(0, 7) %]</td>
 	<td class='time-since'>[% time_since(Commit.authored_time) %]</td>
-	<td rowspan="2">[%
-            message = Commit.comment | html; message.replace("\n", "<br/>");
-	    INCLUDE '_refs.tt2' object = commit;
-	%]</td>
+	<td rowspan="2">
+          <p class='commit-message'>[% Commit.comment | html %]</p>
+	  [% INCLUDE '_refs.tt2' object = commit %]
+        </td>
 	<td class='author'><a href="mailto:[% Commit.author.email %]" title="Email"><img style="float: left; padding-right: 10px" src="[% uri_for_gravatar(Commit.committer.email, 21) %]">[% Commit.author.name | html %]</a></td>
 	<td class='action-list'>Author</td>
 </tr>

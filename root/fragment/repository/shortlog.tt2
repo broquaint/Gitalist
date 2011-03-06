@@ -20,14 +20,14 @@
 	<td><input type="radio" name="sha1_b" value="[% line.sha1 %]" [% "checked" IF loop.count == 2 %]/></td>
 	<td class='sha1' title='[% line.sha1 %]'>[% INCLUDE 'inc/chroma_hash.tt2' sha1 = line.sha1.substr(0, 7) %]</td>
 	<td class='time-since' title='[% line.authored_time %]'>[% time_since(line.authored_time) %]</td>
-	<td>
-		[% IF longlogformat %]
-		 	[% message = line.comment | html; message.replace("\n", "<br/>") %]
-		[% ELSE %]
-			[% short_cmt(line.comment) | html %]
-			[% INCLUDE '_refs.tt2' object = line %]
-		[% END %]
-	</td>
+	<td><p class='commit-message'>[%-
+        IF longlogformat;
+          line.comment | html;
+	ELSE;
+          short_cmt(line.comment) | html;
+          
+        END;
+	-%]</p>[% INCLUDE '_refs.tt2' object = line %]</td>
 	<td class='author'><img src="[% uri_for_gravatar(line.author.email, 21) %]" />[% line.author.name | html %]</td>
 	<td class='action-list'>
  		<a href="[% c.uri_for_action("/ref/commit", [Repository.name, line.sha1]) %]" title="Commit details" class="button commit">commit</a>

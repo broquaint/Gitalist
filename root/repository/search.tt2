@@ -16,7 +16,7 @@
  <tr [% "class='invert'" IF loop.count % 2 %]>
 	<td class='sha1' title='[% result.sha1 %]'>[% INCLUDE 'inc/chroma_hash.tt2' sha1 = result.sha1.substr(0, 7) %]</td>
 	<td class='time-since' title='[% result.authored_time %]'>[% time_since(result.authored_time) %]</td>
-	<td>[%
+	<td class='commit-message'>[%
      # XXX This is fragile at best.
      html_comment = result.comment | html;
      html_comment.replace(

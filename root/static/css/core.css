@@ -536,6 +536,14 @@ div.blob {
 
 /* /blobdiff etc */
 
+.commit-message {
+  white-space: pre-wrap;
+  width: 400px;
+}
+p.commit-message {
+  margin: 0;
+}
+
 /* Hidden spans that contain bits of data to be used by JS */
 .js-data {
     display: none;
