@@ -48,7 +48,7 @@ sub base : Chained('/root') PathPart('') CaptureArgs(0) {
     abridged_description => sub {
         join(' ', grep { defined } (split / /, shift)[0..10]);
     },
-    uri_for_gravatar => sub { # FIXME - Cache these?
+    uri_for_gravatar => sub {
         my $email = shift;
         my $size = shift;
         my $uri = 'http://www.gravatar.com/avatar/' . md5_hex($email);

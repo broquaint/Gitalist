@@ -137,6 +137,39 @@ RUNNING
 
         http://example.gitalist.com
 
+CONFIGURATION
+    The Gitalist config is loaded with Catalyst::Plugin::ConfigLoader and
+    the available config options are:
+
+  Model::CollectionOfRepos
+    git Path to the "git" binary.
+
+    repo_dir
+        A directory containing the directories to show.
+
+        If no repositories are found in this directory then Gitalist will
+        search recursively in that directory for repositories.
+
+    search_recursively
+        A boolean indicating whether to always search recursively for
+        repositories within "repo_dir".
+
+    whitelist
+        Path a file containing a list of repositories that can be shown.
+        Each line in the file will represent the name of a repo to show e.g
+
+          Gitalist
+          some-bare-repo.git
+
+        This is compatible with "gitweb"'s "projects.list".
+
+    export_ok
+        If provided every must contain a file of the same name to be
+        visible. This is similar to "gitweb"'s functionality.
+
+  paging
+    log The number of commits to show in the
+
   FASTCGI
     Running Gitalist in FastCGI mode requires a webserver with FastCGI
     support (such as apache with <mod_fcgi> or <mod_fcgid>). Below is a

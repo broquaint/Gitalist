@@ -206,6 +206,58 @@ This example can be seen live here:
 
     http://example.gitalist.com
 
+=head1 CONFIGURATION
+
+The Gitalist config is loaded with L<Catalyst::Plugin::ConfigLoader>
+and the available config options are:
+
+=head2 Model::CollectionOfRepos
+
+=over
+
+=item git
+
+Path to the C<git> binary.
+
+=item repo_dir
+
+A directory containing the directories to show.
+
+If no repositories are found in this directory then Gitalist will
+search recursively in that directory for repositories.
+
+=item search_recursively
+
+A boolean indicating whether to always search recursively for
+repositories within C<repo_dir>.
+
+=item whitelist
+
+Path a file containing a list of repositories that can be shown. Each
+line in the file will represent the name of a repo to show e.g
+
+  Gitalist
+  some-bare-repo.git
+
+This is compatible with C<gitweb>'s C<projects.list>.
+
+=item export_ok
+
+If provided every must contain a file of the same name to be
+visible. This is similar to C<gitweb>'s functionality.
+
+=back
+
+=head2 paging
+
+=over
+
+=item log
+
+The number of commits to show in the 
+
+=back
+
 =head2 FASTCGI
 
 Running Gitalist in FastCGI mode requires a webserver with FastCGI
@@ -249,7 +301,6 @@ to the top of your F<gitalist.fcgi> file (just below the shebang line).
 Also, note that Apache will refuse C<%2F> in Gitalist URLs
 unless configured otherwise. Make sure C<AllowEncodedSlashes On>
 is in your F<httpd.conf> file in order for this to run smoothly.
-
 
 =head1 CONTRIBUTING
 

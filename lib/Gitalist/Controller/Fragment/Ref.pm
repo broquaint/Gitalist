@@ -62,7 +62,7 @@ after blame => sub {
     my($self, $c) = @_;
 
     my $repository = $c->stash->{Repository};
-                                                      # WTF?
+
     my $blame = $c->stash->{Commit}->blame($c->stash->{filename}, $c->stash->{Commit}->sha1);
     $c->stash(
         blame    => $blame,
@@ -94,7 +94,7 @@ after history => sub {
 
     my %logargs = (
        sha1   => $c->stash->{Commit}->sha1,
-       count  => 25, #Gitalist->config->{paging}{log} || 25,
+       count  => Gitalist->config->{paging}{log} || 25,
        ($filename ? (file => $filename) : ())
     );
 
