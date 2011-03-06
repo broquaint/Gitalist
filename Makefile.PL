@@ -72,6 +72,7 @@ requires 'Try::Tiny';
 requires 'Template' => '2.22';
 requires 'Template::Provider::Encoding';
 requires 'Template::Plugin::Cycle';
+requires 'Template::Plugin::UTF8Decode';
 
 requires 'Config::General';
 

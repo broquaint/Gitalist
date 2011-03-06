@@ -31,6 +31,7 @@ sub raw : Chained('find') Does('FilenameArgs') Args() {
         );
     }
 
+    utf8::decode($c->stash->{blob});
     $c->response->body(delete $c->stash->{blob});
 }
 
