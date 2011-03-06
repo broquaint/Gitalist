@@ -50,6 +50,13 @@ has repos => (
     coerce => 1,
 );
 
+
+has search_recursively => (
+    is      => 'ro',
+    isa     => 'Bool',
+    default => 0,
+);
+
 has export_ok => (
     is  => 'ro',
     isa => 'Str',
@@ -59,7 +66,6 @@ has whitelist => (
     is  => 'ro',
     isa => 'Str',
 );
-
 
 sub _build_repo_dir {
     my $self = shift;
@@ -86,11 +92,10 @@ sub build_per_context_instance {
         $class = 'Gitalist::Git::CollectionOfRepositories::FromDirectory::WhiteList';
         $args{repo_dir}  = $self->repo_dir;
         $args{whitelist} = $self->whitelist;
-    } elsif ($self->_repos_count) {
+    } elsif ($self->_repos_count && !$self->search_recursively) {
         $class = 'Gitalist::Git::CollectionOfRepositories::FromListOfDirectories';
         $args{repos} = $self->repos;
-    }
-    else {
+    } else {
         $class = 'Gitalist::Git::CollectionOfRepositories::FromDirectoryRecursive';
         $args{repo_dir} = $self->repo_dir;
     }
