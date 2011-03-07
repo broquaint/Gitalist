@@ -41,16 +41,17 @@ a img{
 }
 
 #content_holder{
-	background:transparent url([% c.uri_for('/static/i/bg_content.png') %]) repeat-y center center;
+
 }
-#content{
-	min-height:200px;
-	padding:0 12px 40px 10px;
-	background:transparent url([% c.uri_for('/static/i/bg_bottom.png') %]) no-repeat center bottom;
+#content {
+    min-height:200px;
+     -moz-box-shadow: 0px 0px 10px black; /* FF3.5+ */
+  -webkit-box-shadow: 0px 0px 10px black; /* Saf3.0+, Chrome */
+          box-shadow: 0px 0px 10px black; /* Opera 10.5, IE9, Chrome 10+ */
+
 }
 #content_inner{
-	padding-bottom:30px;
-	background:transparent url([% c.uri_for('/static/i/bg_top.png') %]) no-repeat;
+    padding-bottom:30px;
 }
 .copy{
 	padding:10px;
@@ -327,7 +328,6 @@ a.rss_logo:hover {
 /* paging */
 .pager{
 	width:100%;
-	float:left;
 	margin:10px 0;
 	padding:0;
 }
@@ -398,7 +398,7 @@ tr.header{
 	font-weight:bold;
 }
 .author{
-	width:180px;
+	width:160px;
 }
 .author img{
 	margin-right:5px;
@@ -407,6 +407,9 @@ tr.header{
 table.listing{
 	width:970px;
 	border-collapse:collapse;
+}
+table.listing thead {
+    background-color: #666;
 }
 .listing td{
 	vertical-align:top;
@@ -538,7 +541,7 @@ div.blob {
 
 .commit-message {
   white-space: pre-wrap;
-  width: 400px;
+  width: 420px;
 }
 p.commit-message {
   margin: 0;
