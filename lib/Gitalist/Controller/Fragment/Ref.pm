@@ -110,6 +110,7 @@ after history => sub {
        refs      => $repository->references,
        filename  => $filename,
        filetype  => $file->type,
+       page      => $page,
     );
 };
 

@@ -1,9 +1,9 @@
 <ul class="pager">
-	[% IF log_lines.first.sha1 != Commit.sha1 || (log_lines.size != c.config.paging.log && page) %]
-	<li class="pager_prev"><a href='[% c.uri_with(pg => (page||0) + 1) %]'>Newer commits</a></li>
+	[% IF ((page.defined && page > 0) || !page.defined) && (log_lines.first.sha1 != Commit.sha1 || (log_lines.size != 25 && page)) %]
+	<li class="pager_prev"><a href='[% c.uri_with(pg => (page||0) - 1) %]'>Newer commits</a></li>
 	[% END %]
 	
-	[% IF log_lines.size == c.config.paging.log %]
-	<li class="pager_next"><a href='[% c.uri_with(pg => (page||0) - 1) %]'>Older commits</a></li>
+	[% IF log_lines.size == 25 %]
+	<li class="pager_next"><a href='[% c.uri_with(pg => (page||0) + 1) %]'>Older commits</a></li>
 	[% END %]
 </ul>
