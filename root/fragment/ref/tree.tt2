@@ -55,6 +55,5 @@
 </tbody>
 </table>
 
-[%- # We use uri_for instead of uri_for_action as we *want* a /fragment URI in this case %]
-<span id='file_commit_info-uri' class='js-data'>[% c.uri_for('/fragment/' _ Repository.name _ '/' _ Commit.sha1 _ '/file_commit_info') %]</span>
+<span id='file_commit_info-uri' class='js-data'>[% c.uri_for_action('/fragment/ref/file_commit_info', [ Repository.name, Commit.sha1 ]) %]</span>
 <span id='commit-uri' class='js-data'>[% c.uri_for_action('/ref/commit', [Repository.name, 'HEAD']) %]</span>
