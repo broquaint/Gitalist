@@ -20,16 +20,16 @@ class Gitalist::Git::Repository with Gitalist::Git::HasUtils {
 
     our $SHA1RE = qr/[0-9a-fA-F]{40}/;
 
-    around BUILDARGS (ClassName $class: Dir $dir) {
+    around BUILDARGS (ClassName $class: Dir $dir, Str $override_name = '') {
         # Allows us to be called as Repository->new($dir)
         # Last path component becomes $self->name
         # Full path to git objects becomes $self->path
-        my $name = $dir->dir_list(-1);
+        my $name = ($override_name ne '') ? $override_name : $dir->dir_list(-1);
         if(-f $dir->file('.git', 'HEAD')) { # Non-bare repo above .git
             $dir  = $dir->subdir('.git');
-            $name = $dir->dir_list(-2, 1); # .../name/.git
+            $name = $dir->dir_list(-2, 1) if (not defined $override_name); # .../name/.git
         } elsif('.git' eq $dir->dir_list(-1)) { # Non-bare repo in .git
-            $name = $dir->dir_list(-2);
+            $name = $dir->dir_list(-2) if (not defined $override_name);
         }
         confess("Can't find a git repository at " . $dir)
             unless ( -f $dir->file('HEAD') );
