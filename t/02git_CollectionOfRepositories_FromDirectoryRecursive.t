@@ -45,6 +45,12 @@ isa_ok($repository, 'Gitalist::Git::Repository');
 
 $repository = $repo->get_repository( "recursive/goingdeeper/scratch.git" );
 isa_ok($repository, 'Gitalist::Git::Repository');
+cmp_ok($repository->description, 'eq', 'goingdeeper/scratch.git repo', 'Got the right repo');
+
+$repository = $repo->get_repository( "recursive/goingdeeper2/scratch.git" );
+isa_ok($repository, 'Gitalist::Git::Repository');
+cmp_ok($repository->description, 'eq', 'goingdeeper2/scratch.git repo', 'Got the right repo');
+
 
 # check for bug where get_repository blew up if repo_dir
 # was a relative path
