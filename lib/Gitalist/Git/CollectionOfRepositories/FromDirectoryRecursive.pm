@@ -27,15 +27,15 @@ class Gitalist::Git::CollectionOfRepositories::FromDirectoryRecursive
       } grep $_->is_dir, $dir->children;
     }
 
-    method _get_path_for_repository_name (NonEmptySimpleStr $name) {
+    method _get_repo_from_name (NonEmptySimpleStr $name) {
       my $repo = first { $_->name eq $name } $self->repositories->flatten
         or return;
-      return $repo->path;
+      return $repo;
     }
 
     method _get_repo_name (NonEmptySimpleStr $name) {
         # strip off the repo_dir part from a path
-		return Path::Class::Dir->new($name)->relative($self->repo_dir)->stringify;
+        return Path::Class::Dir->new($name)->relative($self->repo_dir)->stringify;
     }
 
     ## Builders

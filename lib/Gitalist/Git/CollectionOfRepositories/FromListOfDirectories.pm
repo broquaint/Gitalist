@@ -27,6 +27,10 @@ class Gitalist::Git::CollectionOfRepositories::FromListOfDirectories with Gitali
         +{ map { basename($_) => dir($_) } $self->repos->flatten };
     }
 
+    method _get_repo_from_name (NonEmptySimpleStr $name) {
+        return Gitalist::Git::Repository->new($self->_get_path_for_repository_name($name));
+    }
+
     ## Builders
     method _build_repositories {
         [ map { $self->get_repository(basename($_)) } $self->repos->flatten ];
