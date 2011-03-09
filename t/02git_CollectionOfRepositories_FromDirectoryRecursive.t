@@ -23,10 +23,10 @@ is($repo->repo_dir, $repo_dir, "repo->repo_dir is correct" );
 # 'bare.git' is a bare git repository in the repository dir
 
 my $repository_list = $repo->repositories;
-is( scalar @{$repository_list}, 5, '->repositories is an array with the correct number of members' );
+is( scalar @{$repository_list}, 6, '->repositories is an array with the correct number of members' );
 isa_ok($repository_list->[0], 'Gitalist::Git::Repository');
 my @sorted_names = sort map { $_->{name} } @{$repository_list};
-is_deeply( \@sorted_names, [ qw( bare.git barerecursive.git nodescription repo1 scratch.git) ], 'Repositories are correctly loaded' );
+is_deeply( \@sorted_names, [ sort qw( bare.git recursive/barerecursive.git nodescription repo1 recursive/goingdeeper/scratch.git recursive/goingdeeper2/scratch.git) ], 'Repositories are correctly loaded' );
 
 dies_ok {
   my $repository = $repo->get_repository("NoSuchRepository");
@@ -43,7 +43,7 @@ dies_ok {
 my $repository = $repo->get_repository( "repo1" );
 isa_ok($repository, 'Gitalist::Git::Repository');
 
-$repository = $repo->get_repository( "scratch.git" );
+$repository = $repo->get_repository( "recursive/goingdeeper/scratch.git" );
 isa_ok($repository, 'Gitalist::Git::Repository');
 
 # check for bug where get_repository blew up if repo_dir
@@ -51,5 +51,6 @@ isa_ok($repository, 'Gitalist::Git::Repository');
 lives_ok {
   my $repo2_dir = "$Bin/lib/../lib/repositories";
   my $repo2 = Gitalist::Git::CollectionOfRepositories::FromDirectoryRecursive->new( repo_dir => $repo2_dir );
+
   my $repo2_proj = $repo2->get_repository("repo1");
 } 'relative repo_dir properly handled';
