@@ -55,6 +55,10 @@ function compareDiffs(){
         baseSha1 = jQuery('#compare-form input[name=sha1_a]:checked').val(),
         compSha1 = jQuery('#compare-form input[name=sha1_b]:checked').val(),
         diffUri  = uriFor('diff', baseSha1);
+	
+    if (baseSha1 == undefined) { alert('Please select a version to compare with'); return; }
+    if (compSha1 == undefined) { alert('Please select a version to compare to');   return; }
+
     document.location.href = diffUri + '/' + compSha1 + (path ? '/' + encodeURIComponent(path) : '');
     return false;
 }
