@@ -70,7 +70,6 @@ requires 'Catalyst::View::Component::SubInclude' => '0.07';
 requires 'Catalyst::View::TT' => '0.34';
 requires 'Try::Tiny';
 requires 'Template' => '2.22';
-requires 'Template::Provider::Encoding';
 requires 'Template::Plugin::Cycle';
 requires 'Template::Plugin::UTF8Decode';
 
@@ -78,7 +77,6 @@ requires 'Config::General';
 
 requires 'Moose';
 requires 'Moose::Autobox';
-requires 'MooseX::MultiMethods' => '0.10';
 requires 'MooseX::Declare' => '0.32';
 requires 'MooseX::Types::Common';
 requires 'MooseX::Types::Path::Class';
@@ -90,7 +88,6 @@ requires 'Git::PurePerl' => '0.47';
 requires 'aliased';
 requires 'CGI';
 requires 'DateTime';
-requires 'DateTime::Format::Mail';
 requires 'File::Copy::Recursive';
 requires 'File::Type';
 requires 'File::Type::WebImages';
@@ -100,7 +97,6 @@ requires 'IPC::Run';
 requires 'JSON::XS';
 requires 'List::MoreUtils';
 requires 'Path::Class' => '0.17';
-requires 'Sub::Exporter';
 requires 'Syntax::Highlight::Engine::Kate';
 requires 'Sys::Hostname';
 
