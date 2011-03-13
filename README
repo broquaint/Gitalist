@@ -147,8 +147,8 @@ CONFIGURATION
     repo_dir
         A directory containing the directories to show.
 
-        If no repositories are found in this directory then Gitalist will
-        search recursively in that directory for repositories.
+    repos
+        A list of directories containing repositories to show.
 
     search_recursively
         A boolean indicating whether to always search recursively for
@@ -168,7 +168,8 @@ CONFIGURATION
         visible. This is similar to "gitweb"'s functionality.
 
   paging
-    log The number of commits to show in the
+    log The number of commits to show in the summary, shortlog and longlog
+        views.
 
   FASTCGI
     Running Gitalist in FastCGI mode requires a webserver with FastCGI

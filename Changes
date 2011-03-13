@@ -1,5 +1,12 @@
 This file documents the revision history for Perl extension Gitalist.
 
+0.003001 2011-03-13
+   - Reinstate FromDirectory in model.
+   - Drop unneeded deps in Makefile.PL.
+   - Add support for multiple repos with the same name (Jose Luis Martinez).
+   - Make paging work for history (Lian Wan Situ),
+   - Respect paging.log config settings.
+
 0.002009 2011-03-06
    - Document the available configuration options.
    - Provide switch in config for forcing recursive repo searching.
