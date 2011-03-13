@@ -95,8 +95,11 @@ sub build_per_context_instance {
     } elsif ($self->_repos_count && !$self->search_recursively) {
         $class = 'Gitalist::Git::CollectionOfRepositories::FromListOfDirectories';
         $args{repos} = $self->repos;
-    } else {
+    } elsif($self->search_recursively) {
         $class = 'Gitalist::Git::CollectionOfRepositories::FromDirectoryRecursive';
+        $args{repo_dir} = $self->repo_dir;
+    } else {
+        $class = 'Gitalist::Git::CollectionOfRepositories::FromDirectory';
         $args{repo_dir} = $self->repo_dir;
     }
 

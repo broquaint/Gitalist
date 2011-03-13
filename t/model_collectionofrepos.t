@@ -21,7 +21,7 @@ use Catalyst::Request;
 use Catalyst::Response;
 use Catalyst::Utils;
 use Gitalist::Model::CollectionOfRepos;
-use File::Temp qw/tempdir/;
+use File::Temp qw/tempdir tempfile/;
 
 my $mock_ctx_meta = Class::MOP::Class->create_anon_class( superclasses => ['Moose::Object'] );
 $mock_ctx_meta->add_attribute($_, accessor => $_, required => 1) for qw/request response/;
@@ -95,19 +95,22 @@ throws_ok { Gitalist::Model::CollectionOfRepos->COMPONENT($ctx_gen->(), { repos 
 
 {
     my $i = test_with_config({ repo_dir => "$FindBin::Bin/lib/repositories"});
-    is scalar($i->repositories->flatten), 6, 'Found 6 repos';
-}
-
-{
-    my $i = test_with_config({ repo_dir => "$FindBin::Bin/lib"});
-    is scalar($i->repositories->flatten), 6, 'Found 6 repos recursively';
-    isa_ok $i, 'Gitalist::Git::CollectionOfRepositories::FromDirectoryRecursive';
+    is scalar($i->repositories->flatten), 3, 'Found 6 repos';
+    isa_ok $i, 'Gitalist::Git::CollectionOfRepositories::FromDirectory';
 }
 
 {
     my $i = test_with_config({ repo_dir => "$FindBin::Bin/lib/repositories", search_recursively => 1 });
     is scalar($i->repositories->flatten), 6, 'Found 6 repos recursively using config';
     isa_ok $i, 'Gitalist::Git::CollectionOfRepositories::FromDirectoryRecursive';
+}
+ {
+    my($tempfh, $wl) = tempfile(UNLINK => 1);
+    print {$tempfh} "repo1";
+    close $tempfh;
+    my $i = test_with_config({ repo_dir => "$FindBin::Bin/lib/repositories", whitelist => $wl });
+    is scalar($i->repositories->flatten), 1, 'Found 1 repos using whitelist';
+    isa_ok $i, 'Gitalist::Git::CollectionOfRepositories::FromDirectory::WhiteList';
 }
 
 {
@@ -117,6 +120,7 @@ throws_ok { Gitalist::Model::CollectionOfRepos->COMPONENT($ctx_gen->(), { repos 
         "$FindBin::Bin/lib/repositories/nodescription",
     ]});
     is scalar($i->repositories->flatten), 3, 'Found 3 repos';
+    isa_ok $i, 'Gitalist::Git::CollectionOfRepositories::FromListOfDirectories';
 }
 
 sub test_with_config {
