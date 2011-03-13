@@ -50,4 +50,4 @@
 <span id='compare-path' class='js-data'>[% filename %]</span>
 <span id="diff-uri" class='js-data'>[% c.uri_for_action('/ref/diff_fancy', [Repository.name, 'HEAD']) %]</span> 
 
-[% INCLUDE 'inc/log_pager.tt2' %]
+[% INCLUDE 'inc/history_pager.tt2' %]
