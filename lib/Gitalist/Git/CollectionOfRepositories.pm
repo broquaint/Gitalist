@@ -20,7 +20,7 @@ role Gitalist::Git::CollectionOfRepositories {
 
     method get_repository (NonEmptySimpleStr $name) {
         my $repo = $self->_get_repo_from_name($name);
-        die "Couldn't get_repository '$name' - not a valid git repository."
+        confess("Couldn't get_repository '$name' - not a valid git repository.")
             unless $self->_is_git_repo($repo->path);
         return $repo;
     }

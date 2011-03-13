@@ -24,16 +24,16 @@ class Gitalist::Git::Repository with Gitalist::Git::HasUtils {
         # Allows us to be called as Repository->new($dir)
         # Last path component becomes $self->name
         # Full path to git objects becomes $self->path
-        my $name = ($override_name ne '') ? $override_name : $dir->dir_list(-1);
+        my $name = $dir->dir_list(-1);
         if(-f $dir->file('.git', 'HEAD')) { # Non-bare repo above .git
             $dir  = $dir->subdir('.git');
-            $name = $dir->dir_list(-2, 1) if (not defined $override_name); # .../name/.git
+            $name = $dir->dir_list(-2, 1); # .../name/.git
         } elsif('.git' eq $dir->dir_list(-1)) { # Non-bare repo in .git
-            $name = $dir->dir_list(-2) if (not defined $override_name);
+            $name = $dir->dir_list(-2);
         }
         confess("Can't find a git repository at " . $dir)
-            unless ( -f $dir->file('HEAD') );
-        return $class->$orig(name => $name,
+            unless -f $dir->file('HEAD');
+        return $class->$orig(name => $override_name || $name,
                              path => $dir);
     }
 
