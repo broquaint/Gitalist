@@ -1,4 +1,4 @@
-<h3>Search help</h3>
+<h3 class="header">Search help</h3>
 
 <div class="copy">
 <p><strong>Pattern</strong> is by default a normal string that is matched precisely (but without

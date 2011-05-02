@@ -51,7 +51,12 @@ a img{
 
 }
 #content_inner{
-    padding-bottom:30px;
+    padding-bottom:   30px;
+    background-color: white;
+    min-height:       100px;
+}
+.header {
+    background-color: #666;
 }
 .copy{
 	padding:10px;

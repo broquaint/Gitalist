@@ -9,6 +9,12 @@
 </tr>
 [% END %]
 
+[% IF results.size == 0 %]
+<div class="copy">
+No results found for <q>[% c.req.param('text') | html %]</q>.
+</div>
+[% ELSE %]
+
 <table class='listing'>
 <thead>[% PROCESS shortlog_table_headfoot type = 'head' %]</thead>
 <tbody>
@@ -33,3 +39,5 @@
 [% END %]
 </tbody>
 </table>
+
+[% END %]

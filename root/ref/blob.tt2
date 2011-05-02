@@ -1,4 +1,4 @@
-<h3>[% INCLUDE 'nav/path.tt2' %]</h3>
+<h3 class="header">[% INCLUDE 'nav/path.tt2' %]</h3>
 
   [% IF object.type == 'commit' %]
    <div class='commit-message'>
