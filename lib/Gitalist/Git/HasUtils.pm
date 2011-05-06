@@ -21,6 +21,7 @@ role Gitalist::Git::HasUtils {
             get_gpp_object
             gpp
         /],
+        traits => ['DoNotSerialize']
     );
     method _build_util { confess(shift() . " cannot build _util") }
 }

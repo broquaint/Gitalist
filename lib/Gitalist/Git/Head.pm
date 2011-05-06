@@ -1,11 +1,15 @@
 package Gitalist::Git::Head;
+
 use Moose;
 use namespace::autoclean;
 
-use Gitalist::Git::Types qw/SHA1/;
+with 'Gitalist::Git::Serializable';
+
 use MooseX::Types::Common::String qw/NonEmptySimpleStr/;
-use MooseX::Types::DateTime;
-use DateTime;
+use MooseX::Types::Moose          qw/Maybe/;
+use Gitalist::Git::Types          qw/SHA1 DateTime/;
+
+use aliased 'DateTime' => 'DT';
 
 has sha1        => ( isa      => SHA1,
                      is       => 'ro',
@@ -19,10 +23,9 @@ has committer   => ( isa      => NonEmptySimpleStr,
                      is       => 'ro',
                      required => 1,
                  );
-has last_change => ( isa      => 'DateTime',
+has last_change => ( isa      => Maybe[DateTime],
                      is       => 'ro',
                      required => 1,
-                     coerce   => 1,
 );
 
 around BUILDARGS => sub {
@@ -38,7 +41,7 @@ around BUILDARGS => sub {
 
         my ($committer, $epoch, $tz) =
             $commitinfo =~ /(.*)\s(\d+)\s+([+-]\d+)$/;
-        my $dt = DateTime->from_epoch(
+        my $dt = DT->from_epoch(
             epoch => $epoch,
             time_zone => $tz,
         );

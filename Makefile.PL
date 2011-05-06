@@ -78,9 +78,11 @@ requires 'Config::General';
 requires 'Moose';
 requires 'Moose::Autobox';
 requires 'MooseX::Declare' => '0.32';
+requires 'MooseX::Storage';
+requires 'MooseX::Types';
 requires 'MooseX::Types::Common';
 requires 'MooseX::Types::Path::Class';
-requires 'MooseX::Types';
+requires 'MooseX::Types::ISO8601';
 requires 'namespace::autoclean';
 
 requires 'Git::PurePerl' => '0.47';
