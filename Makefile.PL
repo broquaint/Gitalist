@@ -96,6 +96,7 @@ requires 'File::Type::WebImages';
 requires 'File::Which';
 requires 'HTML::Entities';
 requires 'IPC::Run';
+requires 'JSON';
 requires 'JSON::XS';
 requires 'List::MoreUtils';
 requires 'Path::Class' => '0.17';

@@ -1,7 +1,9 @@
 use MooseX::Declare;
 use Moose::Autobox;
 
-class Gitalist::Git::Object is dirty {
+class Gitalist::Git::Object with Gitalist::Git::Serializable is dirty {
+    use MooseX::Storage::Meta::Attribute::Trait::DoNotSerialize;
+
     use MooseX::Types::Moose qw/Str Int Bool Maybe ArrayRef/;
     use MooseX::Types::Common::String qw/NonEmptySimpleStr/;
     use overload '""' => '_to_string', fallback => 1;
@@ -32,11 +34,12 @@ class Gitalist::Git::Object is dirty {
                 lazy_build => 1 )
         for qw/modestr size/;
 
-    has _gpp_obj => ( isa => 'Git::PurePerl::Object',
-                      required => 1,
-                      is => 'ro',
+    has _gpp_obj => ( isa        => 'Git::PurePerl::Object',
+                      required   => 1,
+                      is         => 'ro',
                       lazy_build => 1,
-                      handles => [ 'content' ],
+                      handles    => [ 'content' ],
+                      traits     => ['DoNotSerialize']
                   );
 
     # objects can't determine their mode or filename

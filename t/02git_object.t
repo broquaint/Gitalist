@@ -41,6 +41,27 @@ is($object->modestr, 'drwxr-xr-x', "modestr is correct" );
 is($object->size, 33, "size is correct");
 is($object,'729a7c3f6ba5453b42d16a43692205f67fb23bc1', 'stringifies correctly');
 
+is_deeply $object->pack, {
+    __CLASS__
+         => 'Gitalist::Git::Object::Tree',
+    file   => 'dir1',
+    mode   => 16384,
+    modestr
+         => 'drwxr-xr-x',
+    repository
+         => {
+             __CLASS__   => 'Gitalist::Git::Repository',
+             description => 'some test repository',
+             is_bare     => 1,
+             last_change => '2009-11-12T19:00:34Z',
+             name        => 'repo1',
+             owner       => 'Dan'
+         },
+    sha1   => '729a7c3f6ba5453b42d16a43692205f67fb23bc1',
+    size   => 33,
+    type   => 'tree'
+}, 'Serialized tree correctly';
+
 # Create object from sha1.
 my $obj2 = Gitalist::Git::Object::Blob->new(
     repository => $repository,
@@ -60,12 +81,72 @@ dies_ok {
     print $obj2->comment;
 } 'comment is an empty string';
 
+is_deeply $obj2->pack,  {
+    __CLASS__
+         => 'Gitalist::Git::Object::Blob',
+    mode   => 0,
+    modestr
+         => '----------',
+    repository
+         => {
+             __CLASS__   => 'Gitalist::Git::Repository',
+             description => 'some test repository',
+             is_bare     => 1,
+             last_change => '2009-11-12T19:00:34Z',
+             name        => 'repo1',
+             owner       => 'Dan'
+         },
+    sha1   => '5716ca5987cbf97d6bb54920bea6adde242d87e6',
+    size   => 4,
+    type   => 'blob'
+}, 'Serialized blob correctly';
+
 my $commit_obj = Gitalist::Git::Object::Commit->new(
     repository => $repository,
     sha1 => '3f7567c7bdf7e7ebf410926493b92d398333116e',
 );
 isa_ok($commit_obj, 'Gitalist::Git::Object::Commit', "commit object");
 isa_ok($commit_obj->tree->[0], 'Gitalist::Git::Object::Tree');
+
+is_deeply $commit_obj->pack,  {
+    __CLASS__
+         => 'Gitalist::Git::Object::Commit',
+    mode   => 0,
+    modestr
+         => '----------',
+    repository
+         => {
+             __CLASS__   => 'Gitalist::Git::Repository',
+             description => 'some test repository',
+             is_bare     => 1,
+             last_change => '2009-11-12T19:00:34Z',
+             name        => 'repo1',
+             owner       => 'Dan'
+         },
+    sha1   => '3f7567c7bdf7e7ebf410926493b92d398333116e',
+    size   => 218,
+    tree   => [ {
+        __CLASS__
+             => 'Gitalist::Git::Object::Tree',
+        mode   => 0,
+        modestr
+             => '----------',
+        repository
+             => {
+                 __CLASS__   => 'Gitalist::Git::Repository',
+                 description => 'some test repository',
+                 is_bare     => 1,
+                 last_change => '2009-11-12T19:00:34Z',
+                 name        => 'repo1',
+                 owner       => 'Dan'
+             },
+        sha1   => '9062594aebb5df0de7fb92413f17a9eced196c22',
+        size   => 33,
+        type   => 'tree'
+    } ],
+    type   => 'commit'
+}, 'Serialized commit correctly';
+
 my ($tree, $patch) = $commit_obj->diff(
     patch => 1,
 );
