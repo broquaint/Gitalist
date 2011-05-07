@@ -29,8 +29,13 @@ __PACKAGE__->setup();
 
 after prepare_path => sub {
     my ($ctx) = @_;
+    my $path = $ctx->req->uri->path;
     if ($ctx->req->param('a')) {
-        $ctx->request->uri->path('/legacy' . $ctx->request->uri->path);
+        $ctx->req->uri->path("/legacy$path");
+    }
+    
+    if($path =~ s/[.]json$// && $ctx->req->content_type eq 'application/json') {
+        $ctx->req->uri->path($path);
     }
 };
 

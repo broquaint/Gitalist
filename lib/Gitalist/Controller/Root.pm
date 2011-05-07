@@ -68,13 +68,32 @@ Provides some help for the search form.
 
 sub search_help : Chained('base') Args(0) {}
 
-sub end : ActionClass('RenderView') {}
+sub end : ActionClass('Serialize') {
+    my ($self, $c) = @_;
+    # Give repository views the current HEAD.
+    if ($c->stash->{Repository}) {
+        $c->stash->{HEAD} = $c->stash->{Repository}->head_hash;
+    }
+    if ($c->stash->{data} && blessed $c->stash->{data}) {
+        $c->stash->{rest} = $c->stash->{data}->pack;
+    }
+}
 
 sub error_404 : Action {
     my ($self, $c) = @_;
     $c->response->status(404);
     $c->response->body('Page not found');
 }
+
+__PACKAGE__->config(
+    default => 'text/html',
+    map => {
+        'application/json' => [qw/ JSON /],
+        map { $_ => [qw/ View Default /] }
+             qw( text/css text/html text/plain
+                 application/atom+xml application/rss+xml application/rss )
+    }
+);
 
 __PACKAGE__->meta->make_immutable;
 

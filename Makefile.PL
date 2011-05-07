@@ -64,6 +64,7 @@ requires 'Catalyst::Plugin::Static::Simple';
 requires 'Catalyst::Plugin::Unicode::Encoding';
 requires 'Catalyst::Plugin::SubRequest' => '0.15';
 requires 'Catalyst::Action::RenderView';
+requires 'Catalyst::Action::REST';
 requires 'Catalyst::Component::InstancePerContext';
 requires 'Catalyst::Controller::ActionRole';
 requires 'Catalyst::View::Component::SubInclude' => '0.07';
