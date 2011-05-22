@@ -131,7 +131,7 @@ if ($ENV{GITALIST_RELEASE_TESTING}) {
     author_requires('WWW::Mechanize::TreeBuilder');
 }
 
-install_script glob('script/*.pl');
+install_script glob('script/*.p{l,sgi}');
 auto_install;
 
 {   # Make sure you REALLY REALLY have to have the env variable set to run

@@ -204,6 +204,14 @@ This example can be seen live here:
 
     http://example.gitalist.com
 
+=head2 Plack
+
+If you would like to run Gitalist under L<Plack> then one need only
+make use of L<plackup|search.cpan.org/perldoc?plackup> and the
+C<.psgi> found under C<scripts/>:
+
+    plackup script/gitalist_app.psgi
+
 =head1 CONFIGURATION
 
 The Gitalist config is loaded with L<Catalyst::Plugin::ConfigLoader>
