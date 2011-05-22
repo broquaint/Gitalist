@@ -1,188 +1,191 @@
 This file documents the revision history for Perl extension Gitalist.
 
+  - Add JSON serialization and expose via .json (Tomas Doran).
+  - Provide .psgi for Plack goodness (Francoise Dehinbo).
+
 0.003001 2011-03-13
-   - Reinstate FromDirectory in model.
-   - Drop unneeded deps in Makefile.PL.
-   - Add support for multiple repos with the same name (Jose Luis Martinez).
-   - Make paging work for history (Lian Wan Situ),
-   - Respect paging.log config settings.
+  - Reinstate FromDirectory in model.
+  - Drop unneeded deps in Makefile.PL.
+  - Add support for multiple repos with the same name (Jose Luis Martinez).
+  - Make paging work for history (Lian Wan Situ),
+  - Respect paging.log config settings.
 
 0.002009 2011-03-06
-   - Document the available configuration options.
-   - Provide switch in config for forcing recursive repo searching.
-   - Assume UTF8 encoded blobs.
+  - Document the available configuration options.
+  - Provide switch in config for forcing recursive repo searching.
+  - Assume UTF8 encoded blobs.
 
 0.002008 2011-02-26
-   - Add the ability to provide a whitelist of repos.
-   - Add support for export-ok config option.
-   - Ignore ancient/malformed tags.
-   - Use the correct perl binary we installed against (Tom Hukins)
+  - Add the ability to provide a whitelist of repos.
+  - Add support for export-ok config option.
+  - Ignore ancient/malformed tags.
+  - Use the correct perl binary we installed against (Tom Hukins)
 
 0.002007 2011-02-19
-   - Add support for recursively searching for git repos (Dipesh Patel)
-   - Cleaned up model code in Gitalist::Git:: (Zachary Stevens)
-   - Improve POD mark-up, some typos (Lars Dɪᴇᴄᴋᴏᴡ 迪拉斯)
-   - Regenerated README and fixed tests for bootstrapped checkouts.
-   - Add Test::Exception dep.
+  - Add support for recursively searching for git repos (Dipesh Patel)
+  - Cleaned up model code in Gitalist::Git:: (Zachary Stevens)
+  - Improve POD mark-up, some typos (Lars Dɪᴇᴄᴋᴏᴡ 迪拉斯)
+  - Regenerated README and fixed tests for bootstrapped checkouts.
+  - Add Test::Exception dep.
 
 0.002006 2010-10-17
-   - Added notes regarding slash encoding in Catalyst
-   - Fixed typo in core.css
-   - Updated formatting in Gitalist.pm
-   - Modified README with more details on FCGI deployment with Apache
-   - Fix broken env includes in script/gitalist*.pl.
+  - Added notes regarding slash encoding in Catalyst
+  - Fixed typo in core.css
+  - Updated formatting in Gitalist.pm
+  - Modified README with more details on FCGI deployment with Apache
+  - Fix broken env includes in script/gitalist*.pl.
 
 0.002005 2010-08-13
-    - Limit the number of branches/tags listed by default.
+  - Limit the number of branches/tags listed by default.
 
 0.002004 2010-08-02
-    - Fix misnamed variable which was giving a syntax error in
-      Gitalist::Controller::Fragment::Ref.
-    - Fix blame view to display syntax highlighted blobs correctly
-      instead of outputting raw HTML.
+  - Fix misnamed variable which was giving a syntax error in
+    Gitalist::Controller::Fragment::Ref.
+  - Fix blame view to display syntax highlighted blobs correctly
+    instead of outputting raw HTML.
 
 0.002003 2010-08-02
-    - Fix for distribution not including script/env causing Makefile.PL
-      and scripts to die.
+  - Fix for distribution not including script/env causing Makefile.PL
+    and scripts to die.
 
 0.002002 2010-08-01
-    - Fix dist packaging issues.
+  - Fix dist packaging issues.
 
 0.002001 2010-07-03
-    - Fix for loadCommitInfo.
-    - Fix tests to work with local-libbery.
-    - Correct example link and FCGI script.
-    - Bumping version and updated Changes appropriately.
-    - Throttle the commit info loading.
-    - Update bootstrapping for local::lib 1.006000.
-    - Fixed author_* barewords in Makefile.PL.
-    - Handle merges in the diff view.
-    - Add script/{bootstrap.pl,env} to MANIFEST.SKIP.
+  - Fix for loadCommitInfo.
+  - Fix tests to work with local-libbery.
+  - Correct example link and FCGI script.
+  - Bumping version and updated Changes appropriately.
+  - Throttle the commit info loading.
+  - Update bootstrapping for local::lib 1.006000.
+  - Fixed author_* barewords in Makefile.PL.
+  - Handle merges in the diff view.
+  - Add script/{bootstrap.pl,env} to MANIFEST.SKIP.
 
 0.001008 2010-06-03
-   - Add a requires_external_bin for the git command so we won't try running
-     tests unless it's present.
-   - Remove MooseX::MultiMethods as it has been broken by a recent Moose
-     change. The new code is smaller and will be faster.
-   - Add diagnostics to the tests to print out the version of git that
-     people are using.
-   - Make tests which commonly fail with older/different versions of git
-     fail with the output of their git command to make debugging the tests
-     from automated reports possible.
+  - Add a requires_external_bin for the git command so we won't try running
+    tests unless it's present.
+  - Remove MooseX::MultiMethods as it has been broken by a recent Moose
+    change. The new code is smaller and will be faster.
+  - Add diagnostics to the tests to print out the version of git that
+    people are using.
+  - Make tests which commonly fail with older/different versions of git
+    fail with the output of their git command to make debugging the tests
+    from automated reports possible.
 
 0.001007 2010-05-15
-    - Set the use_request_uri_for_path configuration variable to be compatible
-      with Catalyst 5.80024.
+  - Set the use_request_uri_for_path configuration variable to be compatible
+    with Catalyst 5.80024.
 
 0.001006 2010-05-13
-    - Fix Catalyst::Action::REST dependency (there wasn't one previously)
-    - Depend on latest Catalyst::View::TT due to a previous bad version
-      breaking things.
-    - Add render_die => 1 in the View::TT config as we do want real exceptions
-      when we call ->render ourselves.
+  - Fix Catalyst::Action::REST dependency (there wasn't one previously)
+  - Depend on latest Catalyst::View::TT due to a previous bad version
+    breaking things.
+  - Add render_die => 1 in the View::TT config as we do want real exceptions
+    when we call ->render ourselves.
 
 0.001005 2010-05-11
-    - Depend on latest MX::Declare to fix issues for people who upgrade
-      MooseX::Types::Structured to a newer version.
-    - Add some padding below, so file icons are not chopped off
-    - Updated favicon to cope with dark grey backgrounds
+  - Depend on latest MX::Declare to fix issues for people who upgrade
+    MooseX::Types::Structured to a newer version.
+  - Add some padding below, so file icons are not chopped off
+  - Updated favicon to cope with dark grey backgrounds
 
 0.001004 2010-05-06
-    - Remove unneeded dependencies:
-      - XML::OPML::SimpleGen
-      - XML::Atom
-      - XML::RSS
-    - Fixed author_* barewords in Makefile.PL so that users checking out from
-      git without the author modules works correctly.
+  - Remove unneeded dependencies:
+  - XML::OPML::SimpleGen
+  - XML::Atom
+  - XML::RSS
+  - Fixed author_* barewords in Makefile.PL so that users checking out from
+    git without the author modules works correctly.
 
 0.001003 2010-04-21
-    - Added folder / file icons in tree view (Foxtons)
-    - Added favicon
-    - Fix for non uri_for hard coded links for running at not root locations.
-      (RT#56747)
+  - Added folder / file icons in tree view (Foxtons)
+  - Added favicon
+  - Fix for non uri_for hard coded links for running at not root locations.
+    (RT#56747)
 
 0.001002 2010-04-20
-    - Fix link for the project_index action.
-    - Add missing images to MANIFEST.
+  - Fix link for the project_index action.
+  - Add missing images to MANIFEST.
 
 0.001001 2010-04-15
-    - Bumping version number to a format I understand, thanks to mst for
-      pointing me in the right direction and t0m for the new number.
-    - Cleaned up the search results - removed search from the homepage as
-      wasn't working (Foxtons).
-    - Provide a link for an atom entry. switch mode=xml to type=xhtml (Brian
-      Cassidy).
+  - Bumping version number to a format I understand, thanks to mst for
+    pointing me in the right direction and t0m for the new number.
+  - Cleaned up the search results - removed search from the homepage as
+    wasn't working (Foxtons).
+  - Provide a link for an atom entry. switch mode=xml to type=xhtml (Brian
+    Cassidy).
 
 0.000006.1 2010-04-14
-    - Documentation fixes for the --repo-dir flag (Dagfinn Ilmari Mannsåker).
+  - Documentation fixes for the --repo-dir flag (Dagfinn Ilmari Mannsåker).
 
 0.000006 2010-04-10
-    - Major frontend redesign, thanks to ranguard and the web designers at
-      Foxtons for making this happen.
-    - Major URI overhaul, Gitalist has gone from old gitweb style CGI
-      parameters to proper URIs, however the old URIs are still supported
-      and will redirect appropriately (Tomas Doran).
-    - With the URI overhaul also came breaking up actions into fragments
-      for use with Catalyst::View::Component::SubInclude.
-    - BIG BREAKING CHANGE - Gitalist::Model::GitRepos has been renamed
-      Gitalist::Model::CollectionOfRepos. You need to fix your config and
-      if you have actually installed Gitalist - remove the old model file.
-    - Bump required version of Git::PurePerl for Encoding fixes.
-    - Fix Makefile.PL to not need release deps when checking out of Git.
+  - Major frontend redesign, thanks to ranguard and the web designers at
+    Foxtons for making this happen.
+  - Major URI overhaul, Gitalist has gone from old gitweb style CGI
+    parameters to proper URIs, however the old URIs are still supported
+    and will redirect appropriately (Tomas Doran).
+  - With the URI overhaul also came breaking up actions into fragments
+    for use with Catalyst::View::Component::SubInclude.
+  - BIG BREAKING CHANGE - Gitalist::Model::GitRepos has been renamed
+    Gitalist::Model::CollectionOfRepos. You need to fix your config and
+    if you have actually installed Gitalist - remove the old model file.
+  - Bump required version of Git::PurePerl for Encoding fixes.
+  - Fix Makefile.PL to not need release deps when checking out of Git.
 
 0.000005 2010-01-09
-    - Require Git::PurePerl for Win32 compatibility.
-    - Switch to IPC::Run::start for streamed mode, fixing RT#52658
-      and the tests with FreeBSD.
-    - Require new FCGI release in the FCGI script for upstream bug fixes.
-    - Fix tests with older versions of git.
-    - Allow the model to be configured with a list of repositories rather
-      then a directory containing repositories.
-    - Fix syntax highlighting CSS link
-    - Add per line link for previous version of a line in blame.
+  - Require Git::PurePerl for Win32 compatibility.
+  - Switch to IPC::Run::start for streamed mode, fixing RT#52658
+    and the tests with FreeBSD.
+  - Require new FCGI release in the FCGI script for upstream bug fixes.
+  - Fix tests with older versions of git.
+  - Allow the model to be configured with a list of repositories rather
+    then a directory containing repositories.
+  - Fix syntax highlighting CSS link
+  - Add per line link for previous version of a line in blame.
 
 0.000004 2009-12-19
-    - Support being able to pass a list of repositories to view via
-      configuration, rather than having a static directory.
-    - Installation and configuration documentation has been enhanced.
-    - Project has been renamed Repository to correspond with normal git
-      terminology.
-    - Repos has been refactored into a CollectionOfRepositories role
-      and two differnet concrete implementations (the Catalyst model
-      chooses which type to build based on the config).
-    - Remove all tabs and fix no tabs test (Dagfinn Ilmari Mannsåker)
-    - Decode getpwuid values correctly (Dagfinn Ilmari Mannsåker)
-    - Generate correct provides information in META.yml so that search.cpan
-      indexes the classes contained in Gitalist correctly.
-    - Dropped the dependency on File::Stat::ModeString
+  - Support being able to pass a list of repositories to view via
+    configuration, rather than having a static directory.
+  - Installation and configuration documentation has been enhanced.
+  - Project has been renamed Repository to correspond with normal git
+    terminology.
+  - Repos has been refactored into a CollectionOfRepositories role
+    and two differnet concrete implementations (the Catalyst model
+    chooses which type to build based on the config).
+  - Remove all tabs and fix no tabs test (Dagfinn Ilmari Mannsåker)
+  - Decode getpwuid values correctly (Dagfinn Ilmari Mannsåker)
+  - Generate correct provides information in META.yml so that search.cpan
+    indexes the classes contained in Gitalist correctly.
+  - Dropped the dependency on File::Stat::ModeString
 
 0.000003 2009-12-09
-    - Officially switch repository to Shadowcat
-    - Officially switch bug tracker to rt.cpan.org
-    - Start streamlining and generally rejiging the layout.
-    - Hacked in syntax highlighting to the blame view.
-    - Further tweaks to the blame view, making it more informative.
-    - Move all POD below the code, for ::Repo and ::Project.
+  - Officially switch repository to Shadowcat
+  - Officially switch bug tracker to rt.cpan.org
+  - Start streamlining and generally rejiging the layout.
+  - Hacked in syntax highlighting to the blame view.
+  - Further tweaks to the blame view, making it more informative.
+  - Move all POD below the code, for ::Repo and ::Project.
 
 0.000002 2009-12-06
-   - Add documentation about how to configure a Gitalist instance.
-   - Fix so that invalid repository directory will be detected at application
-     startup and a helpful error message will be displayed.
-   - Add --repos_dir command line parameter to all of the scripts which can
-     be used to force the repository directory, overriding config and
-     environment.
-   - Add GITALIST_REPOS_DIR environment variable which will determine the
-     repository path (overriding normal config) if set.
-   - Change so that no default repos path is in the config when installed from
-     CPAN (when checked out of git, behavior of browsing AppDir/../ is
-     maintained).
-   - Do not allow directory traversal via the p param.
+  - Add documentation about how to configure a Gitalist instance.
+  - Fix so that invalid repository directory will be detected at application
+    startup and a helpful error message will be displayed.
+  - Add --repos_dir command line parameter to all of the scripts which can
+    be used to force the repository directory, overriding config and
+    environment.
+  - Add GITALIST_REPOS_DIR environment variable which will determine the
+    repository path (overriding normal config) if set.
+  - Change so that no default repos path is in the config when installed from
+    CPAN (when checked out of git, behavior of browsing AppDir/../ is
+    maintained).
+  - Do not allow directory traversal via the p param.
 
-0.000001
-   - No changes since last dev release.
+0.000001 2009-12-02
+  - No changes since last dev release.
 
-0.000000_02  UNRELEASED
-   - Fixed history action, other minor cleanups.
+0.000000_02 2009-12-01
+  - Fixed history action, other minor cleanups.
 
-0.000000_01  UNRELEASED
-   - Initial release to CPAN
+0.000000_01 2009-11-25
+  - Initial release to CPAN
