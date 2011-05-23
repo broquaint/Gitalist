@@ -1,5 +1,6 @@
 This file documents the revision history for Perl extension Gitalist.
 
+0.003002 2011-05-23
   - Add JSON serialization and expose via .json (Tomas Doran).
   - Provide .psgi for Plack goodness (Francoise Dehinbo).
 
