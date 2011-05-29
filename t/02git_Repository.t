@@ -79,6 +79,8 @@ like($proj->head_hash('HEAD'), qr/^([0-9a-fA-F]{40})$/, 'head_hash');
     isa_ok($tree[0], 'Gitalist::Git::Object', 'tree element 0');
 }
 
+$proj->{owner} = decode_utf8("T\x{c3}\x{a9}st") if $^O eq 'MSWin32';
+
 my $owner = $proj->owner;
 is_flagged_utf8($owner, "Owner name is flagged as utf8");
 is_sane_utf8($owner, "Owner name is not double-encoded");
