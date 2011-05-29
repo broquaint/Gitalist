@@ -11,11 +11,12 @@ use warnings;
 use Test::More qw/no_plan/;
 use Test::Exception;
 
+use Path::Class 'dir';
 use Data::Dumper;
 
 BEGIN { use_ok 'Gitalist::Git::CollectionOfRepositories::FromDirectory' }
 
-my $repo_dir = "$Bin/lib/repositories";
+my $repo_dir = dir( "$Bin/lib/repositories" );
 my $repo = Gitalist::Git::CollectionOfRepositories::FromDirectory->new( repo_dir => $repo_dir );
 isa_ok($repo, 'Gitalist::Git::CollectionOfRepositories::FromDirectory');
 
