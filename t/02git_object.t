@@ -11,6 +11,7 @@ use warnings;
 use Test::More;
 use Test::Exception;
 use Data::Dumper;
+use Test::Deep;
 
 use Path::Class;
 use Gitalist::Git::Repository;
@@ -41,7 +42,7 @@ is($object->modestr, 'drwxr-xr-x', "modestr is correct" );
 is($object->size, 33, "size is correct");
 is($object,'729a7c3f6ba5453b42d16a43692205f67fb23bc1', 'stringifies correctly');
 
-is_deeply $object->pack, {
+cmp_deeply $object->pack, {
     __CLASS__
          => 'Gitalist::Git::Object::Tree',
     file   => 'dir1',
@@ -55,7 +56,7 @@ is_deeply $object->pack, {
              is_bare     => 1,
              last_change => '2009-11-12T19:00:34Z',
              name        => 'repo1',
-             owner       => 'Dan'
+             owner       => code(\&is_system_account_name),
          },
     sha1   => '729a7c3f6ba5453b42d16a43692205f67fb23bc1',
     size   => 33,
@@ -81,7 +82,7 @@ dies_ok {
     print $obj2->comment;
 } 'comment is an empty string';
 
-is_deeply $obj2->pack,  {
+cmp_deeply $obj2->pack,  {
     __CLASS__
          => 'Gitalist::Git::Object::Blob',
     mode   => 0,
@@ -94,7 +95,7 @@ is_deeply $obj2->pack,  {
              is_bare     => 1,
              last_change => '2009-11-12T19:00:34Z',
              name        => 'repo1',
-             owner       => 'Dan'
+             owner       => code(\&is_system_account_name),
          },
     sha1   => '5716ca5987cbf97d6bb54920bea6adde242d87e6',
     size   => 4,
@@ -108,7 +109,7 @@ my $commit_obj = Gitalist::Git::Object::Commit->new(
 isa_ok($commit_obj, 'Gitalist::Git::Object::Commit', "commit object");
 isa_ok($commit_obj->tree->[0], 'Gitalist::Git::Object::Tree');
 
-is_deeply $commit_obj->pack,  {
+cmp_deeply $commit_obj->pack,  {
     __CLASS__
          => 'Gitalist::Git::Object::Commit',
     mode   => 0,
@@ -121,7 +122,7 @@ is_deeply $commit_obj->pack,  {
              is_bare     => 1,
              last_change => '2009-11-12T19:00:34Z',
              name        => 'repo1',
-             owner       => 'Dan'
+             owner       => code(\&is_system_account_name),
          },
     sha1   => '3f7567c7bdf7e7ebf410926493b92d398333116e',
     size   => 218,
@@ -138,7 +139,7 @@ is_deeply $commit_obj->pack,  {
                  is_bare     => 1,
                  last_change => '2009-11-12T19:00:34Z',
                  name        => 'repo1',
-                 owner       => 'Dan'
+                 owner       => code(\&is_system_account_name),
              },
         sha1   => '9062594aebb5df0de7fb92413f17a9eced196c22',
         size   => 33,
@@ -199,3 +200,8 @@ index 257cc56..5716ca5 100644
 }
 done_testing;
 
+sub is_system_account_name {
+    my $name = shift;
+    return 0 if !$name;
+    return 1;
+}
