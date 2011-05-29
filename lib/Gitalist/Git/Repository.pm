@@ -11,7 +11,8 @@ class Gitalist::Git::Repository with (Gitalist::Git::HasUtils, Gitalist::Git::Se
     use aliased 'DateTime' => 'DT';
     use List::MoreUtils qw/any zip/;
     use Encode          qw/decode/;
-    use I18N::Langinfo  qw/langinfo CODESET/;
+
+    use if $^O ne 'MSWin32' => 'I18N::Langinfo', qw/langinfo CODESET/; 
 
     use Gitalist::Git::Object::Blob;
     use Gitalist::Git::Object::Tree;
@@ -224,7 +225,9 @@ class Gitalist::Git::Repository with (Gitalist::Git::HasUtils, Gitalist::Git::Se
     }
 
     method _build_owner {
-        my ($gecos, $name) = map { decode(langinfo(CODESET), $_) } (getpwuid $self->path->stat->uid)[6,0];
+        return 'system' if $^O =~ 'MSWin32';
+
+        my ($gecos, $name) = map { decode(langinfo(CODESET()), $_) } (getpwuid $self->path->stat->uid)[6,0];
         $gecos =~ s/,+$//;
         return length($gecos) ? $gecos : $name;
     }

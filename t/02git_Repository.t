@@ -16,7 +16,7 @@ use Data::Dumper;
 
 BEGIN {
     # Mocking to allow testing regardless of the user's locale
-    require I18N::Langinfo;
+    require I18N::Langinfo if $^O ne 'MSWin32';
     no warnings 'redefine';
     *I18N::Langinfo::langinfo = sub($) {
         return "UTF-8" if $_[0] == I18N::Langinfo::CODESET();
