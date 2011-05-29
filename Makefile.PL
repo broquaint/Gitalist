@@ -106,6 +106,7 @@ requires 'Sys::Hostname';
 
 requires_external_bin 'git';
 
+test_requires 'Test:Deep'       => '0.108';
 test_requires 'Test::More'      => '0.88';
 test_requires 'Test::utf8'      => '0.02';
 test_requires 'Test::Exception' => '0.31';
