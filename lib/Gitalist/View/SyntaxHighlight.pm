@@ -17,6 +17,9 @@ sub process {
 
 sub render {
     my ($self, $c, $blob, $args) = @_;
+
+    # Don't bother with anything over 64kb, it'll be tragically slow.
+    return encode_entities $blob if length $blob > 8192;
     
     my $lang = $args->{language};
 
