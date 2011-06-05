@@ -47,13 +47,13 @@ isa_ok($proj->last_change, 'DateTime', 'last_change');
 
 my %references = %{$proj->references};
 ok(keys %references >= 2, '->references hash has elements');
-is($references{'36c6c6708b8360d7023e8a1649c45bcf9b3bd818'}->[0], 'heads/master', 'reference looks ok');
+is($references{'36c6c6708b8360d7023e8a1649c45bcf9b3bd818'}->[0], 'tags/0.01', 'reference looks ok');
 my @heads = @{$proj->heads};
 ok(scalar @heads > 1, '->heads list has more than one element');
 my $head = $heads[1];
 isa_ok($head, 'Gitalist::Git::Head');
-is($proj->head_hash, '36c6c6708b8360d7023e8a1649c45bcf9b3bd818', 'head_hash for HEAD is correct');
-is($proj->head_hash('refs/heads/master'), '36c6c6708b8360d7023e8a1649c45bcf9b3bd818', 'head_hash for refs/heads/master is correct');
+is($proj->head_hash, 'd6ddf8b26be63066e01d96a0922c87cd8d6e2270', 'head_hash for HEAD is correct');
+is($proj->head_hash('refs/heads/master'), 'd6ddf8b26be63066e01d96a0922c87cd8d6e2270', 'head_hash for refs/heads/master is correct');
 is($proj->head_hash('rafs/head/mister'), undef, 'head_hash for rafs/head/mister is undef');
 
 ok(scalar @{$proj->tags} == 1, '->tags list has one element');
@@ -90,28 +90,26 @@ is_deeply $proj->pack,  {
     heads       => [
         {
             __CLASS__   => 'Gitalist::Git::Head',
+            committer   => 'Dan Brook <broq@cpan.org>',
+            last_change => '2011-06-05T23:00:44Z',
+            name        => 'master',
+            sha1        => 'd6ddf8b26be63066e01d96a0922c87cd8d6e2270',
+        },
+        {
+            __CLASS__   => 'Gitalist::Git::Head',
             committer   => 'Zachary Stevens <zts@cryptocracy.com>',
             last_change => '2009-11-12T19:00:34Z',
             name        => 'branch1',
             sha1        => '0710a7c8ee11c73e8098d08f9384c2a839c65e4e'
         },
-        {
-            __CLASS__   => 'Gitalist::Git::Head',
-            committer   => 'Florian Ragwitz <rafl@debian.org>',
-            last_change => '2007-03-06T20:44:35Z',
-            name        => 'master',
-            sha1        => '36c6c6708b8360d7023e8a1649c45bcf9b3bd818'
-        }
     ],
     is_bare     => 1,
-    last_change => '2009-11-12T19:00:34Z',
+    last_change => '2011-06-05T23:00:44Z',
     name        => 'repo1',
     owner       => "T\351st",
     references  => {
-        "36c6c6708b8360d7023e8a1649c45bcf9b3bd818" => [
-            'heads/master',
-            'tags/0.01'
-        ],
+        "d6ddf8b26be63066e01d96a0922c87cd8d6e2270" => ['heads/master'],
+        "36c6c6708b8360d7023e8a1649c45bcf9b3bd818" => ['tags/0.01'],
         "0710a7c8ee11c73e8098d08f9384c2a839c65e4e" => [ 'heads/branch1' ]
     },
     tags        => [ {

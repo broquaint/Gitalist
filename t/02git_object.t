@@ -24,7 +24,7 @@ BEGIN {
     use_ok 'Gitalist::Git::Object::Blob';
     use_ok 'Gitalist::Git::Object::Commit';
     use_ok 'Gitalist::Git::Object::Tag';
-    }
+}
 
 my $object = Gitalist::Git::Object::Tree->new(
     repository => $repository,
@@ -54,7 +54,7 @@ cmp_deeply $object->pack, {
              __CLASS__   => 'Gitalist::Git::Repository',
              description => 'some test repository',
              is_bare     => 1,
-             last_change => '2009-11-12T19:00:34Z',
+             last_change => '2011-06-05T23:00:44Z',
              name        => 'repo1',
              owner       => code(\&is_system_account_name),
          },
@@ -93,7 +93,7 @@ cmp_deeply $obj2->pack,  {
              __CLASS__   => 'Gitalist::Git::Repository',
              description => 'some test repository',
              is_bare     => 1,
-             last_change => '2009-11-12T19:00:34Z',
+             last_change => '2011-06-05T23:00:44Z',
              name        => 'repo1',
              owner       => code(\&is_system_account_name),
          },
@@ -120,7 +120,7 @@ cmp_deeply $commit_obj->pack,  {
              __CLASS__   => 'Gitalist::Git::Repository',
              description => 'some test repository',
              is_bare     => 1,
-             last_change => '2009-11-12T19:00:34Z',
+             last_change => '2011-06-05T23:00:44Z',
              name        => 'repo1',
              owner       => code(\&is_system_account_name),
          },
@@ -137,7 +137,7 @@ cmp_deeply $commit_obj->pack,  {
                  __CLASS__   => 'Gitalist::Git::Repository',
                  description => 'some test repository',
                  is_bare     => 1,
-                 last_change => '2009-11-12T19:00:34Z',
+                 last_change => '2011-06-05T23:00:44Z',
                  name        => 'repo1',
                  owner       => code(\&is_system_account_name),
              },
@@ -198,6 +198,19 @@ index 257cc56..5716ca5 100644
         'commit_obj->get_patch can return a patchset')
         or warn("Contents was $contents");
 }
+
+my $blame_this = Gitalist::Git::Object::Commit->new(
+    repository => $repository,
+    sha1       => 'd6ddf8b26be63066e01d96a0922c87cd8d6e2270',
+);
+
+{
+    local $SIG{ALRM} = sub { die "Regressions suck!" };
+    alarm 1;
+    eval { $blame_this->blame('empty-for-a-reason', $blame_this->sha1) };
+    is $@, '', "Silly infinite loop didn't manifest for an empty file.";
+}
+
 done_testing;
 
 sub is_system_account_name {

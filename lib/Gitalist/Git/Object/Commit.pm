@@ -180,9 +180,9 @@ class Gitalist::Git::Object::Commit
 
       my $commit = $commitdata{$sha1};
       my $line;
-      until(($line = shift @blameout) =~ s/^\t//) {
-        $commit->{$1} = $2
-         if $line =~ /^(\S+) (.*)/;
+
+      until(@blameout == 0 || ($line = shift @blameout) =~ s/^\t//) {
+        $commit->{$1} = $2 if $line =~ /^(\S+) (.*)/;
       }
 
       unless(exists $commit->{author_dt}) {
