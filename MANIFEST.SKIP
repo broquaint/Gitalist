@@ -1,6 +1,6 @@
 ^gitalist_local.conf$
 ^ISSUES$
-^Gitalist-.*
+^Gitalist-
 ^\.git
 blib/
 \.DS_Store$
@@ -11,5 +11,8 @@ MANIFEST\.bak$
 Makefile\.old$
 \.shipit$
 script/bootstrap.pl
+script/cpan-install
 script/env
-
+local-lib5
+~$
+[#]$
