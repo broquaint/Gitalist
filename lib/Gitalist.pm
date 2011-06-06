@@ -305,9 +305,16 @@ If you find the need to do some troubleshooting, you can call
 C<http://url_to_gitalist.fcgi?dump_info=1> and/or add export C<GITALIST_DEBUG=1>
 to the top of your F<gitalist.fcgi> file (just below the shebang line).
 
-Also, note that Apache will refuse C<%2F> in Gitalist URLs
-unless configured otherwise. Make sure C<AllowEncodedSlashes On>
-is in your F<httpd.conf> file in order for this to run smoothly.
+=head2 Apache config
+
+Apache will refuse C<%2F> in Gitalist URLs unless configured otherwise. Make
+sure C<AllowEncodedSlashes On> is in your F<httpd.conf> file in order for
+this to run smoothly.
+
+To have the static content served statically by Apache, instead of
+Gitalist, then add something like following line to your F<httpd.conf>:
+
+    Alias /static  /usr/local/share/perl/5.10.1/Gitalist/root/static
 
 =head1 CONTRIBUTING
 
