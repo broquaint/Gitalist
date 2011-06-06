@@ -1,6 +1,10 @@
 This file documents the revision history for Perl extension Gitalist.
 
+0.003003 2011-06-06
   - Fixed ownership assertions in t/02git_object.t (Christian Walde).
+  - Change default local config to not search recursively.
+  - Don't attempt to syntax highlight anything big.
+  - Fix for infinite loop bug in blame.
 
 0.003002 2011-05-23
   - Add JSON serialization and expose via .json (Tomas Doran).
