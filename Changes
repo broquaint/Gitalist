@@ -1,5 +1,8 @@
 This file documents the revision history for Perl extension Gitalist.
 
+0.003004 2011-06-07
+  - Fix dependency typo in Makefile.PL.
+
 0.003003 2011-06-06
   - Fixed ownership assertions in t/02git_object.t (Christian Walde).
   - Change default local config to not search recursively.
