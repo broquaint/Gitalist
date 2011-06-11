@@ -1,5 +1,8 @@
 This file documents the revision history for Perl extension Gitalist.
 
+  - Fixes to enable Gitalist to run on Win32 (Christian Walde).
+  - Fix content-type of core.css handler (Christian Walde).
+
 0.003004 2011-06-07
   - Fix dependency typo in Makefile.PL.
 
