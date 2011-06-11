@@ -16,7 +16,7 @@ use Data::Dumper;
 
 BEGIN {
     # Mocking to allow testing regardless of the user's locale
-    require I18N::Langinfo;
+    require I18N::Langinfo if $^O ne 'MSWin32';
     no warnings 'redefine';
     *I18N::Langinfo::langinfo = sub($) {
         return "UTF-8" if $_[0] == I18N::Langinfo::CODESET();
@@ -78,6 +78,8 @@ like($proj->head_hash('HEAD'), qr/^([0-9a-fA-F]{40})$/, 'head_hash');
     is(scalar @tree, 1, "tree array contains one entry.");
     isa_ok($tree[0], 'Gitalist::Git::Object', 'tree element 0');
 }
+
+$proj->{owner} = decode_utf8("T\x{c3}\x{a9}st") if $^O eq 'MSWin32';
 
 my $owner = $proj->owner;
 is_flagged_utf8($owner, "Owner name is flagged as utf8");

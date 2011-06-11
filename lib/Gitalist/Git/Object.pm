@@ -97,7 +97,7 @@ class Gitalist::Git::Object with Gitalist::Git::Serializable is dirty {
             return 'm---------';
         } elsif (S_ISDIR($mode & S_IFMT)) {
             return 'drwxr-xr-x';
-        } elsif (S_ISLNK($mode)) {
+        } elsif ($^O ne 'MSWin32' and S_ISLNK($mode)) { # this is ENOLINKS country, we can't stop here!
             return 'lrwxrwxrwx';
         } elsif (S_ISREG($mode)) {
             # git cares only about the executable bit
