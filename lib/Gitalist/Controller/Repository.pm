@@ -8,6 +8,12 @@ with 'Gitalist::URIStructure::Repository';
 
 sub base : Chained('/base') PathPart('') CaptureArgs(0) {}
 
+=encoding UTF-8
+
+=head1 NAME
+
+Gitalist::Controller::Repository - Controller::Repository module for Gitalist
+
 =head2 search
 
 The action for the search form.

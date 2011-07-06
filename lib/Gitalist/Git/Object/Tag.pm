@@ -18,7 +18,7 @@ __END__
 
 =head1 NAME
 
-Gitalist::Git::Object::Tag
+Gitalist::Git::Object::Tag - Git::Object::Tag module for Gitalist
 
 =head1 SYNOPSIS
 
