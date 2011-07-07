@@ -22,8 +22,7 @@ sub index : Chained('base') PathPart('') Args(0) {
 sub css : Chained('/root') PathPart('core.css') Args(0) {
     my ( $self, $c ) = @_;
 
-    $c->response->content_type('text/css');
-    $c->stash(template => 'static/css/core.css');
+    $c->stash( template => 'static/css/core.css', content_type => 'text/css' );
 }
 
 sub base : Chained('/root') PathPart('') CaptureArgs(0) {
@@ -92,7 +91,8 @@ __PACKAGE__->config(
         map { $_ => [qw/ View Default /] }
              qw( text/css text/html text/plain
                  application/atom+xml application/rss+xml application/rss )
-    }
+    },
+    content_type_stash_key => 'content_type',
 );
 
 __PACKAGE__->meta->make_immutable;
