@@ -215,7 +215,7 @@ __END__
 
 =head1 NAME
 
-Gitalist::Git::Object::Commit
+Gitalist::Git::Object::Commit - Git::Object::Commit module for Gitalist
 
 =head1 SYNOPSIS
 

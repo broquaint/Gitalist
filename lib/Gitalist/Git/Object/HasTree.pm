@@ -38,7 +38,7 @@ __END__
 
 =head1 NAME
 
-Gitalist::Git::Object::HasTree
+Gitalist::Git::Object::HasTree - Git::Object::HasTree module for Gitalist
 
 =head1 SYNOPSIS
 
