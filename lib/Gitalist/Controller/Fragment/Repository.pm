@@ -17,6 +17,12 @@ after heads => sub {
     );
 };
 
+=encoding UTF-8
+
+=head1 NAME
+
+Gitalist::Controller::Fragment::Repository - Fragment::Repository module for Gitalist::Controller
+
 =head2 tags
 
 The current list of tags in the repo.

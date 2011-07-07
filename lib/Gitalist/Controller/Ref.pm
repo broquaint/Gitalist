@@ -35,6 +35,12 @@ sub raw : Chained('find') Does('FilenameArgs') Args() {
     $c->response->body(delete $c->stash->{blob});
 }
 
+=encoding UTF-8
+
+=head1 NAME
+
+Gitalist::Controller::Ref - Controller::Ref module for Gitalist
+
 =head2 snapshot
 
 Provides a snapshot of a given commit.

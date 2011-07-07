@@ -72,6 +72,12 @@ after blame => sub {
     $c->forward('Model::ContentMangler');
 };
 
+=encoding UTF-8
+
+=head1 NAME
+
+Gitalist::Controller::Fragment::Ref - Fragment::Ref module for Gitalist::Controller
+
 =head2 blob
 
 The blob action i.e the contents of a file.

@@ -110,6 +110,12 @@ __PACKAGE__->meta->make_immutable;
 
 __END__
 
+=encoding UTF-8
+
+=head1 NAME
+
+Gitalist::Model::CollectionOfRepos - Model::CollectionOfRepos module for Gitalist
+
 =head1 AUTHORS
 
 See L<Gitalist> for authors.
