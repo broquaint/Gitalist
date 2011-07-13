@@ -1,5 +1,8 @@
 This file documents the revision history for Perl extension Gitalist.
 
+0.003005 2011-07-13
+  - Provide option to disable gravatars.
+  - Tweaks to make Gitalist fit for debian (Jonas Genannt).
   - Fixes to enable Gitalist to run on Win32 (Christian Walde).
   - Fix content-type of core.css handler (Christian Walde).
 

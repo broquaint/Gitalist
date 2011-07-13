@@ -23,8 +23,8 @@ INSTALL
     repositories the directory above the checkout.
 
 DESCRIPTION
-    Gitalist is a web frontend for git repositories based on gitweb.cgi
-    <https://git.wiki.kernel.org/index.php/Gitweb> and backed by Catalyst.
+    Gitalist is a web frontend for git repositories based on <gitweb.cgi>
+    and backed by Catalyst.
 
   History
     This project started off as an attempt to port *gitweb.cgi* to a
@@ -122,8 +122,8 @@ RUNNING
     than using the single threaded developement server.
 
     The recommended deployment method for Gitalist is FastCGI, although
-    Gitalist can also be run under mod_perl <https://perl.apache.org/> or as
-    pure Perl with Catalyst::Engine::PreFork.
+    Gitalist can also be run under <mod_perl> or as pure Perl with
+    Catalyst::Engine::PreFork.
 
     Assuming that you have installed Gitalist's dependencies into a
     local::lib, and you are running from a git checkout, adding a trivial
@@ -146,6 +146,10 @@ RUNNING
 CONFIGURATION
     The Gitalist config is loaded with Catalyst::Plugin::ConfigLoader and
     the available config options are:
+
+    no_gravatars
+        If true don't display gravatars. May be desirable if you are worried
+        about leaking repo names via the browser referer headers.
 
   Model::CollectionOfRepos
     git Path to the "git" binary.
@@ -179,13 +183,11 @@ CONFIGURATION
 
   FASTCGI
     Running Gitalist in FastCGI mode requires a webserver with FastCGI
-    support (such as apache with mod_fcgi
-    <http://www.fastcgi.com/drupal/node/3> or mod_fcgid
-    <https://httpd.apache.org/mod_fcgid/>). Below is a sample configuration
-    using Apache2 with mod_fcgid in a dynamic configuration (as opposed to
-    static or standalone mode). More information on these modes and their
-    configuration can be found at "Standalone server mode" in
-    Catalyst::Engine::FastCGI.
+    support (such as apache with <mod_fcgi> or <mod_fcgid>). Below is a
+    sample configuration using Apache2 with mod_fcgid in a dynamic
+    configuration (as opposed to static or standalone mode). More
+    information on these modes and their configuration can be found at
+    "Standalone server mode" in Catalyst::Engine::FastCGI.
 
     In Apache's mime.conf, add "AddHandler fcgid-script .fcgi" (or
     "AddHandler fastcgi-script .fcgi" for mod_fcgi).
@@ -212,17 +214,22 @@ CONFIGURATION
     Now to access your Gitalist instance, you'll go to
     "gitalist.yourdomain.com/gitalist.fcgi/" (do not forget that trailing
     "/"). If you'd like a different URL, of course, you'll likely want to
-    use mod_rewrite <https://httpd.apache.org/docs/mod/mod_rewrite.html> or
-    equivalent.
+    use <mod_rewrite> or equivalent.
 
     If you find the need to do some troubleshooting, you can call
     "http://url_to_gitalist.fcgi?dump_info=1" and/or add export
     "GITALIST_DEBUG=1" to the top of your gitalist.fcgi file (just below the
     shebang line).
 
-    Also, note that Apache will refuse %2F in Gitalist URLs unless
-    configured otherwise. Make sure "AllowEncodedSlashes On" is in your
-    httpd.conf file in order for this to run smoothly.
+  Apache config
+    Apache will refuse %2F in Gitalist URLs unless configured otherwise.
+    Make sure "AllowEncodedSlashes On" is in your httpd.conf file in order
+    for this to run smoothly.
+
+    To have the static content served statically by Apache, instead of
+    Gitalist, then add something like following line to your httpd.conf:
+
+        Alias /static  /usr/local/share/perl/5.10.1/Gitalist/root/static
 
 CONTRIBUTING
     Patches are welcome, please feel free to fork on github and send pull
