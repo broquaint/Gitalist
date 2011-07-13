@@ -421,6 +421,11 @@ table.listing thead {
 	padding:9px 5px 9px 10px;
 }
 
+.listing .gravatar {
+    float: left;
+    padding-right: 10px;
+}
+
 /*
 
 puts the repo description on one line which gets truncated if the repo name is too long

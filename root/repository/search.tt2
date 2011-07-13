@@ -29,7 +29,7 @@ No results found for <q>[% c.req.param('text') | html %]</q>.
        c.req.param('text'), '<span class="match">' _ c.req.param('text') _ '</span>'
      );
    %]</td>
-	<td class='author'><img src="[% uri_for_gravatar(result.author.email, 21) %]" />[% result.author.name | html %]</td>
+	<td class='author'>[% INCLUDE 'inc/gravatar.tt2' email = result.author.email %][% result.author.name | html %]</td>
 	<td class='action-list'>
  		<a href="[% c.uri_for_action("/ref/commit", [Repository.name, result.sha1]) %]" title="Commit details" class="button commit">commit</a>
  		<a href="[% c.uri_for_action("/ref/diff_fancy", [Repository.name, result.sha1]) %]" title="Commit difference" class="button diff">commitdiff</a>

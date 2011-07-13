@@ -1,0 +1,1 @@
+[% UNLESS c.config.no_gravatars %]<img src="[% uri_for_gravatar(email, 21) %]" class="gravatar">[% END -%]

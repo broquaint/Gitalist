@@ -217,6 +217,15 @@ C<.psgi> found under C<scripts/>:
 The Gitalist config is loaded with L<Catalyst::Plugin::ConfigLoader>
 and the available config options are:
 
+=over
+
+=item no_gravatars
+
+If true don't display gravatars. May be desirable if you are worried about
+leaking repo names via the browser referer headers.
+
+=back
+
 =head2 Model::CollectionOfRepos
 
 =over

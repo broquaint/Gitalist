@@ -28,7 +28,7 @@
           
         END;
 	-%]</p>[% INCLUDE '_refs.tt2' object = line %]</td>
-	<td class='author'><img src="[% uri_for_gravatar(line.author.email, 21) %]" />[% line.author.name | html %]</td>
+	<td class='author'>[% INCLUDE 'inc/gravatar.tt2' email = line.author.email %][% line.author.name | html %]</td>
 	<td class='action-list'>
  		<a href="[% c.uri_for_action("/ref/commit", [Repository.name, line.sha1]) %]" title="Commit details" class="button commit">commit</a>
  		<a href="[% c.uri_for_action("/ref/diff_fancy", [Repository.name, line.sha1]) %]" title="Commit difference" class="button diff">commitdiff</a>

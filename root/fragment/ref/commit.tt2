@@ -16,14 +16,14 @@
           <p class='commit-message'>[% Commit.comment | html %]</p>
 	  [% INCLUDE '_refs.tt2' object = commit %]
         </td>
-	<td class='author'><a href="mailto:[% Commit.author.email %]" title="Email"><img style="float: left; padding-right: 10px" src="[% uri_for_gravatar(Commit.committer.email, 21) %]">[% Commit.author.name | html %]</a></td>
+	<td class='author'><a href="mailto:[% Commit.author.email %]" title="Email">[% INCLUDE 'inc/gravatar.tt2' email = Commit.author.email %][% Commit.author.name | html %]</a></td>
 	<td class='action-list'>Author</td>
 </tr>
 <tr class="invert">
 	<td></td>
 	<td class='time-since'>[% time_since(Commit.committed_time) %]</td>
 	<!-- spanned -->
-	<td class='author'><a href="mailto:[% Commit.committer.email %]" title="Email"><img style="float: left; padding-right: 10px" src="[% uri_for_gravatar(Commit.committer.email, 21) %]">[% Commit.committer.name %]</a></td>
+	<td class='author'><a href="mailto:[% Commit.committer.email %]" title="Email">[% INCLUDE 'inc/gravatar.tt2' email = Commit.committer.email %][% Commit.committer.name %]</a></td>
 	<td class='action-list'>Committer</td>
 </tr>
 </tbody>
