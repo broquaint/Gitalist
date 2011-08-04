@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 use FindBin;
 BEGIN {
     my $env = "$FindBin::Bin/env";
