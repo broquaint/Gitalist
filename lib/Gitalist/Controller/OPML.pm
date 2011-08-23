@@ -3,6 +3,7 @@ package Gitalist::Controller::OPML;
 use Moose;
 use Moose::Autobox;
 use DateTime;
+use DateTime::Format::Mail;
 use Sys::Hostname qw/hostname/;
 
 use namespace::autoclean;
@@ -15,7 +16,7 @@ sub opml : Chained('/base') Args(0) {
     $c->stash(
         title => lc(hostname()) . ' - ' . blessed($c)->config->{name},
         Repositories => $c->model()->repositories,
-        now => DateTime->now,
+        now => DateTime::Format::Mail->format_datetime( DateTime->now ),
         template => 'opml.tt2',
         no_wrapper => 1,
     );

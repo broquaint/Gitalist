@@ -91,6 +91,7 @@ requires 'Git::PurePerl' => '0.47';
 requires 'aliased';
 requires 'CGI';
 requires 'DateTime';
+requires 'DateTime::Format::Mail';
 requires 'File::Copy::Recursive';
 requires 'File::Type';
 requires 'File::Type::WebImages';
