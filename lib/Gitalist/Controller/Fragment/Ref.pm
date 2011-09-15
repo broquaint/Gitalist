@@ -9,7 +9,7 @@ with qw/
 /;
 
 use File::Type::WebImages ();
-use JSON::XS qw(encode_json);
+use JSON::XS qw/encode_json/;
 
 sub base : Chained('/fragment/repository/find') PathPart('') CaptureArgs(0) {}
 
