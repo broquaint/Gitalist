@@ -230,10 +230,6 @@ leaking repo names via the browser referer headers.
 
 =over
 
-=item git
-
-Path to the C<git> binary.
-
 =item repo_dir
 
 A directory containing the directories to show.
