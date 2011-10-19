@@ -101,7 +101,7 @@ throws_ok { Gitalist::Model::CollectionOfRepos->COMPONENT($ctx_gen->(), { repos 
 
 {
     my $i = test_with_config({ repo_dir => "$FindBin::Bin/lib/repositories", search_recursively => 1 });
-    is scalar($i->repositories->flatten), 6, 'Found 6 repos recursively using config';
+    is scalar($i->repositories->flatten), 7, 'Found 6 repos recursively using config';
     isa_ok $i, 'Gitalist::Git::CollectionOfRepositories::FromDirectoryRecursive';
 }
  {
