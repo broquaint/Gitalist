@@ -1,5 +1,10 @@
 This file documents the revision history for Perl extension Gitalist.
 
+0.003006 2011-10-18
+  - Fix lies in docs, make config more obvious (Tomas Doran)
+  - Avoid "Use of qw(...) as parentheses is deprecated" warning with
+    perl-5.14 (Gisle Aas)
+
 0.003005 2011-07-13
   - Provide option to disable gravatars.
   - Tweaks to make Gitalist fit for debian (Jonas Genannt).

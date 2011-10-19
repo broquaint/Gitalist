@@ -15,5 +15,7 @@ script/bootstrap.pl
 script/cpan-install
 script/env
 local-lib5
-~$
-[#]$
+~         # Vim
+.sw[p-z]$ # Vim
+[#]$      # Emacs
+\.[#].    # Emacs
