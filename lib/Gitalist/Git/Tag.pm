@@ -7,7 +7,8 @@ with 'Gitalist::Git::Serializable';
 
 use MooseX::Types::Common::String qw/NonEmptySimpleStr/;
 use MooseX::Types::Moose          qw/Maybe/;
-use Gitalist::Git::Types          qw/SHA1 DateTime/;
+use Gitalist::Git::Types          qw/SHA1/;
+use MooseX::Types::DateTime       qw/ DateTime /;
 
 use aliased 'DateTime' => 'DT';
 

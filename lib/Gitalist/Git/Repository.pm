@@ -5,7 +5,8 @@ class Gitalist::Git::Repository with (Gitalist::Git::HasUtils, Gitalist::Git::Se
 
     use MooseX::Types::Common::String qw/NonEmptySimpleStr/;
     use MooseX::Types::Moose          qw/Str Maybe Bool HashRef ArrayRef/;
-    use Gitalist::Git::Types          qw/SHA1 DateTime Dir/;
+    use Gitalist::Git::Types          qw/SHA1 Dir/;
+    use MooseX::Types::DateTime       qw/ DateTime /;
 
     use Moose::Autobox;
     use aliased 'DateTime' => 'DT';
