@@ -1,4 +1,4 @@
-package Gitalist::ScriptRole;
+package Gitalist::TraitFor::Script;
 use Moose::Role;
 use MooseX::Types::Moose qw/ Undef /;
 use MooseX::Types::Common::String qw/NonEmptySimpleStr/;
