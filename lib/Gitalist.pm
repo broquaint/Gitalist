@@ -33,7 +33,7 @@ after prepare_path => sub {
     if ($ctx->req->param('a')) {
         $ctx->req->uri->path("/legacy$path");
     }
-    
+
     if($path =~ s/[.]json$// && $ctx->req->content_type eq 'application/json') {
         $ctx->req->uri->path($path);
     }
@@ -51,7 +51,7 @@ sub uri_with {
   my $uri = $self->request->uri_with(@args);
   # Wow this awful.
   $uri =~ s[/fragment\b][];
-  return $uri;  
+  return $uri;
 }
 
 1;
