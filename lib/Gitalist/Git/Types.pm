@@ -3,13 +3,12 @@ package Gitalist::Git::Types;
 use MooseX::Types
      -declare => [qw/
          SHA1
-         DateTime
          Dir
      /];
 
 use MooseX::Types::Path::Class;
 use MooseX::Types::ISO8601 qw/ISO8601DateTimeStr/;
-use MooseX::Types::DateTime ();
+use MooseX::Types::DateTime qw/ DateTime /;
 use MooseX::Storage::Engine ();
 use MooseX::Types::Common::String qw/NonEmptySimpleStr/;
 
@@ -21,10 +20,6 @@ subtype SHA1,
 coerce SHA1,
     from NonEmptySimpleStr,
     via { 1 };
-
-subtype DateTime,
-    as 'MooseX::Types::DateTime::DateTime',
-    where { 1 };
 
 MooseX::Storage::Engine->add_custom_type_handler(
     DateTime,
