@@ -17,7 +17,7 @@
     title;
   -%] (Gitalist)</title>
   [% INCLUDE '_header_feeds.tt2' %]
-   
+
 	<link rel="stylesheet" type="text/css" href="[% c.uri_for('/core.css') %]" />
 	<link rel="shortcut icon" href="[% c.uri_for('/static/favicon.ico') %]" />
 	<script src="[% c.uri_for('/static/js/jquery.min.js') %]"></script>
@@ -33,7 +33,7 @@
 
 			<div class="search">
 			[% IF Repository; INCLUDE 'nav/search.tt2'; ELSE; %]
-			
+
 			<!--
 			[%# FIXME - Search submits to blank(ish) page %]
 			<form method="get" action="[% c.uri_for_action('/search') %]" enctype="application/x-www-form-urlencoded">
@@ -45,22 +45,22 @@
 			[% END %]
 			</div>
 		</div>
-		
-		
+
+
 		<div id="nav_logs" [% 'style="visibility:hidden"' IF c.action.name == "index" %]>
-		
+
 			[% IF c.req.captures.size == 1; SET path = 'repository'; ELSE; SET path = 'ref'; END %]
-			
+
 			<ul>
 				<li[% ' class="selected"' IF c.action.name.match('tree') %]><a href="[% c.uri_for_action('/ref/tree', c.req.captures) || c.uri_for_action('/repository/tree', c.req.captures) %]" id="tree">Tree</a></li>
 
 				<li[% ' class="selected"' IF c.action.name.match('longlog') %]><a href="[% c.uri_for_action('/' _ path _ '/longlog', c.req.captures) %]" id="log_full">Long log</a></li>
-				
+
 				<li[% ' class="selected"' IF c.action.name.match('shortlog') %]><a href="[% c.uri_for_action('/' _ path _ '/shortlog', c.req.captures) %]" id="log_short">Short log</a></li>
 
-				
+
 				<li id="branch_selector">
-					Branches 
+					Branches
 					<select id='branch-list'>
 						<option value="">HEAD</option>
 					[%- FOREACH branch IN Repository.heads -%]
@@ -70,16 +70,16 @@
 						[% LAST %]
 						[% END %]
 					[% END -%]
-					
+
 					</select>
 				</li>
-				
+
 			</ul>
 		</div>
-	
+
 		<h1>
 			<a href="[% c.uri_for('/') %]">Home</a>
-		
+
 			[%- IF Repository %]
     		/ <a href="[% c.uri_for_action('/repository/summary', [Repository.name]) %]">[% Repository.name %]</a>
    			[%- END %]
@@ -92,20 +92,20 @@
 					[% END -%]
 				[% END -%]
    			[%- END %]
-			
-			
-			[%- 
-				
+
+
+			[%-
+
 				#FIXME on a history view of a folder, don't show extra actions in dropdown
 				SET on_file_page = 1;
-				
+
 				SET actions_list = {
 						"blob" 		=> 1,
 						"raw" 	 	=> 1,
 						"blame" 	=> 1,
 						"history"  	=> 1,
 					};
-					
+
 				SET action_name = c.action.name
 									.replace("_"," ")
 									.replace("log", " log")
@@ -117,48 +117,48 @@
 				ELSE;
 					action_name_ucfirst;
 				END;
-				
+
 			-%]
 
 			</h1>
-	
-			[%- 
+
+			[%-
 				IF actions_list.$action_name;
 				'<ul id="actions_nav_list">';
 					FOREACH action IN actions_list;
 						action_output = action.key FILTER ucfirst;
-						NEXT IF action_output == action_name_ucfirst;	
+						NEXT IF action_output == action_name_ucfirst;
 						action = action.key;
 						'<li><a href="' _ c.uri_for("/")  _ c.req.path.replace(action_name, action) _ '">' _ action_output _ '</a></li>';
-					END;			
+					END;
 				'</ul>';
 				END;
 			-%]
-		
+
 	</div>
 </div>
 
-	
+
 <div id="content_holder">
 	<div id="content" class="sub_holder">
 		<div id="content_inner">
 
-	
+
 
  [% content %]
 
- 
+
 		</div>
    	</div>
 </div>
 
 <div id="footer_holder">
 	<div id="footer" class="sub_holder">
-		
+
 		<p>[% IF Repository; Repository.description | html IF Repository.description != "Unnamed repository; edit this file to name it for gitweb." ; END; %]</p>
-	
+
 		<a title="git homepage" href="http://git-scm.org"><img src="[% c.uri_for('/logo.png') %]" id="git_logo" alt="git" /></a>
-		
+
 		<div id="feeds">
 		[% INCLUDE 'inc/footer_feeds.tt2' %]
 		</div>
@@ -172,13 +172,13 @@
 	<div id="debug" class="sub_holder">
 
 	<p>Debug:</p>
-	
+
 	[% USE Dumper %]
 	<pre>
 	[% Repository.path %]
 	[% Dumper.dump(c.req.args) %]
 	</pre>
-	
+
 	</div>
 </div>
 

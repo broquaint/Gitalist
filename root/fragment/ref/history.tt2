@@ -20,7 +20,7 @@
 	<td><input type="radio" name="sha1_b" value="[% line.sha1 %]"[% " checked" IF loop.count == 1 %]/></td>
      <td class='sha1' title='[% line.sha1 %]'>[% INCLUDE 'inc/chroma_hash.tt2' sha1 = line.sha1.substr(0, 7) %]</td>
      <td class='time-since' title='[% line.authored_time %]'>[% time_since(line.authored_time) %]</td>
-    
+
      <td>
        [% short_cmt(line.comment) | html %]
        [% INCLUDE '_refs.tt2' object = line.0 %]
@@ -48,6 +48,6 @@
 </form>
 
 <span id='compare-path' class='js-data'>[% filename %]</span>
-<span id="diff-uri" class='js-data'>[% c.uri_for_action('/ref/diff_fancy', [Repository.name, 'HEAD']) %]</span> 
+<span id="diff-uri" class='js-data'>[% c.uri_for_action('/ref/diff_fancy', [Repository.name, 'HEAD']) %]</span>
 
 [% INCLUDE 'inc/history_pager.tt2' %]

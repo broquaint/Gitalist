@@ -70,7 +70,7 @@ sub Test::WWW::Mechanize::Catalyst::page_links_ok {
 
 sub test_uri {
     my ($uri, $qs) = @_;
-    my $request = "/$uri"; 
+    my $request = "/$uri";
     $request .= "?$qs" if defined $qs;
     my $response = request($request);
     ok($response->is_success || $response->is_redirect, "ok $request");

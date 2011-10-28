@@ -126,7 +126,7 @@ throws_ok { Gitalist::Model::CollectionOfRepos->COMPONENT($ctx_gen->(), { repos 
 sub test_with_config {
     my ($config, $msg) = @_;
     my $ctx = $ctx_gen->();
-        
+
     my $m;
     lives_ok { $m = Gitalist::Model::CollectionOfRepos->COMPONENT($ctx, $config) } $msg;
     ok $m, 'Has model';
