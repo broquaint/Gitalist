@@ -2,7 +2,7 @@
 <div id="page-search">
   <form method="get" action="[% c.uri_for_action('/repository/search', [Repository.name]) %]" enctype="application/x-www-form-urlencoded">
   Search
- 
+
   <input type="text" name="text" value="[% c.req.param('s') %]" />
   <select name="type">
       <option value="commit">commit</option>
@@ -15,7 +15,7 @@
   </select>
   <span title="Extended regular expression"><label><input type="checkbox" name="regexp" value="1">re</label></span>
    <sup><a href="[% c.uri_for_action('/search_help') %]">?</a></sup>
-   
+
    <input type="submit" class="button_submit" value="" />
   </form>
 </div>

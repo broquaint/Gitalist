@@ -13,7 +13,7 @@ class Gitalist::Git::Repository with (Gitalist::Git::HasUtils, Gitalist::Git::Se
     use List::MoreUtils qw/any zip/;
     use Encode          qw/decode/;
 
-    use if $^O ne 'MSWin32' => 'I18N::Langinfo', qw/langinfo CODESET/; 
+    use if $^O ne 'MSWin32' => 'I18N::Langinfo', qw/langinfo CODESET/;
 
     use Gitalist::Git::Object::Blob;
     use Gitalist::Git::Object::Tree;

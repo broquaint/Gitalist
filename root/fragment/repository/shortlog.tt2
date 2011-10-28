@@ -25,7 +25,7 @@
           line.comment | html;
 	ELSE;
           short_cmt(line.comment) | html;
-          
+
         END;
 	-%]</p>[% INCLUDE '_refs.tt2' object = line %]</td>
 	<td class='author'>[% INCLUDE 'inc/gravatar.tt2' email = line.author.email %][% line.author.name | html %]</td>
@@ -44,6 +44,6 @@
 </table>
 </form>
 
-<span id="diff-uri" class="js-data">[% c.uri_for_action('/ref/diff_fancy', [Repository.name, 'HEAD']) %]</span> 
+<span id="diff-uri" class="js-data">[% c.uri_for_action('/ref/diff_fancy', [Repository.name, 'HEAD']) %]</span>
 
 [% INCLUDE 'inc/log_pager.tt2' %]
