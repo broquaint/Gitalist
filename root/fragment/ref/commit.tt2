@@ -29,9 +29,9 @@
 </tbody>
 </table>
   <!-- [% USE dumper; dumper.dump(commit.parents) %] -->
- 
- 
- 
+
+
+
 <table class="listing summary">
 	<tr>
 		<td class='sha1'>[% INCLUDE 'inc/chroma_hash.tt2' sha1 = Commit.sha1.substr(0, 7), hide_sha1_output = 1 %] <div class="sha1_label">Commit</div></td>
@@ -52,7 +52,7 @@
     		<a href="[% c.uri_for_action('/ref/diff_fancy', [Repository.name, parent.sha1]) %]" title="Difference" class="button diff">diff</a>
 		</td>
 	</tr>
-[% END %]       
+[% END %]
 </table>
 
 

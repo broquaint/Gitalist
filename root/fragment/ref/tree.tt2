@@ -9,7 +9,7 @@
 [% END %]
 [%-
 	SET counter 	    = 1;
-	
+
  	# sort files and folders
 	SET tree_files 		= [];
 	SET tree_folders 	= [];

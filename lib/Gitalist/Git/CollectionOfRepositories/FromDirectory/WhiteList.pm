@@ -52,7 +52,7 @@ different repository within L</repo_dir>.
 =head1 SEE ALSO
 
 L<Gitalist::Git::CollectionOfRepositories>,
-L<Gitalist::Git::Repository>, 
+L<Gitalist::Git::Repository>,
 L<Gitalist::Git::CollectionOfRepositories::FromDirectory>
 
 =head1 AUTHORS

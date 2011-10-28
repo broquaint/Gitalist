@@ -4,7 +4,7 @@ function findPos(obj) {
 	  do {
 		  curleft += obj.offsetLeft;
 		  curtop += obj.offsetTop;
-	  } 
+	  }
 	  while (obj = obj.offsetParent);
 	  return [curleft,curtop];
 	}
