@@ -50,6 +50,16 @@ has repos => (
     coerce => 1,
 );
 
+has class => (
+    isa => NonEmptySimpleStr,
+    is  => 'ro',
+);
+
+has args => (
+    isa     => 'HashRef',
+    is      => 'ro',
+    default => sub { {} },
+);
 
 has search_recursively => (
     is      => 'ro',
@@ -83,25 +93,40 @@ after BUILD => sub {
     $self->_repos_count || $self->repo_dir;
 };
 
+sub _default_model_class {
+    my($self) = @_;
+
+    if($self->whitelist && -f $self->whitelist) {
+        return 'FromDirectory::WhiteList';
+    } elsif ($self->_repos_count && !$self->search_recursively) {
+        return 'FromListOfDirectories';
+    } elsif($self->search_recursively) {
+        return 'FromDirectoryRecursive';
+    }
+
+    return 'FromDirectory';
+}
+
 sub build_per_context_instance {
     my ($self, $app) = @_;
 
-    my %args = (export_ok => $self->export_ok || '');
-    my $class;
-    if($self->whitelist && -f $self->whitelist) {
-        $class = 'Gitalist::Git::CollectionOfRepositories::FromDirectory::WhiteList';
-        $args{repo_dir}  = $self->repo_dir;
-        $args{whitelist} = $self->whitelist;
-    } elsif ($self->_repos_count && !$self->search_recursively) {
-        $class = 'Gitalist::Git::CollectionOfRepositories::FromListOfDirectories';
-        $args{repos} = $self->repos;
-    } elsif($self->search_recursively) {
-        $class = 'Gitalist::Git::CollectionOfRepositories::FromDirectoryRecursive';
-        $args{repo_dir} = $self->repo_dir;
-    } else {
-        $class = 'Gitalist::Git::CollectionOfRepositories::FromDirectory';
-        $args{repo_dir} = $self->repo_dir;
-    }
+    my %args = (
+        export_ok => $self->export_ok || '',
+        %{ $self->args }
+    );
+
+    my $class = $self->class;
+    Class::MOP::load_class($class) if $class;
+
+    my $default = $self->_default_model_class;
+
+    $args{whitelist} = $self->whitelist if $default eq 'FromDirectory::WhiteList';
+    $args{repos}     = $self->repos     if $default eq 'FromListOfDirectories';
+    $args{repo_dir}  = $self->repo_dir  if $default =~ /\b(?:WhiteList|FromDirectory(?:Recursive)?)$/;
+
+    $class ||= "Gitalist::Git::CollectionOfRepositories::$default";
+
+    $app->log->debug("Using class '$class'");
 
     return $class->new(%args);
 }
