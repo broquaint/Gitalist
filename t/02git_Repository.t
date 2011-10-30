@@ -13,14 +13,17 @@ use Test::Exception;
 use Test::utf8;
 use Encode qw/decode_utf8/;
 use Data::Dumper;
+use Scalar::Util qw/set_prototype/;
 
 BEGIN {
     # Mocking to allow testing regardless of the user's locale
     require I18N::Langinfo if $^O ne 'MSWin32';
     no warnings 'redefine';
-    *I18N::Langinfo::langinfo = sub(_) {
+    my $stub = sub {
         return "UTF-8" if $_[0] == I18N::Langinfo::CODESET();
     };
+    set_prototype \&$stub, ($] <= 5.008009) ? '$' : '_';
+    *I18N::Langinfo::langinfo = $stub;
     *CORE::GLOBAL::getpwuid = sub {
         wantarray
             ? ("test", "x", "1000", "1000", "", "", "T\x{c3}\x{a9}st", "/home/test", "/bin/bash")
