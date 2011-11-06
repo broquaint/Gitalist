@@ -1,1 +1,1 @@
-[% IF syntax_css %]<link rel="stylesheet" type="text/css" href="[% syntax_css %]"/>[% END %]
+[% IF language %]<link rel="stylesheet" type="text/css" href="[% c.uri_for("/static/css/syntax/" _ language _ ".css") %]"/>[% END %]

@@ -28,7 +28,7 @@ sub _diff {
       diff_tree => $tree,
       diff      => $patch,
       # XXX Hack hack hack, see View::SyntaxHighlight
-      blobs     => [map $_->{diff}, @$patch],
+      diffs     => [map $_->{diff}, @$patch],
       %diff_args,
     );
 }

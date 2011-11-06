@@ -6,7 +6,7 @@
    </div>
   [% END %]
 
-[% subinclude('/fragment/ref/blob', c.req.captures, c.req.args.to_path) %]
+[% subinclude('/fragment/ref/blob', c.req.captures, c.req.args.to_path, c.req.parameters) %]
 
 
  
