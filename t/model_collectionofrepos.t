@@ -11,7 +11,7 @@ use warnings;
 
 use Test::More;
 use Test::Exception;
-use FindBin;
+use lib "$Bin/lib"; # Used for testing of --model-class etc
 
 use Moose ();
 use Moose::Object;
@@ -39,13 +39,14 @@ $mock_ctx_meta->add_around_method_modifier( stash => sub { # Nicked straight fro
     }
     return $stash;
 });
+
 our $ctx_gen = sub {
-    my ($cb, $stash) = @_;
-    $stash ||= {};
+    my ($cb, %args) = @_;
     my $ctx = $mock_ctx_meta->new_object(
-        response => Catalyst::Response->new,
-        request => Catalyst::Request->new,
-        stash => { %$stash }, # Shallow copy to try and help the user out. Should we clone?
+        response    => Catalyst::Response->new,
+        request     => Catalyst::Request->new,
+        stash       => {},
+        %args
     );
     $ctx->response->_context($ctx);
     $ctx->request->_context($ctx);
@@ -64,11 +65,11 @@ throws_ok { Gitalist::Model::CollectionOfRepos->COMPONENT($ctx_gen->(), { repo_d
 
 {
     my $td = tempdir( CLEANUP => 1 );
-    test_with_config({ repo_dir => $td }, 'repo_dir is tempdir');
+    test_with_config({ repo_dir => $td }, msg => 'repo_dir is tempdir');
     # NOTE - This is cheating, there isn't a real git repository here, so things will explode (hopefully)
     #        if we go much further..
-    test_with_config({ repos => $td }, 'repos is tempdir (scalar)');
-    test_with_config({ repos => [$td] }, 'repos is tempdir (array)');
+    test_with_config({ repos => $td }, msg => 'repos is tempdir (scalar)');
+    test_with_config({ repos => [$td] }, msg => 'repos is tempdir (array)');
 }
 
 # Note - we treat an empty list of repos as if it doesn't exist at all.
@@ -95,13 +96,13 @@ throws_ok { Gitalist::Model::CollectionOfRepos->COMPONENT($ctx_gen->(), { repos 
 
 {
     my $i = test_with_config({ repo_dir => "$FindBin::Bin/lib/repositories"});
-    is scalar($i->repositories->flatten), 3, 'Found 6 repos';
+    is scalar($i->repositories->flatten), 3, 'Found 3 repos';
     isa_ok $i, 'Gitalist::Git::CollectionOfRepositories::FromDirectory';
 }
 
 {
     my $i = test_with_config({ repo_dir => "$FindBin::Bin/lib/repositories", search_recursively => 1 });
-    is scalar($i->repositories->flatten), 7, 'Found 6 repos recursively using config';
+    is scalar($i->repositories->flatten), 7, 'Found 7 repos recursively using config';
     isa_ok $i, 'Gitalist::Git::CollectionOfRepositories::FromDirectoryRecursive';
 }
  {
@@ -123,10 +124,37 @@ throws_ok { Gitalist::Model::CollectionOfRepos->COMPONENT($ctx_gen->(), { repos 
     isa_ok $i, 'Gitalist::Git::CollectionOfRepositories::FromListOfDirectories';
 }
 
+throws_ok {
+    test_with_config({
+        repo_dir  => "$FindBin::Bin/lib/repositories",
+        class     => 'ThisIsMadeOfLies',
+    });
+} qr/Can't locate ThisIsMadeOfLies/, "Died trying to load a non-existent class";
+
+{
+    my $i = test_with_config({
+        repo_dir => "$FindBin::Bin/lib/repositories",
+        class    => 'TestModelSimple'
+    });
+    is scalar($i->repositories->flatten), 3, 'Found 3 repos';
+    isa_ok $i, 'TestModelSimple';
+}
+
+{
+    my $i = test_with_config({
+        repo_dir => "$FindBin::Bin/lib/repositories",
+        class    => 'TestModelFancy',
+        args     => { fanciness => 1 },
+    });
+    is scalar($i->repositories->flatten), 1, 'Found 1 repo';
+    isa_ok $i, 'TestModelFancy';
+    ok $i->fanciness, "The TestModelFancy is fancy (so --model-args worked)";
+}
+
 sub test_with_config {
-    my ($config, $msg) = @_;
-    my $ctx = $ctx_gen->();
-        
+    my ($config, %opts) = @_;
+    my $msg = delete $opts{msg} || 'Built Model without exception';
+    my $ctx = $ctx_gen->(undef, %opts);
     my $m;
     lives_ok { $m = Gitalist::Model::CollectionOfRepos->COMPONENT($ctx, $config) } $msg;
     ok $m, 'Has model';

@@ -1,7 +1,7 @@
 package Gitalist;
 use Moose;
 BEGIN { require 5.008006; }
-use Catalyst::Runtime 5.80;
+use Catalyst::Runtime 5.90006;
 use namespace::autoclean;
 
 extends 'Catalyst';
@@ -257,6 +257,18 @@ This is compatible with C<gitweb>'s C<projects.list>.
 
 If provided every must contain a file of the same name to be
 visible. This is similar to C<gitweb>'s functionality.
+
+=item class
+
+If you want a different way of surfacing repositories you can use your
+own model (i.e something that composes
+L<Gitalist::Git::CollectionOfRepositories>) and specify the class name with
+this config option.
+
+=item args
+
+Any additional arguments to be passed into the Model constructor, only
+of use when used in conjunction with C<class> (see above).
 
 =back
 

@@ -57,7 +57,7 @@ if ($ENV{GITALIST_RELEASE_TESTING}) {
     }, $FindBin::Bin . "/lib");
 }
 
-requires 'Catalyst::Runtime' => '5.8001402';
+requires 'Catalyst::Runtime' => '5.90006';
 requires 'Catalyst::Plugin::ConfigLoader';
 requires 'Catalyst::Plugin::StackTrace';
 requires 'Catalyst::Plugin::Static::Simple';
