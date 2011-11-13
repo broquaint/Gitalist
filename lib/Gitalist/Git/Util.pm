@@ -21,7 +21,7 @@ class Gitalist::Git::Util {
         if (!$git) {
             die <<EOR;
 Could not find a git executable.
-Please specify the which git executable to use in gitweb.yml
+Please add the directory where your git executable resides to your PATH
 EOR
         }
 
