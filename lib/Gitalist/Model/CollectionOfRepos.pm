@@ -67,6 +67,13 @@ has whitelist => (
     predicate => '_has_whitelist',
 );
 
+has repo_dir => (
+    is         => 'ro',
+    isa        => DirOrUndef,
+    coerce     => 1,
+    predicate => '_has_repo_dir',
+);
+
 # Simple directory of repositories (for list)
 has repos_dir => (
     is => 'ro',
@@ -85,7 +92,9 @@ has repos => (
 
 sub _build_repos_dir {
     my $self = shift;
-    my $dir = $self->_application->run_options->{repo_dir} || $ENV{GITALIST_REPO_DIR } || undef;
+    my $opts = $self->_application->run_options || {};
+    return $self->_has_repo_dir && $self->repo_dir
+        || $opts->{repos_dir} || $ENV{GITALIST_REPO_DIR} || undef;
 }
 
 sub BUILD {
