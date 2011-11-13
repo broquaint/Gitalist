@@ -2,12 +2,27 @@ use MooseX::Declare;
 
 class Gitalist::Git::CollectionOfRepositories::Vhost
     with Gitalist::Git::CollectionOfRepositories {
+    use MooseX::Types::Moose qw/ HashRef Str /;
     use MooseX::Types::Common::String qw/NonEmptySimpleStr/;
     use MooseX::Types::Path::Class qw/Dir/;
+    use Moose::Util::TypeConstraints;
+
+    sub BUILDARGS { # FIXME - This is fuck ugly!
+        my ($class, @args) = @_;
+        my $args = $class->next::method(@args);
+        my %collections = %{ delete $args->{collections} };
+        foreach my $name (keys %collections) {
+            my %args = %{$collections{$name}};
+            my $class = delete $args{class};
+            Class::MOP::load_class($class);
+            $collections{$name} = $class->new(%args);
+        }
+        my $ret = { %$args, collections => \%collections };
+        return $ret;
+    }
 
     has vhost_dispatch => (
         isa => HashRef,
-        sa => HashRef,
         traits => ['Hash'],
         required => 1,
         handles => {
@@ -30,6 +45,7 @@ class Gitalist::Git::CollectionOfRepositories::Vhost
         required => 1,
     );
 
+    role_type 'Gitalist::Git::CollectionOfRepositories';
     has chosen_collection => (
         does => 'Gitalist::Git::CollectionOfRepositories',
         handles => [qw/
@@ -38,7 +54,7 @@ class Gitalist::Git::CollectionOfRepositories::Vhost
         /],
         default => sub {
             my $self = shift;
-            $self->_get_collection($self->_get_collection_name_for_vhost($self->vhost) || $self->_get_collection_name_for_vhost('default'));
+            $self->_get_collection($self->_get_collection_name_for_vhost($self->vhost) || $self->_get_collection_name_for_vhost('_default_'));
         },
         lazy => 1,
     );
@@ -56,10 +72,11 @@ Gitalist::Git::CollectionOfRepositories::Vhost
         vhost_dispatch => {
             "git.shadowcat.co.uk" => "foo",
             "git.moose.perl.org" => "bar",
+            "_default_" => "foo",
         },
         collections => {
-            foo => Gitalist::Git::CollectionOfRepositories::XXX->new(),
-            bar => Gitalist::Git::CollectionOfRepositories::XXX->new,
+            foo => { class => Gitalist::Git::CollectionOfRepositories::XXX', %args },
+            bar => { class => Gitalist::Git::CollectionOfRepositories::XXX', %args },
         }
     );
     my $repository_list = $repo->repositories;

@@ -27,6 +27,7 @@ my $run_options = {};
 my $mock_ctx_meta = Class::MOP::Class->create_anon_class( superclasses => ['Moose::Object'] );
 $mock_ctx_meta->add_method('run_options' => sub { $run_options });
 $mock_ctx_meta->add_attribute($_, accessor => $_, required => 1) for qw/request response/;
+$mock_ctx_meta->add_method('debug' => sub {});
 $mock_ctx_meta->add_attribute('stash', accessor => 'stash', required => 1, default => sub { {} });
 $mock_ctx_meta->add_around_method_modifier( stash => sub { # Nicked straight from Catalyst.pm
     my $orig = shift;
@@ -46,11 +47,12 @@ $mock_log->add_method($_ => sub {}) for qw/ warn info debug /;
 my $logger = $mock_log->name->new;
 $mock_ctx_meta->add_method('log' => sub { $logger });
 
+my $host = "example.gitalist.com";
 our $ctx_gen = sub {
     my ($cb, %args) = @_;
     my $ctx = $mock_ctx_meta->new_object(
         response    => Catalyst::Response->new,
-        request     => Catalyst::Request->new,
+        request     => Catalyst::Request->new(uri => URI->new("http://$host/")),
         stash       => {},
         %args
     );
@@ -148,6 +150,57 @@ throws_ok { Gitalist::Model::CollectionOfRepos->COMPONENT($ctx_gen->(), { repos 
     is scalar($i->repositories->flatten), 1, 'Found 1 repo';
     isa_ok $i, 'TestModelFancy';
     ok $i->fanciness, "The TestModelFancy is fancy (so --model-args worked)";
+}
+
+sub test_vhost_instance {
+    test_with_config({
+        class    => 'Gitalist::Git::CollectionOfRepositories::Vhost',
+        args     => {
+            vhost_dispatch => {
+                "git.shadowcat.co.uk" => "default",
+                "git.moose.perl.org" => "moose",
+                "git.catalyst.perl.org" => "catgit",
+                "_default_" => "default",
+            },
+            collections => {
+                moose => { class => 'Gitalist::Git::CollectionOfRepositories::FromDirectory', repo_dir => "$FindBin::Bin/lib/repositories_sets/moose" },
+                catgit => { class => 'Gitalist::Git::CollectionOfRepositories::FromDirectory', repo_dir => "$FindBin::Bin/lib/repositories_sets/catgit" },
+                default => { class => 'Gitalist::Git::CollectionOfRepositories::FromDirectoryRecursive', repo_dir => "$FindBin::Bin/lib/repositories_sets"},
+            }
+        },
+    });
+}
+
+my $c_name = "$FindBin::Bin/lib/repositories_sets/catgit/Catalyst-Runtime/.git";
+my $m_name = "$FindBin::Bin/lib/repositories_sets/moose/Moose/.git";
+{
+    my $i = test_vhost_instance();
+    is scalar($i->repositories->flatten), 2, 'Found 2 repos on test vhost';
+    my @r = $i->repositories->flatten;
+    my @paths = sort map { $_->path . "" } $i->repositories->flatten;
+    is_deeply \@paths, [sort $c_name, $m_name];
+}
+
+{
+    $host = "git.moose.perl.org";
+    my $i = test_vhost_instance();
+    is scalar($i->repositories->flatten), 1, 'Found 1 repos on moose vhost';
+    is $i->repositories->[0]->path.'', $m_name;
+}
+
+{
+    $host = "git.catalyst.perl.org";
+    my $i = test_vhost_instance();
+    is scalar($i->repositories->flatten), 1, 'Found 1 repos on catalyst vhost';
+    is $i->repositories->[0]->path.'', $c_name;
+}
+
+{
+    $host = "git.shadowcat.co.uk";
+    my $i = test_vhost_instance();
+    is scalar($i->repositories->flatten), 2, 'Found 2 repos on git.shadowcat vhost';
+    my @paths = sort map { $_->path . "" } $i->repositories->flatten;
+    is_deeply \@paths, [sort $c_name, $m_name];
 }
 
 sub test_with_config {

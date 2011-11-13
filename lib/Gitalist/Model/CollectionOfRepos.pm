@@ -117,7 +117,7 @@ sub build_per_context_instance {
 
     my $class = $self->class;
 
-    $ctx->log->debug("Using class '$class'") if $c->debug;
+    $ctx->log->debug("Using class '$class'") if $ctx->debug;
 
     return $class->new(%args);
 }
