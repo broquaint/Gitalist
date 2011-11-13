@@ -1,11 +1,9 @@
 package Gitalist::Model::CollectionOfRepos;
 
 use Moose;
-use Gitalist::Git::CollectionOfRepositories::FromDirectoryRecursive;
-use Gitalist::Git::CollectionOfRepositories::FromListOfDirectories;
-use Gitalist::Git::CollectionOfRepositories::FromDirectory::WhiteList;
 use MooseX::Types::Moose qw/Maybe ArrayRef/;
 use MooseX::Types::Common::String qw/NonEmptySimpleStr/;
+use MooseX::Types::LoadableClass qw/ LoadableClass /;
 use Moose::Util::TypeConstraints;
 use Moose::Autobox;
 use namespace::autoclean;
@@ -52,9 +50,25 @@ has repos => (
 );
 
 has class => (
-    isa => NonEmptySimpleStr,
+    isa => LoadableClass,
     is  => 'ro',
+    is => 'lazy',
+    builder => '_build_class',
 );
+
+sub _build_class {
+    my($self) = @_;
+
+    if($self->whitelist && -f $self->whitelist) {
+        return 'Gitalist::Git::CollectionOfRepositories::FromDirectory::WhiteList';
+    } elsif ($self->_repos_count && !$self->search_recursively) {
+        return 'Gitalist::Git::CollectionOfRepositories::FromListOfDirectories';
+    } elsif($self->search_recursively) {
+        return 'Gitalist::Git::CollectionOfRepositories::FromDirectoryRecursive';
+    }
+
+    return 'Gitalist::Git::CollectionOfRepositories::FromDirectory';
+}
 
 has args => (
     isa     => 'HashRef',
@@ -96,38 +110,19 @@ after BUILD => sub {
     $self->_repos_count || $self->repo_dir;
 };
 
-sub _default_model_class {
-    my($self) = @_;
-
-    if($self->whitelist && -f $self->whitelist) {
-        return 'FromDirectory::WhiteList';
-    } elsif ($self->_repos_count && !$self->search_recursively) {
-        return 'FromListOfDirectories';
-    } elsif($self->search_recursively) {
-        return 'FromDirectoryRecursive';
-    }
-
-    return 'FromDirectory';
-}
 
 sub build_per_context_instance {
     my ($self, $app) = @_;
 
     my %args = (
         export_ok => $self->export_ok || '',
+        $self->_has_whitelist ? (whitelist => $self->whistlist) : (),
+        $self->_has_repos ? (repos => $self->repos) : ()
+        $self->_has_repo_dir ? (repo_dir => $self->repo_dir) : ()
         %{ $self->args }
     );
 
     my $class = $self->class;
-    Class::MOP::load_class($class) if $class;
-
-    my $default = $self->_default_model_class;
-
-    $args{whitelist} = $self->whitelist if $default eq 'FromDirectory::WhiteList';
-    $args{repos}     = $self->repos     if $default eq 'FromListOfDirectories';
-    $args{repo_dir}  = $self->repo_dir  if $default =~ /\b(?:WhiteList|FromDirectory(?:Recursive)?)$/;
-
-    $class ||= "Gitalist::Git::CollectionOfRepositories::$default";
 
     $app->log->debug("Using class '$class'");
 
@@ -143,6 +138,24 @@ __END__
 =head1 NAME
 
 Gitalist::Model::CollectionOfRepos - Model::CollectionOfRepos module for Gitalist
+
+=head1 DESCRIPTION
+
+This Model is a factory for an object implementing the L<Gitalist::Git::CollectionOfRepositories>
+interface.
+
+The simple options passed on the command line (like C<--repos_dir>), a class will by picked by default 
+L<Gitalist::Git::CollectionOfRepositories::FromDirectory>.
+
+This can be overridden from config by explicitly passing in a class name and args for that class
+in config:
+
+    <Model::CollectionOfRepos>
+        class MyClassName
+        <args>
+            ...
+        </args>
+    </Model::CollectionOfRepos>
 
 =head1 AUTHORS
 
