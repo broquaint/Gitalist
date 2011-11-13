@@ -23,7 +23,9 @@ use Catalyst::Utils;
 use Gitalist::Model::CollectionOfRepos;
 use File::Temp qw/tempdir tempfile/;
 
+my $run_options = {};
 my $mock_ctx_meta = Class::MOP::Class->create_anon_class( superclasses => ['Moose::Object'] );
+$mock_ctx_meta->add_method('run_options' => sub { $run_options });
 $mock_ctx_meta->add_attribute($_, accessor => $_, required => 1) for qw/request response/;
 $mock_ctx_meta->add_attribute('stash', accessor => 'stash', required => 1, default => sub { {} });
 $mock_ctx_meta->add_around_method_modifier( stash => sub { # Nicked straight from Catalyst.pm
@@ -39,6 +41,10 @@ $mock_ctx_meta->add_around_method_modifier( stash => sub { # Nicked straight fro
     }
     return $stash;
 });
+my $mock_log = Moose::Meta::Class->create_anon_class( superclasses => ['Moose::Object'] );
+$mock_log->add_method($_ => sub {}) for qw/ warn info debug /;
+my $logger = $mock_log->name->new;
+$mock_ctx_meta->add_method('log' => sub { $logger });
 
 our $ctx_gen = sub {
     my ($cb, %args) = @_;
@@ -57,15 +63,15 @@ our $ctx_gen = sub {
 local %ENV = %ENV;
 delete $ENV{GITALIST_REPO_DIR};
 
-throws_ok { Gitalist::Model::CollectionOfRepos->COMPONENT($ctx_gen->(), {}) }
-    qr/Cannot find repository dir/, 'Blows up nicely with no repos dir';
+throws_ok { my $i = Gitalist::Model::CollectionOfRepos->COMPONENT($ctx_gen->(), {}); $i->{_application} = $mock_ctx_meta->name; }
+    qr/Don't know where to get repositores from/, 'Blows up nicely with no repos dir';
 
-throws_ok { Gitalist::Model::CollectionOfRepos->COMPONENT($ctx_gen->(), { repo_dir => '/does/not/exist' }) }
-    qr|Cannot find repository dir: "/does/not/exist"|, 'Blows up nicely with repos dir does not exist';
+throws_ok { Gitalist::Model::CollectionOfRepos->COMPONENT($ctx_gen->(), { repos_dir => '/does/not/exist' }) }
+    qr|No such file or directory|, 'Blows up nicely with repos dir does not exist';
 
 {
     my $td = tempdir( CLEANUP => 1 );
-    test_with_config({ repo_dir => $td }, msg => 'repo_dir is tempdir');
+    test_with_config({ repos_dir => $td }, msg => 'repos_dir is tempdir');
     # NOTE - This is cheating, there isn't a real git repository here, so things will explode (hopefully)
     #        if we go much further..
     test_with_config({ repos => $td }, msg => 'repos is tempdir (scalar)');
@@ -77,15 +83,15 @@ throws_ok { Gitalist::Model::CollectionOfRepos->COMPONENT($ctx_gen->(), { repos 
     qr/Cannot find repository dir/, 'Blows up nicely with no repos list';
 
 throws_ok { Gitalist::Model::CollectionOfRepos->COMPONENT($ctx_gen->(), { repos => [ '/does/not/exist' ] } ) }
-    qr/Cannot find repository directories/, 'Blows up nicely with repos list - 1 unknown item (array)';
+    qr/No such file or directory/, 'Blows up nicely with repos list - 1 unknown item (array)';
 throws_ok { Gitalist::Model::CollectionOfRepos->COMPONENT($ctx_gen->(), { repos => '/does/not/exist' } ) }
-    qr/Cannot find repository directories/, 'Blows up nicely with repos list - 1 unknown item (scalar))';
+    qr/No such file or directory/, 'Blows up nicely with repos list - 1 unknown item (scalar))';
 
 throws_ok { Gitalist::Model::CollectionOfRepos->COMPONENT($ctx_gen->(), { repos => [ '/does/not/exist', '/also/does/not/exist' ] } ) }
-    qr/Cannot find repository directories/, 'Blows up nicely with repos list - 2 unknown items';
+    qr/No such file or directory/, 'Blows up nicely with repos list - 2 unknown items';
 
 throws_ok { Gitalist::Model::CollectionOfRepos->COMPONENT($ctx_gen->(), { repos => [ tempdir( CLEANUP => 1), '/also/does/not/exist' ] } ) }
-    qr|Cannot find repository directories.*/also/does/not/exist|, 'Blows up nicely with repos list - 1 known, 1 unknown items';
+    qr|No such file or directory|, 'Blows up nicely with repos list - 1 known, 1 unknown items';
 
 {
     my $td = tempdir( CLEANUP => 1 );
@@ -95,13 +101,13 @@ throws_ok { Gitalist::Model::CollectionOfRepos->COMPONENT($ctx_gen->(), { repos 
 }
 
 {
-    my $i = test_with_config({ repo_dir => "$FindBin::Bin/lib/repositories"});
+    my $i = test_with_config({ repos_dir => "$FindBin::Bin/lib/repositories"});
     is scalar($i->repositories->flatten), 3, 'Found 3 repos';
     isa_ok $i, 'Gitalist::Git::CollectionOfRepositories::FromDirectory';
 }
 
 {
-    my $i = test_with_config({ repo_dir => "$FindBin::Bin/lib/repositories", search_recursively => 1 });
+    my $i = test_with_config({ repos_dir => "$FindBin::Bin/lib/repositories", search_recursively => 1 });
     is scalar($i->repositories->flatten), 7, 'Found 7 repos recursively using config';
     isa_ok $i, 'Gitalist::Git::CollectionOfRepositories::FromDirectoryRecursive';
 }
@@ -109,7 +115,7 @@ throws_ok { Gitalist::Model::CollectionOfRepos->COMPONENT($ctx_gen->(), { repos 
     my($tempfh, $wl) = tempfile(UNLINK => 1);
     print {$tempfh} "repo1";
     close $tempfh;
-    my $i = test_with_config({ repo_dir => "$FindBin::Bin/lib/repositories", whitelist => $wl });
+    my $i = test_with_config({ repos_dir => "$FindBin::Bin/lib/repositories", whitelist => $wl });
     is scalar($i->repositories->flatten), 1, 'Found 1 repos using whitelist';
     isa_ok $i, 'Gitalist::Git::CollectionOfRepositories::FromDirectory::WhiteList';
 }
@@ -124,16 +130,9 @@ throws_ok { Gitalist::Model::CollectionOfRepos->COMPONENT($ctx_gen->(), { repos 
     isa_ok $i, 'Gitalist::Git::CollectionOfRepositories::FromListOfDirectories';
 }
 
-throws_ok {
-    test_with_config({
-        repo_dir  => "$FindBin::Bin/lib/repositories",
-        class     => 'ThisIsMadeOfLies',
-    });
-} qr/Can't locate ThisIsMadeOfLies/, "Died trying to load a non-existent class";
-
 {
     my $i = test_with_config({
-        repo_dir => "$FindBin::Bin/lib/repositories",
+        repos_dir => "$FindBin::Bin/lib/repositories",
         class    => 'TestModelSimple'
     });
     is scalar($i->repositories->flatten), 3, 'Found 3 repos';
@@ -142,7 +141,7 @@ throws_ok {
 
 {
     my $i = test_with_config({
-        repo_dir => "$FindBin::Bin/lib/repositories",
+        repos_dir => "$FindBin::Bin/lib/repositories",
         class    => 'TestModelFancy',
         args     => { fanciness => 1 },
     });

@@ -4,6 +4,8 @@ use MooseX::Types
      -declare => [qw/
          SHA1
          Dir
+         ArrayRefOfDirs
+         DirOrUndef
      /];
 
 use MooseX::Types::Path::Class;
@@ -11,6 +13,8 @@ use MooseX::Types::ISO8601 qw/ISO8601DateTimeStr/;
 use MooseX::Types::DateTime qw/ DateTime /;
 use MooseX::Storage::Engine ();
 use MooseX::Types::Common::String qw/NonEmptySimpleStr/;
+use MooseX::Types::Moose qw/ ArrayRef Undef Str /;
+use Path::Class qw/ dir /;
 
 subtype SHA1,
     as NonEmptySimpleStr,
@@ -35,6 +39,13 @@ MooseX::Storage::Engine->add_custom_type_handler(
 subtype Dir,
     as 'MooseX::Types::Path::Class::Dir',
     where { 1 };
+
+subtype ArrayRefOfDirs, as ArrayRef[Dir], where { scalar(@$_) >= 1 }, message { "Cannot find repository dir" };
+coerce ArrayRefOfDirs, from NonEmptySimpleStr, via { [ dir($_)->resolve ] };
+coerce ArrayRefOfDirs, from ArrayRef[NonEmptySimpleStr], via { [ map { dir($_)->resolve } @$_ ] };
+
+subtype DirOrUndef, as Dir | Undef;
+coerce DirOrUndef, from Str, via { if ($_) { dir($_) } else { undef }};
 
 MooseX::Storage::Engine->add_custom_type_handler(
     Dir,
