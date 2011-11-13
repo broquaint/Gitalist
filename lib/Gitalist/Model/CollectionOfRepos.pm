@@ -12,6 +12,7 @@ use namespace::autoclean;
 
 extends 'Catalyst::Model';
 
+with 'Catalyst::Component::ApplicationAttribute';
 with 'Catalyst::Component::InstancePerContext';
 
 my $repo_dir_t = subtype NonEmptySimpleStr,
@@ -79,8 +80,10 @@ has whitelist => (
 
 sub _build_repo_dir {
     my $self = shift;
-    $ENV{GITALIST_REPO_DIR} ?
-        $ENV{GITALIST_REPO_DIR}
+    my $repo_dir = $self->_application->run_options->{repo_dir};
+
+    $repo_dir ?
+        $repo_dir
       : $self->has_config_repo_dir
       ? $self->config_repo_dir
         : '';
