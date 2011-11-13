@@ -105,11 +105,7 @@ sub build_per_context_instance {
         %{ $self->args }
     );
 
-    my $class = $self->class;
-
-    $app->log->debug("Using class '$class'");
-
-    return $class->new(%args);
+    return $self->class->new(%args);
 }
 
 __PACKAGE__->meta->make_immutable;
