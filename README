@@ -175,6 +175,16 @@ CONFIGURATION
         If provided every must contain a file of the same name to be
         visible. This is similar to "gitweb"'s functionality.
 
+    class
+        If you want a different way of surfacing repositories you can use
+        your own model (i.e something that composes
+        Gitalist::Git::CollectionOfRepositories) and specify the class name
+        with this config option.
+
+    args
+        Any additional arguments to be passed into the Model constructor,
+        only of use when used in conjunction with "class" (see above).
+
   paging
     log The number of commits to show in the summary, shortlog and longlog
         views.
