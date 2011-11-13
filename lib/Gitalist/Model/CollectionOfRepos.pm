@@ -104,17 +104,22 @@ sub BUILD {
 }
 
 sub build_per_context_instance {
-    my ($self, $app) = @_;
+    my ($self, $ctx) = @_;
 
     my %args = (
         export_ok => $self->export_ok || '',
         $self->_has_whitelist ? (whitelist => $self->whitelist) : (),
         repos => $self->repos,
         repo_dir => $self->repos_dir,
+        vhost => $ctx->request->uri->host,
         %{ $self->args }
     );
 
-    return $self->class->new(%args);
+    my $class = $self->class;
+
+    $ctx->log->debug("Using class '$class'") if $c->debug;
+
+    return $class->new(%args);
 }
 
 __PACKAGE__->meta->make_immutable;
