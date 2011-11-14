@@ -45,6 +45,8 @@ class Gitalist::Git::CollectionOfRepositories::Vhost
         required => 1,
     );
 
+    method debug_string { 'chosen collection ' . ref($self->chosen_collection) . " " . $self->chosen_collection->debug_string }
+
     role_type 'Gitalist::Git::CollectionOfRepositories';
     has chosen_collection => (
         does => 'Gitalist::Git::CollectionOfRepositories',

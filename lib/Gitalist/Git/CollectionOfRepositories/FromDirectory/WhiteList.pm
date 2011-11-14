@@ -12,6 +12,8 @@ class Gitalist::Git::CollectionOfRepositories::FromDirectory::WhiteList
         coerce   => 1,
     );
 
+    method debug_string { 'repository directory ' . $self->repo_dir . ' whitelist file ' . $self->whitelist }
+
     method _build_repositories {
         return [
             map  Gitalist::Git::Repository->new($_),

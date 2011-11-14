@@ -115,9 +115,11 @@ sub build_per_context_instance {
 
     my $class = $self->class;
 
-    $ctx->log->debug("Using class '$class'") if $ctx->debug;
+    my $model = $class->new(%args);
 
-    return $class->new(%args);
+    $ctx->log->debug("Using class '$class' " . $model->debug_string) if $ctx->debug;
+
+    return $model;
 }
 
 __PACKAGE__->meta->make_immutable;

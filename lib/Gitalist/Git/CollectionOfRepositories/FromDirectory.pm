@@ -12,6 +12,8 @@ class Gitalist::Git::CollectionOfRepositories::FromDirectory
         coerce => 1,
     );
 
+    method debug_string { 'repository directory ' . $self->repo_dir }
+
     method BUILD {
         # Make sure repo_dir is an absolute path so that
         # ->contains() works correctly.

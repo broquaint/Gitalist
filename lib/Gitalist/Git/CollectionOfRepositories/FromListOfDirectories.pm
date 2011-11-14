@@ -25,6 +25,8 @@ class Gitalist::Git::CollectionOfRepositories::FromListOfDirectories with Gitali
         },
     );
 
+    method debug_string { 'repository directories ' . join(" ", map { $_."" } $self->repos->flatten) }
+
     method _build__repos_by_name {
         +{ map { basename($_) => dir($_) } $self->repos->flatten };
     }
