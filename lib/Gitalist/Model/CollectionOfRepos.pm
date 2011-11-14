@@ -97,14 +97,12 @@ sub _build_repos_dir {
         || $opts->{repos_dir} || $ENV{GITALIST_REPO_DIR} || undef;
 }
 
-sub BUILD {
-    my $self = shift;
-    $self->class();
-    if ($self->repos_dir) { $self->repos_dir->resolve }
-}
-
 sub build_per_context_instance {
     my ($self, $ctx) = @_;
+
+    $self->class();
+
+    if ($self->repos_dir) { $self->repos_dir->resolve }
 
     my %args = (
         export_ok => $self->export_ok || '',
