@@ -9,10 +9,11 @@ with 'Catalyst::View::Component::SubInclude';
 use Template::Plugin::Cycle;
 
 __PACKAGE__->config(
-  TEMPLATE_EXTENSION => '.tt2',
-  WRAPPER            => 'wrapper.tt2',
-  subinclude_plugin => 'SubRequest',
-  render_die => 1,
+    TEMPLATE_EXTENSION => '.tt2',
+    WRAPPER            => 'wrapper.tt2',
+    subinclude_plugin => 'Visit',
+    keep_stash => 1,
+    render_die => 1,
 );
 
 use Template::Stash;
