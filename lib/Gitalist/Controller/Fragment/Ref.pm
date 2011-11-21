@@ -53,6 +53,7 @@ after tree => sub {
       : $commit->tree->[0]
     ;
     $c->stash(
+        data      => $tree_obj->tree,
         tree      => $tree_obj,
         tree_list => $tree_obj->tree,
     );

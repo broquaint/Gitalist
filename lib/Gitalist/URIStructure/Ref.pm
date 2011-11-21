@@ -58,7 +58,10 @@ sub commit : Chained('find') PathPart('commit') Args(0) {}
 
 sub file_commit_info : Chained('find') Does('FilenameArgs') Args() {}
 
-sub tree : Chained('find') Does('FilenameArgs') Args() {}
+sub tree : Chained('find') Does('FilenameArgs') Args() {
+    my ($self, $c) = @_;
+    $c->stash->{data} = $c->stash->{Commit}->tree->[0];
+}
 
 sub find_blob : Action {
     my ($self, $c) = @_;

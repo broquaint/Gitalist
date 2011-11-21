@@ -1,7 +1,7 @@
 package Gitalist::Git::Object::HasTree;
 use MooseX::Declare;
 
-role Gitalist::Git::Object::HasTree {
+role Gitalist::Git::Object::HasTree with Gitalist::Git::Serializable is dirty {
     has tree => ( isa => 'ArrayRef[Gitalist::Git::Object]',
                   required => 0,
                   is => 'ro',
