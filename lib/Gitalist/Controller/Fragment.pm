@@ -13,7 +13,7 @@ sub base : Chained('/base') PathPart('fragment') CaptureArgs(0) {
 sub collectionofrepositories : Chained('base') Args(0) {
     my ($self, $c) = @_;
     my @list = @{ $c->model()->repositories };
-    die 'No repositories found in '. $c->model->repo_dir
+    die 'No repositories found in '. ref($c->model) . ' ' . $c->model->debug_string
       unless @list;
 
     my $search = $c->req->param('s') || '';
