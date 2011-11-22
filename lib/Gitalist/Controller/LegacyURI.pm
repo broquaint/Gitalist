@@ -140,7 +140,7 @@ sub project_index : Chained('/base') Args(0) {
       $c->response->content_type('text/plain');
       $c->response->body(
           join "\n", map $_->name, $c->model()->repositories->flatten
-      ) or die 'No repositories found in '. $c->model->repo_dir;
+      ) or die 'No repositories found in ' . ref($c->model) . ' ' . $c->model->debug_string;
 }
 
 __PACKAGE__->meta->make_immutable;
