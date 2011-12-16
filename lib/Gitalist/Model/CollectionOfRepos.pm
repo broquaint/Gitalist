@@ -25,6 +25,7 @@ has class => (
 
 sub _build_class {
     my ($self) = @_;
+    return $self->custom_class if $self->custom_class;
 
     if($self->whitelist && -f $self->whitelist) {
         return 'Gitalist::Git::CollectionOfRepositories::FromDirectory::WhiteList';
@@ -57,6 +58,11 @@ has search_recursively => (
 
 ## XX What is this for?
 has export_ok => (
+    is  => 'ro',
+    isa => 'Str',
+);
+
+has custom_class => (
     is  => 'ro',
     isa => 'Str',
 );
@@ -109,6 +115,7 @@ sub build_per_context_instance {
         $self->_has_whitelist ? (whitelist => $self->whitelist) : (),
         repos => $self->repos,
         repo_dir => $self->repos_dir,
+        remote_user => $ctx->request->remote_user,
         vhost => $ctx->request->uri->host,
         %{ $self->args }
     );
