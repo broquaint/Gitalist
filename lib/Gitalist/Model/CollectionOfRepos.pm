@@ -35,11 +35,11 @@ sub _build_class {
     elsif ($self->repos) {
         return 'Gitalist::Git::CollectionOfRepositories::FromListOfDirectories';
     }
-    elsif ($self->repos_dir) {
+    elsif ($self->repo_dir) {
         return 'Gitalist::Git::CollectionOfRepositories::FromDirectory';
     }
     else {
-        return "Don't know where to get repositores from. Try a --repos_dir option, or setting up config";
+        return "Don't know where to get repositores from. Try a --repo_dir option, or setting up config";
     }
 }
 
@@ -68,11 +68,11 @@ has whitelist => (
 );
 
 # Simple directory of repositories (for list)
-has repos_dir => (
+has repo_dir => (
     is => 'ro',
     isa => DirOrUndef,
     coerce => 1,
-    builder => '_build_repos_dir',
+    builder => '_build_repo_dir',
     lazy => 1,
 );
 
@@ -83,7 +83,7 @@ has repos => (
     coerce => 1,
 );
 
-sub _build_repos_dir {
+sub _build_repo_dir {
     my $self = shift;
     return $ENV{GITALIST_REPO_DIR};
 }
@@ -93,13 +93,13 @@ sub build_per_context_instance {
 
     $self->class();
 
-    if ($self->repos_dir) { $self->repos_dir->resolve }
+    if ($self->repo_dir) { $self->repo_dir->resolve }
 
     my %args = (
         export_ok => $self->export_ok || '',
         $self->_has_whitelist ? (whitelist => $self->whitelist) : (),
         repos => $self->repos,
-        repo_dir => $self->repos_dir,
+        repo_dir => $self->repo_dir,
         vhost => $ctx->request->uri->host,
         %{ $self->args }
     );
@@ -130,7 +130,7 @@ Gitalist::Model::CollectionOfRepos - Model::CollectionOfRepos module for Gitalis
 This Model is a factory for an object implementing the L<Gitalist::Git::CollectionOfRepositories>
 interface.
 
-The simple options passed on the command line (like C<--repos_dir>), a class will by picked by default 
+The simple options passed on the command line (like C<--repo_dir>), a class will by picked by default 
 L<Gitalist::Git::CollectionOfRepositories::FromDirectory>.
 
 This can be overridden from config by explicitly passing in a class name and args for that class
