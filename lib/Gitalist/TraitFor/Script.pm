@@ -16,7 +16,6 @@ has repo_dir => (
 around run => sub {
     my $orig = shift;
     my $self = shift;
-    warn("Script repo dir" . $self->repo_dir);
     local $ENV{GITALIST_REPO_DIR} = $self->repo_dir;
     $self->$orig(@_);
 };

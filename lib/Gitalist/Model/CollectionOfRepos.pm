@@ -9,11 +9,9 @@ use Moose::Util::TypeConstraints;
 use Moose::Autobox;
 use Path::Class qw/ dir /;
 use namespace::autoclean;
+use Carp qw/croak/;
 
 extends 'Catalyst::Model';
-
-with 'Catalyst::Component::ApplicationAttribute';
-with 'Catalyst::Component::InstancePerContext';
 
 has class => (
     isa => LoadableClass,
@@ -39,7 +37,7 @@ sub _build_class {
         return 'Gitalist::Git::CollectionOfRepositories::FromDirectory';
     }
     else {
-        return "Don't know where to get repositores from. Try a --repo_dir option, or setting up config";
+        croak "Don't know where to get repositores from. Try a --repo_dir option, or setting up config";
     }
 }
 
@@ -88,29 +86,35 @@ sub _build_repo_dir {
     return $ENV{GITALIST_REPO_DIR};
 }
 
-sub build_per_context_instance {
-    my ($self, $ctx) = @_;
+sub BUILD {
+    my($self) = @_;
 
     $self->class();
 
     if ($self->repo_dir) { $self->repo_dir->resolve }
+}
+
+sub COMPONENT {
+    my($class, $ctx, @args) = @_;
+
+    my $self = $class->new($ctx, @args);
 
     my %args = (
         export_ok => $self->export_ok || '',
+        repos      => $self->repos,
+        repo_dir  => $self->repo_dir,
         $self->_has_whitelist ? (whitelist => $self->whitelist) : (),
-        repos => $self->repos,
-        repo_dir => $self->repo_dir,
-        vhost => $ctx->request->uri->host,
         %{ $self->args }
     );
 
-    my $class = $self->class;
+    my $model_class = $self->class;
 
-    $ctx->log->debug("Building $class with " . join(", ", map { $_ . " => " . (defined($args{$_}) ? "'" . $args{$_}  . "'" : 'undef') } keys %args))
+    $ctx->log->debug("Building $model_class with " . join(", ", map { $_ . " => " . (defined($args{$_}) ? "'" . $args{$_}  . "'" : 'undef') } keys %args))
         if $ctx->debug;
-    my $model = $class->new(%args);
 
-    $ctx->log->debug("Using class '$class' " . $model->debug_string) if $ctx->debug;
+    my $model = $model_class->new(\%args);
+
+    $ctx->log->debug("Using class '$model_class' " . $model->debug_string) if $ctx->debug;
 
     return $model;
 }

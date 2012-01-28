@@ -47,7 +47,8 @@ $mock_log->add_method($_ => sub {}) for qw/ warn info debug /;
 my $logger = $mock_log->name->new;
 $mock_ctx_meta->add_method('log' => sub { $logger });
 
-my $host = "example.gitalist.com";
+my $host = "git.shadowcat.co.uk";
+$mock_ctx_meta->add_method('uri' => sub { URI->new("http://$host/") });
 our $ctx_gen = sub {
     my ($cb, %args) = @_;
     my $ctx = $mock_ctx_meta->new_object(
@@ -63,6 +64,7 @@ our $ctx_gen = sub {
 };
 
 local %ENV = %ENV;
+delete $ENV{GITALIST_CONFIG};
 delete $ENV{GITALIST_REPO_DIR};
 
 throws_ok { my $i = Gitalist::Model::CollectionOfRepos->COMPONENT($ctx_gen->(), {}); $i->{_application} = $mock_ctx_meta->name; }
@@ -171,8 +173,8 @@ sub test_vhost_instance {
     });
 }
 
-my $c_name = "$FindBin::Bin/lib/repositories_sets/catgit/Catalyst-Runtime/.git";
-my $m_name = "$FindBin::Bin/lib/repositories_sets/moose/Moose/.git";
+my $c_name = "$FindBin::Bin/lib/repositories_sets/catgit/Catalyst-Runtime";
+my $m_name = "$FindBin::Bin/lib/repositories_sets/moose/Moose";
 {
     my $i = test_vhost_instance();
     is scalar($i->repositories->flatten), 2, 'Found 2 repos on test vhost';
@@ -212,9 +214,6 @@ sub test_with_config {
     ok $m, 'Has model';
     my $i = $m->ACCEPT_CONTEXT($ctx);
     ok $i, 'Has model instance from ACCEPT_CONTEXT';
-    isnt $i, $m, 'Model instance returned from ACCEPT_CONTEXT not same as model';
-    is $i, $m->ACCEPT_CONTEXT($ctx), 'Same model instance for same context';
-    isnt $i, $m->ACCEPT_CONTEXT($ctx_gen->()), 'Different model instance for different context';
     return $i;
 }
 

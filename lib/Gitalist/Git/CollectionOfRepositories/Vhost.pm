@@ -1,12 +1,9 @@
 use MooseX::Declare;
 
 class Gitalist::Git::CollectionOfRepositories::Vhost
-    with Gitalist::Git::CollectionOfRepositories {
-    use MooseX::Types::Moose qw/ HashRef Str /;
-    use MooseX::Types::Common::String qw/NonEmptySimpleStr/;
-    use MooseX::Types::Path::Class qw/Dir/;
-    use Moose::Util::TypeConstraints;
+     with Gitalist::Git::CollectionOfRepositoriesWithRequestState {
 
+    use MooseX::Types::Moose qw/HashRef/;
     sub BUILDARGS { # FIXME - This is fuck ugly!
         my ($class, @args) = @_;
         my $args = $class->next::method(@args);
@@ -20,6 +17,34 @@ class Gitalist::Git::CollectionOfRepositories::Vhost
         my $ret = { %$args, collections => \%collections };
         return $ret;
     }
+
+    has collections => (
+        is       => 'ro',
+        isa      => HashRef,
+        required => 1,
+    );
+
+    has vhost_dispatch => (
+        isa => HashRef,
+        traits => ['Hash'],
+        required => 1,
+        handles => {
+            _get_collection_name_for_vhost => 'get',
+        },
+    );
+
+    method implementation_class { 'Gitalist::Git::CollectionOfRepositories::VhostImpl' }
+    method extract_request_state ($ctx) {
+        return (vhost => $ctx->uri->host);
+    }
+}
+
+class Gitalist::Git::CollectionOfRepositories::VhostImpl
+    with Gitalist::Git::CollectionOfRepositories {
+    use MooseX::Types::Moose qw/ HashRef Str /;
+    use MooseX::Types::Common::String qw/NonEmptySimpleStr/;
+    use MooseX::Types::Path::Class qw/Dir/;
+    use Moose::Util::TypeConstraints;
 
     has vhost_dispatch => (
         isa => HashRef,
@@ -49,6 +74,7 @@ class Gitalist::Git::CollectionOfRepositories::Vhost
 
     role_type 'Gitalist::Git::CollectionOfRepositories';
     has chosen_collection => (
+        is => 'ro',
         does => 'Gitalist::Git::CollectionOfRepositories',
         handles => [qw/
             _get_repo_from_name
