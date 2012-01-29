@@ -1,5 +1,14 @@
 This file documents the revision history for Perl extension Gitalist.
 
+0.003008 2012-01-29
+  - Now with Changes.
+
+0.003007 2012-01-28
+  - Allow the model to be user defined,
+  - Use new Catalyst features.
+  - Make repo_dir work consistently with GITALIST_REPO_DIR (Tomas Doran).
+  - Add the Vhost collection of repositories (Tomas Doran).
+
 0.003006 2011-10-18
   - Fix lies in docs, make config more obvious (Tomas Doran)
   - Avoid "Use of qw(...) as parentheses is deprecated" warning with
