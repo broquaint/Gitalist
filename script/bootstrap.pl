@@ -11,71 +11,13 @@
 use strict;
 use warnings;
 
-use lib;
 use FindBin;
-use CPAN;
 
-# Do not take no for an answer.
+my $basedir = -r "$FindBin::Bin/Makefile.PL"
+              ? $FindBin::Bin
+              : -r "$FindBin::Bin/../Makefile.PL"
+                ? "$FindBin::Bin/.."
+                : '';
 
-$ENV{CATALYST_LOCAL_LIB}=1;
-
-# Get the base paths and setup your %ENV
-
-my $basedir;
-if (-r "$FindBin::Bin/Makefile.PL") {
-    $basedir = $FindBin::Bin;
-}
-elsif (-r "$FindBin::Bin/../Makefile.PL") {
-    $basedir = "$FindBin::Bin/..";
-}
-
-$basedir ||= '';
-my $target = "$basedir/local-lib5";
-my $lib = "$target/lib/perl5";
-
-# Start installing stuff in the target dir
-$ENV{PERL_MM_OPT} = "INSTALL_BASE=$target";
-$ENV{PERL_MM_USE_DEFAULT} = "1";
-# And allow dependency checks to find it
-lib->import("$target/lib/perl5");
-
-# Deal with the weird case that cpan has never been run before and
-# cpan wants to create a .cpan directory in /root or somewhere you
-# can't access
-
-local %CPAN::Config;
-require CPAN::HandleConfig;
-CPAN::HandleConfig->load();
-$CPAN::Config->{prefs_dir} = "$ENV{HOME}/.cpan/prefs";
-
-force(qw/install local::lib/);
-
-require lib::core::only; # Turn lib::core:only on
-require local::lib; # Turn local::lib on
-lib::core::only->import();
-local::lib->import( $target );
-
-# Become fully self contained
-$ENV{PERL5LIB} = ""; # If we used a local::lib to bootstrap, this kills it.
-
-# Sorry kane ;)
-$ENV{PERL_AUTOINSTALL_PREFER_CPAN}=1;
-$ENV{PERL_MM_OPT} .= " INSTALLMAN1DIR=none INSTALLMAN3DIR=none";
-
-lib::core::only->import();
-local::lib->import( $target );
-
-# Force a re-install of local::lib here to get the dependencies for local::lib
-# It requires things which ensure we have an unfucked toolchain :)
-force(qw/install local::lib/);
-
-# Install the base modules
-install('Module::Install');
-install('YAML');
-install('CPAN');
-# For some reason this isn't installed along with M::I::Catalyst.
-install('File::Copy::Recursive');
-install('Module::Install::Catalyst');
-
-print "local::lib setup, type perl Makefile.PL && make installdeps to install dependencies\n";
-
+system "$basedir/script/cpanm" => qw(-L local-lib5 local::lib Module::Install YAML Module::Install::Catalyst);
+system "$basedir/script/cpanm" => qw(-L local-lib5 --force --installdeps .);
