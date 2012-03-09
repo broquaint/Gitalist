@@ -32,7 +32,7 @@ MooseX::Storage::Engine->add_custom_type_handler(
             Carp::confess("Not implemented");
         },
         collapse => sub {
-            to_ISO8601DateTimeStr(shift);
+            $_[0]->ymd('-') . 'T' . $_[0]->hms(':') . 'Z' 
         },
 );
 
