@@ -1,5 +1,10 @@
 This file documents the revision history for Perl extension Gitalist.
 
+0.003009 2012-03-18
+  - Don't use MooseX::Types::ISO8601 to serialize DateTime objects as its
+    coercion function is now stricter than the object provided.
+  - Make tests pass with more recent versions of Catalyst.
+
 0.003008 2012-01-29
   - Now with Changes.
 
