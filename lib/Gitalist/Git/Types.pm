@@ -9,7 +9,6 @@ use MooseX::Types
      /];
 
 use MooseX::Types::Path::Class;
-use MooseX::Types::ISO8601 qw/ISO8601DateTimeStr/;
 use MooseX::Types::DateTime qw/ DateTime /;
 use MooseX::Storage::Engine ();
 use MooseX::Types::Common::String qw/NonEmptySimpleStr/;

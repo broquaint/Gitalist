@@ -83,7 +83,6 @@ requires 'MooseX::Storage';
 requires 'MooseX::Types';
 requires 'MooseX::Types::Common';
 requires 'MooseX::Types::Path::Class';
-requires 'MooseX::Types::ISO8601';
 requires 'MooseX::Types::DateTime' => '0.05';
 requires 'namespace::autoclean';
 
