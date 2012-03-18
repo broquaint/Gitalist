@@ -53,12 +53,11 @@ our $ctx_gen = sub {
     my ($cb, %args) = @_;
     my $ctx = $mock_ctx_meta->new_object(
         response    => Catalyst::Response->new,
-        request     => Catalyst::Request->new(uri => URI->new("http://$host/")),
+        # Too lazy to mock up Catalyst::Log
+        request     => Catalyst::Request->new(uri => URI->new("http://$host/"), _log => 1),
         stash       => {},
         %args
     );
-    $ctx->response->_context($ctx);
-    $ctx->request->_context($ctx);
     $cb->($ctx) if $cb;
     return $ctx;
 };
