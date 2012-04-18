@@ -1,8 +1,8 @@
 package Gitalist::Controller::Repository;
 use Moose;
 use Sys::Hostname qw/hostname/;
+use DateTime::Format::Mail;
 use namespace::autoclean;
-
 BEGIN { extends 'Gitalist::Controller' }
 with 'Gitalist::URIStructure::Repository';
 
@@ -66,7 +66,7 @@ sub atom : Chained('find') Does('FilenameArgs') Args() {
     my $host = lc hostname();
     $c->stash(
         title => $host . ' - ' . Gitalist->config->{name},
-        updated => DateTime->now
+        updated => DateTime::Format::Mail->format_datetime( DateTime->now() )
     );
 
     my $repository = $c->stash->{Repository};
@@ -107,8 +107,8 @@ sub rss : Chained('find') Does('FilenameArgs') Args() {
   $c->stash(
     title          => lc(Sys::Hostname::hostname()) . ' - ' . Gitalist->config->{name},
     language       => 'en',
-    pubDate        => DateTime->now,
-    lastBuildDate  => DateTime->now,
+    pubDate        => DateTime::Format::Mail->format_datetime( DateTime->now() ),
+    lastBuildDate  => DateTime::Format::Mail->format_datetime( DateTime->now() ),
     no_wrapper     => 1,
   );
 
