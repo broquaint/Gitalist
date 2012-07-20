@@ -218,6 +218,7 @@ class Gitalist::Git::Repository with (Gitalist::Git::HasUtils, Gitalist::Git::Se
         my $description = "";
         eval {
             $description = $self->path->file('description')->slurp;
+            utf8::decode($description);
             chomp $description;
         };
         $description = "Unnamed repository, edit the .git/description file to set a description"
