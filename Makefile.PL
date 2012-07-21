@@ -57,7 +57,7 @@ if ($ENV{GITALIST_RELEASE_TESTING}) {
     }, $FindBin::Bin . "/lib");
 }
 
-requires 'Catalyst::Runtime' => '5.90006';
+requires 'Catalyst::Runtime' => '5.90013';
 requires 'Catalyst::Plugin::ConfigLoader';
 requires 'Catalyst::Plugin::StackTrace';
 requires 'Catalyst::Plugin::Static::Simple';
@@ -66,7 +66,6 @@ requires 'Catalyst::Plugin::SubRequest' => '0.15';
 requires 'Catalyst::Action::RenderView';
 requires 'Catalyst::Action::REST';
 requires 'Catalyst::Component::InstancePerContext';
-requires 'Catalyst::Controller::ActionRole';
 requires 'Catalyst::View::Component::SubInclude' => '0.07';
 requires 'Catalyst::View::TT' => '0.34';
 requires 'Try::Tiny';
