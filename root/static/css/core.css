@@ -258,6 +258,9 @@ a.longlog{
 a.blob{
 	background:transparent url([% c.uri_for('/static/i/icons/blob.png') %]) no-repeat;
 }
+a.snapshot{
+	background:transparent url([% c.uri_for('/static/i/icons/blob.png') %]) no-repeat;
+}
 a.blame{
 	background:transparent url([% c.uri_for('/static/i/icons/blame.png') %]) no-repeat;
 }
@@ -444,7 +447,7 @@ BUT the final width needs to be set with javascript based on the parent element 
 */
 
 .action-list{
-	width:120px;
+	width:160px;
 }
 
 .diff-tree{

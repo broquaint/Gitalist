@@ -12,6 +12,9 @@ class Gitalist::Git::Repository with (Gitalist::Git::HasUtils, Gitalist::Git::Se
     use aliased 'DateTime' => 'DT';
     use List::MoreUtils qw/any zip/;
     use Encode          qw/decode/;
+    use IPC::Run        qw/run/;
+    use File::Spec      qw/catfile/;
+    use File::Path      qw/mkpath/;
 
     use if $^O ne 'MSWin32' => 'I18N::Langinfo', qw/langinfo CODESET/;
 
@@ -150,20 +153,48 @@ class Gitalist::Git::Repository with (Gitalist::Git::HasUtils, Gitalist::Git::Se
                  NonEmptySimpleStr :$format
                ) {
         # TODO - only valid formats are 'tar' and 'zip'
-        my $formats = { tgz => 'tar', zip => 'zip' };
+        my $formats = {
+            'tar.gz' => 'tar',
+            'tar.bz2' => 'tar',
+            zip => 'zip',
+        };
+        my $compressors = {
+            'tar.gz' => 'gzip',
+            'tar.bz2' => 'bzip2',
+            'tar.xz' => 'xz',
+        };
+        my $mimetypes = {
+            'tar.gz' => 'application/x-gzip',
+            'tar.bz2' => 'application/x-bzip2',
+            'tar.xz' => 'application/octet-stream',
+        };
         unless ($formats->exists($format)) {
             die("No such format: $format");
         }
-        $format = $formats->{$format};
+        my $ga_format = $formats->{$format};
         my $name = $self->name;
         $name =~ s,([^/])/*\.git$,$1,;
-        my $filename = $name;
-        $filename .= "-$sha1.$format";
+        my $sha1_abbrev = $self->run_cmd(('log', '--pretty=format:%h', '-1', $sha1));
+        my $filename = "$name-$sha1_abbrev.$format";
+        my $ga_filename = "$name-$sha1_abbrev.$ga_format";
         $name =~ s/\047/\047\\\047\047/g;
 
-        my @cmd = ('archive', "--format=$format", "--prefix=$name/", $sha1);
-        return ($filename, $self->run_cmd_fh(@cmd));
-        # TODO - support compressed archives
+        my $local_dir = Gitalist->config->{snapshot}{tmpdir} || "/tmp/gitalist/snapshot";
+        $local_dir = File::Spec->catfile($local_dir, substr($sha1,0,2), substr($sha1,0,4));
+        my $local_filename = File::Spec->catfile($local_dir, $filename);
+        my $local_ga_filename = File::Spec->catfile($local_dir, $ga_filename);
+        if(!-e $local_filename) {
+            if(! -e $local_dir) {
+                mkpath($local_dir, 0, 0755);
+            }
+            my @cmd = ('archive', "--format=$ga_format", "--prefix=$name-$sha1_abbrev/", $sha1, "--output=$local_ga_filename");
+            $self->run_cmd(@cmd);
+            if($compressors->exists($format)) {
+                run [$compressors->{$format}, $local_ga_filename];
+            }
+        }
+
+        return ($mimetypes->{$format}, $filename, $local_filename);
     }
 
     method reflog (@logargs) {
