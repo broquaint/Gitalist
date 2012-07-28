@@ -373,13 +373,6 @@ th a{
 th a:hover{
 	color:#f0f0f0;
 }
-.summary tr{
-	background-color:#FAFAFA;
-	border-bottom:1px solid #fff;
-}
-.summary td{
-	vertical-align:middle !important;
-}
 tr{
 	background-color:#fff;
 }
@@ -424,6 +417,11 @@ table.listing thead {
 .listing .gravatar {
     float: left;
     padding-right: 10px;
+}
+
+.summary th {
+    color: #666;
+    font-weight: bold;
 }
 
 /*
