@@ -231,6 +231,10 @@ and the available config options are:
 If true don't display gravatars. May be desirable if you are worried about
 leaking repo names via the browser referer headers.
 
+=item default_gravatar
+
+Set the default gravatar to use
+
 =back
 
 =head2 Model::CollectionOfRepos
