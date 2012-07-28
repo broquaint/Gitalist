@@ -88,4 +88,113 @@ sub blame : Chained('find') Does('FilenameArgs') Args() {}
 
 sub history : Chained('find') Does('FilenameArgs') Args() {}
 
+# Redirect old gitweb-style urls
+sub commit_compat : Chained('base') PathPart('commit') Args(1) {
+    my ($self, $c, $sha1) = @_;
+    my $repo = $c->stash->{Repository};
+    $c->res->status(302);
+    $c->res->redirect($c->uri_for_action("/ref/commit", [$repo->name, $sha1]));
+}
+
+sub commitdiff_compat : Chained('base') PathPart('commitdiff') Args(1) {
+    my ($self, $c, $sha1) = @_;
+    my $repo = $c->stash->{Repository};
+    $c->res->status(302);
+    $c->res->redirect($c->uri_for_action("/ref/diff", [$repo->name, $sha1]));
+}
+
+sub tree_compat : Chained('base') PathPart('tree') Args(1) {
+    my ($self, $c, $sha1) = @_;
+    my $repo = $c->stash->{Repository};
+    $c->res->status(302);
+    $c->res->redirect($c->uri_for_action("/ref/tree", [$repo->name, $sha1]));
+}
+
+sub patch_compat : Chained('base') PathPart('patch') Args(1) {
+    my ($self, $c, $sha1) = @_;
+    my $repo = $c->stash->{Repository};
+    $c->res->status(302);
+    $c->res->redirect($c->uri_for_action("/ref/patch", [$repo->name, $sha1]));
+}
+
+sub commitdiff_plain_compat : Chained('base') PathPart('commitdiff_plain') Args(1) {
+    my ($self, $c, $sha1) = @_;
+    my $repo = $c->stash->{Repository};
+    $c->res->status(302);
+    $c->res->redirect($c->uri_for_action("/ref/patch", [$repo->name, $sha1]));
+}
+
+sub blob_compat : Chained('base') PathPart('blob') Does('FilenameArgs') {
+    my ($self, $c) = @_;
+    my $repo = $c->stash->{Repository};
+    my $ref;
+    my $path = join("/", @{$c->req->args});
+    ($ref, $path) = split /:/, $path;
+    $path ||= "";
+    $c->res->status(302);
+    $c->res->redirect($c->uri_for_action("/ref/blob", [$repo->name, $ref]) . $path);
+}
+
+sub blob_plain_compat : Chained('base') PathPart('blob_plain') Does('FilenameArgs') {
+    my ($self, $c) = @_;
+    my $repo = $c->stash->{Repository};
+    my $ref;
+    my $path = join("/", @{$c->req->args});
+    ($ref, $path) = split /:/, $path;
+    $path ||= "";
+    $c->res->status(302);
+    $c->res->redirect($c->uri_for_action("/ref/raw", [$repo->name, $ref]) . $path);
+}
+
+sub blame_compat : Chained('base') PathPart('blame') Does('FilenameArgs') {
+    my ($self, $c) = @_;
+    my $repo = $c->stash->{Repository};
+    my $ref;
+    my $path = join("/", @{$c->req->args});
+    ($ref, $path) = split /:/, $path;
+    $path ||= "";
+    $c->res->status(302);
+    $c->res->redirect($c->uri_for_action("/ref/blame", [$repo->name, $ref]) . $path);
+}
+
+sub history_compat : Chained('base') PathPart('history') Does('FilenameArgs') {
+    my ($self, $c) = @_;
+    my $repo = $c->stash->{Repository};
+    my $ref;
+    my $path = join("/", @{$c->req->args});
+    ($ref, $path) = split /:/, $path;
+    $path ||= "";
+    $c->res->status(302);
+    $c->res->redirect($c->uri_for_action("/ref/history", [$repo->name, $ref]) . $path);
+}
+
+sub ref_log_compat : Chained('base') PathPart('log/refs') Does('FilenameArgs') {
+    my ($self, $c) = @_;
+    my $repo = $c->stash->{Repository};
+    shift $c->req->args;
+    my $ref = join('%2f', @{$c->req->args});
+    $c->res->status(302);
+    $c->res->redirect($c->uri_for_action("/ref/longlog", [$repo->name, $ref]));
+}
+
+sub ref_shortlog_compat : Chained('base') PathPart('shortlog/refs') Does('FilenameArgs') {
+    my ($self, $c) = @_;
+    my $repo = $c->stash->{Repository};
+    shift $c->req->args;
+    my $ref = join('%2f', @{$c->req->args});
+    $c->res->status(302);
+    $c->res->redirect($c->uri_for_action("/ref/shortlog", [$repo->name, $ref]));
+}
+
+sub ref_tree_compat : Chained('base') PathPart('tree') Does('FilenameArgs') {
+    my ($self, $c) = @_;
+    my $repo = $c->stash->{Repository};
+    my $ref;
+    my $path = join('/', @{$c->req->args});
+    ($ref, $path) = split /:/, $path;
+    $path ||= "";
+    $c->res->status(302);
+    $c->res->redirect($c->uri_for_action("/ref/tree", [$repo->name, $ref]) . "$path");
+}
+
 1;

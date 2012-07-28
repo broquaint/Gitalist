@@ -49,4 +49,17 @@ sub heads : Chained('find') Args() {}
 
 sub tags : Chained('find') Args() {}
 
+# Redirect old gitweb-style URL's
+sub object_compat : Chained('find') PathPart('object') Args(1) {
+    my ($self, $c, $sha1) = @_;
+
+    my $repo = $c->stash->{Repository};
+    my $obj  = $c->stash->{Commit} = $repo->get_object($sha1);
+    my($act) = (ref($obj) || '') =~ /::(\w+)$/;
+
+    $c->res->redirect($c->uri_for_action("/ref/\L$act", [$repo->name, $obj->sha1]));
+    $c->res->status(301);
+
+}
+
 1;
