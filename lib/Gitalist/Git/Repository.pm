@@ -187,8 +187,16 @@ class Gitalist::Git::Repository with (Gitalist::Git::HasUtils, Gitalist::Git::Se
             if(! -e $local_dir) {
                 mkpath($local_dir, 0, 0755);
             }
-            my @cmd = ('archive', "--format=$ga_format", "--prefix=$name-$sha1_abbrev/", $sha1, "--output=$local_ga_filename");
-            $self->run_cmd(@cmd);
+            my @cmd = ('archive', "--format=$ga_format", "--prefix=$name-$sha1_abbrev/", "--output=$local_ga_filename", $sha1);
+            if(my $custom = Gitalist->config->{snapshot}->{custom_snapshot}) {
+                shift @cmd;
+                unshift @cmd, ($custom, '--git-dir' => $self->path);
+                require IPC::Run;
+                IPC::Run::run [ @cmd ], \my($in, $out, $err);
+            }
+            else {
+                $self->run_cmd(@cmd);
+            }
             if($compressors->exists($format)) {
                 run [$compressors->{$format}, $local_ga_filename];
             }
