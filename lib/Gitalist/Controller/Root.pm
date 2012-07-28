@@ -16,7 +16,10 @@ sub root : Chained('/') PathPart('') CaptureArgs(0) {}
 
 sub index : Chained('base') PathPart('') Args(0) {
     my ( $self, $c ) = @_;
-    $c->stash( search_text => $c->req->param('s') || '' ) # FIXME - XSS?
+    $c->stash(
+        search_text => $c->req->param('s') || '',  # FIXME - XSS?
+        hide_nav => 1
+    );
 }
 
 # XXX Fragile much?
