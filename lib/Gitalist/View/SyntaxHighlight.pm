@@ -52,6 +52,30 @@ sub render {
             );
 
             my $hltxt = $hl->highlightText($blob);
+
+            # Line numbering breaks <span class="Other">#define foo\nbar</span>
+            # So let's fix that by closing all spans at end-of-line and opening
+            # new ones on the next, if needed.
+
+            my @lines = split(/\n/, $hltxt);
+            my $last_class = undef;
+            map {
+                unless($_ =~ s/^<\/span>//) {
+                    if($last_class) {
+                        $_ = "<span class=\"$last_class\">" . $_;
+                    }
+                }
+                $last_class = undef;
+                if($_ =~ /<span class="(.*?)">(?!.*<\/span>)/) {
+                    $last_class = $1;
+                }
+                if($_ !~ /<\/span>$/) {
+                    $_ .= "</span>";
+                }
+                $_;
+            } @lines;
+
+            $hltxt = join("\n", @lines);
             $hltxt =~ s/([^[:ascii:]])/encode_entities($1)/eg;
             $hltxt;
         };
