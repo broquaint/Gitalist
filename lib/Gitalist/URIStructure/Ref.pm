@@ -171,7 +171,7 @@ sub history_compat : Chained('base') PathPart('history') Does('FilenameArgs') {
 sub ref_log_compat : Chained('base') PathPart('log/refs') Does('FilenameArgs') {
     my ($self, $c) = @_;
     my $repo = $c->stash->{Repository};
-    shift $c->req->args;
+    shift @{$c->req->args};
     my $ref = join('%2f', @{$c->req->args});
     $c->res->status(302);
     $c->res->redirect($c->uri_for_action("/ref/longlog", [$repo->name, $ref]));
@@ -180,7 +180,7 @@ sub ref_log_compat : Chained('base') PathPart('log/refs') Does('FilenameArgs') {
 sub ref_shortlog_compat : Chained('base') PathPart('shortlog/refs') Does('FilenameArgs') {
     my ($self, $c) = @_;
     my $repo = $c->stash->{Repository};
-    shift $c->req->args;
+    shift @{$c->req->args};
     my $ref = join('%2f', @{$c->req->args});
     $c->res->status(302);
     $c->res->redirect($c->uri_for_action("/ref/shortlog", [$repo->name, $ref]));
