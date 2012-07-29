@@ -5,7 +5,6 @@ use namespace::autoclean;
 extends 'Catalyst::View';
 
 use Syntax::Highlight::Engine::Kate ();
-use Syntax::Highlight::Engine::Kate::Perl ();
 
 use HTML::Entities qw(encode_entities);
 
@@ -19,7 +18,7 @@ sub render {
     my ($self, $c, $blob, $args) = @_;
 
     # Don't bother with anything over 64kb, it'll be tragically slow.
-    return encode_entities $blob if length $blob > 8192;
+    return encode_entities $blob if length $blob > 65536;
 
     my $lang = $args->{language};
 

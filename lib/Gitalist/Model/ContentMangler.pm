@@ -48,6 +48,7 @@ sub process {
 
   my($transformer, $config) = $self->resolve({
     filename => $c->stash->{filename} || '',
+    blob     => \$c->stash->{blob},
     config   => Gitalist->config->{'Model::ContentMangler'},
     action   => $c->action->name,
   });
