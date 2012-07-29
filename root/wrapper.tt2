@@ -104,6 +104,7 @@
 						"raw" 	 	=> 1,
 						"blame" 	=> 1,
 						"history"  	=> 1,
+						"html"  	=> 1,
 					};
 
 				SET action_name = c.action.name

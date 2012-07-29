@@ -1,0 +1,31 @@
+div.pod {
+    margin-left: 1em;
+    margin-right: 1em;
+}
+
+div.pod *, div.pod * a:hover {
+    color: #666;
+}
+
+div.pod h1 {
+    padding : 0px;
+}
+
+div.pod h2 {
+    margin: 0px;
+    font-size: 1.4em;
+}
+
+div.pod h1 a, div.pod h2 a, div.pod h3 a, div.pod h4 a, div.pod h5 a, div.pod h6 a {
+    text-decoration: none;
+}
+
+div.pod p, div.pod dl, div.pod ul {
+    padding-left: 40px;
+    padding-right: 40px;
+}
+
+div.pod dl dd, div.pod ul li, div.pod dl p, div.pod ul p {
+    padding-left: 0px;
+    padding-right: 0px;
+}

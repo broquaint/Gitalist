@@ -45,6 +45,12 @@ class Gitalist::ContentMangler::Resolver::Default with Gitalist::ContentMangler:
                 }
             }
         }
+        if($data->{action} eq 'html') {
+            if(($language || '') eq 'Perl' || $data->{filename} =~ /\.pod$/) {
+                return 'Gitalist::ContentMangler::Transformer::RenderPod' => {};
+            }
+            return;
+        }
         return unless $language;
         return 'Gitalist::ContentMangler::Transformer::SyntaxHighlight' => {language => $language, css => 'Code'};
     }
