@@ -49,6 +49,9 @@ class Gitalist::ContentMangler::Resolver::Default with Gitalist::ContentMangler:
             if(($language || '') eq 'Perl' || $data->{filename} =~ /\.pod$/) {
                 return 'Gitalist::ContentMangler::Transformer::RenderPod' => {};
             }
+            if($data->{filename} =~ /\.md$/) {
+                return 'Gitalist::ContentMangler::Transformer::RenderMarkdown' => {};
+            }
             return 'Gitalist::ContentMangler::Transformer::NoRenderer' => {};
         }
         return unless $language;
