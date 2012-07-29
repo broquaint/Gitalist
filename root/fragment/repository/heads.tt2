@@ -3,7 +3,7 @@
 <tr class="header">
    <[% cell %]>HEAD</[% cell %]>
    <[% cell %]>Last change</[% cell %]>
-   <[% cell %]>Branch</[% cell %]>
+   <[% cell %]>[% headtype || "Branch" %]</[% cell %]>
    <[% cell %]>Actions</[% cell %]>
 </tr>
 [% END %]
