@@ -16,6 +16,8 @@ role Gitalist::Git::Object::HasTree {
         my @ret;
         for my $line (split /\0/, $output) {
             my ($mode, $type, $object, $file) = split /\s+/, $line, 4;
+            # Ignore commits, these represent submodules
+            next if $type eq 'commit';
             my $class = 'Gitalist::Git::Object::' . ucfirst($type);
             push @ret, $class->new( mode => oct $mode,
                                     type => $type,
