@@ -49,7 +49,7 @@ class Gitalist::ContentMangler::Resolver::Default with Gitalist::ContentMangler:
             if(($language || '') eq 'Perl' || $data->{filename} =~ /\.pod$/) {
                 return 'Gitalist::ContentMangler::Transformer::RenderPod' => {};
             }
-            return;
+            return 'Gitalist::ContentMangler::Transformer::NoRenderer' => {};
         }
         return unless $language;
         return 'Gitalist::ContentMangler::Transformer::SyntaxHighlight' => {language => $language, css => 'Code'};
