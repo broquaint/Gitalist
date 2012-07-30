@@ -100,7 +100,7 @@ sub commitdiff_compat : Chained('base') PathPart('commitdiff') Args(1) {
     my ($self, $c, $sha1) = @_;
     my $repo = $c->stash->{Repository};
     $c->res->status(302);
-    $c->res->redirect($c->uri_for_action("/ref/diff", [$repo->name, $sha1]));
+    $c->res->redirect($c->uri_for_action("/ref/diff_fancy", [$repo->name, $sha1]));
 }
 
 sub tree_compat : Chained('base') PathPart('tree') Args(1) {
