@@ -4,6 +4,7 @@ use Moose;
 use Moose::Autobox;
 use Digest::MD5 qw(md5_hex);
 use Gitalist::Utils qw/ age_string /;
+use URI::Escape;
 
 use namespace::autoclean;
 
@@ -15,7 +16,10 @@ sub root : Chained('/') PathPart('') CaptureArgs(0) {}
 
 sub index : Chained('base') PathPart('') Args(0) {
     my ( $self, $c ) = @_;
-    $c->stash( search_text => $c->req->param('s') || '' ) # FIXME - XSS?
+    $c->stash(
+        search_text => $c->req->param('s') || '',  # FIXME - XSS?
+        hide_nav => 1
+    );
 }
 
 # XXX Fragile much?
@@ -50,8 +54,16 @@ sub base : Chained('/root') PathPart('') CaptureArgs(0) {
     uri_for_gravatar => sub {
         my $email = shift;
         my $size = shift;
+        my $default = shift;
         my $uri = 'http://www.gravatar.com/avatar/' . md5_hex($email);
-        $uri .= "?s=$size" if $size;
+        if($size) {
+            $uri .= "?s=$size";
+            $uri .= '&d=' . uri_escape($default) if $default;
+        }
+        elsif($default) {
+            $uri .= '?d=' . uri_escape($default) if $default;
+        }
+
         return $uri;
     },
   );

@@ -47,7 +47,7 @@
 		</div>
 
 
-		<div id="nav_logs" [% 'style="visibility:hidden"' IF c.action.name == "index" %]>
+		<div id="nav_logs" [% 'style="visibility:hidden"' IF hide_nav %]>
 
 			[% IF c.req.captures.size == 1; SET path = 'repository'; ELSE; SET path = 'ref'; END %]
 
