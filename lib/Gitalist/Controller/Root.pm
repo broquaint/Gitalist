@@ -44,6 +44,19 @@ sub base : Chained('/root') PathPart('') CaptureArgs(0) {
       $line =~ s/^(.{70,80}\b).*/$1 \x{2026}/ if defined $line;
       return $line;
     },
+    long_cmt => sub {
+      my $cmt = shift;
+      my @lines = split /\n/, $cmt;
+      shift @lines;
+      return join("\n", @lines);
+    },
+    cmt_link => sub {
+      my $cmt = shift;
+      my $msg = $c->{stash}->{short_cmt}($cmt->comment);
+      for($msg) { s/&/&amp;/g; s/</&lt;/g; s/>/&gt;/; s/"/&quot;/; }
+      my $link = $c->uri_for_action("/ref/commit", [$c->stash->{Repository}->name, $cmt->sha1]);
+      return "<a href=\"$link\" title=\"Commit details\">$msg</a>"
+    },
     abridged_description => sub {
         join(' ', grep { defined } (split / /, shift)[0..10]);
     },

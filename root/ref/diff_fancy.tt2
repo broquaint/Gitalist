@@ -12,7 +12,11 @@
 <tr class="invert">
 	<td class='sha1' title='[% Commit.sha1 %]'>[% INCLUDE 'inc/chroma_hash.tt2' sha1 = Commit.sha1.substr(0, 7) %]</td>
 	<td class='time-since' title='[% Commit.authored_time %]'>[% time_since(Commit.authored_time) %]</td>
-	<td>[% short_cmt(Commit.comment) | html %]</td>
+	<td>
+		<p class='commit-message'>[%- cmt_link(Commit) -%][%- IF long_cmt(Commit.comment) -%]</p><p>[%- 
+		  long_cmt(Commit.comment) | html;
+		END; -%]</p>
+	</td>
 	<td class='author'>[% INCLUDE 'inc/gravatar.tt2' email = Commit.committer.email %][% Commit.author.name | html %]</td>
 </tr>
 </tbody>
