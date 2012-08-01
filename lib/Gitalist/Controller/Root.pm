@@ -4,6 +4,7 @@ use Moose;
 use Moose::Autobox;
 use Digest::MD5 qw(md5_hex);
 use Gitalist::Utils qw/ age_string /;
+use Scalar::Util qw/ weaken /;
 
 use namespace::autoclean;
 
@@ -43,6 +44,12 @@ sub base : Chained('/root') PathPart('') CaptureArgs(0) {
       my($line) = split /\n/, $cmt;
       $line =~ s/^(.{70,80}\b).*/$1 \x{2026}/ if defined $line;
       return $line;
+    },
+    long_cmt => sub {
+      my $cmt = shift;
+      my @lines = split /\n/, $cmt;
+      shift @lines;
+      return join("\n", @lines);
     },
     abridged_description => sub {
         join(' ', grep { defined } (split / /, shift)[0..10]);
