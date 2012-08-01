@@ -4,6 +4,7 @@ use Moose;
 use Moose::Autobox;
 use Digest::MD5 qw(md5_hex);
 use Gitalist::Utils qw/ age_string /;
+use Scalar::Util qw/ weaken /;
 
 use namespace::autoclean;
 
@@ -49,13 +50,6 @@ sub base : Chained('/root') PathPart('') CaptureArgs(0) {
       my @lines = split /\n/, $cmt;
       shift @lines;
       return join("\n", @lines);
-    },
-    cmt_link => sub {
-      my $cmt = shift;
-      my $msg = $c->{stash}->{short_cmt}($cmt->comment);
-      for($msg) { s/&/&amp;/g; s/</&lt;/g; s/>/&gt;/; s/"/&quot;/; }
-      my $link = $c->uri_for_action("/ref/commit", [$c->stash->{Repository}->name, $cmt->sha1]);
-      return "<a href=\"$link\" title=\"Commit details\">$msg</a>"
     },
     abridged_description => sub {
         join(' ', grep { defined } (split / /, shift)[0..10]);
