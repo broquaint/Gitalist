@@ -3,7 +3,7 @@ package Gitalist::Controller::Root;
 use Moose;
 use Moose::Autobox;
 use Digest::MD5 qw(md5_hex);
-use Gitalist::Utils qw/ age_string /;
+use Gitalist::Utils qw/ age_string mode_string /;
 
 use namespace::autoclean;
 
@@ -54,6 +54,9 @@ sub base : Chained('/root') PathPart('') CaptureArgs(0) {
         $uri .= "?s=$size" if $size;
         return $uri;
     },
+    mode_string => sub {
+        return mode_string(oct shift);
+    }
   );
 }
 
