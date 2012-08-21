@@ -1,1 +1,1 @@
-[% INCLUDE 'fragment/repository/heads.tt2' heads = tags %]
+[% INCLUDE 'fragment/repository/heads.tt2' heads = tags headtype="Tag" %]
