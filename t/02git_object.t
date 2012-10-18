@@ -169,15 +169,14 @@ is($patch->{dst}, '5716ca5987cbf97d6bb54920bea6adde242d87e6', 'patch->{dst} is c
 
 {
     my $contents = do { local $/; my $fh = $commit_obj->get_patch; <$fh> };
-ok(index($contents,
-'From 3f7567c7bdf7e7ebf410926493b92d398333116e Mon Sep 17 00:00:00 2001
-From: Florian Ragwitz <rafl@debian.org>
+like $contents, qr{^\QFrom 3f7567c7bdf7e7ebf410926493b92d398333116e Mon Sep 17 00:00:00 2001
+From: Florian Ragwitz <\Erafl[@]debian\Q.org>
 Date: Tue, 6 Mar 2007 20:39:45 +0100
 Subject: [PATCH] bar
 
 ---
- file1 |    2 +-
- 1 files changed, 1 insertions(+), 1 deletions(-)
+ file1 |\E\s+2\Q +-
+ 1 \Efiles?\Q changed, 1 \Einsertions?\Q(+), 1 \Edeletions?\Q(-)
 
 diff --git a/file1 b/file1
 index 257cc56..5716ca5 100644
@@ -186,8 +185,7 @@ index 257cc56..5716ca5 100644
 @@ -1 +1 @@
 -foo
 +bar
---') == 0, 'commit_obj->get_patch can return a patch')
-    or warn("Got instead: $contents");
+--}, 'commit_obj->get_patch can return a patch';
 }
 
 # Note - 2 patches = 3 parts due to where we split.
