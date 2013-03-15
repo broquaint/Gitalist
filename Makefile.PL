@@ -83,6 +83,7 @@ requires 'MooseX::Types';
 requires 'MooseX::Types::Common';
 requires 'MooseX::Types::Path::Class';
 requires 'MooseX::Types::DateTime' => '0.05';
+requires 'MooseX::Types::LoadableClass';
 requires 'namespace::autoclean';
 
 requires 'Git::PurePerl' => '0.47';
