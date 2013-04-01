@@ -54,7 +54,7 @@ after tree => sub {
     ;
     $c->stash(
         tree      => $tree_obj,
-        tree_list => $tree_obj->tree,
+        entries   => $tree_obj->entries,
     );
 };
 

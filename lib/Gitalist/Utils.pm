@@ -5,6 +5,7 @@ use Exporter qw/import/;
 
 our @EXPORT_OK = qw/
     age_string
+    mode_string
 /;
 
 sub age_string {
@@ -48,6 +49,40 @@ sub age_string {
 sub is_binary {
   # Crappy heuristic - does the first line or so look printable?
   return $_[0] !~ /^[[:print:]]+$ (?: \s ^[[:print:]]+$ )?/mx;
+}
+
+# via gitweb.pm circa line 1305
+use Fcntl ':mode';
+use constant {
+    S_IFINVALID => 0030000,
+    S_IFGITLINK => 0160000,
+};
+
+# submodule/subrepository, a commit object reference
+sub S_ISGITLINK($) {
+    return (($_[0] & S_IFMT) == S_IFGITLINK)
+}
+
+# convert file mode in octal to symbolic file mode string
+sub mode_string {
+    my $mode = shift;
+
+    if (S_ISGITLINK($mode)) {
+        return 'm---------';
+    } elsif (S_ISDIR($mode & S_IFMT)) {
+        return 'drwxr-xr-x';
+    } elsif ($^O ne 'MSWin32' and S_ISLNK($mode)) { # this is ENOLINKS country, we can't stop here!
+        return 'lrwxrwxrwx';
+    } elsif (S_ISREG($mode)) {
+        # git cares only about the executable bit
+        if ($mode & S_IXUSR) {
+            return '-rwxr-xr-x';
+        } else {
+            return '-rw-r--r--';
+        }
+    } else {
+        return '----------';
+    }
 }
 
 1;

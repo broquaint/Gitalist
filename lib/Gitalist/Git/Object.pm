@@ -6,6 +6,7 @@ class Gitalist::Git::Object with Gitalist::Git::Serializable is dirty {
 
     use MooseX::Types::Moose qw/Str Int Bool Maybe ArrayRef/;
     use MooseX::Types::Common::String qw/NonEmptySimpleStr/;
+    use Gitalist::Utils qw/mode_string/;
     use overload '""' => '_to_string', fallback => 1;
 
     # repository and sha1 are required initargs
@@ -74,41 +75,7 @@ class Gitalist::Git::Object with Gitalist::Git::Serializable is dirty {
     }
 
     method _build_modestr {
-        return _mode_str($self->mode);
-    }
-
-    # via gitweb.pm circa line 1305
-    use Fcntl ':mode';
-    use constant {
-        S_IFINVALID => 0030000,
-        S_IFGITLINK => 0160000,
-    };
-
-    # submodule/subrepository, a commit object reference
-    sub S_ISGITLINK($) {
-        return (($_[0] & S_IFMT) == S_IFGITLINK)
-    }
-
-    # convert file mode in octal to symbolic file mode string
-    sub _mode_str {
-        my $mode = shift;
-
-        if (S_ISGITLINK($mode)) {
-            return 'm---------';
-        } elsif (S_ISDIR($mode & S_IFMT)) {
-            return 'drwxr-xr-x';
-        } elsif ($^O ne 'MSWin32' and S_ISLNK($mode)) { # this is ENOLINKS country, we can't stop here!
-            return 'lrwxrwxrwx';
-        } elsif (S_ISREG($mode)) {
-            # git cares only about the executable bit
-            if ($mode & S_IXUSR) {
-                return '-rwxr-xr-x';
-            } else {
-                return '-rw-r--r--';
-            }
-        } else {
-            return '----------';
-        }
+        return mode_string($self->mode);
     }
 
 } # end class
