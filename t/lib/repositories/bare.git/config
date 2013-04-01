@@ -2,4 +2,5 @@
 	repositoryformatversion = 0
 	filemode = true
 	bare = true
-	ignorecase = true
+[remote "origin"]
+	url = /home/dbrook/dev/Gitalist/t/lib/repositories/./tmp
