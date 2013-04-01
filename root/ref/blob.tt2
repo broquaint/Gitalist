@@ -6,7 +6,12 @@
    </div>
   [% END %]
 
+<div id="blob">
+<table class="listing">
+<tbody>
 [% subinclude('/fragment/ref/blob', c.req.captures, c.req.args.to_path) %]
-
+</tbody>
+</table>
+</div>
 
 
