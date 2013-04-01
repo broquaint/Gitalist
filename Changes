@@ -1,5 +1,13 @@
 This file documents the revision history for Perl extension Gitalist.
 
+0.004002 2013-04-01
+  - Update gitalist_app.psgi with working copy.
+  - Fix the bare.git test repo.
+  - The branch selector now sends you to the correct url (Dennis Kaarsemaker)
+  - Massive tree action speedup (Dennis Kaarsemaker)
+  - Have line numbers in blob displays (Dennis Kaarsemaker)
+  - Syntax higlighting improvements (Dennis Kaarsemaker)
+
 0.004001 2013-03-15
   - Depend on new Catalyst::Runtime and drop use of Catalyst::Controller::ActionRole
   - Stop calling tags branches (Dennis Kaarsemaker)
