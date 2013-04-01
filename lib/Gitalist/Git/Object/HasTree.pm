@@ -29,6 +29,10 @@ role Gitalist::Git::Object::HasTree {
         return \@ret;
     }
 
+    method entries {
+        return $self->{_gpp_obj}->{directory_entries};
+    }
+
 }
 
 1;
