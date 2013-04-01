@@ -33,6 +33,7 @@
  		<a href="[% c.uri_for_action("/ref/commit", [Repository.name, line.sha1]) %]" title="Commit details" class="button commit">commit</a>
  		<a href="[% c.uri_for_action("/ref/diff_fancy", [Repository.name, line.sha1]) %]" title="Commit difference" class="button diff">commitdiff</a>
  		<a href="[% c.uri_for_action("/ref/tree", [Repository.name, line.sha1]) %]" title="Tree" class="button tree">tree</a>
+ 		<a href="[% c.uri_for_action("/ref/snapshot", [Repository.name, line.sha1]) %]" title="Snapshot" class="button snapshot">snapshot</a>
 	</td>
 </tr>
 [% END %]
