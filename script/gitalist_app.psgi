@@ -11,9 +11,6 @@ BEGIN {
 }
 
 use Gitalist;
-use Plack::Builder;
 
-Gitalist->setup_engine('PSGI');
-my $app = sub { Gitalist->run(@_) };
-
-builder { $app };
+my $app = Gitalist->apply_default_middlewares(Gitalist->psgi_app);
+$app;
