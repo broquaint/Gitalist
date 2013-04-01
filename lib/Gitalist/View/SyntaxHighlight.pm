@@ -5,7 +5,6 @@ use namespace::autoclean;
 extends 'Catalyst::View';
 
 use Syntax::Highlight::Engine::Kate ();
-use Syntax::Highlight::Engine::Kate::Perl ();
 
 use HTML::Entities qw(encode_entities);
 
@@ -19,7 +18,7 @@ sub render {
     my ($self, $c, $blob, $args) = @_;
 
     # Don't bother with anything over 64kb, it'll be tragically slow.
-    return encode_entities $blob if length $blob > 8192;
+    return encode_entities $blob if length $blob > 65536;
 
     my $lang = $args->{language};
 
@@ -53,6 +52,30 @@ sub render {
             );
 
             my $hltxt = $hl->highlightText($blob);
+
+            # Line numbering breaks <span class="Other">#define foo\nbar</span>
+            # So let's fix that by closing all spans at end-of-line and opening
+            # new ones on the next, if needed.
+
+            my @lines = split(/\n/, $hltxt);
+            my $last_class = undef;
+            map {
+                unless($_ =~ s/^<\/span>//) {
+                    if($last_class) {
+                        $_ = "<span class=\"$last_class\">" . $_;
+                    }
+                }
+                $last_class = undef;
+                if($_ =~ /<span class="(.*?)">(?!.*<\/span>)/) {
+                    $last_class = $1;
+                }
+                if($_ !~ /<\/span>$/) {
+                    $_ .= "</span>";
+                }
+                $_;
+            } @lines;
+
+            $hltxt = join("\n", @lines);
             $hltxt =~ s/([^[:ascii:]])/encode_entities($1)/eg;
             $hltxt;
         };

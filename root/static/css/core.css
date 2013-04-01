@@ -493,21 +493,21 @@ BUT the final width needs to be set with javascript based on the parent element 
 
 
 /* /blame */
-#blame pre, #blame tt {
+#blame pre, #blame tt, #blob pre, #blob tt {
   margin: 0;
   font-size: 12px;
 }
 #blame .commit-info {
 
 }
-#blame .lineno {
+#blame .lineno, #blob .lineno {
   text-align: right;
   padding: 0 8px;
 }
-#blame a {
+#blame a, #blob a {
  text-decoration: none;
 }
-#blame {
+#blame, #blob {
     overflow-x: scroll;
 }
 #blame tr.alt {
@@ -516,35 +516,19 @@ BUT the final width needs to be set with javascript based on the parent element 
 #blame tbody tr:hover {
   background-color: #fefeaa;
 }
-#blame td {
+#blame td, #blob td {
 	vertical-align:middle;
 	padding: 3px;
 }
-#blame td.lineno {
+#blame td.lineno, #blob td.lineno {
   background-color: #eee;
 }
 #blame td.date, #blame td.author, #blame td.commit-info {
 }
-#blame tbody td.data {
+#blame tbody td.data, #blob tbody td.data {
   padding-left: 5px;
   background-color: #333;
   color: #ddd;
-}
-
-/* /blob */
-pre.blob {
-  background-color: #333;
-  color: #ddd;
-  border-left: solid 3px #c33;
-  padding: 5px;
-  padding-left: 15px;
-  margin: 20px 15px 20px;
-  overflow:auto;
-  font-size:12px;
-}
-div.blob {
-    text-align: center;
-    margin: 30px;
 }
 
 /* /blobdiff etc */
