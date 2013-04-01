@@ -49,15 +49,18 @@ Provides a snapshot of a given commit.
 
 sub snapshot : Chained('find') PathPart('snapshot') Args() {
     my ($self, $c, $format) = @_;
-    $format ||= 'tgz';
+    $format ||= Gitalist->config->{snapshot}{format} || "tar.bz2";
     my @snap = $c->stash->{Repository}->snapshot(
         sha1 => $c->stash->{Commit}->sha1,
         format => $format
     );
     $c->response->status(200);
-    $c->response->headers->header( 'Content-Disposition' =>
-                                       "attachment; filename=$snap[0]");
-    $c->response->body($snap[1]);
+    $c->response->content_type($snap[0]);
+    $c->response->content_length(-s $snap[2]);
+    $c->response->headers->header('Content-Disposition' =>
+                                       "attachment; filename=$snap[1]");
+    open(my $fh, '<', $snap[2]);
+    $c->response->body($fh);
 }
 
 =head2 patch
