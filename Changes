@@ -1,5 +1,8 @@
 This file documents the revision history for Perl extension Gitalist.
 
+0.004003 2013-09-04
+  - Handle non-trivial tags when displaying associated tree.
+
 0.004002 2013-04-01
   - Update gitalist_app.psgi with working copy.
   - Fix the bare.git test repo.
