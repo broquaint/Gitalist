@@ -9,7 +9,22 @@ class Gitalist::Git::Object::Tag extends Gitalist::Git::Object {
                                       'tagged_time',
                                   ],
                          );
+    has commit => ( isa => 'Gitalist::Git::Object::Commit',
+                    is => 'ro',
+                    lazy_build => 1,
+                  );
 
+    method _build_commit {
+        return Gitalist::Git::Object::Commit->new(
+            repository => $self->repository,
+            sha1       => $self->object,
+            type       => 'commit',
+        );
+    }
+
+    method tree {
+      return [$self->repository->get_object($self->commit->tree_sha1)];
+    }
 }
 
 1;
