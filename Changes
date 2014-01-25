@@ -1,5 +1,8 @@
 This file documents the revision history for Perl extension Gitalist.
 
+0.004004 2014-01-25
+  - Move away from Class::MOP::load_class (Zoffix Znet)
+
 0.004003 2013-09-04
   - Handle non-trivial tags when displaying associated tree.
 
