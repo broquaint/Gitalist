@@ -3,6 +3,7 @@ use Moose;
 use MooseX::Types::Moose qw/HashRef/;
 use MooseX::Types::Common::String qw/NonEmptySimpleStr/;
 use Gitalist::ContentMangler::Resolver;
+use Class::Load;
 use namespace::autoclean;
 
 extends 'Catalyst::Model';
@@ -27,7 +28,7 @@ has _resolver => (
     default => sub {
         my $self = shift;
         my $class = $self->resolver_class;
-        Class::MOP::load_class($class);
+        Class::Load::load_class($class);
         return $class->new($self->resolver_config);
     },
 );
@@ -56,7 +57,7 @@ sub process {
   return
        unless $transformer;
 
-  Class::MOP::load_class($transformer);
+  Class::Load::load_class($transformer);
   $transformer->new($config)->transform($c, $config);
 }
 
