@@ -2,7 +2,6 @@ package Gitalist::Git::Types;
 
 use MooseX::Types
      -declare => [qw/
-         SHA1
          Dir
          ArrayRefOfDirs
          DirOrUndef
@@ -14,15 +13,6 @@ use MooseX::Storage::Engine ();
 use MooseX::Types::Common::String qw/NonEmptySimpleStr/;
 use MooseX::Types::Moose qw/ ArrayRef Undef Str /;
 use Path::Class qw/ dir /;
-
-subtype SHA1,
-    as NonEmptySimpleStr,
-    where { $_ =~ qr/^[0-9a-fA-F]{40}$/ },
-    message { q/Str doesn't look like a SHA1./ };
-
-coerce SHA1,
-    from NonEmptySimpleStr,
-    via { 1 };
 
 MooseX::Storage::Engine->add_custom_type_handler(
     DateTime,

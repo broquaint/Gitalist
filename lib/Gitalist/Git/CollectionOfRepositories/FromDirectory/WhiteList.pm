@@ -16,7 +16,7 @@ class Gitalist::Git::CollectionOfRepositories::FromDirectory::WhiteList
 
     method _build_repositories {
         return [
-            map  Gitalist::Git::Repository->new($_),
+            map  Git::Gitalist::Repository->new($_),
             grep -d $_,
             map  $self->repo_dir->subdir($_),
             map  [split]->[0], $self->whitelist->slurp(chomp => 1)
@@ -54,7 +54,7 @@ different repository within L</repo_dir>.
 =head1 SEE ALSO
 
 L<Gitalist::Git::CollectionOfRepositories>,
-L<Gitalist::Git::Repository>,
+L<Git::Gitalist::Repository>,
 L<Gitalist::Git::CollectionOfRepositories::FromDirectory>
 
 =head1 AUTHORS

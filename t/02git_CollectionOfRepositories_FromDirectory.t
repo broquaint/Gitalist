@@ -33,7 +33,7 @@ ok( ! $repo->_is_git_repo( $repoEmpty ), 'is_git_repo is false for empty dir' );
 
 my $repository_list = $repo->repositories;
 ok(scalar @{$repository_list} == 3, '->repositories is an array with the correct number of members' );
-isa_ok($repository_list->[0], 'Gitalist::Git::Repository');
+isa_ok($repository_list->[0], 'Git::Gitalist::Repository');
 is($repository_list->[0]->{name}, 'bare.git', '->repositories has correct name for "bare.git" repo' );
 
 dies_ok {
@@ -49,7 +49,7 @@ dies_ok {
 } 'throws exception for directory traversal';
 
 my $repository = $repo->get_repository('repo1');
-isa_ok($repository, 'Gitalist::Git::Repository');
+isa_ok($repository, 'Git::Gitalist::Repository');
 
 
 # check for bug where get_repository blew up if repo_dir

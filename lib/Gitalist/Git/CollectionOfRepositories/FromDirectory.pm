@@ -28,7 +28,7 @@ class Gitalist::Git::CollectionOfRepositories::FromDirectory
     }
 
     method _get_repo_from_name (NonEmptySimpleStr $name) {
-        return Gitalist::Git::Repository->new($self->_get_path_for_repository_name($name));
+        return Git::Gitalist::Repository->new($self->_get_path_for_repository_name($name));
     }
 
     ## Builders
@@ -71,7 +71,7 @@ The filesystem root of the C<Repo>.
 
 =head1 SEE ALSO
 
-L<Gitalist::Git::CollectionOfRepositories>, L<Gitalist::Git::Repository>
+L<Gitalist::Git::CollectionOfRepositories>, L<Git::Gitalist::Repository>
 
 =head1 AUTHORS
 

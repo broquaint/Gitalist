@@ -3,7 +3,7 @@ use MooseX::MethodAttributes::Role;
 use Moose::Autobox;
 use namespace::autoclean;
 
-use Gitalist::Git::Types qw/SHA1/;
+use Git::Gitalist::Types qw/SHA1/;
 
 requires 'base';
 
@@ -66,9 +66,9 @@ sub find_blob : Action {
 
     # FIXME - Eugh!
     my $blob;
-    if ($object->isa('Gitalist::Git::Object::Commit')) {
+    if ($object->isa('Git::Gitalist::Object::Commit')) {
         $blob = $object->sha_by_path($c->stash->{filename});
-    } elsif ($object->isa('Gitalist::Git::Object::Blob')) {
+    } elsif ($object->isa('Git::Gitalist::Object::Blob')) {
         $blob = $object;
     } else {
         die "Unknown object type for '${\$object->sha1}'";

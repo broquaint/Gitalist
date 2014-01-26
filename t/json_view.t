@@ -28,7 +28,7 @@ delete $data->{owner}
   if $data && exists $data->{owner};
 is_deeply $data, {
           'is_bare' => 1,
-          '__CLASS__' => 'Gitalist::Git::Repository',
+          '__CLASS__' => 'Git::Gitalist::Repository',
           'last_change' => '2011-06-05T23:00:44Z',
           'name' => 'repo1',
           'description' => 'some test repository'

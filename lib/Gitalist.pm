@@ -2,7 +2,7 @@ package Gitalist;
 use Moose;
 BEGIN { require 5.008006; }
 use Catalyst::Runtime 5.90006;
-use Gitalist::Git::Util;
+use Git::Gitalist::Util;
 use namespace::autoclean;
 
 extends 'Catalyst';
@@ -58,7 +58,7 @@ sub uri_with {
 after setup_finalize => sub {
     # At app startup, ensure we can find a git binary, rather than
     # lazily breaking later at request time.
-    Gitalist::Git::Util->new->_git; # FIXME - should not be a private method
+    Git::Gitalist::Util->new->_git; # FIXME - should not be a private method
 };
 
 1;
@@ -356,7 +356,7 @@ we plan to go with the project.
 
 L<Gitalist::Controller::Root>
 
-L<Gitalist::Git::Repository>
+L<Git::Gitalist::Repository>
 
 L<Catalyst>
 

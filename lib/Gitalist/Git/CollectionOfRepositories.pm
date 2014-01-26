@@ -1,18 +1,18 @@
 use MooseX::Declare;
 
 role Gitalist::Git::CollectionOfRepositories
-     with Gitalist::Git::Serializable
+     with Git::Gitalist::Serializable
      with Gitalist::Git::CollectionOfRepositories::Role::Context {
     use MooseX::Types::Common::String qw/NonEmptySimpleStr/;
     use MooseX::Types::Moose qw/ArrayRef/;
     use Moose::Autobox;
-    use aliased 'Gitalist::Git::Repository';
+    use aliased 'Git::Gitalist::Repository';
 
     requires 'debug_string';
 
     has repositories => (
         is         => 'ro',
-        isa        => ArrayRef['Gitalist::Git::Repository'],
+        isa        => ArrayRef['Git::Gitalist::Repository'],
         required   => 1,
         lazy_build => 1,
     );
@@ -86,20 +86,20 @@ This role provides an abstraction for a list of Repository directories.
 
 =head2 repositories
 
-An array of all L<Gitalist::Git::Repository>s.
+An array of all L<Git::Gitalist::Repository>s.
 
 =head1 METHODS
 
 =head2 get_repository (Str $name)
 
-Returns a L<Gitalist::Git::Repository> for the given name.
+Returns a L<Git::Gitalist::Repository> for the given name.
 If C<$name> is not a valid git repository an exception will be thrown.
 
 =head1 SEE ALSO
 
 L<Gitalist::Git::CollectionOfRepositories::FromListOfDirectories>,
 L<Gitalist::Git::CollectionOfRepositories::FromDirectory>,
-L<Gitalist::Git::Repository>.
+L<Git::Gitalist::Repository>.
 
 =head1 AUTHORS
 

@@ -32,7 +32,7 @@ class Gitalist::Git::CollectionOfRepositories::FromListOfDirectories with Gitali
     }
 
     method _get_repo_from_name (NonEmptySimpleStr $name) {
-        return Gitalist::Git::Repository->new($self->_get_path_for_repository_name($name));
+        return Git::Gitalist::Repository->new($self->_get_path_for_repository_name($name));
     }
 
     ## Builders
@@ -69,7 +69,7 @@ A list of git repository directories
 
 =head1 SEE ALSO
 
-L<Gitalist::Git::CollectionOfRepositories>, L<Gitalist::Git::Repository>
+L<Gitalist::Git::CollectionOfRepositories>, L<Git::Gitalist::Repository>
 
 =head1 AUTHORS
 

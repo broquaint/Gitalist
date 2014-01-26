@@ -41,7 +41,7 @@ class Gitalist::Git::CollectionOfRepositories::FromDirectoryRecursive {
     ## Builders
     method _build_repositories {
       return [
-        map { Gitalist::Git::Repository->new($_, $self->_get_repo_name("$_")) } $self->_find_repos( $self->repo_dir )
+        map { Git::Gitalist::Repository->new($_, $self->_get_repo_name("$_")) } $self->_find_repos( $self->repo_dir )
       ];
     }
     with 'Gitalist::Git::CollectionOfRepositories';
@@ -72,7 +72,7 @@ The filesystem root of the C<Repo>.
 
 =head1 SEE ALSO
 
-L<Gitalist::Git::CollectionOfRepositories>, L<Gitalist::Git::Repository>
+L<Gitalist::Git::CollectionOfRepositories>, L<Git::Gitalist::Repository>
 
 =head1 AUTHORS
 
