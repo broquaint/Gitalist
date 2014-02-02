@@ -58,7 +58,12 @@ sub uri_with {
 after setup_finalize => sub {
     # At app startup, ensure we can find a git binary, rather than
     # lazily breaking later at request time.
-    Git::Gitalist::Util->new->_git; # FIXME - should not be a private method
+    Git::Gitalist::Util::git_executable_path()
+      or die <<ERR;
+No git executable found in PATH.
+Please specify which git executable to use in gitalist.conf or ensure that
+a git executable is reachable in the PATH environment variable.
+ERR
 };
 
 1;
