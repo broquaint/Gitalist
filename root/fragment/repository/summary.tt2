@@ -1,5 +1,6 @@
-<dl>
- <dt>description</dt><dd>[% Repository.description %]</dd>
- <dt>owner</dt><dd>[% Repository.owner %]</dd>
- <dt>last change</dt><dd>[% time_since(Repository.last_change) %]</dd>
-</dl>
+<h2>[% Repository.description %]</h2>
+<table class="summary">
+    <tr><th>Owner</th><td>[% Repository.owner %]</td></tr>
+    <tr><th>Last change</th><td>[% time_since(Repository.last_change) %]</td></tr>
+    <tr><th>Clone url</th><td>[% Repository.url %]</td></tr>
+</table>

@@ -58,6 +58,11 @@ class Gitalist::Git::Repository with (Gitalist::Git::HasUtils, Gitalist::Git::Se
                    lazy_build => 1,
                );
 
+    has url => ( isa => Str,
+                 is => 'ro',
+                 lazy_build => 1
+               );
+
     has last_change => ( isa => Maybe[DateTime],
                          is => 'ro',
                          lazy_build => 1,
@@ -229,9 +234,18 @@ class Gitalist::Git::Repository with (Gitalist::Git::HasUtils, Gitalist::Git::Se
     method _build_owner {
         return 'system' if $^O =~ 'MSWin32';
 
+        my $owner = $self->run_cmd("config", "--get", "gitweb.owner");
+        chomp($owner);
+        return $owner if $owner;
         my ($gecos, $name) = map { decode(langinfo(CODESET()), $_) } (getpwuid $self->path->stat->uid)[6,0];
         $gecos =~ s/,+$//;
         return length($gecos) ? $gecos : $name;
+    }
+
+    method _build_url {
+        my $url = $self->run_cmd("config", "--get", "gitweb.url");
+        chomp($url);
+        return $url;
     }
 
     method _build_last_change {
