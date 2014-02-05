@@ -256,7 +256,7 @@ SUPPORT
 SEE ALSO
     Gitalist::Controller::Root
 
-    Gitalist::Git::Repository
+    Git::Gitalist::Repository
 
     Catalyst
 

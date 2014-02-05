@@ -87,7 +87,7 @@ requires 'MooseX::Types::LoadableClass';
 requires 'namespace::autoclean';
 requires 'Class::Load' => '0.20';
 
-requires 'Git::PurePerl' => '0.47';
+requires 'Git::Gitalist' => '0.000001';
 
 requires 'aliased';
 requires 'CGI';
@@ -95,21 +95,17 @@ requires 'DateTime';
 requires 'File::Copy::Recursive';
 requires 'File::Type';
 requires 'File::Type::WebImages';
-requires 'File::Which';
 requires 'HTML::Entities';
 requires 'IPC::Run';
 requires 'JSON';
 requires 'JSON::XS';
-requires 'List::MoreUtils';
 requires 'Path::Class' => '0.17';
 requires 'Syntax::Highlight::Engine::Kate';
 requires 'Sys::Hostname';
 
 requires_external_bin 'git';
 
-test_requires 'Test::Deep'      => '0.108';
 test_requires 'Test::More'      => '0.88';
-test_requires 'Test::utf8'      => '0.02';
 test_requires 'Test::Exception' => '0.31';
 
 resources bugtracker => 'http://rt.cpan.org/Public/Dist/Display.html?Name=Gitalist';

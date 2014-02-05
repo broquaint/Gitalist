@@ -1,12 +1,14 @@
 package Gitalist;
-use Moose;
+
 BEGIN { require 5.008006; }
-use Catalyst::Runtime 5.90006;
-use Git::Gitalist::Util;
-use namespace::autoclean;
+
+use Moose;
 
 extends 'Catalyst';
 
+use Git::Gitalist::Util;
+
+use Catalyst::Runtime 5.90006;
 use Catalyst qw/
                 ConfigLoader
                 Unicode::Encoding
@@ -15,12 +17,14 @@ use Catalyst qw/
                 SubRequest
 /;
 
-our $VERSION = '0.004004';
+use namespace::autoclean;
+
+our $VERSION = '0.005000_01';
 $VERSION = eval $VERSION;
 
 __PACKAGE__->config(
-    name => 'Gitalist',
-    default_view => 'Default',
+    name          => 'Gitalist',
+    default_view  => 'Default',
     default_model => 'CollectionOfRepos',
     use_request_uri_for_path => 1,
     disable_component_resolution_regex_fallback => 1,
