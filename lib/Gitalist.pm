@@ -19,7 +19,7 @@ use Catalyst qw/
 
 use namespace::autoclean;
 
-our $VERSION = '0.005000_01';
+our $VERSION = '0.005000';
 $VERSION = eval $VERSION;
 
 __PACKAGE__->config(

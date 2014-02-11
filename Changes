@@ -1,5 +1,8 @@
 This file documents the revision history for Perl extension Gitalist.
 
+0.005001 2014-02-11
+  - Stable version of dev release, now depends on latest Git::Gitalist.
+
 0.005000_01 2014-02-05
   - Depend on Git::Gitalist to provide git logic.
 

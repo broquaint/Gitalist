@@ -87,7 +87,7 @@ requires 'MooseX::Types::LoadableClass';
 requires 'namespace::autoclean';
 requires 'Class::Load' => '0.20';
 
-requires 'Git::Gitalist' => '0.000001';
+requires 'Git::Gitalist' => '0.000002';
 
 requires 'aliased';
 requires 'CGI';
