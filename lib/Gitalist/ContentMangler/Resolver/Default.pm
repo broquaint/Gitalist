@@ -45,6 +45,15 @@ class Gitalist::ContentMangler::Resolver::Default with Gitalist::ContentMangler:
                 }
             }
         }
+        if($data->{action} eq 'html') {
+            if(($language || '') eq 'Perl' || $data->{filename} =~ /\.pod$/) {
+                return 'Gitalist::ContentMangler::Transformer::RenderPod' => {};
+            }
+            if($data->{filename} =~ /\.md$/) {
+                return 'Gitalist::ContentMangler::Transformer::RenderMarkdown' => {};
+            }
+            return 'Gitalist::ContentMangler::Transformer::NoRenderer' => {};
+        }
         return unless $language;
         return 'Gitalist::ContentMangler::Transformer::SyntaxHighlight' => {language => $language, css => 'Code'};
     }

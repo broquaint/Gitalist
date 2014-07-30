@@ -1,0 +1,2 @@
+[%- IF mangled; INCLUDE inc/syntax_highlight_css.tt2; END -%]
+[% blob %]

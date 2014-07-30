@@ -102,6 +102,7 @@ requires 'JSON::XS';
 requires 'Path::Class' => '0.17';
 requires 'Syntax::Highlight::Engine::Kate';
 requires 'Sys::Hostname';
+requires 'Text::Markdown';
 
 requires_external_bin 'git';
 

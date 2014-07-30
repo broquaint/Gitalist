@@ -93,6 +93,11 @@ after blob => sub {
     $c->forward('Model::ContentMangler');
 };
 
+after html => sub {
+    my ( $self, $c ) = @_;
+    $c->forward('Model::ContentMangler');
+};
+
 after history => sub {
     my ($self, $c) = @_;
     my $repository  = $c->stash->{Repository};

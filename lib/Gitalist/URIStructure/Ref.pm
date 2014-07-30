@@ -86,6 +86,11 @@ sub blob : Chained('find') Does('FilenameArgs') Args() {
 
 sub blame : Chained('find') Does('FilenameArgs') Args() {}
 
+sub html : Chained('find') Does('FilenameArgs') Args() {
+    my ($self, $c) = @_;
+    $c->forward('find_blob');
+}
+
 sub history : Chained('find') Does('FilenameArgs') Args() {}
 
 1;

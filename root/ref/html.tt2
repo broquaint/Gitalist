@@ -1,0 +1,3 @@
+<h3 class="header">[% INCLUDE 'nav/path.tt2' %]</h3>
+
+[% subinclude('/fragment/ref/html', c.req.captures, c.req.args.to_path) %]
