@@ -1,4 +1,4 @@
-<h2>[% diff_tree.size %] file[% "s" IF diff_tree.size > 1 %] in this diff <span>([%- Commit.sha1 || HEAD -%])</span></h2>
+<h2>[% diff_tree.size %] file[% "s" IF diff_tree.size > 1 %] changed in this commit <span>([%- Commit.sha1 || HEAD -%])</span></h2>
 
 <table class='diff-tree listing'>
  <thead>
@@ -12,7 +12,7 @@
   [% FOREACH line IN diff_tree -%]
   <tr>
    <td class='file-name'>
-    <a href="#diff[% loop.count %]">[% line.file %]</a>
+    <a href="[% c.uri_for_action("/ref/diff_fancy", [ Repository.name, Commit.sha1 ]) %]#diff[% loop.count %]">[% line.file %]</a>
    </td>
    <td class='status'>
     [%

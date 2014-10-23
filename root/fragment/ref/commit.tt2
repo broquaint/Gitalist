@@ -2,29 +2,24 @@
 <thead>
 <tr>
 	<th>ID (sha1)</th>
-	<th>Last change</th>
 	<th>Message</th>
 	<th>By</th>
-	<th>Role</th>
 </tr>
 </thead>
 <tbody>
 <tr class="invert">
 	<td class='sha1' title='[% Commit.sha1 %]'>[% INCLUDE 'inc/chroma_hash.tt2' sha1 = Commit.sha1.substr(0, 7) %]</td>
-	<td class='time-since'>[% time_since(Commit.authored_time) %]</td>
-	<td rowspan="2">
+	<td>
           <p class='commit-message'>[% Commit.comment | html %]</p>
 	  [% INCLUDE '_refs.tt2' object = commit %]
         </td>
-	<td class='author'><a href="mailto:[% Commit.author.email %]" title="Email">[% INCLUDE 'inc/gravatar.tt2' email = Commit.author.email %][% Commit.author.name | html %]</a></td>
-	<td class='action-list'>Author</td>
-</tr>
-<tr class="invert">
-	<td></td>
-	<td class='time-since'>[% time_since(Commit.committed_time) %]</td>
-	<!-- spanned -->
-	<td class='author'><a href="mailto:[% Commit.committer.email %]" title="Email">[% INCLUDE 'inc/gravatar.tt2' email = Commit.committer.email %][% Commit.committer.name %]</a></td>
-	<td class='action-list'>Committer</td>
+	<td>
+        <p><a href="mailto:[% Commit.author.email %]" title="Email">[% INCLUDE 'inc/gravatar.tt2' email = Commit.author.email %][% Commit.author.name | html %]</a>
+        (Author, [% time_since(Commit.authored_time) %])</p>
+        <p><a href="mailto:[% Commit.committer.email %]" title="Email">[% INCLUDE 'inc/gravatar.tt2' email = Commit.committer.email %][% Commit.committer.name | html %]</a>
+        (Committer, [% time_since(Commit.committed_time) %])</p>
+
+    </td>
 </tr>
 </tbody>
 </table>
